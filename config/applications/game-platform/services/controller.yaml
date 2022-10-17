@@ -1,0 +1,24 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\Controller\GamePlatform\:
+        resource: '../../../../src/Controller/GamePlatform'
+        tags: ['controller.service_arguments']
+        autowire: true
+    
+    App\Controller\GamePlatform\AuthController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@vs_application.context.application'
+            - '@twig'
+    
+    App\Controller\GamePlatform\DefaultController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@vs_application.context.application'
+            - '@twig'
+            - '@vsapp.repository.game_categories'

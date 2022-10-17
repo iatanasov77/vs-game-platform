@@ -1,0 +1,31 @@
+{% extends "@VSApplication/layout.html.twig" %}
+
+{# Import Macros #}
+{% from '@SyliusResource/Macros/actions.html.twig' import create %}
+{% import "@VSApplication/Macros/form.html.twig" as vs_form %}
+
+{% block title %}{{ parent() }} :: Edit Game{% endblock %}
+{% block pageTitle %}<i class="icon_genius"></i> Edit Game{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+            <div class="card">
+                <h5 class="card-header">Game</h5>
+                <div class="card-body">
+                    {{ include('admin-panel/Pages/Games/_form.html.twig', {'button_label': 'Save'}) }}
+                </div>
+            </div>
+        </div>
+    </div> 
+{% endblock %}
+
+{% block head_styles %} 
+    {{ parent() }}
+    {{ encore_entry_link_tags( 'js/games-edit' ) }}
+{% endblock %}
+
+{% block body_scripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags( 'js/games-edit' ) }}
+{% endblock %}

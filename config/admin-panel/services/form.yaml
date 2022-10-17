@@ -1,0 +1,31 @@
+parameters:
+    vs_cms.form.pages.ckeditor_uiColor: '#ffffff'
+    vs_cms.form.pages.ckeditor_extraAllowedContent: '*[*]{*}(*)'
+    vs_cms.form.pages.ckeditor_toolbar: devpage_toolbar
+    vs_cms.form.pages.ckeditor_extraPlugins: 'liststyle, font, justify, codesnippet, lightbox'
+    vs_cms.form.pages.ckeditor_removeButtons: ''
+    vs_cms.form.toc_page.ckeditor_uiColor: '#ffffff'
+    vs_cms.form.toc_page.ckeditor_extraAllowedContent: '*[*]{*}(*)'
+    vs_cms.form.toc_page.ckeditor_toolbar: devpage_toolbar
+    vs_cms.form.toc_page.ckeditor_extraPlugins: 'liststyle, font, justify, codesnippet, lightbox'
+    vs_cms.form.toc_page.ckeditor_removeButtons: ''
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+    vsapp.form.games:
+        public: true
+        class: App\Form\GameForm
+        arguments:
+            - '%vsapp.model.games.class%'
+            - '@request_stack'
+        tags:
+            - form.type
+    vsapp.form.gamecategories:
+        public: true
+        class: App\Form\GameCategoryForm
+        arguments:
+            - '%vsapp.model.game_categories.class%'
+            - '@request_stack'
+        tags:
+            - form.type

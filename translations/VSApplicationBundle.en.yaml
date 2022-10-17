@@ -1,0 +1,16 @@
+vs_application:
+    menu:
+        blog: Blog
+        snippets: Snippets
+        
+        admin_panel: Admin Panel
+        
+        
+        games: Games
+        list_games: Games
+        create_new_game: Create New Game
+        edit_game: Edit Game
+        game_categories: Game Categories
+        create_game_category: Create Game Category
+        edit_game_category: Edit Game Category
+

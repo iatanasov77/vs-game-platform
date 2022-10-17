@@ -1,0 +1,90 @@
+{% import "@VSApplication/Macros/form.html.twig" as vs_form %}
+
+{% if useFormMethod is defined %}{% set formMethod = useFormMethod %}{% else %}{% set formMethod = 'PUT' %}{% endif %}
+{{ form_start( form, { 'attr': {'class': 'form-horizontal', 'id': 'form-post'}, 'method': formMethod } ) }}
+    {{ form_widget( form._token ) }}
+    
+    {% if form_errors(form) is not empty %}
+        <div class="alert alert-block alert-danger fade in">
+            <button type="button" class="close close-sm" data-dismiss="alert">
+                <i class="icon-remove"></i>
+            </button>
+            <strong>Error!</strong> {{ form_errors( form ) }}
+        </div>
+    {% endif %}
+    
+    <label class="custom-control custom-checkbox">  
+        <input type="checkbox" id="page_form_enabled" name="game_form[enabled]" 
+            class="custom-control-input form-check-input"
+            {% if form.vars.value.enabled %}checked="checked"{% endif %}
+        />
+        <span class="custom-control-label">{{ 'vs_application.form.enabled'|trans({}, 'VSApplicationBundle') }}</span>
+    </label>
+    
+    <div class="form-group">
+        {{ form_label(form.locale, null, {
+            'label_attr': {'class': 'col-form-label'}
+            }) 
+        }}
+        
+        {{ form_widget(form.locale, {'attr': {'class': 'form-control'}}) }}
+    </div>
+    
+    {% if item.id %}{% set itemId = item.id %}{% else %}{% set itemId = 0 %}{% endif %}
+    {% set comboDataSourceUrl  = url( 'vs_cms_pages_tree_combo_with_selected', {'pageId': itemId, 'taxonomyId': taxonomyId} ) %}
+    {% set comboTreePlaceholder = 'vs_application.form.category_placeholder' | trans( {},'VSApplicationBundle' ) %}
+    {% set comboDataOptions    = "
+            url:'" ~ comboDataSourceUrl ~ 
+            "', required:true, prompt:'" ~ comboTreePlaceholder ~"',
+            onBeforeLoad:function( node ) {
+                //showSpiner
+            },
+            onLoadSuccess:function( node ) {
+                // $( '#game_form_category_taxon' ).combotree( 'setValue', $( '#game_form_category_taxon' ).attr( 'data-value' ) );
+                //hideSpiner
+            }
+    " %}
+    <div class="form-group">
+        {{ form_label(form.category_taxon, null, {
+            'label_attr': {'class': 'col-form-label'}
+            }) 
+        }}
+        {{ form_widget(form.category_taxon, {
+            'attr': {
+                'class': 'form-control easyui-combotree',
+                'data-options': comboDataOptions,
+                'data-value': item.category ? item.category.taxon.id : null
+            }
+        }) }}
+    </div>
+    
+    <div class="form-group">
+        {{ form_label(form.title, null, {
+            'label_attr': {'class': 'col-form-label'}
+            }) 
+        }}
+        
+        {{ form_widget(form.title, {'attr': {'class': 'form-control'}}) }}
+    </div>
+    
+    <div class="form-group mt-3">
+        {% if item.picture %}
+            {% set pictureFileName  = item.picture.originalName %}
+        {% else %}
+            {% set pictureFileName  = 'vs_application.form.picture_placeholder'  | trans( {},'VSApplicationBundle' ) %}
+        {% endif %}
+        
+        <label for="game_form_picture" class="col-form-label">
+            {{ 'vs_application.form.picture'  | trans( {},'VSApplicationBundle' ) }}
+        </label>
+        <div class="custom-file">
+            {{ form_widget(form.picture, {'attr': {'class': 'custom-file-input' }}) }}
+            {{ form_label(form.picture, pictureFileName, {
+                'label_attr': {'class': 'custom-file-label profile-picture game-picture'}
+                }) 
+            }}
+        </div>
+    </div>
+    
+    {{ vs_form.buttons( form ) }}
+{{ form_end( form, {'render_rest': false} ) }}

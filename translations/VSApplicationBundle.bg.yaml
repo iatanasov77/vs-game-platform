@@ -1,0 +1,16 @@
+vs_application:
+    menu:
+        blog: Блог
+        snippets: Снипети
+        
+        admin_panel: Админ Панел
+
+
+        games: Игри
+        list_games: Игри
+        create_new_game: Създай Нова Игра
+        edit_game: Радакция на Игра
+        game_categories: Категории Игри
+        create_game_category: Създай Категория Игри
+        edit_game_category: Редакция на Категория Игри
+

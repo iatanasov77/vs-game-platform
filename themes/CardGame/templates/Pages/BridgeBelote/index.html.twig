@@ -1,5 +1,11 @@
 {% extends "base.html.twig" %}
 
+{% block stylesheets %}
+    {{ parent() }}
+
+    
+{% endblock %}
+
 {% block javascripts %}
 	{{ encore_entry_script_tags( 'js/bridge-belote', null, 'CardGameTheme' ) }}
 {% endblock %}
@@ -10,8 +16,34 @@
             <div class="col-4">
               Column
             </div>
-            <div class="col-xs-12 col-12" align="center">
-                <div id="card-table" style="width: 950px; height: 800px; border: 1px solid black;"></div>
+            <div class="col-xs-12 col-12" align="center" style="width: 950px; height: 800px;">
+                <div id="card-table"></div>
+                <div id="card-actions">
+                    <div class="p-2 float-start">
+                        <a class="btn btn-primary" id="btnStartGame">Start Game</a>
+                    </div>
+                    <div class="p-2 float-end">
+                        <a href="sdfsdf">
+                            <img src="{{ asset('/build/card-game/images/icons/Suites/clover.png') }}" width="40" height="40"/>
+                        </a>
+                        <a href="sdfsdf">
+                            <img src="{{ asset('/build/card-game/images/icons/Suites/diamond.png') }}" width="40" height="40"/>
+                        </a>
+                        <a href="sdfsdf">
+                            <img src="{{ asset('/build/card-game/images/icons/Suites/hearts.png') }}" width="40" height="40"/>
+                        </a>
+                        <a href="sdfsdf">
+                            <img src="{{ asset('/build/card-game/images/icons/Suites/symbol-of-spades.png') }}" width="40" height="40"/>
+                        </a>
+                        
+                        <a href="sdfsdf">
+                            <img src="{{ asset('/build/card-game/images/icons/Suites/ace-of-spades-1.png') }}" width="40" height="40"/>
+                        </a>
+                        <a href="sdfsdf">
+                            <img src="{{ asset('/build/card-game/images/icons/Suites/jack-of-spades.png') }}" width="40" height="40"/>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

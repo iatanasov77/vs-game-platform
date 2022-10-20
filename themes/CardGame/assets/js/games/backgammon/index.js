@@ -1,5 +1,5 @@
-require( 'einaregilsson-cards.js/deckType' );
-const cards = require( 'einaregilsson-cards.js/cards.js' );
+require( '../../library/GamePlatform/Einaregilsson_Cards.Js/deckType' );
+const cards = require( '../../library/GamePlatform/Einaregilsson_Cards.Js/cards' );
 
 $( function()
 {

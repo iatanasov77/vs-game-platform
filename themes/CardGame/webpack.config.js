@@ -13,6 +13,8 @@ Encore
         resolveUrlLoader: true
     })
     
+    .enableReactPreset()
+    
     /**
      * Add Entries
      */

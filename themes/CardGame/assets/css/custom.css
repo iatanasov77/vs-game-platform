@@ -28,3 +28,24 @@
     margin: 15px auto auto 300px;
 }
 
+
+.announce-button {
+	margin-left: 10px;
+    position: relative;
+    top: -10px;
+    color: black;
+    font-family: Times, serif;
+    font-size: 40px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.leftPlayer {
+	border: 1px solid black;
+	
+    position: absolute;
+    top: 130px;
+    left: 10px;
+    width: 140px;
+    height: 250px;
+}

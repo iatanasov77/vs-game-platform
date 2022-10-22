@@ -1,9 +1,9 @@
 /**
- * Abstract Class AbstractGameRules.
+ * Abstract Class AbstractCardGameAnnounce.
  * Manual: https://stackoverflow.com/questions/597769/how-do-i-create-an-abstract-base-class-in-javascript
  *         https://www.freecodecamp.org/news/how-javascript-implements-oop/
  *
- * @class AbstractGameRules
+ * @class AbstractCardGameAnnounce
  */
 class AbstractCardGameAnnounce
 {

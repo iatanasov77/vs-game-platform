@@ -11,60 +11,7 @@
 {% endblock %}
 
 {% block content %}
-    <div id="AnnounceButtons" class="d-none">
-        <a href="javascript:void(0);" id="btnClover" >
-            <img src="{{ asset('/build/card-game/images/icons/Suites/clover.png') }}" width="40" height="40" style="vertical-align: inherit;" />
-        </a>
-        <a href="javascript:void(0);" id="btnDiamond">
-            <img src="{{ asset('/build/card-game/images/icons/Suites/diamond.png') }}" width="40" height="40"style="vertical-align: inherit;" />
-        </a>
-        <a href="javascript:void(0);" id="btnHeart">
-            <img src="{{ asset('/build/card-game/images/icons/Suites/hearts.png') }}" width="40" height="40"style="vertical-align: inherit;" />
-        </a>
-        <a href="javascript:void(0);" id="btnSpade">
-            <img src="{{ asset('/build/card-game/images/icons/Suites/symbol-of-spades.png') }}" width="40" height="40"style="vertical-align: inherit;" />
-        </a>
-        
-        <a href="javascript:void(0);" id="btnAce">
-            <span class="announce-button">a</span>
-            {#<img src="{{ asset('/build/card-game/images/icons/Suites/ace-of-spades-1.png') }}" width="40" height="40"/>#}
-        </a>
-        <a href="javascript:void(0);" id="btnJack">
-            <span class="announce-button">j</span>
-            {#<img src="{{ asset('/build/card-game/images/icons/Suites/jack-of-spades.png') }}" width="40" height="40"/>#}
-        </a>
-        <a href="javascript:void(0);" id="btnPass">
-            <span class="announce-button">pass</span>
-        </a>
-    </div>
-    
     <div class="container text-center" style="height: 100%">
-        <div class="row">
-            <div class="col-4">
-              Column
-            </div>
-            <div class="col-xs-12 col-12" align="center" style="width: 950px; height: 800px;">
-                <div id="card-table">
-                    <div class="leftPlayer">
-                        <div id="lefthand" class="playerCards float-start"></div>
-                        <div class="playerAnnounce float-end" style="position: relative; top: 100px;">
-                            <span class="announceNumber">1.</span><br />
-                            <span class="announceSymbol"><img src="{{ asset('/build/card-game/images/icons/Suites/clover.png') }}" width="40" height="40" style="vertical-align: inherit;" /></span>
-                        </div>
-                    </div>
-                    <div id="upperhand" class="upperPlayer"></div>
-                    <div id="righthand" class="rightPlayer"></div>
-                    <div id="lowerhand" class="lowerPlayer"></div>
-                </div>
-                <div id="card-actions">
-                    <div class="p-2 float-start">
-                        <a class="btn btn-primary" id="btnStartGame">Start Game</a>
-                    </div>
-                    <div class="p-2 float-end">
-                        <div id="AnnounceContainer"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div id="ReactApplication"></div>
     </div>
 {% endblock %}

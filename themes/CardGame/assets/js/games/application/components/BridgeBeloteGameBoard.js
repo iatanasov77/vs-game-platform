@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 
+import { GameContext } from '../contexts/GameContext';
 import BeloteCardGame from '../../../library/GamePlatform/Game/BeloteCardGame';
 import Announce from '../../../library/GamePlatform/CardGameAnnounce/Announce';
 
-const GameBoard = ( {announceSymbols} ) => {
+const BridgeBeloteGameBoard = () => {
+    
+    const { getAnnounceSymbols } = useContext( GameContext );
     
     useEffect( () => {
         game.initBoard();
@@ -34,11 +37,14 @@ const GameBoard = ( {announceSymbols} ) => {
      */
     let game    = new BeloteCardGame( '#card-table' );
     
+    let announceSymbols = getAnnounceSymbols();
     let announceButtons = announceSymbols.map( ( icon, index ) => (
         <a key={ `announce-button-${index}` } href="{undefined}" id={ icon.key }>
             { icon.value }
         </a>
     ));
+    
+    const cloverIcon = announceSymbols.find( ({ id }) => id === Announce.CLOVER ).value;
     
     return (
         <div align="center" style={{width: "950px", height: "800px"}}>
@@ -47,12 +53,30 @@ const GameBoard = ( {announceSymbols} ) => {
                     <div id="lefthand" className="playerCards float-start"></div>
                     <div className="playerAnnounce float-end" style={{position: "relative", top: "100px"}}>
                         <span className="announceNumber">1.</span><br />
-                        <span className="announceSymbol"><img src="/build/card-game/images/icons/Suites/clover.png" width="40" height="40" style={{ verticalAlign: "inherit" }} /></span>
+                        <span className="announceSymbol">{ cloverIcon }</span>
                     </div>
                 </div>
-                <div id="upperhand" className="upperPlayer"></div>
-                <div id="righthand" className="rightPlayer"></div>
-                <div id="lowerhand" className="lowerPlayer"></div>
+                <div className="topPlayer">
+                    <div id="upperhand" className="playerCards"></div>
+                    <div className="playerAnnounce text-center align-middle" style={{position: "relative", top: "100px"}}>
+                        <span className="announceNumber">2.</span>&nbsp;&nbsp;
+                        <span className="announceSymbol">{ cloverIcon }</span>
+                    </div>
+                </div>
+                <div className="rightPlayer">
+                    <div id="righthand" className="playerCards"></div>
+                    <div className="playerAnnounce float-start" style={{position: "relative", top: "100px"}}>
+                        <span className="announceNumber">3.</span><br />
+                        <span className="announceSymbol">{ cloverIcon }</span>
+                    </div>
+                </div>
+                <div className="bottomPlayer">
+                    <div id="lowerhand" className="playerCards"></div>
+                    <div className="playerAnnounce text-center align-middle" style={{position: "relative", top: "0"}}>
+                        <span className="announceNumber">4.</span>&nbsp;&nbsp;
+                        <span className="announceSymbol">{ cloverIcon }</span>
+                    </div>
+                </div>
             </div>
             
             <div id="card-actions">
@@ -71,4 +95,4 @@ const GameBoard = ( {announceSymbols} ) => {
     );
 }
 
-export default GameBoard;
+export default BridgeBeloteGameBoard;

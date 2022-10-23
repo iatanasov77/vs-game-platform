@@ -88,12 +88,24 @@ class BeloteCardGame extends AbstractGame
                 lefthand[i].el.moveTo( '#lefthand' );   // https://stackoverflow.com/questions/2596833/how-to-move-child-element-from-one-parent-to-another-using-jquery
             }
             
+            for ( i = 0; i < upperhand.length; i++ ) {
+                upperhand[i].el.css( 'left', 10 + ( i * 20 ) + 'px' );
+                upperhand[i].el.css( 'top', '0px' );
+                upperhand[i].el.moveTo( '#upperhand' );   // https://stackoverflow.com/questions/2596833/how-to-move-child-element-from-one-parent-to-another-using-jquery
+            }
+            
             for ( i = 0; i < righthand.length; i++ ) {
                 righthand[i].rotate( 90 );
                 
-                righthand[i].el.css( 'left', 595 + 'px' );
-                righthand[i].el.css( 'top', ( 115 + ( i * 20 ) ) + 'px' );
+                righthand[i].el.css( 'left', 60 + 'px' );
+                righthand[i].el.css( 'top', ( i * 20 ) + 'px' );
                 righthand[i].el.moveTo( '#righthand' ); // https://stackoverflow.com/questions/2596833/how-to-move-child-element-from-one-parent-to-another-using-jquery
+            }
+            
+            for ( i = 0; i < lowerhand.length; i++ ) {
+                lowerhand[i].el.css( 'left', 10 + ( i * 20 ) + 'px' );
+                lowerhand[i].el.css( 'top', '45px' );
+                lowerhand[i].el.moveTo( '#lowerhand' );   // https://stackoverflow.com/questions/2596833/how-to-move-child-element-from-one-parent-to-another-using-jquery
             }
         });
     }
@@ -179,6 +191,8 @@ class BeloteCardGame extends AbstractGame
                 lastAnnounce    = oAnnounce.announce( this.players[i].getHand(), lastAnnounce );
                 this.announces.push( lastAnnounce );
             }
+            
+            this.players[i].setAnnounce( lastAnnounce );
         }
         
         this.afterAnnounce( player, oAnnounce );

@@ -1,6 +1,6 @@
 import React from 'react';
 
-const GameStatistics = () => {
+const BridgeBeloteGameStatistics = () => {
 
     let gameResults = [];
     for ( let i = 0; i <= 5; i++ ) {
@@ -30,4 +30,4 @@ const GameStatistics = () => {
     );
 }
 
-export default GameStatistics;
+export default BridgeBeloteGameStatistics;

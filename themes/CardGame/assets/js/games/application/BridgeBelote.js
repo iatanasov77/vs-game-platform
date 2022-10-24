@@ -1,5 +1,7 @@
 import React from 'react';
 
+import './BridgeBelote.scss'
+
 import { GameProvider } from './contexts/GameContext';
 import BridgeBeloteGameStatistics from './components/BridgeBeloteGameStatistics';
 import BridgeBeloteGameBoard from './components/BridgeBeloteGameBoard';

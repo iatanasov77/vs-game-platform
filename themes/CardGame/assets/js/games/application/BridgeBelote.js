@@ -12,11 +12,11 @@ const BridgeBelote = () => {
     return (
         <GameProvider>
             <div className="row">
-                <div className="col-4">
+                <div className="col-2">
                     <BridgeBeloteGameStatistics />
                 </div>
                 
-                <div className="col-xs-12 col-12">
+                <div className="col-xs-10 col-10">
                     <BridgeBeloteGameBoard />
                 </div>
             </div>

@@ -73,7 +73,7 @@ const BridgeBeloteGameBoard = () => {
     ));
     
     return (
-        <div align="center" style={{width: "950px", height: "800px"}}>
+        <div id="game-board" align="center">
             <div id="card-table">
                 { playerContainers }
             </div>

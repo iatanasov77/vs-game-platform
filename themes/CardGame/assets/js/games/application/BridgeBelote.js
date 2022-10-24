@@ -1,5 +1,6 @@
 import React from 'react';
 
+import './CardGame.scss'
 import './BridgeBelote.scss'
 
 import { GameProvider } from './contexts/GameContext';

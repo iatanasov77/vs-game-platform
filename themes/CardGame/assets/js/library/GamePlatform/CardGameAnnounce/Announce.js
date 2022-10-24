@@ -2,7 +2,7 @@ class Announce {
     static PASS         = 'pass';
     
     static CLOVER       = 'clover';
-    static DIAMOND      = 'clover';
+    static DIAMOND      = 'diamond';
     static HEART        = 'heart';
     static SPADE        = 'spade';
     

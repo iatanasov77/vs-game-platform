@@ -48,6 +48,7 @@ const PlayerAnnounce = ( {player} ) => {
             
             setAnnounce( player.id, announceId );
             if ( position === player.id ) {
+                //alert( announceId );
                 setAnnounceIcon( getAnnounceSymbol( announceId ).value );
             }
         });

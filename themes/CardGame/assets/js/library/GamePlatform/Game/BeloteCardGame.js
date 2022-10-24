@@ -158,20 +158,21 @@ class BeloteCardGame extends AbstractGame
         
         this.waitAnnounces().then( () => {
             let announce    = oAnnounce.getAnnounce( this.announces );
-            $( this.boardSelector ).get( 0 ).dispatchEvent(
-                new CustomEvent( GameEvents.GAME_START_EVENT_NAME, {
-                    detail: {
-                        announceId: announce
-                    },
-                })
-            );
             
             // Deal After Anounce If The Announce is not PASS
             if ( announce == Announce.PASS ) {
-                
+                $( '#btnStartGame' ).show();
             } else {
                 this.dealCards( 3 );
                 let pile    = this.beginPlaying( player.getHand() );
+                
+                $( this.boardSelector ).get( 0 ).dispatchEvent(
+                    new CustomEvent( GameEvents.GAME_START_EVENT_NAME, {
+                        detail: {
+                            announceId: announce
+                        },
+                    })
+                );
             }
         });
     }

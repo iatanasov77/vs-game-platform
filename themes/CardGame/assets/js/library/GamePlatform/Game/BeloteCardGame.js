@@ -174,13 +174,26 @@ class BeloteCardGame extends AbstractGame
     {
         this.initAnnounceEventListeners();
         
+        let waitTimeout;
         let player;
         let lastAnnounce;
         let oAnnounce   = new BeloteCardGameAnnounce();
         
+        // https://developer.mozilla.org/en-US/docs/Web/API/setTimeout
+        const partnerBoundMethod = ( function ( containerId, lastAnnounce ) {
+            this.fireAnnounceEvent( containerId, lastAnnounce );
+        }).bind( this );
+        
+        const playerBoundMethod = ( function ( announceContainerId ) {
+            $( '#' + announceContainerId ).show();
+        }).bind( this );
+        
         for ( let i = 0; i < this.players.length; i++ ) {
+            waitTimeout = ( i + 1 ) * 2000;
+            
             if ( this.players[i].type == 'player' ) {
                 player  = this.players[i];
+                setTimeout( playerBoundMethod, waitTimeout, 'AnnounceContainer' );
                 
                 // Wait For Player Announce
                 this.waitMyAnnounce()
@@ -197,7 +210,8 @@ class BeloteCardGame extends AbstractGame
                 this.announces.push( lastAnnounce );
                 
                 this.players[i].setAnnounce( lastAnnounce );
-                this.fireAnnounceEvent( this.players[i].containerId, lastAnnounce );
+                
+                setTimeout( partnerBoundMethod, waitTimeout, this.players[i].containerId, lastAnnounce );
             }
         }
         

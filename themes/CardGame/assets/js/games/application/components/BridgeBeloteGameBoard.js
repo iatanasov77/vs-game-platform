@@ -14,6 +14,7 @@ const BridgeBeloteGameBoard = () => {
         game.initBoard();
         
         initAnnounceButtons();
+        $( '#AnnounceContainer' ).hide();
     }, [] );
     
     function initAnnounceButtons()

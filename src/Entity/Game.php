@@ -73,6 +73,13 @@ class Game implements ResourceInterface
      */
     private $picture;
     
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="game_url", type="string", length=255, nullable=true)
+     */
+    private $gameUrl;
+    
     public function getId(): ?int
     {
         return $this->id;
@@ -135,6 +142,18 @@ class Game implements ResourceInterface
     {
         $picture->setOwner( $this );
         $this->picture  = $picture;
+        
+        return $this;
+    }
+    
+    public function getGameUrl()
+    {
+        return $this->gameUrl;
+    }
+    
+    public function setGameUrl($gameUrl)
+    {
+        $this->gameUrl = $gameUrl;
         
         return $this;
     }

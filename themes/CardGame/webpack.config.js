@@ -13,6 +13,8 @@ Encore
         resolveUrlLoader: true
     })
     
+    .enableReactPreset()
+    
     /**
      * Add Entries
      */
@@ -30,7 +32,7 @@ Encore
      
      .copyFiles([
         {from: './themes/CardGame/assets/images', to: 'images/[path][name].[ext]'},
-        {from: './node_modules/einaregilsson-cards.js/img', to: 'einaregilsson-cards.js/img/[path][name].[ext]'}  
+        {from: './themes/CardGame/assets/js/library/GamePlatform/Einaregilsson_Cards.Js/img', to: 'einaregilsson-cards.js/img/[path][name].[ext]'}  
      ])
     
     .addStyleEntry( 'css/app', './themes/CardGame/assets/css/main.scss' )

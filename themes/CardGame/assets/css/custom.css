@@ -1,0 +1,89 @@
+/*
+ * Game Table
+ */
+#card-table {
+    background-color: green;
+    height: 60%;
+    width: 75%;
+    border: solid 6px brown;
+    border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    -ms-border-radius: 8px;
+    -o-border-radius: 8px;
+    box-shadow: #111 1px 1px 2px;
+    
+    margin: 180px auto auto 300px;
+}
+
+/*
+ * Game Actions Box
+ */
+#card-actions {
+    background-color: green;
+    height: 70px;
+    width: 75%;
+    border: solid 6px brown;
+    border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    -ms-border-radius: 8px;
+    -o-border-radius: 8px;
+    box-shadow: #111 1px 1px 2px;
+    
+    margin: 15px auto auto 300px;
+}
+
+.announce-button {
+	margin-left: 10px;
+    position: relative;
+    top: -10px;
+    color: black;
+    font-family: Times, serif;
+    font-size: 40px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/*
+ * Player Positions
+ */
+.leftPlayer {
+	border: 1px solid black;
+	
+    position: absolute;
+    top: 130px;
+    left: 10px;
+    width: 140px;
+    height: 250px;
+}
+
+.topPlayer {
+    border: 1px solid black;
+    
+    position: absolute;
+    top: 10px;
+    left: 230px;
+    width: 250px;
+    height: 140px;
+}
+
+.rightPlayer {
+    border: 1px solid black;
+    
+    position: absolute;
+    top: 130px;
+    right: 10px;
+    width: 140px;
+    height: 250px;
+}
+
+.bottomPlayer {
+    border: 1px solid black;
+    
+    position: absolute;
+    bottom: 10px;
+    left: 230px;
+    width: 250px;
+    height: 140px;
+}

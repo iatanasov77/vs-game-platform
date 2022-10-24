@@ -8,14 +8,28 @@ import Announce from '../../../library/GamePlatform/CardGameAnnounce/Announce';
 
 const BridgeBeloteGameBoard = () => {
     
-    const { getAnnounceSymbols, setAnnounce } = useContext( GameContext );
+    const { getAnnounceSymbols, getAnnounceSymbol, setAnnounce } = useContext( GameContext );
+    const [gameAnnounceIcon, setGameAnnounceIcon] = useState( null );
     
     useEffect( () => {
         game.initBoard();
         
         initAnnounceButtons();
+        listenForGameEvents();
         $( '#AnnounceContainer' ).hide();
+        $( '#GameAnnounce' ).hide();
     }, [] );
+    
+    function listenForGameEvents()
+    {
+        $( "#card-table" ).get( 0 ).addEventListener( GameEvents.GAME_START_EVENT_NAME, ( event ) => {
+            const { announceId }    = event.detail;
+            
+            setGameAnnounceIcon( getAnnounceSymbol( announceId ).value );
+            $( '#AnnounceContainer' ).hide();
+            $( '#GameAnnounce' ).show();
+        });
+    }
     
     function initAnnounceButtons()
     {
@@ -33,6 +47,7 @@ const BridgeBeloteGameBoard = () => {
         event.preventDefault();
         
         game.startGame();
+        $( '#btnStartGame' ).hide();
     }
     
     /**
@@ -72,6 +87,9 @@ const BridgeBeloteGameBoard = () => {
                 <div className="p-2 float-end">
                     <div id="AnnounceContainer">
                         { announceButtons }
+                    </div>
+                    <div id="GameAnnounce">
+                        <span className="announce-button">Game:</span> { gameAnnounceIcon }
                     </div>
                 </div>
             </div>

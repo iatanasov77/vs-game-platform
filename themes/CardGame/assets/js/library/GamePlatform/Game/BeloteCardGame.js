@@ -8,7 +8,7 @@ import CardGamePlayer from './CardGamePlayer';
 
 import Announce from '../CardGameAnnounce/Announce';
 import BeloteCardGameAnnounce from '../CardGameAnnounce/BeloteCardGameAnnounce';
-import BeloteGameRules from '../GameRules/BeloteGameRules';
+import * as GameEvents from './GameEvents';
 
 class BeloteCardGame extends AbstractGame
 {
@@ -32,6 +32,20 @@ class BeloteCardGame extends AbstractGame
      */
     announces;
     
+    
+    constructor( boardSelector )
+    {
+        super( boardSelector );
+        
+        //Now lets create a couple of hands, one face down, one face up.
+        this.players  = [
+            ( new CardGamePlayer( 'left', 'LeftPlayer', 'Left Player', 'computer' ) ).setHand( new cards.Hand({ faceUp:false, x:75, y:225 }) ),
+            ( new CardGamePlayer( 'top', 'TopPlayer', 'Top Player', 'computer' ) ).setHand( new cards.Hand({ faceUp:false, x:335, y:52 }) ),
+            ( new CardGamePlayer( 'right', 'RightPlayer', 'Right Player', 'computer' ) ).setHand( new cards.Hand({ faceUp:false, x:605, y:227 }) ),
+            ( new CardGamePlayer( 'bottom', 'BottomPlayer', 'Bottom Player', 'player' ) ).setHand( new cards.Hand({ faceUp:true, x:335, y:415 }) )
+        ];
+    }
+    
     initBoard()
     {
         //Start by initalizing the library
@@ -49,15 +63,6 @@ class BeloteCardGame extends AbstractGame
         
         //No animation here, just get the deck onto the table.
         this.deck.render( {immediate:true} );
-        
-        
-        //Now lets create a couple of hands, one face down, one face up.
-        this.players  = [
-            ( new CardGamePlayer( 'computer' ) ).setHand( new cards.Hand({ faceUp:false, x:75, y:225 }) ),
-            ( new CardGamePlayer( 'computer' ) ).setHand( new cards.Hand({ faceUp:false, x:335, y:52 }) ),
-            ( new CardGamePlayer( 'computer' ) ).setHand( new cards.Hand({ faceUp:false, x:605, y:227 }) ),
-            ( new CardGamePlayer( 'player' ) ).setHand( new cards.Hand({ faceUp:true, x:335, y:415 }) )
-        ];
     }
     
     startGame()
@@ -161,8 +166,6 @@ class BeloteCardGame extends AbstractGame
             } else {
                 this.dealCards( 3 );
                 let pile    = this.beginPlaying( player.getHand() );
-                
-                //let rules   = new BeloteGameRules().rules( announce );
             }
         });
     }
@@ -185,14 +188,30 @@ class BeloteCardGame extends AbstractGame
                         lastAnnounce    = window.playerAnnounce;
                         this.announces.push( lastAnnounce );
                         //alert( 'My Announce: ' + window.playerAnnounce );
+                        
+                        $( "#" + this.players[i].containerId ).get( 0 ).dispatchEvent(
+                            new CustomEvent( GameEvents.PLAYER_ANNOUNCE_EVENT_NAME, {
+                                detail: {
+                                    announceId: lastAnnounce
+                                },
+                            })
+                        );
                     });
             } else {
                 // Create Announce for Partner Gamer
                 lastAnnounce    = oAnnounce.announce( this.players[i].getHand(), lastAnnounce );
                 this.announces.push( lastAnnounce );
+                
+                this.players[i].setAnnounce( lastAnnounce );
+                
+                $( "#" + this.players[i].containerId ).get( 0 ).dispatchEvent(
+                    new CustomEvent( GameEvents.PLAYER_ANNOUNCE_EVENT_NAME, {
+                        detail: {
+                            announceId: lastAnnounce
+                        },
+                    })
+                );
             }
-            
-            this.players[i].setAnnounce( lastAnnounce );
         }
         
         this.afterAnnounce( player, oAnnounce );

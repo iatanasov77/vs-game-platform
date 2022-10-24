@@ -189,13 +189,7 @@ class BeloteCardGame extends AbstractGame
                         this.announces.push( lastAnnounce );
                         //alert( 'My Announce: ' + window.playerAnnounce );
                         
-                        $( "#" + this.players[i].containerId ).get( 0 ).dispatchEvent(
-                            new CustomEvent( GameEvents.PLAYER_ANNOUNCE_EVENT_NAME, {
-                                detail: {
-                                    announceId: lastAnnounce
-                                },
-                            })
-                        );
+                        this.dispatchAnnounceEvent( this.players[i].containerId, lastAnnounce );
                     });
             } else {
                 // Create Announce for Partner Gamer
@@ -203,14 +197,7 @@ class BeloteCardGame extends AbstractGame
                 this.announces.push( lastAnnounce );
                 
                 this.players[i].setAnnounce( lastAnnounce );
-                
-                $( "#" + this.players[i].containerId ).get( 0 ).dispatchEvent(
-                    new CustomEvent( GameEvents.PLAYER_ANNOUNCE_EVENT_NAME, {
-                        detail: {
-                            announceId: lastAnnounce
-                        },
-                    })
-                );
+                this.dispatchAnnounceEvent( this.players[i].containerId, lastAnnounce );
             }
         }
         
@@ -242,6 +229,17 @@ class BeloteCardGame extends AbstractGame
         });
         
         return pile;
+    }
+    
+    dispatchAnnounceEvent( playerContainerId, announceId )
+    {
+        $( "#" + playerContainerId ).get( 0 ).dispatchEvent(
+            new CustomEvent( GameEvents.PLAYER_ANNOUNCE_EVENT_NAME, {
+                detail: {
+                    announceId: announceId
+                },
+            })
+        );
     }
 }
 

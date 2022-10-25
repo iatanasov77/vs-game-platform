@@ -81,7 +81,7 @@ class BeloteCardGame extends AbstractGame
         let righthand   = this.players[2].getHand();
         let lowerhand   = this.players[3].getHand();
         
-        lowerhand.x = 73;
+        lowerhand.x = 110;
         lowerhand.y = 90;
         
         //Deck has a built in method to deal to hands.

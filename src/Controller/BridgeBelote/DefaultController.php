@@ -31,7 +31,7 @@ class DefaultController extends AbstractController
     
     public function index( $gameSlug, Request $request ): Response
     {
-        $game   = $this->gamesRepository->findBy( ['slug' => $gameSlug] );
+        $game   = $this->gamesRepository->findOneBy( ['slug' => $gameSlug] );
         
         return new Response( $this->templatingEngine->render( $this->getTemplate(), ['game' => $game] ) );
     }

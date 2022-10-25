@@ -126,21 +126,15 @@ class BeloteCardGame extends AbstractGame
     initAnnounceEventListeners()
     {
         let promise = new Promise( ( resolve ) => {
-            $( '#AnnounceContainer' ).find( '#btnClover' ).get( 0 ).addEventListener( 'click', resolve );
-            $( '#AnnounceContainer' ).find( '#btnDiamond' ).get( 0 ).addEventListener( 'click', resolve );
-            $( '#AnnounceContainer' ).find( '#btnHeart' ).get( 0 ).addEventListener( 'click', resolve );
-            $( '#AnnounceContainer' ).find( '#btnSpade' ).get( 0 ).addEventListener( 'click', resolve );
-            
-            $( '#AnnounceContainer' ).find( '#btnBezKoz' ).get( 0 ).addEventListener( 'click', resolve );
-            $( '#AnnounceContainer' ).find( '#btnVsichkoKoz' ).get( 0 ).addEventListener( 'click', resolve );
-            $( '#AnnounceContainer' ).find( '#btnPass' ).get( 0 ).addEventListener( 'click', resolve );
+            $( '#BottomPlayer' ).get( 0 ).addEventListener( GameEvents.PLAYER_ANNOUNCE_EVENT_NAME, ( event ) => {
+                const { announceId }    = event.detail;
+                window.playerAnnounce   = announceId;
+            });
         });
         
         this.waitMyAnnounce = async function waitMyAnnounce() {
             return await promise.then( ( ev ) => {
-                ev.preventDefault();
                 
-                window.playerAnnounce  = $( ev.target ).parent( 'a' ).attr( 'data-announce' );
             });
         }
     }

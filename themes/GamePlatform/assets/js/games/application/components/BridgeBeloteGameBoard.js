@@ -38,6 +38,19 @@ const BridgeBeloteGameBoard = () => {
         $( '#btnStartGame' ).hide();
     }
     
+    function onPlayerAnnounce( event, announceId )
+    {
+        event.preventDefault();
+        
+        $( "#BottomPlayer" ).get( 0 ).dispatchEvent(
+            new CustomEvent( GameEvents.PLAYER_ANNOUNCE_EVENT_NAME, {
+                detail: {
+                    announceId: announceId
+                },
+            })
+        );
+    }
+    
     /**
      * MAIN APPLICATION
      */
@@ -55,7 +68,10 @@ const BridgeBeloteGameBoard = () => {
     
     let announceSymbols     = getAnnounceSymbols();
     let announceButtons     = announceSymbols.map( ( icon, index ) => (
-        <a key={ `announce-button-${index}` } href="{undefined}" id={ icon.key } data-announce={icon.id}>
+        <a key={ `announce-button-${index}` } href="{undefined}" 
+            id={ icon.key }
+            onClick={ event => onPlayerAnnounce( event, icon.id ) }
+        >
             { icon.value }
         </a>
     ));

@@ -42,7 +42,7 @@ class BeloteCardGame extends AbstractGame
             ( new CardGamePlayer( 'left', 'LeftPlayer', 'Left Player', 'computer' ) ).setHand( new cards.Hand({ faceUp:false, x:75, y:225 }) ),
             ( new CardGamePlayer( 'top', 'TopPlayer', 'Top Player', 'computer' ) ).setHand( new cards.Hand({ faceUp:false, x:335, y:52 }) ),
             ( new CardGamePlayer( 'right', 'RightPlayer', 'Right Player', 'computer' ) ).setHand( new cards.Hand({ faceUp:false, x:605, y:227 }) ),
-            ( new CardGamePlayer( 'bottom', 'BottomPlayer', 'Bottom Player', 'player' ) ).setHand( new cards.Hand({ faceUp:true, x:335, y:415 }) )
+            ( new CardGamePlayer( 'bottom', 'BottomPlayer', 'Bottom Player', 'player' ) ).setHand( new cards.Hand({ faceUp:true, x:335, y:415 }) ),
         ];
     }
     

@@ -1,3 +1,23 @@
+0.2.0	|	Release date: **25.10.2022**
+============================================
+* New Features:
+  - Separate Styles for Bridge Belote Game.
+  - Separate CSS Styles for Card Games.
+  - Add Delays For Announces.
+  - Add Game URL Field in Game Entity.
+  - Add Game Start Event and Use It.
+
+* Bug-Fixes:
+  - Fix Styling of CardGame Board.
+  - Fix Player Click Handler.
+
+* Remove Game Applications:
+  - Move CardGame Applications to GamePlatform Application.
+  - Fix Bottom Cards Position.
+  - Improve Games Controllers.
+  - Fix Game Layout Template.
+
+
 0.1.0	|	Release date: **24.10.2022**
 ============================================
 * New Features and Improvements:

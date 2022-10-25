@@ -3,5 +3,6 @@ game_platform:
     
     
     form:
-    
+        game:
+            game_url: УРЛ на Играта
     

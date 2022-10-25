@@ -78,6 +78,12 @@ class GameForm extends AbstractForm
                     ])
                 ],
             ])
+            
+            ->add( 'gameUrl', TextType::class, [
+                'label'                 => 'game_platform.form.game.game_url',
+                'translation_domain'    => 'GamePlatform',
+                'required'              => false,
+            ])
         ;
     }
 

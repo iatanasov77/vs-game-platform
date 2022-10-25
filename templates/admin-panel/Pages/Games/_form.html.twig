@@ -86,5 +86,14 @@
         </div>
     </div>
     
+    <div class="form-group">
+        {{ form_label(form.gameUrl, null, {
+            'label_attr': {'class': 'col-form-label'}
+            }) 
+        }}
+        
+        {{ form_widget(form.gameUrl, {'attr': {'class': 'form-control'}}) }}
+    </div>
+    
     {{ vs_form.buttons( form ) }}
 {{ form_end( form, {'render_rest': false} ) }}

@@ -22,3 +22,39 @@ services:
             - '@vs_application.context.application'
             - '@twig'
             - '@vsapp.repository.game_categories'
+
+
+    ########################################################
+    # Games
+    ########################################################
+    App\Controller\BridgeBelote\DefaultController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@vs_application.context.application'
+            - '@twig'
+            - '@vsapp.repository.games'
+            
+    App\Controller\ContractBridge\DefaultController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@vs_application.context.application'
+            - '@twig'
+            - '@vsapp.repository.games'
+            
+    App\Controller\Chess\DefaultController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@vs_application.context.application'
+            - '@twig'
+            - '@vsapp.repository.games'
+            
+    App\Controller\Backgammon\DefaultController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@vs_application.context.application'
+            - '@twig'
+            - '@vsapp.repository.games'

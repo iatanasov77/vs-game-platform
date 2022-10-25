@@ -81,21 +81,26 @@ class BeloteCardGame extends AbstractGame
         let righthand   = this.players[2].getHand();
         let lowerhand   = this.players[3].getHand();
         
+        lowerhand.x = 73;
+        lowerhand.y = 90;
+        
         //Deck has a built in method to deal to hands.
         this.deck.deal( count, [lefthand, upperhand, righthand, lowerhand], 50, function() {
             let i;
-            
+
             for ( i = 0; i < lefthand.length; i++ ) {
                 lefthand[i].rotate( 90 );
                 
                 lefthand[i].el.css( 'left', 10 + 'px' );
                 lefthand[i].el.css( 'top', ( i * 20 ) + 'px' );
+                
                 lefthand[i].el.moveTo( '#lefthand' );   // https://stackoverflow.com/questions/2596833/how-to-move-child-element-from-one-parent-to-another-using-jquery
             }
             
             for ( i = 0; i < upperhand.length; i++ ) {
                 upperhand[i].el.css( 'left', 10 + ( i * 20 ) + 'px' );
                 upperhand[i].el.css( 'top', '0px' );
+                
                 upperhand[i].el.moveTo( '#upperhand' );   // https://stackoverflow.com/questions/2596833/how-to-move-child-element-from-one-parent-to-another-using-jquery
             }
             
@@ -104,12 +109,15 @@ class BeloteCardGame extends AbstractGame
                 
                 righthand[i].el.css( 'left', 60 + 'px' );
                 righthand[i].el.css( 'top', ( i * 20 ) + 'px' );
+                
                 righthand[i].el.moveTo( '#righthand' ); // https://stackoverflow.com/questions/2596833/how-to-move-child-element-from-one-parent-to-another-using-jquery
             }
+            
             
             for ( i = 0; i < lowerhand.length; i++ ) {
                 lowerhand[i].el.css( 'left', 10 + ( i * 20 ) + 'px' );
                 lowerhand[i].el.css( 'top', '45px' );
+                
                 lowerhand[i].el.moveTo( '#lowerhand' );   // https://stackoverflow.com/questions/2596833/how-to-move-child-element-from-one-parent-to-another-using-jquery
             }
         });
@@ -237,6 +245,7 @@ class BeloteCardGame extends AbstractGame
                 callback: function() {
                     for ( let i = 0; i < pile.length; i++ ) {
                         pile[i].rotate( -60 + ( ( i + 1 ) * 25 ) );
+                        pile[i].el.moveTo( '#card-table' );
                         
                         var left = parseInt( $( pile[i].el ).css( 'left' ) );
                         pile[i].el.css( 'left', ( left - leftOffset ) + 'px' );

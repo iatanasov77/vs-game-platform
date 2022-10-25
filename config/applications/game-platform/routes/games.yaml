@@ -1,0 +1,15 @@
+bridge_belote:
+    path: /bridge-belote
+    controller: App\Controller\BridgeBelote\DefaultController::index
+    
+contract_bridge:
+    path: /contract-bridge
+    controller: App\Controller\ContractBridge\DefaultController::index
+
+chess:
+    path: /chess
+    controller: App\Controller\Chess\DefaultController::index
+   
+backgammon:
+    path: /backgammon
+    controller: App\Controller\Backgammon\DefaultController::index

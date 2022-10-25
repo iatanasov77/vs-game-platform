@@ -87,13 +87,5 @@ const GamePlatformThemeConfig   = require('./themes/GamePlatform/webpack.config'
 
 //=================================================================================================
 
-/**
- *  CardGame Theme
- */
-Encore.reset();
-const CardGameThemeConfig   = require('./themes/CardGame/webpack.config');
 
-//=================================================================================================
-
-
-module.exports = [adminPanelConfig, GamePlatformThemeConfig, CardGameThemeConfig];
+module.exports = [adminPanelConfig, GamePlatformThemeConfig];

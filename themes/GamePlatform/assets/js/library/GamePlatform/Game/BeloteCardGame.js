@@ -126,15 +126,13 @@ class BeloteCardGame extends AbstractGame
     initAnnounceEventListeners()
     {
         let promise = new Promise( ( resolve ) => {
-            $( '#BottomPlayer' ).get( 0 ).addEventListener( GameEvents.PLAYER_ANNOUNCE_EVENT_NAME, ( event ) => {
-                const { announceId }    = event.detail;
-                window.playerAnnounce   = announceId;
-            });
+            $( '#BottomPlayer' ).get( 0 ).addEventListener( GameEvents.PLAYER_ANNOUNCE_EVENT_NAME, resolve );
         });
         
         this.waitMyAnnounce = async function waitMyAnnounce() {
             return await promise.then( ( ev ) => {
-                
+                const { announceId }    = ev.detail;
+                window.playerAnnounce   = announceId;
             });
         }
     }

@@ -1,15 +1,15 @@
 bridge_belote:
-    path: /bridge-belote
+    path: /{gameSlug}
     controller: App\Controller\BridgeBelote\DefaultController::index
     
 contract_bridge:
-    path: /contract-bridge
+    path: /{gameSlug}
     controller: App\Controller\ContractBridge\DefaultController::index
 
 chess:
-    path: /chess
+    path: /{gameSlug}
     controller: App\Controller\Chess\DefaultController::index
    
 backgammon:
-    path: /backgammon
+    path: /{gameSlug}
     controller: App\Controller\Backgammon\DefaultController::index

@@ -4,6 +4,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Twig\Environment;
+use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 
 use Vankosoft\ApplicationBundle\Component\Context\ApplicationContextInterface;
 
@@ -15,17 +16,24 @@ class DefaultController extends AbstractController
     /** @var Environment */
     private $templatingEngine;
     
+    /** @var EntityRepository */
+    private $gamesRepository;
+    
     public function __construct(
         ApplicationContextInterface $applicationContext,
-        Environment $templatingEngine
+        Environment $templatingEngine,
+        EntityRepository $gamesRepository
     ) {
         $this->applicationContext   = $applicationContext;
         $this->templatingEngine     = $templatingEngine;
+        $this->gamesRepository      = $gamesRepository;
     }
     
-    public function index( Request $request ): Response
+    public function index( $gameSlug, Request $request ): Response
     {
-        return new Response( $this->templatingEngine->render( $this->getTemplate(), [] ) );
+        $game   = $this->gamesRepository->findBy( ['slug' => $gameSlug] );
+        
+        return new Response( $this->templatingEngine->render( $this->getTemplate(), ['game' => $game] ) );
     }
     
     protected function getTemplate(): string

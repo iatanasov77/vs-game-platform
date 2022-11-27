@@ -13,9 +13,8 @@ const BridgeBeloteGameBoard = () => {
     
     useEffect( () => {
         game.initBoard();
-        
-        initAnnounceButtons();
         listenForGameEvents();
+        
         $( '#AnnounceContainer' ).hide();
         $( '#GameAnnounce' ).hide();
     }, [] );
@@ -31,23 +30,25 @@ const BridgeBeloteGameBoard = () => {
         });
     }
     
-    function initAnnounceButtons()
-    {
-        $( '#btnClover' ).attr( 'data-announce', Announce.CLOVER );
-        $( '#btnDiamond' ).attr( 'data-announce', Announce.DIAMOND );
-        $( '#btnHeart' ).attr( 'data-announce', Announce.HEART );
-        $( '#btnSpade' ).attr( 'data-announce', Announce.SPADE );
-        $( '#btnBezKoz' ).attr( 'data-announce', Announce.BEZ_KOZ );
-        $( '#btnVsichkoKoz' ).attr( 'data-announce', Announce.VSICHKO_KOZ );
-        $( '#btnPass' ).attr( 'data-announce', Announce.PASS );
-    }
-    
     function onStartGame( event )
     {
         event.preventDefault();
         
         game.startGame();
         $( '#btnStartGame' ).hide();
+    }
+    
+    function onPlayerAnnounce( event, announceId )
+    {
+        event.preventDefault();
+        
+        $( "#BottomPlayer" ).get( 0 ).dispatchEvent(
+            new CustomEvent( GameEvents.PLAYER_ANNOUNCE_EVENT_NAME, {
+                detail: {
+                    announceId: announceId
+                },
+            })
+        );
     }
     
     /**
@@ -67,7 +68,10 @@ const BridgeBeloteGameBoard = () => {
     
     let announceSymbols     = getAnnounceSymbols();
     let announceButtons     = announceSymbols.map( ( icon, index ) => (
-        <a key={ `announce-button-${index}` } href="{undefined}" id={ icon.key }>
+        <a key={ `announce-button-${index}` } href="{undefined}" 
+            id={ icon.key }
+            onClick={ event => onPlayerAnnounce( event, icon.id ) }
+        >
             { icon.value }
         </a>
     ));

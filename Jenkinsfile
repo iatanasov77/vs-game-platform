@@ -2,7 +2,7 @@
 
 node ( label: 'php-host' ) {
     String[] environments       = ["production", "staging"]
-    def APP_HOST                = 'guitarpro.vankosoft.org'
+    def APP_HOST                = 'game-platform.vankosoft.org'
     def BUILD_ENVIRONMENT
     def BRANCH_NAME
     def DB_BACKUP
@@ -11,12 +11,12 @@ node ( label: 'php-host' ) {
     final PHP_BIN               = '/usr/bin/php74'
     
     final GIT_CREDENTIALS_ID    = 'github-iatanasov77';
-    final GIT_URI               = 'github.com/iatanasov77/vs-web-guitarpro.git'
+    final GIT_URI               = 'github.com/iatanasov77/vs-game-platform.git'
     final GIT_REPO_URL          = "https://${GIT_URI}"
     def GIT_REPO_WITH_CRED;
     
     def MYSQL_CREDENTIALS_ID    = 'vankosoft-mysql';
-    def MYSQL_DATABASE_PREFIX   = 'WebGuitarPro_';
+    def MYSQL_DATABASE_PREFIX   = 'GamePlatform_';
     def APP_MYSQL_USER;
     def APP_MYSQL_PASSWORD;
     def APP_MYSQL_DATABASE;
@@ -24,8 +24,8 @@ node ( label: 'php-host' ) {
     
     def CONFIG_TEMPLATE;
     def FTP_HOST                = 'ftp://164.138.221.242';
-    def FTP_CREDENTIALS_ID      = 'guitarpro-ftp';
-    def APP_DIR                 = '/opt/VankosoftProjects/WebGuitarPro';
+    def FTP_CREDENTIALS_ID      = 'gameplatform-ftp';
+    def APP_DIR                 = '/opt/VankosoftProjects/GamePlatform';
     def APP_FTP_USER;
     def APP_FTP_PASSWORD;
     def APP_FTP_URL;
@@ -158,7 +158,7 @@ ENDSSH
                             migrationCode=\$?   # Capture migration return code
                             
                             ${PHP_BIN} -d memory_limit=-1 bin/console cache:clear
-                            ${PHP_BIN} -d memory_limit=-1 bin/web-guitar-pro cache:clear
+                            ${PHP_BIN} -d memory_limit=-1 bin/game-platform cache:clear
                             
                             #${PHP_BIN} -d memory_limit=-1 bin/console vankosoft:maintenance --unset-maintenance
                             
@@ -180,7 +180,7 @@ ENDSSH
                             migrationCode=\$?   # Capture migration return code
                             
                             ${PHP_BIN} -d memory_limit=-1 bin/console cache:clear
-                            ${PHP_BIN} -d memory_limit=-1 bin/web-guitar-pro cache:clear
+                            ${PHP_BIN} -d memory_limit=-1 bin/game-platform cache:clear
                             
                             #SETUP APPLICATION PERMISSIONS
                             chmod -R 0777 ${REMOTE_DIR}

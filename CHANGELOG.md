@@ -1,3 +1,13 @@
+0.3.0	|	Release date: **27.11.2022**
+============================================
+* New Features and Improvements:
+  - Improvement
+  - Player Announce Handler.
+  - Improve Player Announce Handler.
+  - Add JWT API Authentication into AdminPanel.
+  - Prepare For Deployment.
+
+
 0.2.0	|	Release date: **25.10.2022**
 ============================================
 * New Features:

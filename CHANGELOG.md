@@ -1,3 +1,11 @@
+0.4.0	|	Release date: **27.11.2022**
+============================================
+* New Features:
+  - Add ApiBundle.
+* Bug-Fixes:
+  - Fix security config.
+
+
 0.3.0	|	Release date: **27.11.2022**
 ============================================
 * New Features and Improvements:

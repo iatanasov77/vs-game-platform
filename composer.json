@@ -22,7 +22,8 @@
         "symfony/notifier": "5.4.*",
         "symfony/runtime": "5.4.*",
         
-        "vankosoft/application": "1.9.*"
+        "vankosoft/application": "1.9.*",
+        "vankosoft/api-bundle": "1.2.*"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",
@@ -67,7 +68,7 @@
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install public/admin-panel": "symfony-cmd",
-            "assets:install %PUBLIC_DIR%": "symfony-cmd",
+            "assets:install public/game-platform/_themes/vankosoft/game-platform": "symfony-cmd",
             "liip:imagine:cache:remove": "symfony-cmd"
         },
         "post-install-cmd": [

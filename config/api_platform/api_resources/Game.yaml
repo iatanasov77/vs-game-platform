@@ -1,0 +1,15 @@
+resources:
+    App\Entity\Game:
+
+        collectionOperations:
+            
+                
+        itemOperations:
+            
+                    
+        properties:
+            id:
+                identifier: true
+                writeable: false
+                required: false
+            

@@ -2,13 +2,14 @@
 
 node ( label: 'php-host' ) {
     String[] environments       = ["production", "staging"]
+    def HOST_PREFIX             = 'game-platform-'
     def APP_HOST                = 'game-platform.vankosoft.org'
     def BUILD_ENVIRONMENT
     def BRANCH_NAME
     def DB_BACKUP
     def REMOTE_DIR
     
-    final PHP_BIN               = '/usr/bin/php74'
+    final PHP_BIN               = '/usr/bin/php82'
     
     final GIT_CREDENTIALS_ID    = 'github-iatanasov77';
     final GIT_URI               = 'github.com/iatanasov77/vs-game-platform.git'
@@ -52,7 +53,7 @@ node ( label: 'php-host' ) {
                 break;
             default:
                 DB_BACKUP       = false
-                APP_HOST        = "guitarpro-${BUILD_ENVIRONMENT}.vankosoft.org"  
+                APP_HOST        = "${HOST_PREFIX}${BUILD_ENVIRONMENT}.vankosoft.org"  
                 
                 def branches    = vankosoftJob.getGitBranches( GIT_REPO_WITH_CRED )
                 

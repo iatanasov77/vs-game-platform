@@ -2,7 +2,7 @@ const $ = require( 'jquery' );
 global.$ = $;
 window.$ = $;
 
-const bootstrap = require( 'bootstrap-5' );
+const bootstrap = require( 'bootstrap' );
 global.bootstrap = bootstrap;
 window.bootstrap = bootstrap;
 

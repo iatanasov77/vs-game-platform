@@ -9,6 +9,14 @@ const adminPanelConfig  = require( themePath + '/webpack.config' );
 //=================================================================================================
 
 /**
+ *  AdminPanel Cusstom Entries
+ */
+Encore.reset();
+const adminPanelCusstomEntriesConfig = require('./assets/admin-panel/webpack.config');
+
+//=================================================================================================
+
+/**
  *  GamePlatform ReactJs Theme
  */
 Encore.reset();
@@ -27,6 +35,7 @@ const GamePlatform_AngularJs_Config   = require('./themes/GamePlatform_AngularJs
 
 module.exports = [
     adminPanelConfig,
+    adminPanelCusstomEntriesConfig,
     GamePlatform_ReactJs_Config,
     GamePlatform_AngularJs_Config
 ];

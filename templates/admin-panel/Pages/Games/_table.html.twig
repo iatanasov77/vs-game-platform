@@ -1,7 +1,7 @@
 <div class="card mb-2">
     <div class="card-header">
         <h5 class="mb-0">
-            <button class="btn btn-link collapsed" data-parent="{{ dataParent }}" data-toggle="collapse" data-target="#collapse{{ cat.id }}" aria-expanded="false" aria-controls="collapse{{ cat.id }}">
+            <button class="btn btn-link collapsed" data-parent="{{ dataParent }}" data-bs-toggle="collapse" data-bs-target="#collapse{{ cat.id }}" aria-expanded="false" aria-controls="collapse{{ cat.id }}">
                 <span class="fas fa-angle-down mr-3"></span>{{ cat.name }}
             </button>
         </h5>
@@ -50,16 +50,22 @@
                         </td>
                         <td>
                             <div class="btn-group">
-                                <a class="btn btn-primary" href="{{ path('vsapp_games_show', {'id': item.id}) }}">
+                                <a class="btn btn-primary"
+                                    href="{{ path('vsapp_games_show', {'id': item.id}) }}"
+                                    title="{{ 'vs_cms.template.button_preview' | trans( {},'VSCmsBundle' ) }}"
+                                >
                                     <i class="fas fa-eye" style="color: #be4bdb;" ></i>
                                 </a>
-                                <a class="btn btn-primary" href="{{ path('vsapp_games_update', {'id': item.id}) }}">
+                                <a class="btn btn-primary"
+                                    href="{{ path('vsapp_games_update', {'id': item.id}) }}"
+                                    title="{{ 'vs_application.template.items_index_row_action_edit' | trans( {},'VSApplicationBundle' ) }}"
+                                >
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <a class="btn btn-danger btnDelete" 
                                     href="{{ path('vsapp_games_delete', {'id': item.id}) }}"
                                     data-csrfToken="{{ csrf_token( item.id ) }}"
-                                    title="Delete"
+                                    title="{{ 'vs_application.template.items_index_row_action_delete' | trans( {},'VSApplicationBundle' ) }}"
                                 >
                                     <i class="icon_close_alt2"></i>
                                 </a>

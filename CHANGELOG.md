@@ -1,3 +1,14 @@
+0.5.0	|	Release date: **08.01.2023**
+============================================
+* New Features:
+  - Upgrade to Symfony 6 adn PHP 8
+  - Load AdminPanel Assets From Vankosoft ApplicationBundle.
+  -  Add an AngularJs Theme.
+  - Add Admin Panel Custom Entries and Custom Pages.
+* Bug-Fixes:
+  - Fix a Doctrine Migration.
+
+
 0.4.0	|	Release date: **27.11.2022**
 ============================================
 * New Features:

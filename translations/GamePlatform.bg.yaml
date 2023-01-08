@@ -1,6 +1,9 @@
 game_platform:
     template:
-    
+        list_game_categories: Списък Категории
+        game_category: Категория
+        list_games: Игри
+        game: Игра
     
     form:
         game:

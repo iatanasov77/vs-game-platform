@@ -5,8 +5,8 @@
 {% from "@VSApplication/Macros/pagination.html.twig" import pagination %}
 
 {# Override Blocs #}
-{% block title %}{{ parent() }} :: List Games{% endblock %}
-{% block pageTitle %}<i class="icon_genius"></i> List Games{% endblock %}
+{% block title %}{{ parent() }} :: {{ 'game_platform.template.list_games' | trans( {},'GamePlatform' ) }}{% endblock %}
+{% block pageTitle %}<i class="icon_genius"></i> {{ 'game_platform.template.list_games' | trans( {},'GamePlatform' ) }}{% endblock %}
 
 {% block content %}
 	<div class="row">
@@ -28,11 +28,11 @@
 {% block head_styles %}
     {{ parent() }}
     
-    {{ encore_entry_link_tags( 'js/games' ) }}
+    {{ encore_entry_link_tags( 'js/games', null, 'CustomEntries' ) }}
 {% endblock %}
 
 {% block body_scripts %}
     {{ parent() }}
     
-    {{ encore_entry_script_tags( 'js/games' ) }}
+    {{ encore_entry_script_tags( 'js/games', null, 'CustomEntries' ) }}
 {% endblock %}

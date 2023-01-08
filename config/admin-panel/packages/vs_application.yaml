@@ -203,7 +203,7 @@ vs_application:
         
         mainVankosoftMenu:
             games:
-                name: vs_application.menu.games
+                name: vs_application.menu.game_platform
                 uri: "javascript:;"
                 attributes:
                     iconClass: icon_genius

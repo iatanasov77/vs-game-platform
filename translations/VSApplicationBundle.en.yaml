@@ -6,7 +6,7 @@ vs_application:
         admin_panel: Admin Panel
         
         
-        games: Games
+        game_platform: Game Platform
         list_games: Games
         create_new_game: Create New Game
         edit_game: Edit Game

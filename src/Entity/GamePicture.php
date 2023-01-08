@@ -10,18 +10,19 @@ use Vankosoft\CmsBundle\Model\File;
 class GamePicture extends File
 {
     /**
-     * @ORM\Column(name="original_name", type="string", length=255, nullable=false, options={"comment": "The Original Name of the File."})
+     * @ORM\OneToOne(targetEntity="App\Entity\Game", inversedBy="picture", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", nullable=false, onDelete="CASCADE")
      */
-    protected $originalName;
+    protected $owner;
     
-    public function getOriginalName(): string
+    public function getGame()
     {
-        return $this->originalName;
+        return $this->owner;
     }
     
-    public function setOriginalName( string $originalName ): self
+    public function setGame( Game $game ): self
     {
-        $this->originalName = $originalName;
+        $this->setOwner( $game);
         
         return $this;
     }

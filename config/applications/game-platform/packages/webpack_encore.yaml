@@ -3,11 +3,14 @@ framework:
         packages:
             default:
                 json_manifest_path: '%kernel.project_dir%/public/game-platform/build/default/manifest.json'
-            game-platform-theme:
-                json_manifest_path: '%kernel.project_dir%/public/shared_assets/build/game-platform/manifest.json'
+            game-platform-reactjs:
+                json_manifest_path: '%kernel.project_dir%/public/shared_assets/build/game-platform-reactjs/manifest.json'
+            game-platform-angularjs:
+                json_manifest_path: '%kernel.project_dir%/public/shared_assets/build/game-platform-angularjs/manifest.json'
 
 webpack_encore:
     output_path: '%kernel.project_dir%/public/game-platform/build/default'
     builds:
         defaultConfig: '%kernel.project_dir%/public/game-platform/build/default'
-        GamePlatformTheme: '%kernel.project_dir%/public/shared_assets/build/game-platform'
+        GamePlatform_ReactJs: '%kernel.project_dir%/public/shared_assets/build/game-platform-reactjs'
+        GamePlatform_AngularJs: '%kernel.project_dir%/public/shared_assets/build/game-platform-angularjs'

@@ -1,7 +1,10 @@
 game_platform:
     template:
-    
-    
+        list_game_categories: List Game Categories
+        game_category: Game Category
+        list_games: List Games
+        game: Game
+        
     form:
         game:
             game_url: Game URL

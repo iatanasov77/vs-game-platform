@@ -9,7 +9,7 @@
             <button type="button" class="close close-sm" data-dismiss="alert">
                 <i class="icon-remove"></i>
             </button>
-            <strong>Error!</strong> {{ form_errors( form ) }}
+            <strong>{{ 'vs_application.form.errors_title' | trans( {},'VSApplicationBundle' ) }}</strong> {{ form_errors( form ) }}
         </div>
     {% endif %}
     
@@ -77,12 +77,16 @@
         <label for="game_form_picture" class="col-form-label">
             {{ 'vs_application.form.picture'  | trans( {},'VSApplicationBundle' ) }}
         </label>
-        <div class="custom-file">
-            {{ form_widget(form.picture, {'attr': {'class': 'custom-file-input' }}) }}
+        <div class="input-group">
+            {{ form_widget(form.picture, {'attr': {'class': 'form-control' }}) }}
+            
+            {# Bootstrap 5 beta no longer provides a custom file input like Bootstrap 4
+             ###################################################################################
             {{ form_label(form.picture, pictureFileName, {
-                'label_attr': {'class': 'custom-file-label profile-picture game-picture'}
+                'label_attr': {'class': 'input-group-text'}
                 }) 
             }}
+            #}
         </div>
     </div>
     

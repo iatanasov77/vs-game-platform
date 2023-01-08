@@ -5,8 +5,8 @@
 {% from "@VSApplication/Macros/pagination.html.twig" import pagination %}
 
 {# Override Blocs #}
-{% block title %}{{ parent() }} :: List Game_categories{% endblock %}
-{% block pageTitle %}<i class="icon_genius"></i> List Game_categories{% endblock %}
+{% block title %}{{ parent() }} :: {{ 'game_platform.template.list_game_categories' | trans( {},'GamePlatform' ) }}{% endblock %}
+{% block pageTitle %}<i class="icon_genius"></i> {{ 'game_platform.template.list_game_categories' | trans( {},'GamePlatform' ) }}{% endblock %}
 
 {% block content %}
     <div class="row">
@@ -20,29 +20,9 @@
         
             {% if resources.haveToPaginate() %}
                 {{ pagerfanta( resources, null, { 'proximity': 10 } ) }}
-                
-                {# This Macros Not Needed 
-                {{ pagination(resources) }}
-                #}
             {% endif %}
         </div>
     </div>
     
     {% include '@VSApplication/Partial/resource-delete.html.twig' %}
-{% endblock %}
-
-{% block head_styles %}	
-	{{ parent() }}
-	
-	{#
-	{{ encore_entry_link_tags( 'js/projects-categories' ) }}
-	#}
-{% endblock %}
-
-{% block body_scripts %}
-    {{ parent() }}
-    
-    {#
-    {{ encore_entry_script_tags( 'js/projects-categories' ) }}
-    #}
 {% endblock %}

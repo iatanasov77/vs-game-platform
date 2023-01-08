@@ -6,7 +6,7 @@ vs_application:
         admin_panel: Админ Панел
 
 
-        games: Игри
+        game_platform: Игрална Платформа
         list_games: Игри
         create_new_game: Създай Нова Игра
         edit_game: Радакция на Игра

@@ -9,16 +9,24 @@ const adminPanelConfig  = require( themePath + '/webpack.config' );
 //=================================================================================================
 
 /**
- *  GamePlatform Theme
+ *  GamePlatform ReactJs Theme
  */
 Encore.reset();
-const GamePlatformThemeConfig   = require('./themes/GamePlatform/webpack.config');
+const GamePlatform_ReactJs_Config   = require('./themes/GamePlatform_ReactJs/webpack.config');
+
+//=================================================================================================
+
+/**
+ *  GamePlatform AngularJs Theme
+ */
+Encore.reset();
+const GamePlatform_AngularJs_Config   = require('./themes/GamePlatform_AngularJs/webpack.config');
 
 //=================================================================================================
 
 
 module.exports = [
     adminPanelConfig,
-    //WebGuitarPro_ReactJs_Config,
-    GamePlatformThemeConfig
+    GamePlatform_ReactJs_Config,
+    GamePlatform_AngularJs_Config
 ];

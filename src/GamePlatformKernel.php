@@ -9,7 +9,7 @@ use Vankosoft\ApplicationBundle\Component\Application\Kernel as BaseKernel;
 
 class GamePlatformKernel extends BaseKernel
 {
-    const VERSION   = '1.9.6';
+    const VERSION   = '1.10.4';
     const APP_ID    = 'game-platform';
     
     /**

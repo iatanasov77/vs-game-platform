@@ -34,7 +34,22 @@
         "intl-messageformat": "^9.11.3",
 
         "react": "^18.2.0",
-        "react-dom": "^18.2.0"
+        "react-dom": "^18.2.0",
+
+        "@angular/animations": "^15.0.0",
+        "@angular/cdk": "^15.0.0",
+        "@angular/common": "^15.0.0",
+        "@angular/compiler": "^15.0.0",
+        "@angular/core": "^15.0.0",
+        "@angular/forms": "^15.0.0",
+        "@angular/material": "^15.0.0",
+        "@angular/platform-browser": "^15.0.0",
+        "@angular/platform-browser-dynamic": "^15.0.0",
+        "rxjs": "^7.5.5",
+        "rxjs-compat": "^6.6.7",
+        "rxjs-observable": "0.0.7",
+        "tsd": "^0.25.0",
+        "tslib": "^2.3.0"
     },
     "devDependencies": {
         "@symfony/stimulus-bridge": "^2.0.0",
@@ -48,7 +63,19 @@
         "stimulus": "^2.0.0",
         "webpack-notifier": "^1.6.0",
 
-        "@babel/preset-react": "^7.0.0"
+        "@babel/preset-react": "^7.0.0",
+
+        "@angular-devkit/build-angular": "^15.0.1",
+        "@angular/cli": "~15.0.1",
+        "@angular/compiler-cli": "^15.0.0",
+        "@babel/core": "^7.17.0",
+        "@babel/preset-env": "^7.16.0",
+        "@ngtools/webpack": "^15.0.4",
+        "@types/jasmine": "~4.3.0",
+        "@types/node": "^12.11.1",
+        "@types/webpack": "^5.28.0",
+        "ts-loader": "^9.0.0",
+        "raw-loader": "^4.0.2"
     },
 	"resolutions": {
     	"@kanety/jquery-simple-tree-table/jquery": "3.6.3",

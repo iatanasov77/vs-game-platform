@@ -1,5 +1,7 @@
 const Encore    = require('@symfony/webpack-encore');
+const webpack   = require('webpack');
 const path      = require('path');
+const AngularCompilerPlugin = require('@ngtools/webpack').AngularWebpackPlugin;
 
 Encore
     .setOutputPath( 'public/shared_assets/build/game-platform-angularjs/' )
@@ -18,7 +20,20 @@ Encore
         resolveUrlLoader: true
     })
     
-    .enableReactPreset()
+    /**
+     * Configure Angular Compiler and Loader
+     */
+    .enableTypeScriptLoader()
+    .addPlugin(new AngularCompilerPlugin({
+        "tsConfigPath": './themes/WebGuitarPro_AngularJs/assets/js/Player/tsconfig.app.json',
+        "entryModule": './themes/WebGuitarPro_AngularJs/assets/js/Player/main.ts',
+    }))
+    
+    /* Embed Angular Component Templates. */
+    .addLoader({
+        test: /\.(html)$/,
+        use: 'raw-loader',
+    })
     
     /**
      * Add Entries
@@ -50,5 +65,15 @@ Encore
 
 const config = Encore.getWebpackConfig();
 config.name = 'GamePlatform_ReactJs';
+
+config.resolve = {
+    extensions: ['.ts', '.js']
+};
+
+config.plugins.push(
+    new webpack.DefinePlugin({
+        PRODUCTION: JSON.stringify( Encore.isProduction() ),
+    })
+);
 
 module.exports = config;

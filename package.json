@@ -33,6 +33,8 @@
         "bazinga-translator": "^5.0.0",
         "intl-messageformat": "^9.11.3",
 
+        "vanilla-cookieconsent": "^2.8",
+
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
 

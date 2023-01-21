@@ -1,4 +1,5 @@
 const Encore    = require('@symfony/webpack-encore');
+const webpack   = require('webpack');
 const path      = require('path');
 
 Encore
@@ -11,13 +12,15 @@ Encore
     .enableVersioning(Encore.isProduction())
     
     .addAliases({
-        '@': path.resolve( __dirname, '../../vendor/vankosoft/application/src/Vankosoft/ApplicationBundle/Resources/themes/default/assets' )
+        '@': path.resolve( __dirname, '../../vendor/vankosoft/application/src/Vankosoft/ApplicationBundle/Resources/themes/default/assets' ),
+        '_@': path.resolve( __dirname, '../../assets/library' ),
     })
     
     .enableSassLoader(function(sassOptions) {}, {
         resolveUrlLoader: true
     })
     
+    .enableTypeScriptLoader()
     .enableReactPreset()
     
     /**
@@ -50,5 +53,12 @@ Encore
 
 const config = Encore.getWebpackConfig();
 config.name = 'GamePlatform_ReactJs';
+
+config.resolve.extensions = ['.ts', '.js'];
+config.plugins.push(
+    new webpack.DefinePlugin({
+        PRODUCTION: JSON.stringify( Encore.isProduction() ),
+    })
+);
 
 module.exports = config;

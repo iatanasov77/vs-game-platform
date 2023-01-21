@@ -1,20 +1,20 @@
 class CardGamePlayer
 {
-    id;
+    id: any;
     
-    containerId;
+    containerId: any;
     
-    name;
+    name: any;
     
-    type;
+    type: any;
     
-    cardsId;
+    cardsId: any;
     
-    hand;
+    hand: any;
     
-    announce;
+    announce: any;
     
-    constructor( id, containerId, playerName, playerType )
+    constructor( id: any, containerId: any, playerName: any, playerType: any )
     {
         this.id             = id;
         this.containerId    = containerId;
@@ -46,7 +46,7 @@ class CardGamePlayer
         return this.hand;
     }
     
-    setHand( hand )
+    setHand( hand: any )
     {
         this.hand   = hand;
         
@@ -58,7 +58,7 @@ class CardGamePlayer
         return this.announce;
     }
     
-    setAnnounce( announce )
+    setAnnounce( announce: any )
     {
         this.announce   = announce;
         

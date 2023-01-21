@@ -10,30 +10,38 @@ import Announce from '../CardGameAnnounce/Announce';
 import BeloteCardGameAnnounce from '../CardGameAnnounce/BeloteCardGameAnnounce';
 import * as GameEvents from './GameEvents';
 
+declare var $: any;
+declare global {
+    interface Window {
+        playerAnnounce: any;
+    }
+}
+
 class BeloteCardGame extends AbstractGame
 {
     /**
      * Cards Deck
      */
-    deck;
+    deck: any;
     
     /**
      * Game Players
      */
-    players;
+    players: any;
     
     /**
      * Assync Function
      */
-    waitMyAnnounce;
+    waitMyAnnounce: any;
+    waitAnnounces: any;
     
     /**
      * Array
      */
-    announces;
+    announces: any;
     
     
-    constructor( boardSelector )
+    constructor( boardSelector: string )
     {
         super( boardSelector );
         
@@ -46,7 +54,7 @@ class BeloteCardGame extends AbstractGame
         ];
     }
     
-    initBoard()
+    public override initBoard(): void
     {
         //Start by initalizing the library
         cards.init({
@@ -65,7 +73,7 @@ class BeloteCardGame extends AbstractGame
         this.deck.render( {immediate:true} );
     }
     
-    startGame()
+    public override startGame(): void
     {
         // Start Game
         this.dealCards( 5 );
@@ -74,7 +82,7 @@ class BeloteCardGame extends AbstractGame
         this.startAnnounce();
     }
     
-    dealCards( count )
+    public dealCards( count: any )
     {
         let lefthand    = this.players[0].getHand();
         let upperhand   = this.players[1].getHand();
@@ -123,26 +131,26 @@ class BeloteCardGame extends AbstractGame
         });
     }
     
-    initAnnounceEventListeners()
+    public initAnnounceEventListeners()
     {
         let promise = new Promise( ( resolve ) => {
             $( '#BottomPlayer' ).get( 0 ).addEventListener( GameEvents.PLAYER_ANNOUNCE_EVENT_NAME, resolve );
         });
         
         this.waitMyAnnounce = async function waitMyAnnounce() {
-            return await promise.then( ( ev ) => {
+            return await promise.then( ( ev: any ) => {
                 const { announceId }    = ev.detail;
                 window.playerAnnounce   = announceId;
             });
         }
     }
     
-    afterAnnounce( player, oAnnounce )
+    public afterAnnounce( player: any, oAnnounce: any )
     {
         let setImmediate = global.setImmediate || ( ( fn, ...args ) => global.setTimeout( fn, 0, ...args ) );
         const unblock = () => new Promise( setImmediate );
         
-        const waitForLength = async ( arr, len ) => {
+        const waitForLength = async ( arr: any, len: any ) => {
             while ( true ) {
                 if ( arr.length >= len )
                     return arr;
@@ -187,11 +195,11 @@ class BeloteCardGame extends AbstractGame
         let oAnnounce   = new BeloteCardGameAnnounce();
         
         // https://developer.mozilla.org/en-US/docs/Web/API/setTimeout
-        const partnerBoundMethod = ( function ( containerId, lastAnnounce ) {
+        const partnerBoundMethod = ( function ( this: BeloteCardGame, containerId: any, lastAnnounce: any ) {
             this.fireAnnounceEvent( containerId, lastAnnounce );
         }).bind( this );
         
-        const playerBoundMethod = ( function ( announceContainerId ) {
+        const playerBoundMethod = ( function ( announceContainerId: any ) {
             $( '#' + announceContainerId ).show();
         }).bind( this );
         
@@ -225,12 +233,12 @@ class BeloteCardGame extends AbstractGame
         this.afterAnnounce( player, oAnnounce );
     }
     
-    beginPlaying( playerHand )
+    beginPlaying( playerHand: any )
     {
         let pile    = new cards.Deck( {faceUp:true} );
         
         let leftOffset = 20;
-        playerHand.click( function( card )
+        playerHand.click( function( card: any )
         {
             pile.addCard( card );
             pile.render({
@@ -253,7 +261,7 @@ class BeloteCardGame extends AbstractGame
         return pile;
     }
     
-    fireAnnounceEvent( playerContainerId, announceId )
+    fireAnnounceEvent( playerContainerId: any, announceId: any )
     {
         $( "#" + playerContainerId ).get( 0 ).dispatchEvent(
             new CustomEvent( GameEvents.PLAYER_ANNOUNCE_EVENT_NAME, {
@@ -265,4 +273,10 @@ class BeloteCardGame extends AbstractGame
     }
 }
 
+/*
+module.exports = {
+    BeloteCardGame,
+};
+*/
 export default BeloteCardGame;
+

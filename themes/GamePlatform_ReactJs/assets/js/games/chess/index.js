@@ -6,7 +6,7 @@ $( function()
     //Start by initalizing the library
     cards.init({
         table: '#card-table',
-        cardsUrl: '/build/card-game/einaregilsson-cards.js/img/cards.png'
+        cardsUrl: '/build/game-platform-reactjs/einaregilsson-cards.js/img/cards.png'
     });
     //Create a new deck of cards
     deck = new cards.Deck(); 

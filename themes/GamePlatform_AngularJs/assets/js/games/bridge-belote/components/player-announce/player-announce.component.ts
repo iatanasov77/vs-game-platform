@@ -1,9 +1,8 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 
-const Announce:any = require( '_@/GamePlatform/CardGameAnnounce/Announce' );
-const GameEvents:any = require( '_@/GamePlatform/Game/GameEvents' );
-//import Announce from '_@/GamePlatform/CardGameAnnounce/Announce';
-//import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
+import CardGamePlayer from '_@/GamePlatform/Game/CardGamePlayer';
+import Announce from '_@/GamePlatform/CardGameAnnounce/Announce';
+import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
 import { BridgeBeloteProvider } from '../../../application/services/providers/bridge-belote-provider';
 
 import templateString from './player-announce.component.html'
@@ -18,7 +17,9 @@ declare var $: any;
 })
 export class PlayerAnnounceComponent implements OnInit, OnDestroy
 {
-    @Input() player: any;
+    @Input() player?: CardGamePlayer;
+    
+    providerBridgeBelote: any;
     
     announceIcon: any;
     position: any;
@@ -26,18 +27,21 @@ export class PlayerAnnounceComponent implements OnInit, OnDestroy
     styles: any;
     
     constructor(
-        private providerBridgeBelote: BridgeBeloteProvider
+        //private providerBridgeBelote: BridgeBeloteProvider
     ) {
+        // DI Not Worked
+        this.providerBridgeBelote   = new BridgeBeloteProvider();
+        
         this.announceIcon   = null;
         
-        this.position    = this.player.id;
+        this.position    = this.player?.id;
         this.className   = 'playerAnnounce';
         this.styles      = {
             position: "relative",
             top: "100px"
         };
         
-        switch ( this.player.id ) {
+        switch ( this.player?.id ) {
             case 'left':
                 this.className   += ' float-end';
                 
@@ -70,11 +74,11 @@ export class PlayerAnnounceComponent implements OnInit, OnDestroy
     
     listenForGameEvents()
     {
-        $( "#" + this.player.containerId ).get( 0 ).addEventListener( GameEvents.PLAYER_ANNOUNCE_EVENT_NAME, ( event:any ) => {
+        $( "#" + this.player?.containerId ).get( 0 ).addEventListener( GameEvents.PLAYER_ANNOUNCE_EVENT_NAME, ( event:any ) => {
             const { announceId }    = event.detail;
             
-            this.providerBridgeBelote.setAnnounce( this.player.id, announceId );
-            if ( this.position === this.player.id ) {
+            this.providerBridgeBelote.setAnnounce( this.player?.id, announceId );
+            if ( this.position === this.player?.id ) {
                 //alert( announceId );
                 this.announceIcon   = this.providerBridgeBelote.getAnnounceSymbol( announceId )?.value;
             }

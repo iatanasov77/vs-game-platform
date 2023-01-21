@@ -12,6 +12,15 @@ declare module '_@/GamePlatform/Game/BeloteCardGame' {
     export = BeloteCardGame;
 }
 
+declare module '_@/GamePlatform/Game/CardGamePlayer' {
+    class CardGamePlayer {
+        id: any;
+        containerId: any;
+        constructor( id: any, containerId: any, playerName: any, playerType: any )
+    }
+    export = CardGamePlayer;
+}
+
 declare module '_@/GamePlatform/CardGameAnnounce/Announce' {
     class Announce {
         static PASS: string;

@@ -1,13 +1,13 @@
 <div id="game-board" align="center">
     <div id="card-table">
-        <ng-template *ngFor="let player of game.players; let i = index">
+        <ng-container *ngFor="let player of game.players; let i = index">
 	        <div class="{{ player.containerId.charAt( 0 ).toLowerCase() + player.containerId.slice( 1 ) }}"
 	            id="{{ player.containerId }}"
 	        >
 	            <div id="{{ player.cardsId }}" class="playerCards float-start"></div>
 	            <player-announce [player]="player"></player-announce>
 	        </div>
-	    </ng-template>
+	    </ng-container>
     </div>
     
     <div id="card-actions">
@@ -18,17 +18,18 @@
         </div>
         <div class="p-2 float-end">
             <div id="AnnounceContainer">
-                <ng-template *ngFor="let icon of announceSymbols; let i = index">
-	                <a href="#" 
-			            id="{{ icon.key }}"
-			            (click)="onPlayerAnnounce( icon.id, $event )"
-			        >
-			            {{ icon.value }}
-			        </a>
-			    </ng-template>
+                <ng-container *ngFor="let icon of announceSymbols; let i = index">
+					<a href="#" 
+					    id="{{ icon.key }}"
+					    (click)="onPlayerAnnounce( icon.id, $event )"
+					>
+                        <span class="announce-button" [innerHTML]="icon.value"></span>
+                    </a>
+			    </ng-container>
             </div>
             <div id="GameAnnounce">
-                <span class="announce-button">Game:</span> {{ gameAnnounceIcon }}
+                <span class="announce-button">Game:</span>&nbsp;
+                <span class="announce-button" [innerHTML]="gameAnnounceIcon"></span>
             </div>
         </div>
     </div>

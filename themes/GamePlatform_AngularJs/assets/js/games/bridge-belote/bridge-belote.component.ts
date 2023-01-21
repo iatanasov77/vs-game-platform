@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
-import cssCardGameString from '../shared/CardGame.scss'
+import cssCardGameString from '../application/assets/CardGame.scss'
 import cssGameString from './bridge-belote.component.scss'
 import templateString from './bridge-belote.component.html'
 

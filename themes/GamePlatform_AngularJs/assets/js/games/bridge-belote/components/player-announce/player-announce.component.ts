@@ -4,7 +4,7 @@ const Announce:any = require( '_@/GamePlatform/CardGameAnnounce/Announce' );
 const GameEvents:any = require( '_@/GamePlatform/Game/GameEvents' );
 //import Announce from '_@/GamePlatform/CardGameAnnounce/Announce';
 //import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
-import { BridgeBeloteProvider } from '../../../services/bridge-belote-provider';
+import { BridgeBeloteProvider } from '../../../application/services/providers/bridge-belote-provider';
 
 import templateString from './player-announce.component.html'
 

@@ -30,6 +30,11 @@ class BeloteCardGame extends AbstractGame
     players: any;
     
     /**
+     * Current Dealer
+     */
+    currentDealer: any;
+    
+    /**
      * Assync Function
      */
     waitMyAnnounce: any;
@@ -50,8 +55,10 @@ class BeloteCardGame extends AbstractGame
             ( new CardGamePlayer( 'left', 'LeftPlayer', 'Left Player', 'computer' ) ).setHand( new cards.Hand({ faceUp:false, x:75, y:225 }) ),
             ( new CardGamePlayer( 'top', 'TopPlayer', 'Top Player', 'computer' ) ).setHand( new cards.Hand({ faceUp:false, x:335, y:52 }) ),
             ( new CardGamePlayer( 'right', 'RightPlayer', 'Right Player', 'computer' ) ).setHand( new cards.Hand({ faceUp:false, x:605, y:227 }) ),
-            ( new CardGamePlayer( 'bottom', 'BottomPlayer', 'Bottom Player', 'player' ) ).setHand( new cards.Hand({ faceUp:true, x:335, y:415 }) ),
+            ( new CardGamePlayer( 'bottom', 'BottomPlayer', 'Bottom Player', 'player', true ) ).setHand( new cards.Hand({ faceUp:true, x:335, y:415 }) ),
         ];
+        
+        this.currentDealer  = 3;
     }
     
     public override initBoard(): void
@@ -134,6 +141,7 @@ class BeloteCardGame extends AbstractGame
     public initAnnounceEventListeners()
     {
         let promise = new Promise( ( resolve ) => {
+            //alert( resolve );
             $( '#BottomPlayer' ).get( 0 ).addEventListener( GameEvents.PLAYER_ANNOUNCE_EVENT_NAME, resolve );
         });
         
@@ -145,7 +153,7 @@ class BeloteCardGame extends AbstractGame
         }
     }
     
-    public afterAnnounce( player: any, oAnnounce: any )
+    public afterAnnounce( player: CardGamePlayer, oAnnounce: BeloteCardGameAnnounce )
     {
         let setImmediate = global.setImmediate || ( ( fn, ...args ) => global.setTimeout( fn, 0, ...args ) );
         const unblock = () => new Promise( setImmediate );
@@ -190,7 +198,7 @@ class BeloteCardGame extends AbstractGame
         this.initAnnounceEventListeners();
         
         let waitTimeout;
-        let player;
+        let player: CardGamePlayer;
         let lastAnnounce;
         let oAnnounce   = new BeloteCardGameAnnounce();
         
@@ -202,13 +210,21 @@ class BeloteCardGame extends AbstractGame
         const playerBoundMethod = ( function ( announceContainerId: any ) {
             $( '#' + announceContainerId ).show();
         }).bind( this );
+      
+        let i           = 0;
+        let nextPlayer  = this.players[i];
+        if ( this.players[this.currentDealer+1] != undefined ) {
+            nextPlayer  = this.players[this.currentDealer+1];
+            i           = this.currentDealer+1;
+        }
         
-        for ( let i = 0; i < this.players.length; i++ ) {
+        while( nextPlayer && nextPlayer.currentDealer === false ) {
             waitTimeout = ( i + 1 ) * 2000;
             
-            if ( this.players[i].type == 'player' ) {
-                player  = this.players[i];
+            if ( nextPlayer.type == 'player' ) {
+                player  = nextPlayer;
                 setTimeout( playerBoundMethod, waitTimeout, 'AnnounceContainer' );
+                
                 
                 // Wait For Player Announce
                 this.waitMyAnnounce()
@@ -217,20 +233,25 @@ class BeloteCardGame extends AbstractGame
                         this.announces.push( lastAnnounce );
                         //alert( 'My Announce: ' + window.playerAnnounce );
                         
-                        this.fireAnnounceEvent( this.players[i].containerId, lastAnnounce );
+                        this.fireAnnounceEvent( player.containerId, lastAnnounce );
                     });
+                    
+                // After Announce Begin Playing
+                this.afterAnnounce( player, oAnnounce );
             } else {
                 // Create Announce for Partner Gamer
-                lastAnnounce    = oAnnounce.announce( this.players[i].getHand(), lastAnnounce );
+                lastAnnounce    = oAnnounce.announce( nextPlayer.getHand(), lastAnnounce );
                 this.announces.push( lastAnnounce );
                 
-                this.players[i].setAnnounce( lastAnnounce );
+                nextPlayer.setAnnounce( lastAnnounce );
                 
-                setTimeout( partnerBoundMethod, waitTimeout, this.players[i].containerId, lastAnnounce );
+                setTimeout( partnerBoundMethod, waitTimeout, nextPlayer.containerId, lastAnnounce );
             }
+        
+            nextPlayer  = this.players[++i];
         }
         
-        this.afterAnnounce( player, oAnnounce );
+        
     }
     
     beginPlaying( playerHand: any )
@@ -273,10 +294,4 @@ class BeloteCardGame extends AbstractGame
     }
 }
 
-/*
-module.exports = {
-    BeloteCardGame,
-};
-*/
 export default BeloteCardGame;
-

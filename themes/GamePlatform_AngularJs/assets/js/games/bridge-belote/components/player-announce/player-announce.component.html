@@ -1,4 +1,9 @@
 <div class="{{ className }}" [ngStyle]="styles">
-    <span class="announceNumber">{{ player.name }}</span><br />
-    <span class="announceSymbol">{{ announceIcon }}</span>
+    <span
+        class="announceNumber {{ rotateClassName }}"
+    >{{ player.name }}</span><br />
+    <span
+        class="announceSymbol {{ rotateClassName }} {{ rotateClassName }}-symbol"
+        [innerHTML]="announceIcon"
+    ></span>
 </div>

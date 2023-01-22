@@ -8,13 +8,15 @@ class CardGamePlayer
     
     type: any;
     
+    currentDealer: any = false;
+    
     cardsId: any;
     
     hand: any;
     
     announce: any;
     
-    constructor( id: any, containerId: any, playerName: any, playerType: any )
+    constructor( id: any, containerId: any, playerName: any, playerType: any, currentDealer: boolean = false )
     {
         this.id             = id;
         this.containerId    = containerId;

@@ -6,6 +6,7 @@ import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
 import { BridgeBeloteProvider } from '../../../application/services/providers/bridge-belote-provider';
 
 import templateString from './player-announce.component.html'
+import styleString from './player-announce.component.scss'
 
 declare var $: any;
 
@@ -13,7 +14,9 @@ declare var $: any;
     selector: 'player-announce',
     
     template: templateString || 'Template Not Loaded !!!',
-    styles: []
+    styles: [
+        styleString || 'Template Not Loaded !!!'
+    ]
 })
 export class PlayerAnnounceComponent implements OnInit, OnDestroy
 {
@@ -24,6 +27,7 @@ export class PlayerAnnounceComponent implements OnInit, OnDestroy
     announceIcon: any;
     position: any;
     className: any;
+    rotateClassName: any;
     styles: any;
     
     constructor(
@@ -34,36 +38,40 @@ export class PlayerAnnounceComponent implements OnInit, OnDestroy
         
         this.announceIcon   = null;
         
-        this.position    = this.player?.id;
         this.className   = 'playerAnnounce';
         this.styles      = {
             position: "relative",
             top: "100px"
         };
-        
-        switch ( this.player?.id ) {
-            case 'left':
-                this.className   += ' float-end';
-                
-                break;
-            case 'top':
-                this.className   += ' text-center align-middle';
-                
-                break;
-            case 'right':
-                this.className   += ' float-start';
-                
-                break;
-            case 'bottom':
-                this.className   += ' text-center align-middle';
-                this.styles.top  = 0;
-                
-                break;
-        }
     }
     
     ngOnInit(): void
     {
+        this.position    = this.player?.id;
+        switch ( this.player?.id ) {
+            case 'left':
+                this.className          += ' float-end';
+                this.rotateClassName    = 'rotate-90-left';
+                
+                break;
+            case 'top':
+                this.className          += ' text-center align-middle';
+                this.rotateClassName    = 'rotate-none';
+                
+                break;
+            case 'right':
+                this.className          += ' float-start';
+                this.rotateClassName    = 'rotate-90-right';
+                
+                break;
+            case 'bottom':
+                this.className          += ' text-center align-middle';
+                this.styles.top         = 0;
+                this.rotateClassName    = 'rotate-bottom';
+                
+                break;
+        }
+        
         this.listenForGameEvents();
     }
     

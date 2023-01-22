@@ -7,9 +7,9 @@
  */
 class AbstractGame
 {
-    boardSelector;
+    boardSelector: string;
     
-    constructor( boardSelector )
+    constructor( boardSelector: string )
     {
         if ( this.constructor == AbstractGame ) {
             throw new Error( "Abstract classes can't be instantiated." );
@@ -18,14 +18,27 @@ class AbstractGame
         this.boardSelector  = boardSelector;
     }
     
-    initBoard()
+    public initBoard(): void
     {
         throw new Error( "Method 'initCardsDeck()' must be implemented." );
     }
     
-    startGame()
+    public startGame(): void
     {
         throw new Error( "Method 'startGame()' must be implemented." );
+    }
+    
+    public nextGame(): void
+    {
+        throw new Error( "Method 'nextGame()' must be implemented." );
+    }
+    
+    /**
+     * Used in Card Games Only
+     */
+    public getHands(): any
+    {
+        throw new Error( "Method 'getHands()' must be implemented." );
     }
 }
 

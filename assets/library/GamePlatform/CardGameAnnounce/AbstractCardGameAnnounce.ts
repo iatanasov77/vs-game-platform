@@ -14,12 +14,12 @@ class AbstractCardGameAnnounce
         }
     }
     
-    announce( hand, lastAnnounce )
+    announce( hand: any, lastAnnounce: any )
     {
         throw new Error( "Method 'announce()' must be implemented." );
     }
     
-    getAnnounce( announces )
+    getAnnounce( announces: any )
     {
         throw new Error( "Method 'getAnnounce()' must be implemented." );
     }

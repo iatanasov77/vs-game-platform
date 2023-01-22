@@ -31,9 +31,6 @@
     top: 0;
     left: 0;
     
-    /* Rotate from top left corner (not default) */
-    transform-origin: 0 0;
-    
     transform: rotate(-90deg) !important;
     
     /* Legacy vendor prefixes that you probably don't need... */
@@ -59,7 +56,7 @@
 }
 
 .rotate-90-right-symbol {
-    left: -40px !important;
+    left: -60px !important;
 }
 
 .rotate-bottom {

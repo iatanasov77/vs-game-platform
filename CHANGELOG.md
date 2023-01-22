@@ -1,3 +1,17 @@
+0.6.0	|	Release date: **22.01.2023**
+============================================
+* New Features:
+  - Add Missing AdminPanel Translation.
+  - Add Angular Dependencies.
+  - Add Cookie Consent.
+  - Add AngularCompiler into Webpack Config In AngularJs Theme.
+  - Create Angular Application For AngularJs Theme.
+  - Refactoring Angular Application.
+  - Display Player Annonces.
+  - Create a GamePlayersIterator
+  - Test BeloteCardGame Events.
+
+
 0.5.0	|	Release date: **08.01.2023**
 ============================================
 * New Features:

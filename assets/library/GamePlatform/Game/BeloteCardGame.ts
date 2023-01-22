@@ -67,6 +67,7 @@ class BeloteCardGame extends AbstractGame
         this.handKeys   = ['lefthand', 'upperhand', 'righthand', 'lowerhand'];
         
         this.currentDealer  = 4;
+        //this.currentDealer  = 2;
     }
     
     public override initBoard(): void
@@ -227,8 +228,9 @@ class BeloteCardGame extends AbstractGame
         let player: CardGamePlayer;
         let nextPlayer: CardGamePlayer; // Using for current Iteration
         let lastAnnounce;
-        let oAnnounce   = new BeloteCardGameAnnounce();
-        let loopIndex   = 1;
+        let oAnnounce       = new BeloteCardGameAnnounce();
+        let loopIndex       = 1;
+        let waitMyAnnounce  = false;
         
         // https://developer.mozilla.org/en-US/docs/Web/API/setTimeout
         const partnerBoundMethod = ( function ( this: BeloteCardGame, containerId: any, lastAnnounce: any ) {
@@ -246,7 +248,8 @@ class BeloteCardGame extends AbstractGame
             waitTimeout = loopIndex * 2000;
             
             if ( nextPlayer.type == 'player' ) {
-                player  = nextPlayer;
+                waitMyAnnounce  = true;
+                player          = nextPlayer;
                 setTimeout( playerBoundMethod, waitTimeout, 'AnnounceContainer' );
                 
                 // Wait For Player Announce
@@ -257,19 +260,54 @@ class BeloteCardGame extends AbstractGame
                         //alert( 'My Announce: ' + window.playerAnnounce );
                         
                         this.fireAnnounceEvent( player.containerId, lastAnnounce );
+                        this.continueAnnounce( ++loopIndex );
                     });
                     
                 // After Announce Begin Playing
                 this.afterAnnounce( player, oAnnounce );
             } else {
-                // Create Announce for Partner Gamer
-                lastAnnounce    = oAnnounce.announce( nextPlayer.getHand(), lastAnnounce );
-                this.announces.push( lastAnnounce );
-                
-                nextPlayer.setAnnounce( lastAnnounce );
-                
-                setTimeout( partnerBoundMethod, waitTimeout, nextPlayer.containerId, lastAnnounce );
+                if ( ! waitMyAnnounce ) {
+                    // Create Announce for Partner Gamer
+                    lastAnnounce    = oAnnounce.announce( nextPlayer.getHand(), lastAnnounce );
+                    this.announces.push( lastAnnounce );
+                    
+                    nextPlayer.setAnnounce( lastAnnounce );
+                    
+                    setTimeout( partnerBoundMethod, waitTimeout, nextPlayer.containerId, lastAnnounce );
+                }
             }
+            
+            loopIndex++;
+        } while( this.players.nextPlayer().done === false );
+    }
+    
+    /**
+     * Continue Announce After My Announce
+     */
+    continueAnnounce( loopIndex: number )
+    {
+        let waitTimeout;
+        let nextPlayer: CardGamePlayer; // Using for current Iteration
+        let lastAnnounce;
+        let oAnnounce   = new BeloteCardGameAnnounce();
+        
+        // https://developer.mozilla.org/en-US/docs/Web/API/setTimeout
+        const partnerBoundMethod = ( function ( this: BeloteCardGame, containerId: any, lastAnnounce: any ) {
+            this.fireAnnounceEvent( containerId, lastAnnounce );
+        }).bind( this );
+        
+        do {
+            nextPlayer  = this.players.geCurrentPlayer();
+            
+            waitTimeout = loopIndex * 2000;
+            
+            // Create Announce for Partner Gamer
+            lastAnnounce    = oAnnounce.announce( nextPlayer.getHand(), lastAnnounce );
+            this.announces.push( lastAnnounce );
+            
+            nextPlayer.setAnnounce( lastAnnounce );
+            
+            setTimeout( partnerBoundMethod, waitTimeout, nextPlayer.containerId, lastAnnounce );
             
             loopIndex++;
         } while( this.players.nextPlayer().done === false );

@@ -5,6 +5,7 @@ require ( '../includes/jquery.moveTo.js' );
 
 import AbstractGame from './AbstractGame';
 import CardGamePlayer from './CardGamePlayer';
+import GamePlayersIterator from './GamePlayersIterator';
 
 import Announce from '../CardGameAnnounce/Announce';
 import BeloteCardGameAnnounce from '../CardGameAnnounce/BeloteCardGameAnnounce';
@@ -27,12 +28,17 @@ class BeloteCardGame extends AbstractGame
     /**
      * Game Players
      */
-    players: any;
+    players: GamePlayersIterator;
+    
+    /**
+     * Players Hands
+     */
+    handKeys: Array<string>;
     
     /**
      * Current Dealer
      */
-    currentDealer: any;
+    currentDealer: number;
     
     /**
      * Assync Function
@@ -51,14 +57,16 @@ class BeloteCardGame extends AbstractGame
         super( boardSelector );
         
         //Now lets create a couple of hands, one face down, one face up.
-        this.players  = [
+        this.players  = new GamePlayersIterator([
             ( new CardGamePlayer( 'left', 'LeftPlayer', 'Left Player', 'computer' ) ).setHand( new cards.Hand({ faceUp:false, x:75, y:225 }) ),
             ( new CardGamePlayer( 'top', 'TopPlayer', 'Top Player', 'computer' ) ).setHand( new cards.Hand({ faceUp:false, x:335, y:52 }) ),
             ( new CardGamePlayer( 'right', 'RightPlayer', 'Right Player', 'computer' ) ).setHand( new cards.Hand({ faceUp:false, x:605, y:227 }) ),
             ( new CardGamePlayer( 'bottom', 'BottomPlayer', 'Bottom Player', 'player', true ) ).setHand( new cards.Hand({ faceUp:true, x:335, y:415 }) ),
-        ];
+        ], false);
         
-        this.currentDealer  = 3;
+        this.handKeys   = ['lefthand', 'upperhand', 'righthand', 'lowerhand'];
+        
+        this.currentDealer  = 4;
     }
     
     public override initBoard(): void
@@ -89,19 +97,38 @@ class BeloteCardGame extends AbstractGame
         this.startAnnounce();
     }
     
-    public dealCards( count: any )
+    public override nextGame(): void
     {
-        let lefthand    = this.players[0].getHand();
-        let upperhand   = this.players[1].getHand();
-        let righthand   = this.players[2].getHand();
-        let lowerhand   = this.players[3].getHand();
+        this.currentDealer++
+    }
+    
+    public override getHands(): any
+    {
+        let hands   = new Map();
+        this.players.setStartIterationIndex( this.currentDealer - 1 );
+        do {
+            hands.set( this.handKeys[this.players.getCurrentIndex()], this.players.geCurrentPlayer().getHand() );
+        } while( this.players.nextPlayer().done === false );
         
-        lowerhand.x = 110;
-        lowerhand.y = 90;
+        return hands;
+    }
+    
+    public getPlayers(): Array<CardGamePlayer>
+    {
+        return this.players.getPlayers();
+    }
+    
+    public dealCards( count: number ): void
+    {
+        let hands   = this.getHands();
         
         //Deck has a built in method to deal to hands.
-        this.deck.deal( count, [lefthand, upperhand, righthand, lowerhand], 50, function() {
-            let i;
+        this.deck.deal( count, Array.from( hands.values() ), 50, function() {
+            let lefthand    = hands.get( 'lefthand' );
+            let upperhand   = hands.get( 'upperhand' );
+            let righthand   = hands.get( 'righthand' );
+            let lowerhand   = hands.get( 'lowerhand' );
+            let i: number;
 
             for ( i = 0; i < lefthand.length; i++ ) {
                 lefthand[i].rotate( 90 );
@@ -128,11 +155,10 @@ class BeloteCardGame extends AbstractGame
                 righthand[i].el.moveTo( '#righthand' ); // https://stackoverflow.com/questions/2596833/how-to-move-child-element-from-one-parent-to-another-using-jquery
             }
             
-            
             for ( i = 0; i < lowerhand.length; i++ ) {
                 lowerhand[i].el.css( 'left', 10 + ( i * 20 ) + 'px' );
                 lowerhand[i].el.css( 'top', '45px' );
-                
+
                 lowerhand[i].el.moveTo( '#lowerhand' );   // https://stackoverflow.com/questions/2596833/how-to-move-child-element-from-one-parent-to-another-using-jquery
             }
         });
@@ -199,8 +225,10 @@ class BeloteCardGame extends AbstractGame
         
         let waitTimeout;
         let player: CardGamePlayer;
+        let nextPlayer: CardGamePlayer; // Using for current Iteration
         let lastAnnounce;
         let oAnnounce   = new BeloteCardGameAnnounce();
+        let loopIndex   = 1;
         
         // https://developer.mozilla.org/en-US/docs/Web/API/setTimeout
         const partnerBoundMethod = ( function ( this: BeloteCardGame, containerId: any, lastAnnounce: any ) {
@@ -211,20 +239,15 @@ class BeloteCardGame extends AbstractGame
             $( '#' + announceContainerId ).show();
         }).bind( this );
       
-        let i           = 0;
-        let nextPlayer  = this.players[i];
-        if ( this.players[this.currentDealer+1] != undefined ) {
-            nextPlayer  = this.players[this.currentDealer+1];
-            i           = this.currentDealer+1;
-        }
-        
-        while( nextPlayer && nextPlayer.currentDealer === false ) {
-            waitTimeout = ( i + 1 ) * 2000;
+        this.players.setStartIterationIndex( this.currentDealer -1 );
+        do {
+            nextPlayer  = this.players.geCurrentPlayer();
+            
+            waitTimeout = loopIndex * 2000;
             
             if ( nextPlayer.type == 'player' ) {
                 player  = nextPlayer;
                 setTimeout( playerBoundMethod, waitTimeout, 'AnnounceContainer' );
-                
                 
                 // Wait For Player Announce
                 this.waitMyAnnounce()
@@ -247,11 +270,9 @@ class BeloteCardGame extends AbstractGame
                 
                 setTimeout( partnerBoundMethod, waitTimeout, nextPlayer.containerId, lastAnnounce );
             }
-        
-            nextPlayer  = this.players[++i];
-        }
-        
-        
+            
+            loopIndex++;
+        } while( this.players.nextPlayer().done === false );
     }
     
     beginPlaying( playerHand: any )

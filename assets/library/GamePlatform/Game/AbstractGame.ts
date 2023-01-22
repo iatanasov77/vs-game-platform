@@ -27,6 +27,19 @@ class AbstractGame
     {
         throw new Error( "Method 'startGame()' must be implemented." );
     }
+    
+    public nextGame(): void
+    {
+        throw new Error( "Method 'nextGame()' must be implemented." );
+    }
+    
+    /**
+     * Used in Card Games Only
+     */
+    public getHands(): any
+    {
+        throw new Error( "Method 'getHands()' must be implemented." );
+    }
 }
 
 export default AbstractGame;

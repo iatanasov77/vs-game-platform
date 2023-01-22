@@ -36,6 +36,6 @@ const GamePlatform_AngularJs_Config   = require('./themes/GamePlatform_AngularJs
 module.exports = [
     adminPanelConfig,
     adminPanelCusstomEntriesConfig,
-    GamePlatform_ReactJs_Config,
+    //GamePlatform_ReactJs_Config,
     GamePlatform_AngularJs_Config
 ];

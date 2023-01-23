@@ -21,6 +21,11 @@ declare global {
 class BeloteCardGame extends AbstractGame
 {
     /**
+     * Public Root Path for Assets
+     */
+    publicRootPath: string
+    
+    /**
      * Cards Deck
      */
     deck: any;
@@ -52,9 +57,11 @@ class BeloteCardGame extends AbstractGame
     announces: any;
     
     
-    constructor( boardSelector: string )
+    constructor( boardSelector: string, publicRootPath: string = '' )
     {
         super( boardSelector );
+        
+        this.publicRootPath = publicRootPath;
         
         //Now lets create a couple of hands, one face down, one face up.
         this.players  = new GamePlayersIterator([
@@ -76,7 +83,7 @@ class BeloteCardGame extends AbstractGame
         cards.init({
             type: BELOTE,
             table: this.boardSelector,
-            cardsUrl: '/build/card-game/einaregilsson-cards.js/img/cards.png'
+            cardsUrl: this.publicRootPath + '/einaregilsson-cards.js/img/cards.png'
         });
         //console.log( cards.all );
         

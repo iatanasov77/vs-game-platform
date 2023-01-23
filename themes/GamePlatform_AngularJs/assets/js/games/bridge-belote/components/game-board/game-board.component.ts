@@ -28,7 +28,7 @@ export class GameBoardComponent implements OnInit, OnDestroy
         // DI Not Worked
         this.providerBridgeBelote   = new BridgeBeloteProvider();
         
-        this.game                   = new BeloteCardGame( '#card-table' );
+        this.game                   = new BeloteCardGame( '#card-table', '/build/game-platform-angularjs' );
         this.gameAnnounceIcon       = null;
         this.announceSymbols        = this.providerBridgeBelote.getAnnounceSymbols();
     }

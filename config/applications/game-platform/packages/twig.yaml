@@ -14,8 +14,6 @@ twig:
         
         platformUrl: '%vankosoft_host%'
         
-    form_themes: [
-      'bootstrap_4_layout.html.twig',
-      '@FOSCKEditor/Form/ckeditor_widget.html.twig'
-    ]
+    form_themes:
+        - '@FOSCKEditor/Form/ckeditor_widget.html.twig'
     

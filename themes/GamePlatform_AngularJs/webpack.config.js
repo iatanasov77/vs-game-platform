@@ -47,6 +47,11 @@ Encore
     })
     
     .copyFiles({
+         from: './assets/library/GamePlatform/Einaregilsson_Cards.Js/img',
+         to: 'einaregilsson-cards.js/img/[path][name].[ext]',
+     })
+     
+    .copyFiles({
          from: './themes/GamePlatform_AngularJs/assets/images',
          to: 'images/[path][name].[ext]',
      })

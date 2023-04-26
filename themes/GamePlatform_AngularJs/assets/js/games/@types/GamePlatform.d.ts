@@ -7,7 +7,7 @@ declare module '_@/GamePlatform/Game/GameEvents' {
 
 declare module '_@/GamePlatform/Game/BeloteCardGame' {
     class BeloteCardGame {
-        constructor( boardSelector: string )
+        constructor( boardSelector: string, publicRootPath: string )
     }
     export = BeloteCardGame;
 }

@@ -54,7 +54,7 @@ const BridgeBeloteGameBoard = () => {
     /**
      * MAIN APPLICATION
      */
-    let game    = new BeloteCardGame( '#card-table' );
+    let game    = new BeloteCardGame( '#card-table', '/build/game-platform-reactjs' );
     
     let playerContainers    = game.players.map( ( player, index ) => (
         <div key={ `player-container-${index}` }

@@ -1,3 +1,13 @@
+0.6.1	|	Release date: **26.04.2023**
+============================================
+* New Features:
+  - Copy Cards Images From library to public Shared Assets Dir.
+  - Remove Bootstrap 4 Twgig Form Theme.
+  - Remove Assets includes Folder From Themes.
+  - Update Frontend Packages.
+  - Remove Sensio Extra Bundle.
+
+
 0.6.0	|	Release date: **22.01.2023**
 ============================================
 * New Features:

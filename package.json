@@ -57,6 +57,7 @@
     "devDependencies": {
         "@symfony/stimulus-bridge": "^2.0.0",
         "@symfony/webpack-encore": "^1.0.0",
+        "compression-webpack-plugin": "^10.0.0",
         "core-js": "^3.26.1",
         "file-loader": "^6.0.0",
         "sass": "^1.57.1",
@@ -81,10 +82,10 @@
         "ts-loader": "^9.0.0",
         "raw-loader": "^4.0.2"
     },
-	"resolutions": {
-    	"@kanety/jquery-simple-tree-table/jquery": "3.6.3",
+    "resolutions": {
+        "@kanety/jquery-simple-tree-table/jquery": "3.6.3",
         "jquery-ui/jquery": "3.6.3",
         "jquery-ui-dist/jquery": "3.6.3",
         "jquery-slimscroll/jquery": "3.6.3"
-	}
+    }
 }

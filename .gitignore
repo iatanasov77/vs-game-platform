@@ -47,6 +47,7 @@
 /public/bundles/
 npm-debug.log
 yarn-error.log
+cript
 ###< symfony/webpack-encore-bundle ###
 
 ###> liip/imagine-bundle ###

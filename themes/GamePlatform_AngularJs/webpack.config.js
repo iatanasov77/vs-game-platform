@@ -2,12 +2,15 @@ const Encore    = require('@symfony/webpack-encore');
 const webpack   = require('webpack');
 const path      = require('path');
 const AngularCompilerPlugin = require('@ngtools/webpack').AngularWebpackPlugin;
+//const CompressionPlugin     = require( 'compression-webpack-plugin' );
 
 Encore
     .setOutputPath( 'public/shared_assets/build/game-platform-angularjs/' )
     .setPublicPath( '/build/game-platform-angularjs/' )
   
-    .disableSingleRuntimeChunk()
+    .enableSingleRuntimeChunk()
+    //.addPlugin(new CompressionPlugin())
+    
     .cleanupOutputBeforeBuild()
     .enableSourceMaps(!Encore.isProduction())
     .enableVersioning(Encore.isProduction())

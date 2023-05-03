@@ -1,3 +1,12 @@
+0.6.2	|	Release date: **03.05.2023**
+============================================
+* Bug-Fixes and Improvements:
+  - Add Compression Plugin for Webpack Encore..
+  - Remove Compression Plugin for Webpack Encore.
+  - Improve tsconfig
+  - Update Frontend Packages.
+
+
 0.6.1	|	Release date: **26.04.2023**
 ============================================
 * New Features:

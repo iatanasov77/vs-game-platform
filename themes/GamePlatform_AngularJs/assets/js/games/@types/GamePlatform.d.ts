@@ -32,6 +32,9 @@ declare module '_@/GamePlatform/CardGameAnnounce/Announce' {
         
         static BEZ_KOZ: string;
         static VSICHKO_KOZ: string;
+        
+        static KONTRA: string;
+        static RE_KONTRA: string;
     }
     export = Announce;
 }

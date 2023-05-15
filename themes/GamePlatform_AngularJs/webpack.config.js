@@ -30,7 +30,6 @@ Encore
     .enableTypeScriptLoader()
     .addPlugin(new AngularCompilerPlugin({
         "tsConfigPath": './themes/GamePlatform_AngularJs/assets/js/games/tsconfig.app.json',
-        "entryModule": './themes/GamePlatform_AngularJs/assets/js/games/main.ts',
     }))
     
     /* Embed Angular Component Templates. */
@@ -66,8 +65,7 @@ Encore
     .addEntry( 'js/home', './themes/GamePlatform_AngularJs/assets/js/pages/home.js' )
     
     // Games
-    .addEntry( 'js/bridge-belote', './themes/GamePlatform_AngularJs/assets/js/games/index.js' )
-    //.addEntry( 'js/bridge-belote', './themes/GamePlatform_AngularJs/assets/js/games/bridge-belote/index.js' )
+    .addEntry( 'js/bridge-belote', './themes/GamePlatform_AngularJs/assets/js/games/bridge-belote/index.js' )
     .addEntry( 'js/contract-bridge', './themes/GamePlatform_AngularJs/assets/js/games/contract-bridge/index.js' )
     .addEntry( 'js/chess', './themes/GamePlatform_AngularJs/assets/js/games/chess/index.js' )
     .addEntry( 'js/backgammon', './themes/GamePlatform_AngularJs/assets/js/games/backgammon/index.js' )

@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { CommonModule, APP_BASE_HREF } from '@angular/common';
+import { APP_BASE_HREF, Location } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { RestangularModule } from 'ngx-restangular';
@@ -21,8 +21,6 @@ import { GameStatisticsComponent } from './components/game-statistics/game-stati
 import { GameBoardComponent } from './components/game-board/game-board.component';
 import { PlayerAnnounceComponent } from './components/player-announce/player-announce.component';
 
-
-
 @NgModule({
     declarations: [
         BridgeBeloteComponent,
@@ -32,17 +30,18 @@ import { PlayerAnnounceComponent } from './components/player-announce/player-ann
     ],
     imports: [
         BrowserModule,
-        
-        CommonModule,
         MatTooltipModule,
         
         AppRoutingModule,
         RestangularModule.forRoot( RestangularConfigFactory ),
-        StoreRouterConnectingModule.forRoot( { serializer: CustomSerializer } ),
         StoreModule.forRoot( reducers ),
         //EffectsModule.forRoot( [Effects] ),
+        //StoreRouterConnectingModule.forRoot( { serializer: CustomSerializer } ),
     ],
     bootstrap: [BridgeBeloteComponent],
-    providers: [{provide: APP_BASE_HREF, useValue: '/game/bridge-belote'}]
+    providers: [
+        { provide: Window, useValue: window },
+        { provide: APP_BASE_HREF, useValue: window.location.pathname }
+    ]
 })
 export class BridgeBeloteModule { }

@@ -29,8 +29,9 @@ class DefaultController extends AbstractController
         $this->gamesRepository      = $gamesRepository;
     }
     
-    public function index( $gameSlug, Request $request ): Response
+    public function index( Request $request ): Response
     {
+        $gameSlug   = 'bridge-belote';
         $game   = $this->gamesRepository->findOneBy( ['slug' => $gameSlug] );
         
         return new Response( $this->templatingEngine->render( $this->getTemplate(), ['game' => $game] ) );

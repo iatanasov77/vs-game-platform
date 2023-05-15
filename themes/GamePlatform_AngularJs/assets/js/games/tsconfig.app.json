@@ -27,7 +27,7 @@
   },
   "files": [
     "polyfills.ts",
-    "main.ts"
+    "application/main.ts"
   ],
   "include": [
     "./**/*.d.ts"

@@ -7,9 +7,10 @@
 import { enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
+const {context} = require( './context' );
+
 import { BridgeBeloteModule } from './bridge-belote/bridge-belote.module';
 
-const {context} = require( './context' );
 if ( context.isProduction ) {
     enableProdMode();
 }

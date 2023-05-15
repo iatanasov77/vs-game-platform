@@ -1,3 +1,20 @@
+declare module '_@/GamePlatform/Game/CardGameInterface' {
+    interface ICardGame
+    {
+        deck: any;
+        //players: GamePlayersIterator;
+    }
+    export = ICardGame;
+}
+
+declare module '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface' {
+    interface ICardGameAnnounce
+    {
+        
+    }
+    export = ICardGameAnnounce;
+}
+
 declare module '_@/GamePlatform/Game/GameEvents' {
     export const PLAYER_ANNOUNCE_EVENT_NAME: string;
     export const GAME_START_EVENT_NAME: string;

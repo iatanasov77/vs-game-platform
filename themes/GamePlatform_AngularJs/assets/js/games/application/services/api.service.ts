@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
 import { Restangular } from 'ngx-restangular';
 
@@ -16,9 +16,9 @@ const backendURL = context.backendURL;
 export class ApiService
 {
     constructor(
-        private httpClient: HttpClient,
-        private restangular: Restangular,
-        private authStore: AuthService
+        @Inject(HttpClient) private httpClient: HttpClient,
+        @Inject(Restangular) private restangular: Restangular,
+        @Inject(AuthService) private authStore: AuthService
     ) { }
     
     /*

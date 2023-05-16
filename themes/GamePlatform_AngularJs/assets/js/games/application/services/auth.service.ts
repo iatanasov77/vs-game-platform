@@ -8,7 +8,9 @@ import { IAuth } from '../interfaces/auth';
  *===========================================================================
  * In Manual has How to decrypt data if its contains sensitive information
  */
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class AuthService
 {
     authKey = "auth";

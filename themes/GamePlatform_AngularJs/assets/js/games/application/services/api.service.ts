@@ -45,4 +45,9 @@ export class ApiService
     
         this.authStore.removeAuth();
     }
+    
+    register( formData: any )
+    {
+        return this.restangular.all( "users/register" ).post( formData );
+    }
 }

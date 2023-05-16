@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, Inject } from "@angular/core";
 
 import { createEffect, Actions, ofType } from '@ngrx/effects';
 import { catchError, map, switchMap } from "rxjs";
@@ -32,7 +32,10 @@ import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounce
 })
 export class Effects
 {
-    constructor( private actions$: Actions, private gameService: GameService ) { }
+    constructor(
+        @Inject(Actions) private actions$: Actions,
+        @Inject(GameService) private gameService: GameService
+    ) { }
     
     startGame = createEffect( (): any => this.actions$.pipe(
         ofType( startGame ),

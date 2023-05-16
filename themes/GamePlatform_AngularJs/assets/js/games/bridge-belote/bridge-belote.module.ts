@@ -18,7 +18,7 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { BridgeBeloteComponent } from './bridge-belote.component';
 import { GameTableModule } from './components/game-table.module';
-
+import { AuthenticationModule } from '../application/components/authentication/authentication.module';
 
 @NgModule({
     declarations: [
@@ -31,10 +31,11 @@ import { GameTableModule } from './components/game-table.module';
         AppRoutingModule,
         RestangularModule.forRoot( RestangularConfigFactory ),
         StoreModule.forRoot( reducers ),
-        //EffectsModule.forRoot( [Effects] ),
+        EffectsModule.forRoot( [Effects] ),
         //StoreRouterConnectingModule.forRoot( { serializer: CustomSerializer } ),
         
         GameTableModule,
+        AuthenticationModule,
     ],
     bootstrap: [BridgeBeloteComponent],
     providers: [

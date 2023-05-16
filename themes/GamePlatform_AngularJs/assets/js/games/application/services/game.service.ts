@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
 import { Observable} from 'rxjs';
 
@@ -14,7 +14,7 @@ import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounce
 export class GameService
 {
     constructor(
-        private httpClient: HttpClient,
+        @Inject(HttpClient) private httpClient: HttpClient,
     ) { }
      
     startGame(): Observable<ICardGame>

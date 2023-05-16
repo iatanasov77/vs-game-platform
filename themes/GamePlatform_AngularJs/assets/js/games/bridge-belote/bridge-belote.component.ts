@@ -1,4 +1,6 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
+
+import { AuthService } from '../application/services/auth.service'
 
 import cssCardGameString from '../application/assets/CardGame.scss'
 import cssGameString from './bridge-belote.component.scss'
@@ -13,11 +15,22 @@ declare var $: any;
     styles: [
         cssCardGameString || 'Template Not Loaded !!!',
         cssGameString || 'Template Not Loaded !!!',
-    ]
+    ],
+    providers: [AuthService]
 })
 export class BridgeBeloteComponent implements OnInit, OnDestroy
 {
-    constructor() { }
+    isLoggedIn: boolean = false;
+    
+    constructor(
+        @Inject(AuthService) private authStore: AuthService
+    ) {
+        /* */
+        this.authStore.isLoggedIn().subscribe( ( isLoggedIn: boolean ) => {
+            this.isLoggedIn = isLoggedIn;
+        });
+    
+    }
     
     ngOnInit(): void
     {

@@ -35,7 +35,7 @@ import { ContractBridgeComponent } from './contract-bridge.component';
     ],
     bootstrap: [ContractBridgeComponent],
     providers: [
-        { provide: Window, useValue: window },
+        //{ provide: Window, useValue: window },
         { provide: APP_BASE_HREF, useValue: window.location.pathname }
     ]
 })

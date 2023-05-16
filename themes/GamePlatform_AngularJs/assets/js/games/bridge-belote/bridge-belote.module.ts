@@ -38,7 +38,7 @@ import { GameTableModule } from './components/game-table.module';
     ],
     bootstrap: [BridgeBeloteComponent],
     providers: [
-        { provide: Window, useValue: window },
+        //{ provide: Window, useValue: window },
         { provide: APP_BASE_HREF, useValue: window.location.pathname }
     ]
 })

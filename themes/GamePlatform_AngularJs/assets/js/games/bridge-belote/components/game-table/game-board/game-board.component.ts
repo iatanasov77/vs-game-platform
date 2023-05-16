@@ -4,7 +4,7 @@ import BeloteCardGame from '_@/GamePlatform/Game/BeloteCardGame';
 import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
 import Announce from '_@/GamePlatform/CardGameAnnounce/Announce';
 
-import { BridgeBeloteProvider } from '../../../application/services/providers/bridge-belote-provider';
+import { BridgeBeloteProvider } from '../../../../application/services/providers/bridge-belote-provider';
 import templateString from './game-board.component.html'
 
 declare var $: any;

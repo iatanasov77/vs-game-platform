@@ -27,8 +27,6 @@ import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounce
  * multiple events, and other external interactions where your components don't need explicit knowledge of these interactions.
  */
 
-/*
-
 @Injectable({
     providedIn: 'root'
 })
@@ -53,4 +51,3 @@ export class Effects
     ));
 }
 
-*/

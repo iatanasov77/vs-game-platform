@@ -4,14 +4,14 @@ import { APP_BASE_HREF, Location } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { RestangularModule } from 'ngx-restangular';
-import { RestangularConfigFactory } from '../restangular.config';
+import { RestangularConfigFactory } from '../application/restangular.config';
 
 import { StoreModule } from '@ngrx/store';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { EffectsModule } from '@ngrx/effects';
 
-import { reducers } from '../+store';
-import { CustomSerializer } from '../+store/router';
+import { reducers } from '../application/+store';
+import { CustomSerializer } from '../application/+store/router';
 //import { Effects } from '../+store/effects';
 
 import { AppRoutingModule } from './app-routing.module';

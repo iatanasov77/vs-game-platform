@@ -40,8 +40,6 @@
         "moment": "^2.29.1",
         "popper": "^1.0.1",
         "popper.js": "^1.15.0",
-        "react": "^18.2.0",
-        "react-dom": "^18.2.0",
         "rxjs": "^7.5.5",
         "rxjs-compat": "^6.6.7",
         "rxjs-observable": "0.0.7",

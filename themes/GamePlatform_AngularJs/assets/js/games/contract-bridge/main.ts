@@ -7,7 +7,7 @@
 import { enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
-const {context} = require( '../context' );
+const {context} = require( '../application/context' );
 
 import { ContractBridgeModule } from './contract-bridge.module';
 

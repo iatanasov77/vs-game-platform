@@ -23,7 +23,7 @@
         "symfony/runtime": "6.2.*",
         
         "vankosoft/application": "1.10.*",
-        "vankosoft/api-bundle": "2.0.*"
+        "vankosoft/api-bundle": "2.1.*"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",

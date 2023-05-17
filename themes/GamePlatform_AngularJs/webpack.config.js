@@ -71,14 +71,13 @@ Encore
     .addEntry( 'js/backgammon', './themes/GamePlatform_AngularJs/assets/js/games/backgammon/index.js' )
 ;
 
+Encore.configureDefinePlugin( ( options ) => {
+    options.IS_PRODUCTION = JSON.stringify( Encore.isProduction() );
+});
+
 const config = Encore.getWebpackConfig();
 config.name = 'GamePlatform_AngularJs';
 
 config.resolve.extensions = ['.ts', '.js'];
-config.plugins.push(
-    new webpack.DefinePlugin({
-        PRODUCTION: JSON.stringify( Encore.isProduction() ),
-    })
-);
 
 module.exports = config;

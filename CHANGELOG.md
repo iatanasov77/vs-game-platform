@@ -1,3 +1,19 @@
+0.6.3	|	Release date: **17.05.2023**
+============================================
+* New Features and Improvements:
+  - Update Jenkinsfile
+  - Game BridgeBelote Add Kontra Announces.
+  - Add RXJS Store and Api Services.
+  - Rafactoring of Application Theme Assets
+  - Create an Authentication Module in Application Theme Scripts.
+  - Add Config For Lexic JWT Authentication Bundle.
+  - Add Config For JWT Refresh Token.
+* Bug-Fixes:
+  - Fix Open Every Game as Different Angular Application.
+  - Angular Inject Auth Service.
+  - Fix Angular Dependencie Injection.
+
+
 0.6.2	|	Release date: **03.05.2023**
 ============================================
 * Bug-Fixes and Improvements:

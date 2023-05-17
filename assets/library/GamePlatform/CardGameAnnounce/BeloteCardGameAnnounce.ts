@@ -1,4 +1,5 @@
 import AbstractCardGameAnnounce from './AbstractCardGameAnnounce';
+import ICardGameAnnounce from './CardGameAnnounceInterface';
 import Announce from './Announce';
 
 class BeloteCardGameAnnounce extends AbstractCardGameAnnounce

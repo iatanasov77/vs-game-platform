@@ -2,6 +2,7 @@ require( '../Einaregilsson_Cards.Js/deckType' );
 const cards = require( '../Einaregilsson_Cards.Js/cards' );
 
 import AbstractGame from './AbstractGame';
+import ICardGame from './CardGameInterface';
 import CardGamePlayer from './CardGamePlayer';
 import GamePlayersIterator from './GamePlayersIterator';
 
@@ -187,7 +188,7 @@ class BeloteCardGame extends AbstractGame
     
     public afterAnnounce( player: CardGamePlayer, oAnnounce: BeloteCardGameAnnounce )
     {
-        let setImmediate = global.setImmediate || ( ( fn, ...args ) => global.setTimeout( fn, 0, ...args ) );
+        let setImmediate = global.setImmediate || ( ( fn: any, ...args: any[] ) => global.setTimeout( fn, 0, ...args ) );
         const unblock = () => new Promise( setImmediate );
         
         const waitForLength = async ( arr: any, len: any ) => {

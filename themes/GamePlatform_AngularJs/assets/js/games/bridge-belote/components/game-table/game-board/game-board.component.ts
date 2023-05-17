@@ -11,6 +11,20 @@ import templateString from './game-board.component.html'
 
 import { UserLoginComponent } from '../../../../application/components/authentication/user-login/user-login.component';
 
+import { Store } from '@ngrx/store';
+import { Actions, ofType } from '@ngrx/effects';
+import { map, merge } from 'rxjs';
+import {
+    startGame,
+    startGameFailure,
+    startGameSuccess,
+    
+    playerAnnounce,
+    playerAnnounceFailure,
+    playerAnnounceSuccess
+} from '../../../../application/+store/actions';
+import { runStartGame, runMakeAnnounce } from '../../../../application/+store/selectors';
+
 declare var $: any;
 
 @Component({
@@ -30,7 +44,10 @@ export class GameBoardComponent implements OnInit, OnDestroy
     
     constructor(
         //private providerBridgeBelote: BridgeBeloteProvider,
-        @Inject(NgbModal) private ngbModal: NgbModal
+        @Inject(NgbModal) private ngbModal: NgbModal,
+        
+        @Inject(Store) private store: Store,
+        @Inject(Actions) private actions$: Actions
     ) {
         // DI Not Worked
         this.providerBridgeBelote   = new BridgeBeloteProvider();
@@ -66,20 +83,24 @@ export class GameBoardComponent implements OnInit, OnDestroy
         });
     }
     
-    onStartGame( event: any )
+    onStartGame( event: any ): void
     {
         //event.preventDefault();
-        
-        if ( this.isLoggedIn ) {
-            this.game.startGame();
-            $( '#btnStartGame' ).hide();
-        } else {
-            const modalRef = this.ngbModal.open( UserLoginComponent );
-            modalRef.componentInstance.closeModalLogin.subscribe( () => {
-                // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
-                modalRef.dismiss();
-            });
+        if ( ! this.isLoggedIn ) {
+            this.openLoginForm();
+            return;
         }
+        
+        this.game.startGame();
+        $( '#btnStartGame' ).hide();
+    }
+    
+    onStartGameNew( event: any )
+    {
+        this.store.dispatch( startGame() );
+        this.store.subscribe( ( state: any ) => {
+            //this.showSpinner    = state.main.latestTablatures == null;
+        });
     }
     
     onPlayerAnnounce( announceId: any, event: any )
@@ -93,5 +114,22 @@ export class GameBoardComponent implements OnInit, OnDestroy
                 },
             })
         );
+    }
+    
+    onPlayerAnnounceNew( announceId: any, event: any )
+    {
+        this.store.dispatch( playerAnnounce() );
+        this.store.subscribe( ( state: any ) => {
+            //this.showSpinner    = state.main.latestTablatures == null;
+        });
+    }
+    
+    openLoginForm(): void
+    {
+        const modalRef = this.ngbModal.open( UserLoginComponent );
+        modalRef.componentInstance.closeModalLogin.subscribe( () => {
+            // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
+            modalRef.dismiss();
+        });
     }
 }

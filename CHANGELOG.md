@@ -1,3 +1,11 @@
+0.6.4	|	Release date: **17.05.2023**
+============================================
+* Bug-Fixes and Improvements:
+  - Update Package @types/node
+  - Fix Frontend Library Types.
+  - Fix Typescript Warnings.
+
+
 0.6.3	|	Release date: **17.05.2023**
 ============================================
 * New Features and Improvements:

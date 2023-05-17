@@ -1,4 +1,6 @@
-export interface ICardGameAnnounce
+interface ICardGameAnnounce
 {
     
 }
+
+export default ICardGameAnnounce;

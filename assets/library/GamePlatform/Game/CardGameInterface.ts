@@ -1,7 +1,9 @@
 import GamePlayersIterator from "./GamePlayersIterator";
 
-export interface ICardGame
+interface ICardGame
 {
     deck: any;
     players: GamePlayersIterator;
 }
+
+export default ICardGame;

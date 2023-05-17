@@ -21,8 +21,8 @@ interface IAppState
 }
 
 const mainInitialState: IMainState = {
-    game:   null,
-    announce:       null
+    game:       null,
+    announce:   null
 };
 
 const mainReducer = createReducer<IMainState>(

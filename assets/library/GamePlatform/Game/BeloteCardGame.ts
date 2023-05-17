@@ -2,6 +2,7 @@ require( '../Einaregilsson_Cards.Js/deckType' );
 const cards = require( '../Einaregilsson_Cards.Js/cards' );
 
 import AbstractGame from './AbstractGame';
+import ICardGame from './CardGameInterface';
 import CardGamePlayer from './CardGamePlayer';
 import GamePlayersIterator from './GamePlayersIterator';
 

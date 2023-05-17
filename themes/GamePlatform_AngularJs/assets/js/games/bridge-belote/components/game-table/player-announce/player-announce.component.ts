@@ -15,7 +15,7 @@ declare var $: any;
     
     template: templateString || 'Template Not Loaded !!!',
     styles: [
-        styleString || 'Template Not Loaded !!!'
+        styleString || 'CSS Not Loaded !!!'
     ]
 })
 export class PlayerAnnounceComponent implements OnInit, OnDestroy

@@ -1,4 +1,6 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, Input } from '@angular/core';
+
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import BeloteCardGame from '_@/GamePlatform/Game/BeloteCardGame';
 import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
@@ -6,6 +8,8 @@ import Announce from '_@/GamePlatform/CardGameAnnounce/Announce';
 
 import { BridgeBeloteProvider } from '../../../../application/services/providers/bridge-belote-provider';
 import templateString from './game-board.component.html'
+
+import { UserLoginComponent } from '../../../../application/components/authentication/user-login/user-login.component';
 
 declare var $: any;
 
@@ -17,13 +21,16 @@ declare var $: any;
 })
 export class GameBoardComponent implements OnInit, OnDestroy
 {
+    @Input() isLoggedIn: boolean = false;
+
     providerBridgeBelote: any;
     game: any;
     announceSymbols: any;
     gameAnnounceIcon: any;
     
     constructor(
-        //private providerBridgeBelote: BridgeBeloteProvider
+        //private providerBridgeBelote: BridgeBeloteProvider,
+        @Inject(NgbModal) private ngbModal: NgbModal
     ) {
         // DI Not Worked
         this.providerBridgeBelote   = new BridgeBeloteProvider();
@@ -61,10 +68,18 @@ export class GameBoardComponent implements OnInit, OnDestroy
     
     onStartGame( event: any )
     {
-        event.preventDefault();
+        //event.preventDefault();
         
-        this.game.startGame();
-        $( '#btnStartGame' ).hide();
+        if ( this.isLoggedIn ) {
+            this.game.startGame();
+            $( '#btnStartGame' ).hide();
+        } else {
+            const modalRef = this.ngbModal.open( UserLoginComponent );
+            modalRef.componentInstance.closeModalLogin.subscribe( () => {
+                // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
+                modalRef.dismiss();
+            });
+        }
     }
     
     onPlayerAnnounce( announceId: any, event: any )

@@ -13,8 +13,8 @@ declare var $: any;
     
     template: templateString || 'Template Not Loaded !!!',
     styles: [
-        cssCardGameString || 'Template Not Loaded !!!',
-        cssGameString || 'Template Not Loaded !!!',
+        cssCardGameString || 'CardGame CSS Not Loaded !!!',
+        cssGameString || 'Game CSS Not Loaded !!!',
     ],
     providers: [AuthService]
 })

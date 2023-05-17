@@ -22,7 +22,7 @@ class BeloteCardGameAnnounce extends AbstractCardGameAnnounce
         }
         
         return announces[0];
-        return announces[announces.length - 1];
+        //return announces[announces.length - 1];
     }
 }
 

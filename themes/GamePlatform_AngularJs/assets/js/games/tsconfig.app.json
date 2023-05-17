@@ -26,8 +26,8 @@
       "preserveWhitespaces": true
   },
   "files": [
-    "main.ts",
-    "polyfills.ts"
+    "polyfills.ts",
+    "application/main.ts"
   ],
   "include": [
     "./**/*.d.ts"

@@ -8,6 +8,9 @@ class Announce {
     
     static BEZ_KOZ      = 'bez_koz';
     static VSICHKO_KOZ  = 'vsichko_koz';
+    
+    static KONTRA       = 'kontra';
+    static RE_KONTRA    = 're_kontra';
 }
 
 export default Announce;

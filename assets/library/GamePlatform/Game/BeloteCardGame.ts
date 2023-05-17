@@ -1,8 +1,6 @@
 require( '../Einaregilsson_Cards.Js/deckType' );
 const cards = require( '../Einaregilsson_Cards.Js/cards' );
 
-require ( '../includes/jquery.moveTo.js' );
-
 import AbstractGame from './AbstractGame';
 import CardGamePlayer from './CardGamePlayer';
 import GamePlayersIterator from './GamePlayersIterator';

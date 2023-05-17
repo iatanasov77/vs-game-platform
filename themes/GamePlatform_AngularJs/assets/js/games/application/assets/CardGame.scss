@@ -1,3 +1,5 @@
+@import "~@angular/material/prebuilt-themes/deeppurple-amber.css";
+
 /*
  * Game Board
  */
@@ -64,3 +66,12 @@
     vertical-align: unset;
 }
 
+@media (min-width: 576px) {
+    .modal-dialog {
+        max-width: 700px !important;
+    }
+}
+
+.modal-footer {
+    display: block !important;
+}

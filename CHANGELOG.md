@@ -1,3 +1,10 @@
+0.6.5	|	Release date: **18.05.2023**
+============================================
+* New Features:
+  - Update Vankosoft Api Bundle.
+  - Add API Docs Assets.
+
+
 0.6.4	|	Release date: **17.05.2023**
 ============================================
 * Bug-Fixes and Improvements:

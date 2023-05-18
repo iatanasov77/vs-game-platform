@@ -59,6 +59,8 @@ ignore = "
     /config/preload.php
     /config/routes.yaml
     /config/services.yaml
+    
+    /public/game-platform/_themes/vankosoft/game-platform-angularjs/bundles/*
 "
 
 ; explicit list of files and directories to include (by default includes all files and directories)
@@ -84,6 +86,9 @@ include = "
     /themes/DeveloperBlog/composer.json
     /themes/DeveloperWebsite/composer.json
     /VERSION
+    
+    /public/game-platform/_themes/vankosoft/game-platform-angularjs/bundles/apiplatform
+    /public/game-platform/_themes/vankosoft/game-platform-angularjs/bundles/apiplatform/*
 "
 
 ; is allowed to delete remote files? (defaults to yes)

@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http'
 import { Restangular } from 'ngx-restangular';
 
 import { AuthService } from './auth.service';
+import { IAuth } from '../interfaces/auth';
+import { ISignedUrlResponse } from '../interfaces/signed-url-response';
 
 const {context} = require( '../context' );
 const backendURL = context.backendURL;
@@ -49,5 +51,27 @@ export class ApiService
     register( formData: any )
     {
         return this.restangular.all( "users/register" ).post( formData );
+    }
+    
+    loginBySignedUrl( signedUrl: string )
+    {
+        this.httpClient.get<ISignedUrlResponse>( signedUrl ).subscribe( ( response: ISignedUrlResponse ) => {            
+            if ( response.data ) {
+                let auth: IAuth = {
+                    id: response.data.user.id,
+                    
+                    email: response.data.user.email,
+                    username: response.data.user.email.username,
+                    
+                    fullName: response.data.user.firstName + ' ' + response.data.user.lastName,
+                    
+                    apiToken: response.data.tokenString,
+                    tokenCreated: response.data.token.iat,
+                    tokenExpired: response.data.token.exp,
+                };
+                
+                this.authStore.createAuth( auth );
+            }
+        });
     }
 }

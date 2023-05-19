@@ -1,9 +1,17 @@
 {% extends "base-game.html.twig" %}
 
+{% block stylesheets %}
+    {{ parent() }}
+
+    {{ encore_entry_link_tags( 'js/chess', null, 'GamePlatform_AngularJs' ) }}
+{% endblock %}
+
 {% block javascripts %}
 	{{ encore_entry_script_tags( 'js/chess', null, 'GamePlatform_AngularJs' ) }}
 {% endblock %}
 
 {% block content %}
-    
+    <div class="container text-center" style="height: 100%">
+        <app-chess urlLoginBySignature="{{ urlLoginBySignature }}"></app-chess>
+    </div>
 {% endblock %}

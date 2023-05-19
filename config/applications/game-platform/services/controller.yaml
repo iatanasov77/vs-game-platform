@@ -34,6 +34,7 @@ services:
             - '@vs_application.context.application'
             - '@twig'
             - '@vsapp.repository.games'
+            - '@vs_api.api_manager'
             
     App\Controller\ContractBridge\DefaultController:
         tags: ['controller.service_arguments']
@@ -42,6 +43,7 @@ services:
             - '@vs_application.context.application'
             - '@twig'
             - '@vsapp.repository.games'
+            - '@vs_api.api_manager'
             
     App\Controller\Chess\DefaultController:
         tags: ['controller.service_arguments']
@@ -50,6 +52,7 @@ services:
             - '@vs_application.context.application'
             - '@twig'
             - '@vsapp.repository.games'
+            - '@vs_api.api_manager'
             
     App\Controller\Backgammon\DefaultController:
         tags: ['controller.service_arguments']
@@ -58,3 +61,4 @@ services:
             - '@vs_application.context.application'
             - '@twig'
             - '@vsapp.repository.games'
+            - '@vs_api.api_manager'

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, ElementRef } from '@angular/core';
 
 import { AuthService } from '../application/services/auth.service'
 
@@ -20,12 +20,17 @@ declare var $: any;
 })
 export class BridgeBeloteComponent implements OnInit, OnDestroy
 {
+    urlLoginBySignature?: string;
+    
     isLoggedIn: boolean = false;
     
     constructor(
+        @Inject(ElementRef) private elementRef: ElementRef,
         @Inject(AuthService) private authStore: AuthService
     ) {
-        /* */
+        this.urlLoginBySignature = this.elementRef.nativeElement.getAttribute( 'urlLoginBySignature' );
+        //this.debugApplication();
+        
         this.authStore.isLoggedIn().subscribe( ( isLoggedIn: boolean ) => {
             this.isLoggedIn = isLoggedIn;
         });
@@ -41,4 +46,10 @@ export class BridgeBeloteComponent implements OnInit, OnDestroy
     {
 
     }
+    
+    debugApplication()
+    {
+        alert( this.urlLoginBySignature );
+        //alert( this.isLoggedIn );
+    }  
 }

@@ -6,6 +6,7 @@ import { AuthService } from './auth.service';
 import { IAuth } from '../interfaces/auth';
 import { ISignedUrlResponse } from '../interfaces/signed-url-response';
 
+import {AppConstants} from "../constants";
 const {context} = require( '../context' );
 const backendURL = context.backendURL;
 
@@ -56,7 +57,7 @@ export class ApiService
     loginBySignedUrl( signedUrl: string )
     {
         this.httpClient.get<ISignedUrlResponse>( signedUrl ).subscribe( ( response: ISignedUrlResponse ) => {            
-            if ( response.data ) {
+            if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
                 let auth: IAuth = {
                     id: response.data.user.id,
                     

@@ -35,7 +35,8 @@ declare var $: any;
 })
 export class GameBoardComponent implements OnInit, OnDestroy
 {
-    @Input() isLoggedIn: boolean = false;
+    @Input() isLoggedIn: boolean        = false;
+    @Input() developementClass: string  = '';
 
     providerBridgeBelote: any;
     game: any;

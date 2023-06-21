@@ -68,7 +68,8 @@
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install public/game-platform/_themes/vankosoft/game-platform-angularjs": "symfony-cmd",
-            "liip:imagine:cache:remove": "symfony-cmd"
+            "liip:imagine:cache:remove": "symfony-cmd",
+            "assets:install %PUBLIC_DIR%": "symfony-cmd"
         },
         "post-install-cmd": [
             "@auto-scripts"

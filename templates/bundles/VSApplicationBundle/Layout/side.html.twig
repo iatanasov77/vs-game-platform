@@ -1,47 +1,32 @@
 <nav class="navbar navbar-expand-lg navbar-light">
     <a class="d-xl-none d-lg-none" href="#">{{ 'vs_application.menu.dashboard' | trans( {},'VSApplicationBundle' ) }}</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
         <!-- sidebar menu start-->
         <ul class="navbar-nav flex-column">
-            <li class="nav-divider">{{ 'vs_application.menu.application_links' | trans( {},'VSApplicationBundle' ) }}</li>
-            {% for oApplication in applicationsRepo.findAll() %}
-                {% if oApplication.code != 'admin-panel' %}
-                    <li class="nav-item ">
-                        <a class="nav-link main-menu-button" href="http://{{ oApplication.hostname }}" target="_blank">
-                            {{ oApplication.hostname }}
-                        </a>
-                   </li>
-                {% endif %}
-            {% endfor %}
+        
+            {{ vs_widget_render( 'admin-main-menu', ['main-menu-applications'] ) }}
             
-            <li class="nav-divider"><hr /></li>
-            <li class="nav-divider">{{ 'vs_application.menu.system' | trans( {},'VSApplicationBundle' ) }}</li>
             {{ knp_menu_render('mainSystem', {'template': '@VSApplication/Menu/mainSystem.html.twig'}) }}
             
-            <li class="nav-divider"><hr /></li>
-            <li class="nav-divider">{{ 'vs_application.menu.cms' | trans( {},'VSApplicationBundle' ) }}</li>
             {{ knp_menu_render('mainCms', {'template': '@VSApplication/Menu/mainCms.html.twig'}) }}
             
         {% if installedBundles['VSUsersSubscriptionsBundle'] is defined %}
-            <li class="nav-divider"><hr /></li>
-            <li class="nav-divider">{{ 'vs_application.menu.users_subscriptions' | trans( {},'VSApplicationBundle' ) }}</li>
             {{ knp_menu_render('mainUsersSubscriptions', {'template': '@VSUsersSubscriptions/Menu/mainUsersSubscriptions.html.twig'}) }}
         {% endif %}
             
         {% if installedBundles['VSPaymentBundle'] is defined %}
-            <li class="nav-divider"><hr /></li>
-            <li class="nav-divider">{{ 'vs_application.menu.payment' | trans( {},'VSApplicationBundle' ) }}</li>
             {{ knp_menu_render('mainPayment', {'template': '@VSPayment/Menu/mainPayment.html.twig'}) }}
         {% endif %}
         
-            <li class="nav-divider"><hr /></li>
-            <li class="nav-divider">{{ 'vs_application.menu.game_platform' | trans( {},'VSApplicationBundle' ) }}</li>
+        {% if installedBundles['VSCatalogBundle'] is defined %}
+            {{ knp_menu_render('mainCatalog', {'template': '@VSCatalog/Menu/mainCatalog.html.twig'}) }}
+        {% endif %}
+        
             {{ knp_menu_render('mainVankosoft', {'template': 'admin-panel/Menu/mainVankosoft.html.twig'}) }}
         </ul>
         <!-- sidebar menu end-->
     </div>
 </nav>
-

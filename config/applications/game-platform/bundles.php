@@ -27,7 +27,6 @@ return [
 	Knp\Bundle\GaufretteBundle\KnpGaufretteBundle::class => ['all' => true],
 	Artgris\Bundle\FileManagerBundle\ArtgrisFileManagerBundle::class => ['all' => true],
 	Liip\ImagineBundle\LiipImagineBundle::class => ['all' => true],
-	SPE\FilesizeExtensionBundle\SPEFilesizeExtensionBundle::class => ['all' => true],
 	
     Sylius\Bundle\ResourceBundle\SyliusResourceBundle::class => ['all' => true],
     Sylius\Bundle\ThemeBundle\SyliusThemeBundle::class => ['all' => true],

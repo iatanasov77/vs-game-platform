@@ -39,21 +39,23 @@ return [
     winzou\Bundle\StateMachineBundle\winzouStateMachineBundle::class => ['all' => true],
     JMS\SerializerBundle\JMSSerializerBundle::class => ['all' => true],
     Bazinga\Bundle\HateoasBundle\BazingaHateoasBundle::class => ['all' => true],
-    SPE\FilesizeExtensionBundle\SPEFilesizeExtensionBundle::class => ['all' => true],
-    
-    Vankosoft\ApplicationInstalatorBundle\VSApplicationInstalatorBundle::class => ['all' => true],
-    Vankosoft\ApplicationBundle\VSApplicationBundle::class => ['all' => true],
-    Vankosoft\CmsBundle\VSCmsBundle::class => ['all' => true],
-    Vankosoft\UsersBundle\VSUsersBundle::class => ['all' => true],
     
     FOS\JsRoutingBundle\FOSJsRoutingBundle::class => ['all' => true],
     Bazinga\Bundle\JsTranslationBundle\BazingaJsTranslationBundle::class => ['all' => true],
     Hackzilla\Bundle\PasswordGeneratorBundle\HackzillaPasswordGeneratorBundle::class => ['all' => true],
     
-    ApiPlatform\Symfony\Bundle\ApiPlatformBundle::class => ['all' => true],
-    Vankosoft\ApiBundle\VSApiBundle::class => ['all' => true],
+    Vankosoft\AgentBundle\VSAgentBundle::class => ['all' => true],
+    Vankosoft\ApplicationInstalatorBundle\VSApplicationInstalatorBundle::class => ['all' => true],
+    Vankosoft\ApplicationBundle\VSApplicationBundle::class => ['all' => true],
+    Vankosoft\CmsBundle\VSCmsBundle::class => ['all' => true],
+    Vankosoft\UsersBundle\VSUsersBundle::class => ['all' => true],
+    
+    Payum\Bundle\PayumBundle\PayumBundle::class => ['all' => true],
+    Vankosoft\UsersSubscriptionsBundle\VSUsersSubscriptionsBundle::class => ['all' => true],
+    Vankosoft\PaymentBundle\VSPaymentBundle::class => ['all' => true],
+    Vankosoft\BoricaBundle\VSBoricaBundle::class => ['all' => true],
+    Vankosoft\CatalogBundle\VSCatalogBundle::class => ['all' => true],
+    
     Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle::class => ['all' => true],
     Gesdinet\JWTRefreshTokenBundle\GesdinetJWTRefreshTokenBundle::class => ['all' => true],
-    Nelmio\CorsBundle\NelmioCorsBundle::class => ['all' => true],
-    Symfony\Bundle\MercureBundle\MercureBundle::class => ['all' => true],
 ];

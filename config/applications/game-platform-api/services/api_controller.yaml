@@ -1,0 +1,12 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        
+    App\Controller\Api\DefaultController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@vs_api.api_manager'
+
+

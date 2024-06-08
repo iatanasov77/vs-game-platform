@@ -1,0 +1,35 @@
+sylius_resource:
+    translation:
+        #default_locale: '%locale%'
+        locale_provider: sylius.translation_locale_provider.immutable
+        #available_locales_provider: sylius.translation.locales_provider
+        
+    #######################################################################################################################
+    # Override default settings
+    # -------------------------
+    # You Can To Override Many Resource Parameters For All Resources (Including VankoSoft Bundles)
+    # View Available Settings in 
+    #     \Sylius\Bundle\ResourceBundle\DependencyInjection\Configuration::addSettingsSection(ArrayNodeDefinition $node)
+    #######################################################################################################################
+    settings:
+        paginate: 10
+    
+    resources:
+        vsapp.games:
+            driver: doctrine/orm
+            classes:
+                model: App\Entity\Game
+                interface: Sylius\Component\Resource\Model\ResourceInterface
+                controller: App\Controller\AdminPanel\GameController
+                repository: Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository
+                form: App\Form\GameForm
+        vsapp.game_categories:
+            driver: doctrine/orm
+            classes:
+                model: App\Entity\GameCategory
+                interface: Sylius\Component\Resource\Model\ResourceInterface
+                controller: App\Controller\AdminPanel\GameCategoryController
+                repository: Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository
+                form: App\Form\GameCategoryForm
+
+

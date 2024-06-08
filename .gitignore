@@ -7,6 +7,12 @@
 /vendor/
 /node_modules/
 /templates/base.html.twig
+
+/assets/controllers.json
+/migrations/
+/public/index.php
+/src/ApiResource/
+/src/Kernel.php
 ###< symfony/framework-bundle ###
 
 ###> symfony/phpunit-bridge ###

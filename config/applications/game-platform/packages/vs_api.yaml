@@ -1,16 +1,9 @@
-imports:
-    #- { resource: "@VSApiBundle/Resources/config/app/security.yaml" }
-    - { resource: "@VSApiBundle/Resources/config/app/api_platform.yaml" }
-    - { resource: "@VSApiBundle/Resources/config/app/serializer.yaml" }
-    - { resource: "@VSApiBundle/Resources/config/app/lexik_jwt_authentication.yaml" }
-    - { resource: "@VSApiBundle/Resources/config/app/nelmio_cors.yaml" }
-    - { resource: "@VSApiBundle/Resources/config/app/mercure.yaml" }
-
 vs_api:
-    enabled: true
+    enabled: false
     
-    title: 'GamePlatform API'
-    description: 'API for All Games in GamePlatform'
-    version: '0.0.1'  # The version of the API.
+    resources:
+        refresh_token:
+            classes:
+                model: App\Entity\Api\RefreshToken
 
 

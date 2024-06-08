@@ -5,79 +5,58 @@ use Sylius\Component\Resource\Model\ResourceInterface;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Sylius\Component\Resource\Model\ToggleableTrait;
 use Vankosoft\CmsBundle\Model\FileInterface;
+use App\Entity\Application\Translation;
 
-/**
- * @Gedmo\TranslationEntity(class="App\Entity\Application\Translation")
- * @ORM\Table(name="VSGP_Games")
- * @ORM\Entity
- */
+#[ORM\Entity]
+#[ORM\Table(name: "VSGP_Games")]
+#[Gedmo\TranslationEntity(class: Translation::class)]
 class Game implements ResourceInterface
 {
     use ToggleableTrait;
     
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    /** @var int */
+    #[ORM\Id, ORM\Column(type: "integer"), ORM\GeneratedValue(strategy: "IDENTITY")]
     private $id;
     
-    /**
-     * @var bool
-     *
-     * @ORM\Column(type="boolean", options={"default":"0"})
-     */
+    /** @var bool */
+    #[ORM\Column(type: "boolean", options: ["default" => 0])]
     protected $enabled = true;
     
-    /**
-     * @var string
-     *
-     * @Gedmo\Locale
-     */
+    /** @var string */
+    #[Gedmo\Locale]
     private $locale;
     
-    /**
-     * @Gedmo\SortableGroup
-     * @ORM\ManyToOne(targetEntity="App\Entity\GameCategory", inversedBy="games")
-     * @ORM\JoinColumn(name="category_id", referencedColumnName="id", nullable=false)
-     */
+    /** @var GameCategory */
+    #[ORM\ManyToOne(targetEntity: "GameCategory", inversedBy: "games", cascade: ["all"], fetch: "EAGER")]
+    #[Gedmo\SortableGroup]
     private $category;
     
-    /**
-     * @var string
-     *
-     * @Gedmo\Translatable
-     * @ORM\Column(name="title", type="string", length=255, nullable=false)
-     */
+    /** @var string */
+    #[ORM\Column(type: "string", length: 255)]
+    #[Gedmo\Translatable]
     private $title;
     
-    /**
-     * Use Slug for Subdomain of Game Url
-     * 
-     * @Gedmo\Slug(fields={"title"})
-     * @ORM\Column(name="slug", type="string", length=255, nullable=false, unique=true)
-     */
+    /** @var string */
+    #[ORM\Column(type: "string", length: 255, unique: true)]
+    #[Gedmo\Slug(fields: ["title"])]
+    #[Gedmo\Translatable]
     private $slug;
     
     /**
      * @Gedmo\SortablePosition
      * @ORM\Column(name="position", type="integer")
      */
+    /** @var int */
+    #[ORM\Column(type: "integer")]
+    #[Gedmo\SortablePosition]
     private $position;
     
-    /**
-     * @var FileInterface|null
-     *
-     * @ORM\OneToOne(targetEntity="App\Entity\GamePicture", cascade={"all"}, orphanRemoval=true)
-     * @ORM\JoinColumn(name="picture_id", referencedColumnName="id", nullable=true)
-     */
+    #[ORM\OneToOne(targetEntity: GamePicture::class, mappedBy: "owner", cascade: ["persist", "remove"], orphanRemoval: true)]
+    #[ORM\JoinColumn(name: "picture_id", referencedColumnName: "id", nullable: true)]
     private $picture;
     
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="game_url", type="string", length=255, nullable=true)
-     */
+    /** @var string */
+    #[ORM\Column(name: "game_url", type: "string", length: 255, nullable: true)]
     private $gameUrl;
     
     public function getId(): ?int
@@ -133,12 +112,12 @@ class Game implements ResourceInterface
         return $this;
     }
     
-    public function getPicture(): ?FileInterface
+    public function getPicture(): ?GamePicture
     {
         return $this->picture;
     }
     
-    public function setPicture( ?FileInterface $picture ): self
+    public function setPicture( ?GamePicture $picture ): self
     {
         $picture->setOwner( $this );
         $this->picture  = $picture;

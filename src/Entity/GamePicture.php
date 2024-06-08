@@ -3,16 +3,13 @@
 use Doctrine\ORM\Mapping as ORM;
 use Vankosoft\CmsBundle\Model\File;
 
-/**
- * @ORM\Table(name="VSGP_GamePictures")
- * @ORM\Entity
- */
+#[ORM\Entity]
+#[ORM\Table(name: "VSGP_GamePictures")]
 class GamePicture extends File
 {
-    /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Game", inversedBy="picture", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", nullable=false, onDelete="CASCADE")
-     */
+    /** @var Game */
+    #[ORM\OneToOne(targetEntity: Game::class, inversedBy: "picture", cascade: ["persist", "remove"], orphanRemoval: true)]
+    #[ORM\JoinColumn(name: "owner_id", referencedColumnName: "id", nullable: false, onDelete: "CASCADE")]
     protected $owner;
     
     public function getGame()

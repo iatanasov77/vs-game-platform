@@ -1,3 +1,32 @@
+0.7.0	|	Release date: **08.06.2024**
+============================================
+* New Features:
+* Bug-Fixes:
+* Commits:
+
+
+0.7.0	|	Release date: **08.06.2024**
+============================================
+* New Features:
+  - Use Login By Signature in Games When is Needed.
+  - Use Login By Signed Url in Angular Applications.
+  - Add an AppConstants Class in Angular Application.
+  - Add to AdminPanel Twig Globals.
+  - Display Application Links into AdminPanel Side Menu.
+  - Add Player Borders in Card Table Only in Developement Builds.
+  - Render Login Form Modal Only If User is Not Logged In.
+  - Add to .gitignore
+  - Improve Phing Build Config.
+  - Improve Doctrine Config for Production Environement.
+  - Update Application Required Packages About New Versions of VankoSoft Bundles.
+  - Separate API into Different Application.
+  - Add Some Developement Routes.
+  - Create an API Route to get User Signature.
+  - Improve Bridge Belote Component View.
+  - Refactoring of Game Controllers.
+  - Improve Security Configs and GamePlatform Angular Context.
+
+
 0.6.5	|	Release date: **18.05.2023**
 ============================================
 * New Features:

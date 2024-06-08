@@ -8,9 +8,32 @@ vs_user_proffile:
 
 app_login:
     path: /login
-    controller: App\Controller\GamePlatform\AuthController::login
+    controller: App\Controller\VideoPlatform\AuthController::login
 
 app_logout:
     path: /logout
-    controller: App\Controller\GamePlatform\AuthController::logout
+    controller: App\Controller\VideoPlatform\AuthController::logout
 
+vs_users_register_form:
+    path:     /register
+    controller: App\Controller\VideoPlatform\RegisterController::index
+    
+vs_users_forgot_password_form:
+    path:     /forgot-password
+    controller: App\Controller\VideoPlatform\ForgotPasswordController::indexAction
+
+vs_users_forgot_password_reset:
+    path:     /forgot-password/reset/{token}
+    controller: App\Controller\VideoPlatform\ForgotPasswordController::resetAction
+
+vs_users_get_states_for_country:
+    path:     /get-states-for-country/{countryCode}
+    controller: App\Controller\VideoPlatform\RegisterController::getStatesForCountry
+
+vvp_profile_show:
+    path:     /my-profile
+    controller: App\Controller\VideoPlatform\ProfileController::showAction
+    
+vs_users_after_verify:
+    path:     /register-after-verify
+    controller: App\Controller\VideoPlatform\RegisterController::afterVerifyAction

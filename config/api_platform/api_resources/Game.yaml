@@ -1,12 +1,13 @@
 resources:
     App\Entity\Game:
-
-        collectionOperations:
-            
-                
-        itemOperations:
-            
-                    
+        operations:
+            games_get:
+                class: ApiPlatform\Metadata\GetCollection
+                method: GET
+                uriTemplate: /games
+                normalizationContext:
+                    groups: ['game:read']
+          
         properties:
             id:
                 identifier: true

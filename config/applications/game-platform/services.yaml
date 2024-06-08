@@ -4,6 +4,8 @@ imports:
     - { resource: services/form.yaml }
     - { resource: services/doctrine_extensions.yaml }
     - { resource: services/menu.yaml }
+    - { resource: services/uploader.yaml }
+    - { resource: services/widgets.yaml }
     
 parameters:
     lang: 'en'

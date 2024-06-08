@@ -48,11 +48,14 @@ class GameController extends AbstractController
     
     protected function getVerifySignature(): ?string
     {
+        $signature  = null;
+        
         try {
-            $signature  = null;
-            $response   = $this->httpClient->request( 'GET', 'http://api.game-platform.lh/api/get-verify-signature' );
+            $response       = $this->httpClient->request( 'GET', 'http://api.game-platform.lh/api/get-verify-signature' );
+            $decodedPayload = $response->toArray( false );
+            //echo '<pre>'; var_dump( $decodedPayload ); die;
             
-            if ( isset( $response ) && isset( $response['status'] ) && $response['status'] == Status::STATUS_OK ) {
+            if ( isset( $decodedPayload['status'] ) && $decodedPayload['status'] == Status::STATUS_OK ) {
                 $signature  = $response['signature'];
             }
             

@@ -74,10 +74,11 @@ security:
         # API Routes
         - { path: ^/api/api-docs, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
         - { path: ^/api/login, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
+        #- { path: ^/api/login-by-signature, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
         
         - { path: ^/api/recurring-payment, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
         - { path: ^/api/coconut/webhook, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
         - { path: ^/api/coconut/storage, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
         
-        - { path: ^/api, roles: ROLE_VANKOSOFT_API_ADMIN, requires_channel: '%env(SECURE_SCHEME)%' }
+        - { path: ^/api, roles: [ROLE_SUPER_ADMIN,ROLE_VANKOSOFT_API_ADMIN], requires_channel: '%env(SECURE_SCHEME)%' }
 

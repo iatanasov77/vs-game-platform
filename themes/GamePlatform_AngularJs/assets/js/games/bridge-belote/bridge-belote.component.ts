@@ -38,6 +38,7 @@ export class BridgeBeloteComponent implements OnInit, OnDestroy
         this.urlLoginBySignature = this.elementRef.nativeElement.getAttribute( 'urlLoginBySignature' );
         
         this.authStore.isLoggedIn().subscribe( ( isLoggedIn: boolean ) => {
+            //alert( isLoggedIn );
             this.isLoggedIn = isLoggedIn;
         });
     

@@ -9,8 +9,8 @@ imports:
 vs_api:
     enabled: true
     
-    title: 'VideoPlatform API'
-    description: 'API for VideoPlatform Application.'
+    title: 'GamePlatform API'
+    description: 'API for GamePlatform Application.'
     version: '0.0.1'  # The version of the API.
     
     resources:

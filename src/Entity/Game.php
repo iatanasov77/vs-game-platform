@@ -112,12 +112,12 @@ class Game implements ResourceInterface
         return $this;
     }
     
-    public function getPicture(): ?FileInterface
+    public function getPicture(): ?GamePicture
     {
         return $this->picture;
     }
     
-    public function setPicture( ?FileInterface $picture ): self
+    public function setPicture( ?GamePicture $picture ): self
     {
         $picture->setOwner( $this );
         $this->picture  = $picture;

@@ -1,0 +1,16 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        
+#     App\Controller\Api\GetPicingPlanCouponController:
+#         tags: ['controller.service_arguments']
+#         arguments:
+#             - '@vs_catalog.repository.pricing_plan'
+#             
+#     App\Controller\Api\CheckValidPricingPlanCouponController:
+#         tags: ['controller.service_arguments']
+#         arguments:
+#             - '@vs_catalog.repository.pricing_plan'
+
+

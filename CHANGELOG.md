@@ -1,6 +1,13 @@
 0.7.0	|	Release date: **08.06.2024**
 ============================================
 * New Features:
+* Bug-Fixes:
+* Commits:
+
+
+0.7.0	|	Release date: **08.06.2024**
+============================================
+* New Features:
   - Use Login By Signature in Games When is Needed.
   - Use Login By Signed Url in Angular Applications.
   - Add an AppConstants Class in Angular Application.

@@ -101,6 +101,7 @@ node ( label: 'php-host' ) {
     stage( 'Build Application' ) {
         sh """
             export COMPOSER_HOME='/home/vagrant/.composer';
+            export COMPOSER_ALLOW_SUPERUSER=1;
             
             # https://www.makeuseof.com/javascript-heap-out-of-memory-error-fix/
             export NODE_OPTIONS='--max-old-space-size=4096';
@@ -164,11 +165,15 @@ ENDSSH
                             
                             ${PHP_BIN} -d memory_limit=-1 bin/console cache:clear
                             ${PHP_BIN} -d memory_limit=-1 bin/game-platform cache:clear
+                            ${PHP_BIN} -d memory_limit=-1 bin/game-platform-api cache:clear
                             
                             #${PHP_BIN} -d memory_limit=-1 bin/console vankosoft:maintenance --unset-maintenance
                             
                             #SETUP APPLICATION PERMISSIONS
                             chmod -R 0777 ${REMOTE_DIR}
+                            
+                            ${PHP_BIN} -d memory_limit=-1 bin/console vankosoft:install:info update
+                            ${PHP_BIN} -d memory_limit=-1 bin/console vankosoft:load-widgets
                             
                             exit \$migrationCode
 ENDSSH
@@ -186,9 +191,13 @@ ENDSSH
                             
                             ${PHP_BIN} -d memory_limit=-1 bin/console cache:clear
                             ${PHP_BIN} -d memory_limit=-1 bin/game-platform cache:clear
+                            ${PHP_BIN} -d memory_limit=-1 bin/game-platform-api cache:clear
                             
                             #SETUP APPLICATION PERMISSIONS
                             chmod -R 0777 ${REMOTE_DIR}
+                            
+                            ${PHP_BIN} -d memory_limit=-1 bin/console vankosoft:install:info update
+                            ${PHP_BIN} -d memory_limit=-1 bin/console vankosoft:load-widgets
                             
                             exit \$migrationCode
 ENDSSH

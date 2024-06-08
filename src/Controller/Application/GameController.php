@@ -1,11 +1,14 @@
 <?php namespace App\Controller\Application;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\HttpClient\Exception\ClientException;
 use Twig\Environment;
 use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
-
+use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTEncodeFailureException;
 use Vankosoft\ApplicationBundle\Component\Context\ApplicationContextInterface;
-use Vankosoft\ApiBundle\Security\ApiManager;
+use Vankosoft\ApiBundle\Exception\ApiLoginException;
+use Vankosoft\ApplicationBundle\Component\Status;
 
 class GameController extends AbstractController
 {
@@ -18,19 +21,19 @@ class GameController extends AbstractController
     /** @var EntityRepository */
     protected $gamesRepository;
     
-    /** @var ApiManager */
-    protected $apiManager;
+    /** @var HttpClientInterface */
+    protected $httpClient;
     
     public function __construct(
         ApplicationContextInterface $applicationContext,
         Environment $templatingEngine,
         EntityRepository $gamesRepository,
-        ApiManager $apiManager
+        HttpClientInterface $httpClient
     ) {
         $this->applicationContext   = $applicationContext;
         $this->templatingEngine     = $templatingEngine;
         $this->gamesRepository      = $gamesRepository;
-        $this->apiManager           = $apiManager;
+        $this->httpClient           = $httpClient;
     }
     
     protected function getTemplate( string $gameSlug, string $template ): string
@@ -41,5 +44,25 @@ class GameController extends AbstractController
         }
         
         return $template;
+    }
+    
+    protected function getVerifySignature(): ?string
+    {
+        try {
+            $signature  = null;
+            //$response   = $this->httpClient->request( 'GET', 'http://api.game-platform.lh/api/get-verify-signature' );
+            
+            if ( isset( $response ) && isset( $response['status'] ) && $response['status'] == Status::STATUS_OK ) {
+                $signature  = $response['signature'];
+            }
+            
+            return $signature;
+        }
+        catch ( ClientException $e ) {
+            return $signature;
+        }
+        catch ( JWTEncodeFailureException $e ) {
+            throw new ApiLoginException( 'JWTEncodeFailureException: ' . $e->getMessage() );
+        }
     }
 }

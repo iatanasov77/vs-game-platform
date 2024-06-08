@@ -9,12 +9,8 @@ class DefaultController extends GameController
     public function index( Request $request ): Response
     {
         $gameSlug   = 'bridge-belote';
-        $game   = $this->gamesRepository->findOneBy( ['slug' => $gameSlug] );
-        
-        $signature  = null;
-        if ( $this->getUser() ) {
-            $signature  = $this->apiManager->getVerifySignature( $this->getUser(), 'vs_api_login_by_signature' );
-        }
+        $game       = $this->gamesRepository->findOneBy( ['slug' => $gameSlug] );
+        $signature  = $this->getVerifySignature();
         
         return new Response(
             $this->templatingEngine->render( $this->getTemplate( $gameSlug , 'Pages/BridgeBelote/index.html.twig' ), [

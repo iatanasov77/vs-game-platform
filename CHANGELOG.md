@@ -1,3 +1,9 @@
+0.7.1	|	Release date: **08.06.2024**
+============================================
+* New Features and Improvements:
+  - Update Deployment Scripts.
+
+
 0.7.0	|	Release date: **08.06.2024**
 ============================================
 * New Features:

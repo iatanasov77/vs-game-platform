@@ -50,7 +50,7 @@ class GameController extends AbstractController
     {
         try {
             $signature  = null;
-            //$response   = $this->httpClient->request( 'GET', 'http://api.game-platform.lh/api/get-verify-signature' );
+            $response   = $this->httpClient->request( 'GET', 'http://api.game-platform.lh/api/get-verify-signature' );
             
             if ( isset( $response ) && isset( $response['status'] ) && $response['status'] == Status::STATUS_OK ) {
                 $signature  = $response['signature'];

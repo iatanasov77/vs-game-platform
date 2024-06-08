@@ -10,11 +10,7 @@ class DefaultController extends GameController
     {
         $gameSlug   = 'contract-bridge';
         $game       = $this->gamesRepository->findOneBy( ['slug' => $gameSlug] );
-        
-        $signature  = null;
-        if ( $this->getUser() ) {
-            $signature  = $this->apiManager->getVerifySignature( $this->getUser(), 'vs_api_login_by_signature' );
-        }
+        $signature  = $this->getVerifySignature();
         
         return new Response(
             $this->templatingEngine->render( $this->getTemplate( $gameSlug , 'Pages/ContractBridge/index.html.twig' ), [

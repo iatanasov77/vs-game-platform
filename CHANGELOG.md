@@ -1,3 +1,9 @@
+0.7.2	|	Release date: **08.06.2024**
+============================================
+* Bug-Fixes:
+  - Fix Doctrine Migrations For Production Server.
+
+
 0.7.1	|	Release date: **08.06.2024**
 ============================================
 * New Features and Improvements:

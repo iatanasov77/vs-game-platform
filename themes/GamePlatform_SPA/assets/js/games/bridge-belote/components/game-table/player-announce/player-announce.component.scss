@@ -1,0 +1,89 @@
+.rotate-90-left {
+    position: absolute;
+    top: 0;
+    left: 0;
+    
+    /* Rotate from top left corner (not default) */
+    transform-origin: 0 0;
+    
+    transform: rotate(90deg) !important;
+    
+    /* Legacy vendor prefixes that you probably don't need... */
+    
+    /* Safari */
+    -webkit-transform: rotate(90deg) !important;
+    
+    /* Firefox */
+    -moz-transform: rotate(90deg) !important;
+    
+    /* IE */
+    -ms-transform: rotate(90deg) !important;
+    
+    /* Opera */
+    -o-transform: rotate(90deg) !important;
+    
+    /* Internet Explorer */
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3) !important;
+}
+
+.rotate-90-right {
+    position: absolute;
+    top: 0;
+    left: 0;
+    
+    transform: rotate(-90deg) !important;
+    
+    /* Legacy vendor prefixes that you probably don't need... */
+    
+    /* Safari */
+    -webkit-transform: rotate(-90deg) !important;
+    
+    /* Firefox */
+    -moz-transform: rotate(-90deg) !important;
+    
+    /* IE */
+    -ms-transform: rotate(-90deg) !important;
+    
+    /* Opera */
+    -o-transform: rotate(-90deg) !important;
+    
+    /* Internet Explorer */
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3) !important;
+}
+
+.rotate-90-left-symbol {
+    left: 40px !important;
+}
+
+.rotate-90-right-symbol {
+    left: -60px !important;
+}
+
+.rotate-bottom {
+    position: absolute;
+    top: 0;
+    left: 70px;
+    
+    transform: rotate(180deg) !important;
+    
+    /* Legacy vendor prefixes that you probably don't need... */
+    
+    /* Safari */
+    -webkit-transform: rotate(180deg) !important;
+    
+    /* Firefox */
+    -moz-transform: rotate(180deg) !important;
+    
+    /* IE */
+    -ms-transform: rotate(180deg) !important;
+    
+    /* Opera */
+    -o-transform: rotate(180deg) !important;
+    
+    /* Internet Explorer */
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3) !important;
+}
+
+.rotate-bottom-symbol {
+    top: -40px !important;
+}

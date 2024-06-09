@@ -1,0 +1,156 @@
+<div class="modal-header">
+    <h5 class="modal-title">Register</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="dismissModal()"></button>
+</div>
+
+<div class="modal-body">
+    <p>Please enter your user information.</p>
+    
+	<div class="alert alert-block alert-danger fade in d-none" id="registrationFormError">
+	    <button type="button" class="close close-sm" data-dismiss="alert">
+	        <span aria-hidden="true">&times;</span>
+	    </button>
+	    
+	    <div id="formErrors" ></div>
+	</div>
+	
+	<form class="px-4 py-3" id="formRegister" [formGroup]="registerForm" (ngSubmit)="handleSubmit()" >
+	    <div class="form-group">
+            <label for="exampleDropdownFormUsername">Username</label>
+			<input type="text" name="username"
+			    class="form-control"
+			    [ngClass]="{ 'is-invalid': registerForm.get('username')?.touched && registerForm.get('username')?.errors }"
+			    placeholder="Username"
+			    
+			    formControlName="username"
+			/>
+               
+            <ng-container *ngIf="registerForm.get('username')?.touched">
+                <div *ngIf="registerForm.get('username')?.errors?.['required']" class="invalid-feedback">Username is required</div>
+				<div *ngIf="registerForm.get('username')?.errors?.['minlength']" class="invalid-feedback">Username is less than
+			        {{ registerForm.get('username')?.errors?.['minlength']?.requiredLength }} characters
+			    </div>
+			</ng-container>
+        </div>
+           
+        <div class="row">&nbsp;</div>
+        <div [formGroup]="passwordGroup">
+            <div class="form-group">
+                <label for="exampleDropdownFormPassword1">Password</label>
+                <input type="password" name="password"
+                    class="form-control"
+                    [ngClass]="{ 'is-invalid': passwordGroup.get('password')?.touched && passwordGroup.get('password')?.errors }"
+                    placeholder="Password"
+                    
+                    formControlName="password"
+                />
+                
+                <ng-container *ngIf="passwordGroup.get('password')?.touched">
+                    <div *ngIf="passwordGroup.get('password')?.errors?.['required']" class="invalid-feedback">Password is required</div>
+                    <div *ngIf="passwordGroup.get('password')?.errors?.['minlength']" class="invalid-feedback">Password is less than
+                        {{ passwordGroup.get('password')?.errors?.['minlength']?.requiredLength }} characters
+                    </div>
+                </ng-container>
+            </div>
+            
+            <div class="row">&nbsp;</div>
+            <div class="form-group">
+                <label for="exampleDropdownFormPassword1">Repeat Password</label>
+                <input type="password" name="confirmPassword"
+                    class="form-control"
+                    [ngClass]="{ 'is-invalid': passwordGroup.get('confirmPassword')?.touched && passwordGroup.hasError('notSame') }"
+                    placeholder="Password Repeat"
+                    
+                    formControlName="confirmPassword"
+                />
+                
+                <ng-container *ngIf="passwordGroup.hasError('notSame')">
+                    <div class="invalid-feedback">Passwords not matched</div>
+                </ng-container>
+            </div>
+        </div>
+           
+        <div class="row">&nbsp;</div>
+		<div class="form-group">
+            <label for="exampleDropdownFormPassword1">Email</label>
+		    <input type="text" name="email"
+		        class="form-control"
+		        [ngClass]="{ 'is-invalid': registerForm.get('email')?.touched && registerForm.get('email')?.errors }"
+		        placeholder="Email"
+		        
+		        formControlName="email"
+		    />
+		    
+		    <ng-container *ngIf="registerForm.get('email')?.touched">
+		        <div *ngIf="registerForm.get('email')?.errors?.['required']" class="invalid-feedback">Email is required</div>
+		        <div *ngIf="registerForm.get('email')?.errors?.['email']" class="invalid-feedback">Email is Invalid</div>
+		    </ng-container>
+		</div>
+           
+        <div class="row">&nbsp;</div>
+        <div class="form-group">
+            <label for="exampleDropdownFormPassword1">First Name</label>
+            <input type="password" name="first_name"
+                class="form-control"
+                [ngClass]="{ 'is-invalid': registerForm.get('first_name')?.touched && registerForm.get('first_name')?.errors }"
+                placeholder="First Name"
+                
+                formControlName="first_name"
+            />
+            
+            <ng-container *ngIf="registerForm.get('first_name')?.touched">
+                <div *ngIf="registerForm.get('first_name')?.errors?.['required']" class="invalid-feedback">First Name is required</div>
+            </ng-container>
+        </div>
+           
+        <div class="row">&nbsp;</div>
+        <div class="form-group">
+            <label for="exampleDropdownFormPassword1">Last Name</label>
+            <input type="password" name="last_name"
+                class="form-control"
+                [ngClass]="{ 'is-invalid': registerForm.get('last_name')?.touched && registerForm.get('last_name')?.errors }"
+                placeholder="Last Name"
+                
+                formControlName="last_name"
+            />
+            
+            <ng-container *ngIf="registerForm.get('last_name')?.touched">
+                <div *ngIf="registerForm.get('last_name')?.errors?.['required']" class="invalid-feedback">Last Name is required</div>
+            </ng-container>
+        </div>
+        
+        <div class="row">&nbsp;</div>
+        <div class="form-group">
+            <label class="custom-control custom-checkbox">
+	           <input type="checkbox" name="tac"
+	               class="custom-control-input"
+	               [ngClass]="{ 'is-invalid': registerForm.hasError('required', 'tac') }"
+	               (change)="onCheckboxChange($event)"
+	               
+	               formControlName="tac"
+	           />
+	           <span class="custom-control-label">
+	               By creating an account, you agree with the &nbsp;
+	               <a href="#" data-toggle="modal" data-target="#terms-and-conditions-modal">terms and conditions</a>
+	           </span>
+	           <!--  
+	           <div *ngIf="registerForm.hasError('required', 'tac')" class="invalid-feedback">You must agree before submitting.</div>
+	           -->
+            </label>
+        </div>
+         
+        <div class="row">&nbsp;</div>
+        <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+</div>
+
+<div class="modal-footer">
+    <div class="row">
+        <div class="col-10">
+            
+        </div>
+        <div class="col-2">
+            <button type="button" class="btn btn-outline-dark" (click)="dismissModal()">Cancel</button>
+        </div>
+    </div>
+</div>

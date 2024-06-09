@@ -8,7 +8,8 @@
     ],
     "extra": {
         "sylius-theme": {
-            "title": "Game Platform AngularJs Theme"
+            "title": "Game Platform AngularJs Theme",
+            "description": "Theme description"
         }
     }
 }

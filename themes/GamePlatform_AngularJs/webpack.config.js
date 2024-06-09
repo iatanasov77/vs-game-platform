@@ -65,6 +65,7 @@ Encore
     .addEntry( 'js/home', './themes/GamePlatform_AngularJs/assets/js/pages/home.js' )
     
     // Games
+    .addEntry( 'js/game-platform', './themes/GamePlatform_AngularJs/assets/js/games/game-platform/index.js' )
     .addEntry( 'js/bridge-belote', './themes/GamePlatform_AngularJs/assets/js/games/bridge-belote/index.js' )
     .addEntry( 'js/contract-bridge', './themes/GamePlatform_AngularJs/assets/js/games/contract-bridge/index.js' )
     .addEntry( 'js/chess', './themes/GamePlatform_AngularJs/assets/js/games/chess/index.js' )

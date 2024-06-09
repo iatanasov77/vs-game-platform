@@ -10,13 +10,19 @@ import {
     
     playerAnnounce,
     playerAnnounceFailure,
-    playerAnnounceSuccess
+    playerAnnounceSuccess,
+    
+    loadGame,
+    loadGameFailure,
+    loadGameSuccess
 } from "./actions";
 
 import { GameService } from "../services/game.service";
 import ICardGame from '_@/GamePlatform/Game/CardGameInterface';
 import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
 
+import { ApiService } from "../services/api.service";
+import { IGame } from '../interfaces/game';
 
 /**
  * Effects are an RxJS powered side effect model for Store. Effects use streams to provide new sources of actions to reduce state based on external interactions such 
@@ -34,13 +40,14 @@ export class Effects
 {
     constructor(
         @Inject(Actions) private actions$: Actions,
-        @Inject(GameService) private gameService: GameService
+        @Inject(GameService) private gameService: GameService,
+        @Inject(ApiService) private apiService: ApiService
     ) { }
     
     startGame = createEffect( (): any => this.actions$.pipe(
         ofType( startGame ),
         switchMap( () => this.gameService.startGame().pipe(
-            map( ( game: ICardGame ) => startGameSuccess( { game } ) ),
+            map( ( cardGame: ICardGame ) => startGameSuccess( { cardGame } ) ),
             catchError( error => [startGameFailure( { error } )] )
         ))
     ));
@@ -50,6 +57,14 @@ export class Effects
         switchMap( () => this.gameService.playerAnnounce().pipe(
             map( ( announce: ICardGameAnnounce ) => playerAnnounceSuccess( { announce } ) ),
             catchError( error => [playerAnnounceFailure( { error } )] )
+        ))
+    ));
+    
+    loadGame = createEffect( (): any => this.actions$.pipe(
+        ofType( loadGame ),
+        switchMap( ( { slug } ) => this.apiService.loadGame( slug ).pipe(
+            map( ( game: IGame ) => loadGameSuccess( { game } ) ),
+            catchError( error => [loadGameFailure( { error } )] )
         ))
     ));
 }

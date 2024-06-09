@@ -75,4 +75,14 @@ export class ApiService
             }
         });
     }
+    
+    loadGame( slug: string )
+    {
+       return this.restangular.one( 'games/' + slug )
+                    .customGET( 
+                        undefined,
+                        undefined,
+                        {"Authorization": 'Bearer ' + this.getApiToken()}
+                    );
+    }
 }

@@ -11,3 +11,4 @@ export const getRouteParams         = createSelector( routerSelector, s => s?.st
 export const runStartGame           = createSelector( mainSelector, s => s.game );
 export const runMakeAnnounce        = createSelector( mainSelector, s => s.announce );
 
+export const getGame                = createSelector( mainSelector, s => s.game );

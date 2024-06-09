@@ -76,9 +76,14 @@ export class ApiService
         });
     }
     
-    loadGame( slug: string )
+    loadGame( id: number )
     {
-       return this.restangular.one( 'games/' + slug )
+        return this.restangular.one( 'games/' + id ).get();
+    }
+    
+    loadGameBySlug( slug: string )
+    {
+        return this.restangular.one( 'games/' + slug )
                     .customGET( 
                         undefined,
                         undefined,

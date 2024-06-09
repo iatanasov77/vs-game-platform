@@ -66,10 +66,16 @@ export class GamePlatformComponent implements OnInit, OnDestroy
     
     ngOnInit(): void
     {
-        this.store.dispatch( loadGame( { slug: 'bridge-belote' } ) );
+        //this.store.dispatch( loadGameBySlug( { slug: 'bridge-belote' } ) );
+        
+        /*
+        this.store.dispatch( loadTablature( { tabId: +params['id'] } ) ); // (+) converts string 'id' to a number
+        */
+        this.store.dispatch( loadGame( { id: 8 } ) );
             
         this.store.subscribe( ( state: any ) => {
             this.game = state.main.game;
+            //console.log( this.game );
         });
     }
     

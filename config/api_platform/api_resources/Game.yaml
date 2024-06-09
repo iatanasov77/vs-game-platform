@@ -7,10 +7,24 @@ resources:
                 uriTemplate: /games
                 normalizationContext:
                     groups: ['game:read']
+            game_show:
+                class: ApiPlatform\Metadata\Get
+                method: GET
+                #uriTemplate: /games/{slug}
+                uriTemplate: /games/{id}
+                controller: App\Controller\Api\Games\ShowGameController
+                normalizationContext:
+                    groups: ['game:read']
           
         properties:
             id:
                 identifier: true
                 writeable: false
                 required: false
+            slug:
+                writeable: true
+                required: true
+            title:
+                writeable: true
+                required: true
             

@@ -62,7 +62,7 @@ export class Effects
     
     loadGame = createEffect( (): any => this.actions$.pipe(
         ofType( loadGame ),
-        switchMap( ( { slug } ) => this.apiService.loadGame( slug ).pipe(
+        switchMap( ( { id } ) => this.apiService.loadGame( id ).pipe(
             map( ( game: IGame ) => loadGameSuccess( { game } ) ),
             catchError( error => [loadGameFailure( { error } )] )
         ))

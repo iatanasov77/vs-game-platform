@@ -15,6 +15,7 @@ const actionTypes = {
     playerAnnounceFailure:  'PLAYER_ANNOUNCE_FAILURE',
     
     loadGame:               'LOAD_GAME',
+    loadGameBySlug:         'LOAD_GAME_BY_SLUG',
     loadGameSuccess:        'LOAD_GAME_SUCCESS',
     loadGameFailure:        'LOAD_GAME_FAILURE',
 };
@@ -27,6 +28,7 @@ export const playerAnnounce         = createAction( actionTypes.playerAnnounce )
 export const playerAnnounceSuccess  = createAction( actionTypes.playerAnnounceSuccess, props<{ announce: ICardGameAnnounce }>() );
 export const playerAnnounceFailure  = createAction( actionTypes.playerAnnounceFailure, props<{ error: any }>() );
 
-export const loadGame               = createAction( actionTypes.loadGame, props<{ slug: string }>() );
+export const loadGame               = createAction( actionTypes.loadGame, props<{ id: number }>() );
+export const loadGameBySlug         = createAction( actionTypes.loadGameBySlug, props<{ slug: string }>() );
 export const loadGameSuccess        = createAction( actionTypes.loadGameSuccess, props<{ game: IGame }>() );
 export const loadGameFailure        = createAction( actionTypes.loadGameFailure, props<{ error: any }>() );

@@ -1,0 +1,8 @@
+App\Entity\Game:
+    attributes:
+        id:
+            groups: ['game:read']
+        slug:
+            groups: ['game:read']
+        title:
+            groups: ['game:read']

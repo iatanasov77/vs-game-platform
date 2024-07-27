@@ -1,0 +1,16 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+    {% include 'Partial/dashboard-header.html.twig' %}
+    {% include 'Partial/dashboard-games.html.twig' %}
+    {% include 'Partial/dashboard-about.html.twig' %}
+    {#
+    {% include 'Partial/dashboard-contact.html.twig' %}
+    #}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    
+    {{ encore_entry_script_tags( 'js/home', null, 'GamePlatform_SPA' ) }}
+{% endblock %}

@@ -49,9 +49,10 @@ class GameController extends AbstractController
     protected function getVerifySignature(): ?string
     {
         $signature  = null;
+        $appHost    = $this->getParameter( 'vankosoft_host' );
         
         try {
-            $response       = $this->httpClient->request( 'GET', 'http://api.game-platform.lh/api/get-verify-signature' );
+            $response       = $this->httpClient->request( 'GET', \sprintf( 'http://api.%s/api/get-verify-signature', $appHost ) );
             $decodedPayload = $response->toArray( false );
             //echo '<pre>'; var_dump( $decodedPayload ); die;
             

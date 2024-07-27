@@ -8,5 +8,15 @@ services:
         autowire: true
         arguments:
             - '@vs_api.api_manager'
+            
+    App\Controller\Api\Games\ShowGameController:
+        arguments:
+            - '@doctrine'
+            - '@vs_users.security_bridge'
+            - '@vsapp.repository.games'
+        autowire: false
+        tags: ['controller.service_arguments']
+        calls:
+            - [ setContainer, [ '@service_container' ] ]
 
 

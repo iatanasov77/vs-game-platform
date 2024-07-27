@@ -1,0 +1,69 @@
+{% extends 'knp_menu.html.twig' %}
+
+{% block root %}
+
+	{% set hasChilds = false %}
+    {% for parentItem in item.children %}
+        {% if parentItem is not empty %}
+            {% set hasChilds = true %}
+        {% endif %}
+    {% endfor %}
+    
+    {% if hasChilds %}
+    	<li class="menu-title"><span data-key="t-menu">{{ 'vs_application.menu.game_platform' | trans( {},'VSApplicationBundle' ) }}</span></li>
+    {% endif %}
+
+    {% for parentItem in item.children %}
+    
+    	{% if( parentItem.displayed and parentItem.hasChildren ) %}
+        
+        	{# Detect Current Parent #}
+            {% set isCurrentParent = false %}
+            {% if ( parentItem.hasChildren ) %}
+                {% for childItem in parentItem.children %}
+                    {% if childItem.isCurrent %}
+                        {% set isCurrentParent = true %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            
+            <li class="nav-item ">
+                <a class="nav-link menu-link {% if isCurrentParent %}active{% endif %}"
+                    data-bs-toggle="collapse"
+                    role="button"
+                    {% if isCurrentParent %}aria-expanded="true"{% else %}aria-expanded="false"{% endif %}
+                    data-bs-target="#submenu-vankosoft-{{ loop.index }}"
+                    aria-controls="submenu-vankosoft-{{ loop.index }}"
+                    href="{{ parentItem.uri }}"
+                 >
+                    {#
+                    <i data-feather="{{ parentItem.attributes.iconClass }}" class="icon-dual"></i> 
+                    #}
+                    <i class="{{ parentItem.attributes.iconClass }}"></i> 
+                    <span data-key="t-{{ parentItem.name }}">{{ parentItem.name }}</span>
+                </a>
+                
+                {% if(parentItem.hasChildren) %}
+                    <div class="collapse menu-dropdown {% if isCurrentParent %}show{% endif %}"  id="submenu-vankosoft-{{ loop.index }}">
+                        <ul class="nav nav-sm flex-column">
+                            {% for childItem in parentItem.children %}
+                                {% if( childItem.displayed ) %}
+                                    <li class="nav-item">
+                                        <a class="nav-link {% if childItem.isCurrent %}active{% endif %}"
+                                        	data-key="t-{{ childItem.name }}"
+                                        	href="{{ childItem.uri }}"
+                                        >
+                                            {{ childItem.name }}
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </li>
+        {% endif %}
+            
+    {% endfor %}
+    
+{% endblock %}

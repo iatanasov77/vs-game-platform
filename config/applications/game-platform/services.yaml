@@ -58,6 +58,7 @@ services:
             - '../../../src/Form/'
             - '../../../src/Tests/'
             - '../../../src/Controller/'
+            - '../../../src/Widgets/'
             - '../../../src/GamePlatformKernel.php'
         autowire: true
 

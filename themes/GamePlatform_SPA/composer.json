@@ -1,0 +1,15 @@
+{
+    "name": "vankosoft/game-platform-spa",
+    "authors": [
+        {
+            "name": "Ivan Atanasov",
+            "email": "i.atanasov77@gmail.com"
+        }
+    ],
+    "extra": {
+        "sylius-theme": {
+            "title": "Game Platform SPA Theme",
+            "description": "Single-Page Application Theme"
+        }
+    }
+}

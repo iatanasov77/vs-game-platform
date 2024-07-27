@@ -9,10 +9,18 @@ const adminPanelConfig  = require( themePath + '/webpack.config' );
 //=================================================================================================
 
 /**
- *  AdminPanel Cusstom Entries
+ *  AdminPanel Velzon Theme
  */
 Encore.reset();
-const adminPanelCusstomEntriesConfig = require('./assets/admin-panel/webpack.config');
+const adminPanelVelzonConfig	= require( './themes/AdminPanel_VelzonChild/webpack.config' );
+
+//=================================================================================================
+
+/**
+ *  GamePlatform AngularJs Theme
+ */
+// Encore.reset();
+// const GamePlatform_MPA_Config   = require('./themes/GamePlatform_MPA/webpack.config');
 
 //=================================================================================================
 
@@ -20,13 +28,14 @@ const adminPanelCusstomEntriesConfig = require('./assets/admin-panel/webpack.con
  *  GamePlatform AngularJs Theme
  */
 Encore.reset();
-const GamePlatform_AngularJs_Config   = require('./themes/GamePlatform_AngularJs/webpack.config');
+const GamePlatform_SPA_Config   = require('./themes/GamePlatform_SPA/webpack.config');
 
 //=================================================================================================
 
 
 module.exports = [
     adminPanelConfig,
-    adminPanelCusstomEntriesConfig,
-    GamePlatform_AngularJs_Config
+    adminPanelVelzonConfig,
+    //GamePlatform_MPA_Config,
+    GamePlatform_SPA_Config
 ];

@@ -4,6 +4,7 @@ use Vankosoft\ApplicationBundle\Form\AbstractForm;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Sylius\Component\Resource\Repository\RepositoryInterface;
 
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -15,18 +16,18 @@ use App\Entity\Game;
 
 class GameForm extends AbstractForm
 {
-	protected $requestStack;
-    
-    public function __construct(
+	public function __construct(
         string $dataClass,
-        RequestStack $requestStack
+        RequestStack $requestStack,
+        RepositoryInterface $localesRepository
     ) {
         parent::__construct( $dataClass );
         
-        $this->requestStack	= $requestStack;
+        $this->requestStack         = $requestStack;
+        $this->localesRepository    = $localesRepository;
     }
     
-    public function buildForm(FormBuilderInterface $builder, array $options): void
+    public function buildForm( FormBuilderInterface $builder, array $options ): void
     {
     	parent::buildForm( $builder, $options );
         
@@ -35,7 +36,7 @@ class GameForm extends AbstractForm
         	->add( 'locale', ChoiceType::class, [
                 'label'                 => 'vs_cms.form.locale',
                 'translation_domain'    => 'VSCmsBundle',
-                'choices'               => \array_flip( \Vankosoft\ApplicationBundle\Component\I18N::LanguagesAvailable() ),
+        	    'choices'               => \array_flip( $this->fillLocaleChoices() ),
                 'data'                  => $currentLocale,
                 'mapped'                => false,
             ])

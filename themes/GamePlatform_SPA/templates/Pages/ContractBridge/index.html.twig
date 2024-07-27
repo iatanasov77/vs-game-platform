@@ -1,0 +1,17 @@
+{% extends "base-game.html.twig" %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    {{ encore_entry_link_tags( 'js/contract-bridge', null, 'GamePlatform_SPA' ) }}
+{% endblock %}
+
+{% block javascripts %}
+	{{ encore_entry_script_tags( 'js/contract-bridge', null, 'GamePlatform_SPA' ) }}
+{% endblock %}
+
+{% block content %}
+    <div class="container text-center">
+        <app-contract-bridge urlLoginBySignature="{{ urlLoginBySignature }}"></app-contract-bridge>
+    </div>
+{% endblock %}

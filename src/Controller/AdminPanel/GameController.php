@@ -33,13 +33,6 @@ class GameController extends AbstractCrudController
             $entity->setTranslatableLocale( $formPost['locale'] );
         }
         
-        if ( isset( $formPost['category_taxon'] ) ) {
-            $category   = $pcr->findOneBy( ['taxon' => $formPost['category_taxon']] );
-            if ( $category ) {
-                $entity->setCategory( $category );
-            }
-        }
-        
         $gamePictureFile    = $form->get( 'picture' )->getData();
         if ( $gamePictureFile ) {
             $this->addGamePicture( $entity, $gamePictureFile );

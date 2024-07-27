@@ -1,3 +1,15 @@
+0.8.0	|	Release date: **27.07.2024**
+============================================
+* New Features and Improvements:
+  - Litle Improvements.
+  - Imrove and RefactoringTheme.
+  - Improve Footer.
+  - Create New SPA Theme.
+  - Move Admin Panel Custom Entries into AdminPanelVelzon Theme.
+* Bug-Fixes:
+  - Fix GameController.
+
+
 0.7.2	|	Release date: **08.06.2024**
 ============================================
 * Bug-Fixes:

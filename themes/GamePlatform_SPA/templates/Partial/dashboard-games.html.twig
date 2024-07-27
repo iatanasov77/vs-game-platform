@@ -27,7 +27,7 @@
                             {% if game.picture %}
                                 <img class="img-fluid" src="{{ game.picture.path | imagine_filter( 'game_picture_thumb' ) }}" alt="{{ game.title }}" />
                             {% else %}
-                                <img class="img-fluid" src="{{ asset('/build/game-platform/images/portfolio/game.png') }}" alt="{{ game.title }}" />
+                                <img class="img-fluid" src="{{ asset('/build/game-platform-spa/images/portfolio/game.png') }}" alt="{{ game.title }}" />
                             {% endif %}
                             
                                 <div style="text-align:center; margin-top: 10px; font-size: 1rem; font-weight: bold;">{{ game.title }}</div>

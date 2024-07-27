@@ -11,8 +11,10 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 use App\Entity\Game;
+use App\Entity\GameCategory;
 
 class GameForm extends AbstractForm
 {
@@ -46,12 +48,21 @@ class GameForm extends AbstractForm
                 'translation_domain'    => 'VSApplicationBundle',
             ])
             
-            ->add( 'category_taxon', ChoiceType::class, [
+            ->add( 'category', EntityType::class, [
                 'label'                 => 'vs_application.form.category',
                 'translation_domain'    => 'VSApplicationBundle',
-                'required'              => false,
-                'mapped'                => false,
+                'required'              => true,
+                'mapped'                => true,
                 'placeholder'           => 'vs_application.form.category_placeholder',
+                
+                'class'                 => GameCategory::class,
+                'choice_label'          => function ( GameCategory $category ) {
+                    return $category->getNameTranslated( $this->requestStack->getMainRequest()->getLocale() );
+                },
+                'choice_value'          => function ( ?GameCategory $category ) {
+                    //return $category ? $category->getTaxon()->getId() : 0;
+                    return $category ? $category->getId() : 0;
+                },
             ])
             
             ->add( 'title', TextType::class, [

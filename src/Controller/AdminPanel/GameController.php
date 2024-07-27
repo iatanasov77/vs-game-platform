@@ -27,7 +27,7 @@ class GameController extends AbstractCrudController
     protected function prepareEntity( &$entity, &$form, Request $request )
     {
         $pcr        = $this->get( 'vsapp.repository.game_categories' );
-        $formPost   = $request->request->get( 'game_form' );
+        $formPost   = $request->request->all( 'game_form' );
         
         if ( isset( $formPost['locale'] ) ) {
             $entity->setTranslatableLocale( $formPost['locale'] );

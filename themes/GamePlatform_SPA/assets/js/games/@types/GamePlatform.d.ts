@@ -1,4 +1,3 @@
-/*
 declare module '_@/GamePlatform/Game/CardGameInterface' {
     interface ICardGame
     {
@@ -56,4 +55,3 @@ declare module '_@/GamePlatform/CardGameAnnounce/Announce' {
     }
     export = Announce;
 }
-*/

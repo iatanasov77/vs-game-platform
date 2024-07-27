@@ -1,4 +1,5 @@
 imports:
+    - { resource: services/widgets.yaml }
     - { resource: services/menu.yaml }
     - { resource: services/controller.yaml }
     - { resource: services/form.yaml }
@@ -61,6 +62,7 @@ services:
             - '../../src/Form/'
             - '../../src/Tests/'
             - '../../src/Controller/'
+            - '../../src/Widgets/'
             - '../../src/AdminPanelKernel.php'
         autowire: true
     

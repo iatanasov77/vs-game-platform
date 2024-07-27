@@ -19,6 +19,7 @@ services:
         arguments:
             - '%vsapp.model.games.class%'
             - '@request_stack'
+            - '@vs_application.repository.locale'
         tags:
             - form.type
     vsapp.form.gamecategories:
@@ -27,5 +28,6 @@ services:
         arguments:
             - '%vsapp.model.game_categories.class%'
             - '@request_stack'
+            - '@vs_application.repository.locale'
         tags:
             - form.type

@@ -3,8 +3,8 @@ framework:
         packages:
             default:
                 json_manifest_path: '%kernel.project_dir%/public/game-platform/build/default/manifest.json'
-            game-platform-mpa:
-                json_manifest_path: '%kernel.project_dir%/public/shared_assets/build/game-platform-mpa/manifest.json'
+#             game-platform-mpa:
+#                 json_manifest_path: '%kernel.project_dir%/public/shared_assets/build/game-platform-mpa/manifest.json'
             game-platform-spa:
                 json_manifest_path: '%kernel.project_dir%/public/shared_assets/build/game-platform-spa/manifest.json'
 
@@ -12,5 +12,5 @@ webpack_encore:
     output_path: '%kernel.project_dir%/public/game-platform/build/default'
     builds:
         defaultConfig: '%kernel.project_dir%/public/game-platform/build/default'
-        GamePlatform_MPA: '%kernel.project_dir%/public/shared_assets/build/game-platform-mpa'
+#         GamePlatform_MPA: '%kernel.project_dir%/public/shared_assets/build/game-platform-mpa'
         GamePlatform_SPA: '%kernel.project_dir%/public/shared_assets/build/game-platform-spa'

@@ -3,13 +3,13 @@
 {% block stylesheets %}
     {{ parent() }}
 
-    {{ encore_entry_link_tags( 'js/game-platform', null, 'GamePlatform_AngularJs' ) }}
-    {{ encore_entry_link_tags( 'js/bridge-belote', null, 'GamePlatform_AngularJs' ) }}
+    {{ encore_entry_link_tags( 'js/game-platform', null, 'GamePlatform_SPA' ) }}
+    {{ encore_entry_link_tags( 'js/bridge-belote', null, 'GamePlatform_SPA' ) }}
 {% endblock %}
 
 {% block javascripts %}
-    {{ encore_entry_script_tags( 'js/game-platform', null, 'GamePlatform_AngularJs' ) }}
-	{{ encore_entry_script_tags( 'js/bridge-belote', null, 'GamePlatform_AngularJs' ) }}
+    {{ encore_entry_script_tags( 'js/game-platform', null, 'GamePlatform_SPA' ) }}
+	{{ encore_entry_script_tags( 'js/bridge-belote', null, 'GamePlatform_SPA' ) }}
 {% endblock %}
 
 {% block content %}

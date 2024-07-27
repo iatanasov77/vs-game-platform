@@ -1,0 +1,63 @@
+{% import "@VSApplication/Macros/form.html.twig" as vs_form %}
+
+{% if useFormMethod is defined %}{% set formMethod = useFormMethod %}{% else %}{% set formMethod = 'PUT' %}{% endif %}
+{{ form_start( form, { 'attr': {'class': 'form-horizontal', 'id': 'form-post'}, 'method': formMethod } ) }}
+    {{ form_widget( form._token ) }}
+    
+    {% if form_errors(form) is not empty %}
+        <div class="alert alert-block alert-danger fade in">
+            <button type="button" class="close close-sm" data-dismiss="alert">
+                <i class="icon-remove"></i>
+            </button>
+            <strong>{{ 'vs_application.form.errors_title' | trans( {},'VSApplicationBundle' ) }}</strong> {{ form_errors( form ) }}
+        </div>
+    {% endif %}
+    
+    <div class="form-group">
+        {{ form_label(form.locale, null, {
+            'label_attr': {'class': 'form-label'}
+            }) 
+        }}
+        
+        {{ form_widget(form.locale, {'attr': {'class': 'form-select'}}) }}
+    </div>
+                        
+    {% if item.id %}{% set itemId = item.id %}{% else %}{% set itemId = 0 %}{% endif %}
+    {% if item.parent %}{% set itemParentTaxon = item.parent.taxon.id %}{% else %}{% set itemParentTaxon = null %}{% endif %}
+    {% set comboDataSourceUrl  = url( 'vs_cms_pages_tree_combo_with_selected', {'pageId': itemId, 'taxonomyId': taxonomyId} ) %}
+    {% set comboTreePlaceholder = 'vs_application.form.parent_category_placeholder' | trans( {},'VSApplicationBundle' ) %}
+    {% set comboDataOptions    = "
+            url:'" ~ comboDataSourceUrl ~ 
+            "', required:false, prompt:'" ~ comboTreePlaceholder ~ "', value: '" ~ itemParentTaxon ~ "',
+            onBeforeLoad:function( node ) {
+                //showSpiner
+            },
+            onLoadSuccess:function( node ) {
+                //hideSpiner
+            }
+    " %}
+    <div class="form-group">
+        {{ form_label( form.parent, null, {
+            'label_attr': {'class': 'form-label'}
+            })
+        }}
+        {{ form_widget( form.parent, {
+            'attr': {
+                'class': 'form-select easyui-combotree',
+                'data-options': comboDataOptions,
+                'data-value': item.parent ? item.parent.taxon.id : null
+            }
+        }) }}
+    </div>
+    
+    <div class="form-group">
+        {{ form_label(form.name, null, {
+            'label_attr': {'class': 'form-label'}
+            }) 
+        }}
+        
+        {{ form_widget(form.name, {'attr': {'class': 'form-control'}, 'value': item.name}) }}
+    </div>
+    
+    {{ vs_form.buttons( form ) }}
+{{ form_end( form, {'render_rest': false} ) }}

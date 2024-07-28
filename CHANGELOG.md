@@ -1,3 +1,13 @@
+0.8.1	|	Release date: **28.07.2024**
+============================================
+* New Features:
+  - Add A Velzon Theme for Game Platform Application.
+  - Load AdminPanel Assets From VelzonTheme Build.
+* Bug-Fixes and Improvements:
+  - Improve AdminPanel GameForm .
+  - Fix Assets Path in SPA Theme.
+
+
 0.8.0	|	Release date: **27.07.2024**
 ============================================
 * New Features and Improvements:

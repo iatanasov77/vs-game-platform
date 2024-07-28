@@ -3,8 +3,8 @@ var Encore = require( '@symfony/webpack-encore' );
 /**
  *  AdminPanel Default Theme
  */
-const themePath         = './vendor/vankosoft/application/src/Vankosoft/ApplicationBundle/Resources/themes/default';
-const adminPanelConfig  = require( themePath + '/webpack.config' );
+// const themePath         = './vendor/vankosoft/application/src/Vankosoft/ApplicationBundle/Resources/themes/default';
+// const adminPanelConfig  = require( themePath + '/webpack.config' );
 
 //=================================================================================================
 
@@ -41,7 +41,7 @@ const GamePlatform_VelzonSaas_Config   = require('./themes/GamePlatform_VelzonSa
 //=================================================================================================
 
 module.exports = [
-    adminPanelConfig,
+    //adminPanelConfig,
     adminPanelVelzonConfig,
     //GamePlatform_MPA_Config,
     //GamePlatform_SPA_Config,

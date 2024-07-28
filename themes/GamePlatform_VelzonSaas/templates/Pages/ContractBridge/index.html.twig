@@ -1,0 +1,17 @@
+{% extends "base.html.twig" %}
+
+{% block head_styles %}
+    {{ parent() }}
+
+    {{ encore_entry_link_tags( 'js/contract-bridge', null, 'GameplatformVelzonsaasTheme' ) }}
+{% endblock %}
+
+{% block javascripts %}
+	{{ encore_entry_script_tags( 'js/contract-bridge', null, 'GameplatformVelzonsaasTheme' ) }}
+{% endblock %}
+
+{% block content %}
+    <div class="container text-center">
+        <app-contract-bridge urlLoginBySignature="{{ urlLoginBySignature }}"></app-contract-bridge>
+    </div>
+{% endblock %}

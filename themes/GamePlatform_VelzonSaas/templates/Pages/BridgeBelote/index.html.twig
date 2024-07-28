@@ -1,0 +1,25 @@
+{% extends "base.html.twig" %}
+
+{% block head_styles %}
+    {{ parent() }}
+	
+	{#
+    {{ encore_entry_link_tags( 'js/game-platform', null, 'GameplatformVelzonsaasTheme' ) }}
+    #}
+    {{ encore_entry_link_tags( 'js/bridge-belote', null, 'GameplatformVelzonsaasTheme' ) }}
+{% endblock %}
+
+{% block javascripts %}
+	{{ parent() }}
+	
+	{#
+    {{ encore_entry_script_tags( 'js/game-platform', null, 'GameplatformVelzonsaasTheme' ) }}
+    #}
+	{{ encore_entry_script_tags( 'js/bridge-belote', null, 'GameplatformVelzonsaasTheme' ) }}
+{% endblock %}
+
+{% block content %}
+    <div class="container text-center">
+        <app-bridge-belote urlLoginBySignature="{{ urlLoginBySignature }}"></app-bridge-belote>
+    </div>
+{% endblock %}

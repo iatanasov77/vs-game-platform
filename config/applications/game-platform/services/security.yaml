@@ -20,7 +20,9 @@ parameters:
 #        - 'App\Entity\Comment'
 #
 #
-
+    vs_users.registration_form: 'App\Form\RegistrationForm'
+    vs_users.redirect_after_verify: 'app_home'
+    
 services:
     _defaults:
         autowire: true

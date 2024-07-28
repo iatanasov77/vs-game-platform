@@ -1,0 +1,17 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+    {% include 'Partial/dashboard-games.html.twig' %}
+{% endblock %}
+
+{% block head_styles %}
+    {{ parent() }}
+    
+    {{ encore_entry_link_tags( 'js/home', null, 'GameplatformVelzonsaasTheme' ) }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    
+    {{ encore_entry_script_tags( 'js/home', null, 'GameplatformVelzonsaasTheme' ) }}
+{% endblock %}

@@ -1,6 +1,6 @@
 app_home:
     path: /
-    controller: App\Controller\GamePlatform\DefaultController::index
+    controller: App\Controller\GamePlatformNew\DefaultController::index
 
 admin_panel:
     path: /admin

@@ -3,11 +3,10 @@ services:
         autowire: true
         autoconfigure: true
         public: true
-            
+
     App\Widgets\ApplicationMenuLocalesWidget:
         arguments:
             - '@request_stack'
             - '@vs_application.repository.locale'
         tags:
             - { name: kernel.event_listener, event: widget.start, method: builder }
-

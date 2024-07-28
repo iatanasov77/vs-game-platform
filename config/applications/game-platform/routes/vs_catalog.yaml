@@ -1,3 +1,35 @@
+#app_vs_catalog_products:
+#    resource: "@VSCatalogBundle/Resources/config/routing/products.yaml"
+#    prefix: /
+
+
+
+
+# app_vs_catalog_catalog:
+#     resource: "@VSCatalogBundle/Resources/config/routing/catalog.yaml"
+#     prefix: /
+
+vs_catalog_catalog_latest_products:
+    path: /catalog/products/latest
+    controller: App\Controller\GamePlatformNew\CatalogController::latestProductsAction
+    
+vs_catalog_catalog_category_products:
+    path: /catalog/products/{categorySlug}
+    controller: App\Controller\GamePlatformNew\CatalogController::categoryProductsAction
+    defaults:
+        categorySlug: ''
+    
+vs_catalog_catalog_product_show:
+    path: /catalog/products/{categorySlug}/{productSlug}
+    controller: App\Controller\GamePlatformNew\CatalogController::showProductAction
+    defaults:
+        categorySlug: ''
+        productSlug: ''
+
+
+
+
+
 app_vs_catalog_pricing_plans:
     resource: "@VSCatalogBundle/Resources/config/routing/pricing_plans.yaml"
     prefix: /
@@ -5,5 +37,17 @@ app_vs_catalog_pricing_plans:
 app_vs_catalog_payment:
     resource: "@VSCatalogBundle/Resources/config/routing/payment.yaml"
     prefix: /
+    
+vs_payment_show_payment_methods_form:
+    path: /payment-methods
+    controller: App\Controller\GamePlatformNew\ShoppingCartCheckoutController::showPaymentMethodsFormAction
+    options:
+        expose: true
+        
+vs_payment_pricing_plans:
+    path: /pricing-plans-checkout
+    controller: App\Controller\GamePlatformNew\PricingPlanCheckoutController::showPricingPlans
+    options:
+        expose: true
 
 

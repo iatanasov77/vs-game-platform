@@ -9,7 +9,7 @@ vs_application_password_generator:
     prefix:   /
     options:
         expose: true
-
+        
 vs_application_frontend:
     resource: "@VSApplicationBundle/Resources/config/routing/frontend.yaml"
     prefix:   /
@@ -18,4 +18,4 @@ vs_application_frontend:
 
 vs_application_contact:
     path: /contact
-    controller: App\Controller\VideoPlatform\ContactController::index
+    controller: App\Controller\GamePlatformNew\ContactController::index

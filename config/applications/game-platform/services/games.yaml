@@ -1,0 +1,40 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\Controller\BridgeBelote\DefaultController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@vs_application.context.application'
+            - '@twig'
+            - '@vsapp.repository.games'
+            - '@http_client'
+            
+    App\Controller\ContractBridge\DefaultController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@vs_application.context.application'
+            - '@twig'
+            - '@vsapp.repository.games'
+            - '@http_client'
+            
+    App\Controller\Chess\DefaultController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@vs_application.context.application'
+            - '@twig'
+            - '@vsapp.repository.games'
+            - '@http_client'
+            
+    App\Controller\Backgammon\DefaultController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@vs_application.context.application'
+            - '@twig'
+            - '@vsapp.repository.games'
+            - '@http_client'

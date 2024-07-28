@@ -1,6 +1,4 @@
 security:
-    enable_authenticator_manager: true
-    
     password_hashers:
         App\Entity\UserManagement\User:
             algorithm: auto
@@ -10,16 +8,15 @@ security:
         default_provider:
             entity:
                 class: App\Entity\UserManagement\User
-                property: username
-                
+                property: email
         api_provider:
             entity:
                 class: App\Entity\UserManagement\User
                 property: username
 
     firewalls:
-        # API Firewall
-        ###############
+        # API Firewall - Uncomment to Use API Firewalls
+        ################################################################################################
         # Manual: https://symfony.com/bundles/LexikJWTAuthenticationBundle/current/index.html
         # NOTE: API Firewall Configuration Should Be Before Main Firewall
         #       You can Remove apiToken field from User Model in Library.
@@ -27,16 +24,23 @@ security:
         ################################################################################################
         api_login:
             pattern: ^/api/login
-            stateless: true
+            stateless: '%env(bool:ENABLE_API_STATELESS_REQUESTS)%'
             provider: api_provider
             json_login:
                 check_path: /api/login_check
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
+        api_token_refresh:
+            pattern: ^/api/token/refresh
+            stateless: '%env(bool:ENABLE_API_STATELESS_REQUESTS)%'
+            provider: api_provider
+            refresh_jwt:
+                check_path: api_refresh_token
+
         api_main:
             pattern:   ^/api
-            stateless: true
+            stateless: '%env(bool:ENABLE_API_STATELESS_REQUESTS)%'
             provider: api_provider
             jwt: ~
         ################################################################################################
@@ -73,14 +77,18 @@ security:
     access_control:
         - { path: /_wdt/.*, roles: PUBLIC_ACCESS }
         - { path: /_profiler/.*, roles: PUBLIC_ACCESS }
-
+        
         # API Routes
-        - { path: ^/api/get-signature, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
+        - { path: ^/api/recurring-payment, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
         - { path: ^/api-docs, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
         - { path: ^/api/login, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
-        - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY, requires_channel: '%env(SECURE_SCHEME)%' }
+        - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
+        - { path: ^/api, roles: ROLE_VANKOSOFT_API_ADMIN, requires_channel: '%env(SECURE_SCHEME)%' }
 
-        # Web Routes
+        # Uncomment This If The Home Page is Public
+        ##############################################
+        # - { path: ^/$, roles: PUBLIC_ACCESS }
+
         - { path: ^/login, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
         - { path: ^/forgot-password, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
         - { path: ^/register, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
@@ -88,5 +96,7 @@ security:
         - { path: ^/password-generator/json-get-passwords, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
         - { path: ^/translations/, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
         
-        - { path: ^/, roles: [PUBLIC_ACCESS], requires_channel: '%env(SECURE_SCHEME)%' }
+        - { path: ^/cookie-consent-translations, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
+        #- { path: ^/, roles: [ROLE_SUPER_ADMIN, ROLE_APPLICATION_ADMIN, ROLE_TEST_VANKOSOFT_APPLICATION_ADMIN], requires_channel: '%env(SECURE_SCHEME)%' }
+        - { path: ^/, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
 

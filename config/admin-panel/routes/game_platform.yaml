@@ -1,0 +1,5 @@
+# Videos Categories Callbacks
+##################################
+gp_games_tree_combo_with_selected:
+    path: /game-platform/json/{gameId}/games-categories-{taxonomyId}/easyui-combotree
+    controller: App\Controller\AdminPanel\GameExtController::easyuiComboTreeWithSelectedSource

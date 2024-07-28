@@ -5,7 +5,37 @@ game_platform:
         list_games: List Games
         game: Game
         
+        remember_my_password: Wait, I remember my password...
+        reset_password_with: Reset password with GamePlatform
+        new: New
+        select: Select
+        result: Result
+        remove: Remove
+        
+        menu:
+            welcome: Welcome
+            login: Login
+            profile: Profile
+            my_profile: My Profile
+            language: Language
+            documentation: Documentation
+            about_application: About Application
+            logout: Logout
+        
     form:
+        login:
+            email: Email address
+            password: Password
+            login: Login
+            register: Register
+            forgot_password: Forgot Password
+            login_page_title: Application Login
+            
+        register:
+            button_register: Register An Account
+            agreement_text: By creating an account, you agree the
+            terms_and_conditions: terms and conditions
+        
         game:
             game_url: Game URL
     

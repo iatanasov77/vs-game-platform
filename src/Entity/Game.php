@@ -27,7 +27,7 @@ class Game implements ResourceInterface
     private $locale;
     
     /** @var GameCategory */
-    #[ORM\ManyToOne(targetEntity: "GameCategory", inversedBy: "games", cascade: ["all"], fetch: "EAGER")]
+    #[ORM\ManyToOne(targetEntity: "GameCategory", inversedBy: "games", fetch: "EAGER")]
     #[Gedmo\SortableGroup]
     private $category;
     

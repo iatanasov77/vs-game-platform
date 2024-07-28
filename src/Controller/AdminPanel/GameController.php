@@ -27,17 +27,10 @@ class GameController extends AbstractCrudController
     protected function prepareEntity( &$entity, &$form, Request $request )
     {
         $pcr        = $this->get( 'vsapp.repository.game_categories' );
-        $formPost   = $request->request->get( 'game_form' );
+        $formPost   = $request->request->all( 'game_form' );
         
         if ( isset( $formPost['locale'] ) ) {
             $entity->setTranslatableLocale( $formPost['locale'] );
-        }
-        
-        if ( isset( $formPost['category_taxon'] ) ) {
-            $category   = $pcr->findOneBy( ['taxon' => $formPost['category_taxon']] );
-            if ( $category ) {
-                $entity->setCategory( $category );
-            }
         }
         
         $gamePictureFile    = $form->get( 'picture' )->getData();

@@ -5,7 +5,7 @@ vs_application_instalator:
                 model: App\Entity\Application\InstalationInfo
 vs_application:
     project_type: extended_application
-    
+
     resources:
         application:
             classes:
@@ -56,25 +56,53 @@ vs_application:
     menu:
         mainApplicationMenu:
             home:
-                name: Home
-                uri: "http://%vankosoft_host%"
+                name: vs_application.menu.site_main.home
+                route: app_home
+                attributes:
+                    iconClass: "bx bxs-dashboard"
+                display: false
+            games:
+                name: vs_application.menu.list_games
+                route: vsapp_games_index
+                attributes:
+                    iconClass: "bx bxs-dashboard"
+            user_register:
+                name: vs_wgp.form.login.register
+                route: vs_users_register_form
+                attributes:
+                    id: user_register
+                    iconClass: "bx bx-user-circle"
+            user_login:
+                name: vs_wgp.template.menu.login
+                route: app_login
+                attributes:
+                    id: user_login
+                    iconClass: "bx bx-user-circle"
 
         profileMenu:
             profile:
-                name: "My Profile"
+                name: vs_application.menu.my_profile
                 route: vs_users_profile_show
                 attributes:
-                    iconClass: "fas fa-user mr-2"
-            logout:
-                name: "Log Out"
-                route: app_logout
-                attributes:
-                    iconClass: "fas fa-power-off mr-2"
+                    iconClass: "mdi mdi-account-circle text-muted fs-16 align-middle me-1"
+                    
             documentation:
-                name: "Documentation"
+                name: vs_application.menu.documentation
                 uri: "javascript:;"
                 attributes:
-                    iconClass: "fas fa-cog mr-2"
+                    iconClass: "mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"
                     
-
-     
+#             about:
+#                 name: vs_application.menu.about_application
+#                 route: wgp_about_application
+#                 attributes:
+#                     iconClass: "mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"
+                  
+            divider_1:
+                isDivider: true
+            
+            logout:
+                name: vs_application.menu.logout
+                route: app_logout
+                attributes:
+                    iconClass: "mdi mdi-logout text-muted fs-16 align-middle me-1"

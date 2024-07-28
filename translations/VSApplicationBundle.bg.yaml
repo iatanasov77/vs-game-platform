@@ -5,7 +5,6 @@ vs_application:
         
         admin_panel: Админ Панел
 
-
         game_platform: Игрална Платформа
         list_games: Игри
         create_new_game: Създай Нова Игра
@@ -13,4 +12,28 @@ vs_application:
         game_categories: Категории Игри
         create_game_category: Създай Категория Игри
         edit_game_category: Редакция на Категория Игри
+        
+        profile: Профил
+        my_profile: Моят Профил
+        language: Език
+        logout: Изход
+        documentation: Документация
+        about_application: За Приложението
+        
+        site_main:
+            home: Начало
+            login: Вход
+            
+    template:
+        vankosoft_application: Game Platform
+        super_admin_panel: Admin Panel
+        
+        contact_page:
+            my_address: 'bul. "Al. Stamboliiski", Plovdiv 4000'
+            visit_us: Contacts
+            contact_details: Get In Touch
+            contact_text: 'We are always happy to help and provide more information about our services. You can contact us through email, phone, or by filling out the form on our website. Thank you for considering us!'
+            opening_hours: Opening Hours
+            email_us: Email Us
+            view_larger_map: View Larger Map
 

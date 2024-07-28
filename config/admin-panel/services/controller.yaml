@@ -10,3 +10,9 @@ services:
         arguments:
             - '@service_container'
         tags: ['controller.service_arguments']
+        
+    App\Controller\AdminPanel\GameExtController:
+        tags: ['controller.service_arguments']
+        arguments:
+            - '@vs_application.repository.taxonomy'
+            - '@vsapp.repository.games'

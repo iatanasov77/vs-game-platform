@@ -4,8 +4,38 @@ game_platform:
         game_category: Категория
         list_games: Игри
         game: Игра
+        
+        remember_my_password: Wait, I remember my password...
+        reset_password_with: Reset password with GamePlatform
+        new: Нови
+        select: Избрани
+        result: Резултата
+        remove: Премахване
+        
+        menu:
+            welcome: Добре дошъл
+            login: Вход
+            profile: Профил
+            my_profile: Моят Профил
+            language: Език
+            documentation: Документация
+            about_application: За Приложението
+            logout: Изход
     
     form:
+        login:
+            email: Имейл Адрес
+            password: Парола
+            login: Вход
+            register: Регистрация
+            forgot_password: Забравена парола
+            login_page_title: Вход
+            
+        register:
+            button_register: Регистрирай Акаунт
+            agreement_text: Чрез създаване на акаунт, вие се съгласявате със
+            terms_and_conditions: правилата и условията
+        
         game:
             game_url: УРЛ на Играта
     

@@ -1,6 +1,6 @@
 parameters:
     vs_application.menu.config_file: "%kernel.project_dir%/config/applications/game-platform/packages/vs_application.yaml"
-    vs_application.main_menus: ['mainApplicationMenu']
+    vs_application.main_menus: ['mainApplicationMenu', 'profileMenu']
 
 services:
     # Custom Menus

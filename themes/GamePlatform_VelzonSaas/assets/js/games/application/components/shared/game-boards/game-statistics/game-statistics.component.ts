@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import templateString from './game-statistics.component.html'
+import cssString from './game-statistics.component.scss'
 
 declare var $: any;
 
@@ -8,7 +9,7 @@ declare var $: any;
     selector: 'game-statistics',
     
     template: templateString || 'Template Not Loaded !!!',
-    styles: []
+    styles: [cssString || 'CSS Not Loaded !!!']
 })
 export class GameStatisticsComponent implements OnInit, OnDestroy
 {

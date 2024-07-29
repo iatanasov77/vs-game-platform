@@ -1,34 +1,13 @@
 @import "~@angular/material/prebuilt-themes/deeppurple-amber.css";
 
 /*
- * Game Statistics
- */
-.game-statistics-container {
-    position: relative;
-    top: 120px;
-}
-
-/*
  * Game Board
  */
-@media (min-width: 768px) {
-    #game-board {
-        width: 800px;
-        height: 580px;
-    }
-}
-
-@media (min-width: 900px) {
-    #game-board {
-        width: 950px;
-        height: 700px;
-    }
-}
 
 #card-table {
     background-color: green;
-    height: 75%;
-    width: 75%;
+    width: 710px;
+    height: 510px;
     border: solid 6px brown;
     border-radius: 8px;
     -webkit-border-radius: 8px;
@@ -36,8 +15,6 @@
     -ms-border-radius: 8px;
     -o-border-radius: 8px;
     box-shadow: #111 1px 1px 2px;
-    
-    margin: 120px auto auto auto;
 }
 
 /*
@@ -45,8 +22,8 @@
  */
 #card-actions {
     background-color: green;
+    width: 710px;
     height: 70px;
-    width: 75%;
     border: solid 6px brown;
     border-radius: 8px;
     -webkit-border-radius: 8px;

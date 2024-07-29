@@ -18,7 +18,6 @@ import { Effects } from '../application/+store/effects';
 import { AppRoutingModule } from './app-routing.module';
 
 import { BridgeBeloteComponent } from './bridge-belote.component';
-import { GameTableModule } from './components/game-table.module';
 
 import { AuthenticationModule } from '../application/components/authentication/authentication.module';
 import { SharedModule } from '../application/components/shared/shared.module';
@@ -38,7 +37,6 @@ import { SharedModule } from '../application/components/shared/shared.module';
         EffectsModule.forRoot( [Effects] ),
         //StoreRouterConnectingModule.forRoot( { serializer: CustomSerializer } ),
         
-        GameTableModule,
         AuthenticationModule,
         SharedModule,
     ],

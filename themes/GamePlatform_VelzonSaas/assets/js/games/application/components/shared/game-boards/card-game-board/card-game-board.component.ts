@@ -6,10 +6,10 @@ import BeloteCardGame from '_@/GamePlatform/Game/BeloteCardGame';
 import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
 import Announce from '_@/GamePlatform/CardGameAnnounce/Announce';
 
-import { BridgeBeloteProvider } from '../../../../application/services/providers/bridge-belote-provider';
-import templateString from './game-board.component.html'
+import { BridgeBeloteProvider } from '../../../../services/providers/bridge-belote-provider';
+import templateString from './card-game-board.component.html'
 
-import { UserLoginComponent } from '../../../../application/components/authentication/user-login/user-login.component';
+import { UserLoginComponent } from '../../../authentication/user-login/user-login.component';
 
 import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
@@ -22,18 +22,18 @@ import {
     playerAnnounce,
     playerAnnounceFailure,
     playerAnnounceSuccess
-} from '../../../../application/+store/actions';
-import { runStartGame, runMakeAnnounce } from '../../../../application/+store/selectors';
+} from '../../../../+store/actions';
+import { runStartGame, runMakeAnnounce } from '../../../../+store/selectors';
 
 declare var $: any;
 
 @Component({
-    selector: 'game-board',
+    selector: 'card-game-board',
     
     template: templateString || 'Template Not Loaded !!!',
     styles: []
 })
-export class GameBoardComponent implements OnInit, OnDestroy
+export class CardGameBoardComponent implements OnInit, OnDestroy
 {
     @Input() isLoggedIn: boolean        = false;
     @Input() developementClass: string  = '';

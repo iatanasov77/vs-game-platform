@@ -1,5 +1,3 @@
-require( '../../css/games.css' );
-
 $( function()
 {
 	$( '.btnGame' ).on( 'click', function( e )

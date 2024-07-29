@@ -41,6 +41,12 @@ Encore
         '@@@': path.resolve( __dirname, baseThemePath )
     })
     
+    // Default Theme Images
+    .copyFiles({
+         from: path.resolve( __dirname, defaultThemePath ) + '/images',
+         to: 'images/[path][name].[ext]',
+     })
+    
     // FOS CkEditor
     .copyFiles([
         {from: './node_modules/ckeditor4/', to: 'ckeditor/[path][name].[ext]', pattern: /\.(js|css)$/, includeSubdirectories: false},

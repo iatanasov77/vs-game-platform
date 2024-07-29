@@ -45,7 +45,6 @@ parameters:
     vs_cms.filemanager_shared_media_artgris: '%kernel.project_dir%/public/shared_media/artgris'
 
     vs_application.taxon_repository_throw_exception: false
-    
     vsapp.game-categories.taxonomy_code: game-categories
 
 services:

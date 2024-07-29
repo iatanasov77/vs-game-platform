@@ -63,7 +63,7 @@ vs_application:
                 display: false
             games:
                 name: vs_application.menu.list_games
-                route: vsapp_games_index
+                route: app_games
                 attributes:
                     iconClass: "bx bxs-dashboard"
             user_register:

@@ -166,3 +166,9 @@ services:
             - '@doctrine'
         calls:
             - [ setContainer, [ '@service_container' ] ]
+            
+    App\Controller\GamePlatformNew\GamesController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@vsapp.repository.game_categories'

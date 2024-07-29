@@ -1,5 +1,14 @@
 {% extends "base.html.twig" %}
 
+{% block title %}{{ parent() }} :: {{ 'game_platform.template.games.contract_bridge' | trans( {},'GamePlatform' ) }}{% endblock %}
+{% block pageTitle %}{{ 'game_platform.template.games.contract_bridge' | trans( {},'GamePlatform' ) }}{% endblock %}
+
+{% block content %}
+    <div class="container text-center">
+        <app-contract-bridge apiVerifySiganature="{{ apiVerifySiganature }}"></app-contract-bridge>
+    </div>
+{% endblock %}
+
 {% block head_styles %}
     {{ parent() }}
 
@@ -7,11 +16,5 @@
 {% endblock %}
 
 {% block javascripts %}
-	{{ encore_entry_script_tags( 'js/contract-bridge', null, 'GameplatformVelzonsaasTheme' ) }}
-{% endblock %}
-
-{% block content %}
-    <div class="container text-center">
-        <app-contract-bridge apiVerifySiganature="{{ apiVerifySiganature }}"></app-contract-bridge>
-    </div>
+    {{ encore_entry_script_tags( 'js/contract-bridge', null, 'GameplatformVelzonsaasTheme' ) }}
 {% endblock %}

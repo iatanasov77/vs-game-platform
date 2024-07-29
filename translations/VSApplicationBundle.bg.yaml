@@ -24,6 +24,12 @@ vs_application:
             home: Начало
             login: Вход
             
+        games:
+            bridge_belote: Bridge Belote
+            contract_bridge: Contract Bridge
+            chess: Chess
+            backgammon: Backgammon
+            
     template:
         vankosoft_application: Game Platform
         super_admin_panel: Admin Panel

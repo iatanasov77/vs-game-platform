@@ -3,17 +3,17 @@ app_games:
     controller: App\Controller\GamePlatformNew\GamesController::index
 
 bridge_belote:
-    path: /game/bridge-belote
+    path: /games/bridge-belote
     controller: App\Controller\BridgeBelote\DefaultController::index
     
 contract_bridge:
-    path: /game/contract-bridge
+    path: /games/contract-bridge
     controller: App\Controller\ContractBridge\DefaultController::index
 
 chess:
-    path: /game/chess
+    path: /games/chess
     controller: App\Controller\Chess\DefaultController::index
    
 backgammon:
-    path: /game/backgammon
+    path: /games/backgammon
     controller: App\Controller\Backgammon\DefaultController::index

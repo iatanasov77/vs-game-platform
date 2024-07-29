@@ -1,25 +1,28 @@
 {% extends "base.html.twig" %}
 
+{% block title %}{{ parent() }} :: {{ 'game_platform.template.games.bridge_belote' | trans( {},'GamePlatform' ) }}{% endblock %}
+{% block pageTitle %}{{ 'game_platform.template.games.bridge_belote' | trans( {},'GamePlatform' ) }}{% endblock %}
+
+{% block content %}
+    <div class="container text-center">
+        <app-bridge-belote apiVerifySiganature="{{ apiVerifySiganature }}"></app-bridge-belote>
+    </div>
+{% endblock %}
+
 {% block head_styles %}
     {{ parent() }}
-	
-	{#
+    
+    {#
     {{ encore_entry_link_tags( 'js/game-platform', null, 'GameplatformVelzonsaasTheme' ) }}
     #}
     {{ encore_entry_link_tags( 'js/bridge-belote', null, 'GameplatformVelzonsaasTheme' ) }}
 {% endblock %}
 
 {% block javascripts %}
-	{{ parent() }}
-	
-	{#
+    {{ parent() }}
+    
+    {#
     {{ encore_entry_script_tags( 'js/game-platform', null, 'GameplatformVelzonsaasTheme' ) }}
     #}
-	{{ encore_entry_script_tags( 'js/bridge-belote', null, 'GameplatformVelzonsaasTheme' ) }}
-{% endblock %}
-
-{% block content %}
-    <div class="container text-center">
-        <app-bridge-belote apiVerifySiganature="{{ apiVerifySiganature }}"></app-bridge-belote>
-    </div>
+    {{ encore_entry_script_tags( 'js/bridge-belote', null, 'GameplatformVelzonsaasTheme' ) }}
 {% endblock %}

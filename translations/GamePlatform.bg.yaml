@@ -21,6 +21,12 @@ game_platform:
             documentation: Документация
             about_application: За Приложението
             logout: Изход
+            
+        games:
+            bridge_belote: Bridge Belote
+            contract_bridge: Contract Bridge
+            chess: Chess
+            backgammon: Backgammon
     
     form:
         login:

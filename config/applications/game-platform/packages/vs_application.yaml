@@ -66,6 +66,30 @@ vs_application:
                 route: app_games
                 attributes:
                     iconClass: "bx bxs-dashboard"
+            games_bridge_belote:
+                name: vs_application.menu.games.bridge_belote
+                route: bridge_belote
+                display: false
+                attributes:
+                    iconClass: "bx bxs-dashboard"
+            games_contract_bridge:
+                name: vs_application.menu.games.contract_bridge
+                route: contract_bridge
+                display: false
+                attributes:
+                    iconClass: "bx bxs-dashboard"
+            games_chess:
+                name: vs_application.menu.games.chess
+                route: chess
+                display: false
+                attributes:
+                    iconClass: "bx bxs-dashboard"
+            games_backgammon:
+                name: vs_application.menu.games.backgammon
+                route: backgammon
+                display: false
+                attributes:
+                    iconClass: "bx bxs-dashboard"
             user_register:
                 name: vs_wgp.form.login.register
                 route: vs_users_register_form

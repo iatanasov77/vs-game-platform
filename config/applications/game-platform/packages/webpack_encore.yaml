@@ -7,8 +7,6 @@ framework:
 #                 json_manifest_path: '%kernel.project_dir%/public/shared_assets/build/adminpanel-velzondefault/manifest.json'
             adminpanel-velzonchild:
                 json_manifest_path: '%kernel.project_dir%/public/shared_assets/build/adminpanel-velzonchild/manifest.json'
-#             game-platform-spa-theme:
-#                 json_manifest_path: '%kernel.project_dir%/public/shared_assets/build/game-platform-spa-theme/manifest.json'
             gameplatform-velzonsaas-theme:
                 json_manifest_path: '%kernel.project_dir%/public/shared_assets/build/gameplatform-velzonsaas-theme/manifest.json'
 webpack_encore:
@@ -17,5 +15,4 @@ webpack_encore:
         defaultConfig: '%kernel.project_dir%/public/game-platform/build/default'
 #         AdminpanelVelzondefault: '%kernel.project_dir%/public/shared_assets/build/adminpanel-velzondefault'
         AdminpanelVelzonchild: '%kernel.project_dir%/public/shared_assets/build/adminpanel-velzonchild'
-#         GamePlatformSpaTheme: '%kernel.project_dir%/public/shared_assets/build/game-platform-spa-theme'
         GameplatformVelzonsaasTheme: '%kernel.project_dir%/public/shared_assets/build/gameplatform-velzonsaas-theme'

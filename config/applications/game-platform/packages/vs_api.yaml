@@ -1,9 +1,0 @@
-vs_api:
-    enabled: false
-    
-    resources:
-        refresh_token:
-            classes:
-                model: App\Entity\Api\RefreshToken
-
-

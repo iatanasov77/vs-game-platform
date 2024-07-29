@@ -11,6 +11,8 @@ use Vankosoft\PaymentBundle\Model\Interfaces\CustomerInterface;
 use Vankosoft\PaymentBundle\Model\Traits\CustomerEntity;
 use Vankosoft\CatalogBundle\Model\Interfaces\UserSubscriptionAwareInterface;
 use Vankosoft\CatalogBundle\Model\Traits\UserSubscriptionAwareEntity;
+use Vankosoft\ApiBundle\Model\Interfaces\ApiUserInterface;
+use Vankosoft\ApiBundle\Model\Traits\ApiUserEntity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -21,12 +23,14 @@ class User extends BaseUser implements
     SubscribedUserInterface,
     UserPaymentAwareInterface,
     CustomerInterface,
-    UserSubscriptionAwareInterface
+    UserSubscriptionAwareInterface,
+    ApiUserInterface
 {
     use SubscribedUserEntity;
     use UserPaymentAwareEntity;
     use CustomerEntity;
     use UserSubscriptionAwareEntity;
+    use ApiUserEntity;
     
     public function __construct()
     {

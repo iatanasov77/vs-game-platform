@@ -27,7 +27,7 @@ declare var $: any;
 })
 export class GamePlatformComponent implements OnInit, OnDestroy
 {
-    urlLoginBySignature?: string;
+    apiVerifySiganature?: string;
     isLoggedIn: boolean = false;
     errorFetcingData    = false;
     

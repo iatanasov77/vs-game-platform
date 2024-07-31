@@ -24,6 +24,19 @@ class DefaultController extends AbstractController
         $this->apiManager       = $apiManager;
     }
     
+    public function getTranslationsAction( $locale, Request $request ): Response
+    {
+        switch ( $locale ) {
+            case 'bg_BG':
+                $translations   = $this->getBulgarianTranslations();
+                break;
+            default:
+                $translations   = $this->getEnglishTranslations();
+        }
+        
+        return new JsonResponse( $translations );
+    }
+    
     public function getVerifySignatureAction( Request $request ): Response
     {
         $user                   = $this->vsSecurityBridge->getUser();
@@ -36,5 +49,21 @@ class DefaultController extends AbstractController
             'status'    => Status::STATUS_OK,
             'signedUrl' => $signatureComponents ? $signatureComponents->getSignedUrl() : null,
         ]);
+    }
+    
+    private function getEnglishTranslations():array
+    {
+        return [
+            'game_board.statistics.we'  => 'We',
+            'game_board.statistics.you' => 'You',
+        ];
+    }
+    
+    private function getBulgarianTranslations():array
+    {
+        return [
+            'game_board.statistics.we'  => 'Ние',
+            'game_board.statistics.you' => 'Вие',
+        ];
     }
 }

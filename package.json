@@ -70,7 +70,9 @@
         "@ngrx/router-store": "^15.2.0",
         "@ngrx/store": "^15.2.0",
         "@angular/localize": "^15.2.9",
-        "@ng-bootstrap/ng-bootstrap": "^14.1.1"
+        "@ng-bootstrap/ng-bootstrap": "^14.1.1",
+        "@ngx-translate/core": "^14.0",
+        "@ngx-translate/http-loader": "^7.0"
     },
     "devDependencies": {
         "@angular-devkit/build-angular": "^15.0.1",

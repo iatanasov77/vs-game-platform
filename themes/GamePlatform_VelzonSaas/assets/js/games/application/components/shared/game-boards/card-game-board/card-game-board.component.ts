@@ -6,7 +6,7 @@ import BeloteCardGame from '_@/GamePlatform/Game/BeloteCardGame';
 import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
 import Announce from '_@/GamePlatform/CardGameAnnounce/Announce';
 
-import { BridgeBeloteProvider } from '../../../../services/providers/bridge-belote-provider';
+import { BridgeBeloteProvider } from '../../../../providers/bridge-belote-provider';
 import templateString from './card-game-board.component.html'
 
 import { UserLoginComponent } from '../../../authentication/user-login/user-login.component';

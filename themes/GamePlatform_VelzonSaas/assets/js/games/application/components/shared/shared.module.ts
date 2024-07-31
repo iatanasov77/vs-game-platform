@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
+
 import { LoaderComponent } from './loader/loader.component';
 
 // Game Boards
@@ -17,7 +19,8 @@ import { CardGameBoardComponent } from './game-boards/card-game-board/card-game-
         CardGameBoardComponent
     ],
     imports: [
-        CommonModule
+        CommonModule,
+        TranslateModule.forChild(),
     ],
     exports: [
         LoaderComponent,

@@ -31,10 +31,16 @@ Encore
     }))
     
     /* Embed Angular Component Templates. */
-    .addLoader({
-        test: /\.(html)$/,
-        use: 'raw-loader',
-    })
+    .addLoader(
+        {
+            test: /\.(html)$/,
+            use: 'raw-loader',
+        },
+        {
+            test: /\.(xlf)$/,
+            loader: 'raw-loader'
+        }
+    )
 
     /**
      * Add Entries

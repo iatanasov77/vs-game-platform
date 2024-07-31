@@ -3,7 +3,7 @@ import { Component, OnInit, OnDestroy, Inject, ElementRef, isDevMode } from '@an
 import { AuthService } from '../application/services/auth.service'
 import { ApiService } from '../application/services/api.service'
 
-import cssCardGameString from '../application/assets/CardGame.scss'
+import cssCardGameString from '../application/assets/css/CardGame.scss'
 import cssGameString from './bridge-belote.component.scss'
 import templateString from './bridge-belote.component.html'
 
@@ -43,7 +43,7 @@ export class BridgeBeloteComponent implements OnInit, OnDestroy
         });
     
         if ( ! this.isLoggedIn && this.apiVerifySiganature?.length ) {
-            this.apiService.loginBySignedUrl( this.apiVerifySiganature )
+            //this.apiService.loginBySignedUrl( this.apiVerifySiganature )
         }
         
         //this.debugApplication();

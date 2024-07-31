@@ -24,6 +24,11 @@ export class ApiService
         @Inject(AuthService) private authStore: AuthService
     ) { }
     
+    loadTranslations( locale: string )
+    {
+        return this.restangular.one( 'get-translations/' + locale ).get();
+    }
+    
     /*
      * Centralize Get Api Token To Can Check if Expired and someday to use a reffreah token
      * ===========================================================================================

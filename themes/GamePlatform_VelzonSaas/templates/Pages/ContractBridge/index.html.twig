@@ -4,7 +4,7 @@
 {% block pageTitle %}{{ 'game_platform.template.games.contract_bridge' | trans( {},'GamePlatform' ) }}{% endblock %}
 
 {% block content %}
-    <div class="container text-center">
+    <div class="container text-center" id="GameContainer" data-locale="{{ app.request.locale }}">
         <app-contract-bridge apiVerifySiganature="{{ apiVerifySiganature }}"></app-contract-bridge>
     </div>
 {% endblock %}

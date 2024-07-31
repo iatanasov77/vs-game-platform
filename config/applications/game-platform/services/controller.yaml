@@ -24,6 +24,12 @@ services:
         exclude:
             - '../../../../src/Controller/GamePlatformNew/ProductController.php'
     
+    App\Controller\GamePlatformNew\PagesController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@vs_cms.repository.pages'
+    
     App\Controller\GamePlatformNew\ContactController:
         tags: ['controller.service_arguments']
         autowire: true

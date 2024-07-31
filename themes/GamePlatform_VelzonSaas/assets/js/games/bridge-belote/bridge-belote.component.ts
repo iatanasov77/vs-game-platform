@@ -27,9 +27,9 @@ export class BridgeBeloteComponent implements OnInit, OnDestroy
     developementClass: string   = '';
     
     constructor(
-        @Inject(ElementRef) private elementRef: ElementRef,
-        @Inject(AuthService) private authStore: AuthService,
-        @Inject(ApiService) private apiService: ApiService
+        @Inject( ElementRef ) private elementRef: ElementRef,
+        @Inject( AuthService ) private authStore: AuthService,
+        @Inject( ApiService ) private apiService: ApiService
     ) {
         if( isDevMode() ) {
             this.developementClass  = 'developement';
@@ -43,7 +43,7 @@ export class BridgeBeloteComponent implements OnInit, OnDestroy
         });
     
         if ( ! this.isLoggedIn && this.apiVerifySiganature?.length ) {
-            //this.apiService.loginBySignedUrl( this.apiVerifySiganature )
+             this.apiService.loginBySignature( this.apiVerifySiganature );
         }
         
         //this.debugApplication();

@@ -61,6 +61,22 @@ vs_application:
                 attributes:
                     iconClass: "bx bxs-dashboard"
                 display: false
+            
+            #########################################
+            # Static Pages
+            #########################################
+            page_contact:
+                name: vs_application.menu.contact
+                route: vs_application_contact
+                display: false
+            page_about_application:
+                name: vs_application.menu.about_application
+                route: app_about_application
+                display: false
+                
+            #########################################
+            # Game Pages
+            #########################################
             games:
                 name: vs_application.menu.list_games
                 route: app_games
@@ -109,18 +125,6 @@ vs_application:
                 route: vs_users_profile_show
                 attributes:
                     iconClass: "mdi mdi-account-circle text-muted fs-16 align-middle me-1"
-                    
-            documentation:
-                name: vs_application.menu.documentation
-                uri: "javascript:;"
-                attributes:
-                    iconClass: "mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"
-                    
-#             about:
-#                 name: vs_application.menu.about_application
-#                 route: wgp_about_application
-#                 attributes:
-#                     iconClass: "mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"
                   
             divider_1:
                 isDivider: true

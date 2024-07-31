@@ -1,3 +1,7 @@
+app_about_application:
+    path: /about-application
+    controller: App\Controller\GamePlatformNew\PagesController::aboutApplication
+
 app_games:
     path: /games
     controller: App\Controller\GamePlatformNew\GamesController::index

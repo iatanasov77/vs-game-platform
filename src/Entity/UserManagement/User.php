@@ -17,6 +17,8 @@ use Vankosoft\ApiBundle\Model\Traits\ApiUserEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
+use App\Entity\GameRoom;
+
 #[ORM\Entity]
 #[ORM\Table(name: "VSUM_Users")]
 class User extends BaseUser implements
@@ -32,11 +34,16 @@ class User extends BaseUser implements
     use UserSubscriptionAwareEntity;
     use ApiUserEntity;
     
+    #[ORM\ManyToMany(targetEntity: GameRoom::class, mappedBy: "players", indexBy: "id")]
+    private $gameRooms;
+    
     public function __construct()
     {
         $this->newsletterSubscriptions  = new ArrayCollection();
         $this->orders                   = new ArrayCollection();
         $this->pricingPlanSubscriptions = new ArrayCollection();
+        
+        $this->gameRooms                = new ArrayCollection();
         
         parent::__construct();
     }
@@ -48,5 +55,10 @@ class User extends BaseUser implements
     {
         /* Use RolesCollection */
         return $this->getRolesFromCollection();
+    }
+    
+    public function getGameRooms(): Collection
+    {
+        return $this->gameRooms;
     }
 }

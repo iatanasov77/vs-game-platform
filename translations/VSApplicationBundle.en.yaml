@@ -11,6 +11,9 @@ vs_application:
         game_categories: Game Categories
         create_game_category: Create Game Category
         edit_game_category: Edit Game Category
+        list_game_rooms: Game Rooms
+        create_new_game_room: Create Game Room
+        edit_game_room: Edit Game Room
         
         my_profile: My Profile
         profile: Profile

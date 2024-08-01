@@ -3,6 +3,8 @@
 use Doctrine\ORM\Mapping as ORM;
 use Sylius\Component\Resource\Model\ResourceInterface;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Sylius\Component\Resource\Model\ToggleableTrait;
 use Vankosoft\CmsBundle\Model\FileInterface;
 use App\Entity\Application\Translation;
@@ -58,6 +60,15 @@ class Game implements ResourceInterface
     /** @var string */
     #[ORM\Column(name: "game_url", type: "string", length: 255, nullable: true)]
     private $gameUrl;
+    
+    /** @var Collection | GameRoom[] */
+    #[ORM\OneToMany(targetEntity: GameRoom::class, mappedBy: "game", cascade: ["persist", "remove"], orphanRemoval: true)]
+    private $rooms;
+    
+    public function __construct()
+    {
+        $this->rooms    = new ArrayCollection();
+    }
     
     public function getId(): ?int
     {
@@ -133,6 +144,32 @@ class Game implements ResourceInterface
     public function setGameUrl($gameUrl)
     {
         $this->gameUrl = $gameUrl;
+        
+        return $this;
+    }
+    
+    /**
+     * @return Collection|GameRoom[]
+     */
+    public function getRooms(): Collection
+    {
+        return $this->rooms;
+    }
+    
+    public function addRoom( GameRoom $room ): self
+    {
+        if ( ! $this->rooms->contains( $room ) ) {
+            $this->rooms[] = $room;
+        }
+        
+        return $this;
+    }
+    
+    public function removeRoom( GameRoom $room ): self
+    {
+        if ( $this->rooms->contains( $room ) ) {
+            $this->rooms->removeElement( $room );
+        }
         
         return $this;
     }

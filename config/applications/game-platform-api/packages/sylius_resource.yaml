@@ -19,17 +19,16 @@ sylius_resource:
             driver: doctrine/orm
             classes:
                 model: App\Entity\Game
-                interface: Sylius\Component\Resource\Model\ResourceInterface
-                controller: App\Controller\AdminPanel\GameController
                 repository: Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository
-                form: App\Form\GameForm
         vsapp.game_categories:
             driver: doctrine/orm
             classes:
                 model: App\Entity\GameCategory
-                interface: Sylius\Component\Resource\Model\ResourceInterface
-                controller: App\Controller\AdminPanel\GameCategoryController
                 repository: Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository
-                form: App\Form\GameCategoryForm
+        vsapp.game_rooms:
+            driver: doctrine/orm
+            classes:
+                model: App\Entity\GameRoom
+                repository: Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository
 
 

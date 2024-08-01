@@ -3,6 +3,8 @@ game_platform:
         list_game_categories: List Game Categories
         game_category: Game Category
         list_games: List Games
+        list_game_rooms: Game Rooms
+        game_room: Game Room
         game: Game
         
         remember_my_password: Wait, I remember my password...
@@ -11,6 +13,9 @@ game_platform:
         select: Select
         result: Result
         remove: Remove
+        
+        # Resource Listing Tables
+        items_index_row_game: Game
         
         menu:
             welcome: Welcome
@@ -44,4 +49,10 @@ game_platform:
         
         game:
             game_url: Game URL
+            
+        game_room:
+            game: Game
+            game_placeholder: '-- Choose a Game --'
+            players: Players
+            players_placeholder: '-- Select Players --'
     

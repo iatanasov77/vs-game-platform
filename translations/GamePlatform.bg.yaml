@@ -3,6 +3,8 @@ game_platform:
         list_game_categories: Списък Категории
         game_category: Категория
         list_games: Игри
+        list_game_rooms: Game Rooms
+        game_room: Game Room
         game: Игра
         
         remember_my_password: Wait, I remember my password...
@@ -11,6 +13,9 @@ game_platform:
         select: Избрани
         result: Резултата
         remove: Премахване
+        
+        # Resource Listing Tables
+        items_index_row_game: Игра
         
         menu:
             welcome: Добре дошъл
@@ -44,4 +49,10 @@ game_platform:
         
         game:
             game_url: УРЛ на Играта
+            
+        game_room:
+            game: Game
+            game_placeholder: '-- Choose a Game --'
+            players: Players
+            players_placeholder: '-- Select Players --'
     

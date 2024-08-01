@@ -79,6 +79,8 @@ export class ApiService
                     apiToken: response.data.tokenString,
                     tokenCreated: response.data.token.iat,
                     tokenExpired: response.data.token.exp,
+                    
+                    apiRefreshToken: response.data.refreshToken,
                 };
                 
                 this.authStore.createAuth( auth );

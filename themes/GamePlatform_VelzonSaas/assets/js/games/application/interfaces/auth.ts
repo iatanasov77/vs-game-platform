@@ -10,4 +10,6 @@ export interface IAuth
     apiToken: string;
     tokenCreated: number;
     tokenExpired: number;
+    
+    apiRefreshToken: string;
 }

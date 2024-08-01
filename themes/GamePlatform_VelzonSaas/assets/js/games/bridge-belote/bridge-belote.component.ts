@@ -36,15 +36,15 @@ export class BridgeBeloteComponent implements OnInit, OnDestroy
         }
         
         this.apiVerifySiganature = this.elementRef.nativeElement.getAttribute( 'apiVerifySiganature' );
+    
+        if ( ! this.isLoggedIn && this.apiVerifySiganature?.length ) {
+             this.apiService.loginBySignature( this.apiVerifySiganature );
+        }
         
         this.authStore.isLoggedIn().subscribe( ( isLoggedIn: boolean ) => {
             //alert( isLoggedIn );
             this.isLoggedIn = isLoggedIn;
         });
-    
-        if ( ! this.isLoggedIn && this.apiVerifySiganature?.length ) {
-             this.apiService.loginBySignature( this.apiVerifySiganature );
-        }
         
         //this.debugApplication();
     }

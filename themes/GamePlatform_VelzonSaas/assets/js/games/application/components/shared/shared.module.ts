@@ -4,6 +4,9 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { LoaderComponent } from './loader/loader.component';
 
+// Dialogs
+import { UserNotLoggedInComponent } from './dialogs/not-loggedin-dialog/not-loggedin-dialog.component';
+
 // Game Boards
 import { PlayerAnnounceComponent } from './game-boards/player-announce/player-announce.component';
 import { GameStatisticsComponent } from './game-boards/game-statistics/game-statistics.component';
@@ -12,6 +15,9 @@ import { CardGameBoardComponent } from './game-boards/card-game-board/card-game-
 @NgModule({
     declarations: [
         LoaderComponent,
+        
+        // Dialogs
+        UserNotLoggedInComponent,
         
         // Game Boards
         PlayerAnnounceComponent,
@@ -24,6 +30,9 @@ import { CardGameBoardComponent } from './game-boards/card-game-board/card-game-
     ],
     exports: [
         LoaderComponent,
+        
+        // Dialogs
+        UserNotLoggedInComponent,
         
         // Game Boards
         PlayerAnnounceComponent,

@@ -54,16 +54,26 @@ class DefaultController extends AbstractController
     private function getEnglishTranslations():array
     {
         return [
-            'game_board.statistics.we'  => 'We',
-            'game_board.statistics.you' => 'You',
+            'dialogs.close'                     => 'Close',
+            'dialogs.login'                     => 'Login',
+            'dialogs.not_loggedin_message'      => 'You are NOT Logged In.',
+            'dialogs.not_an_account_question'   => 'if you have not an account',
+            'dialogs.create_account_link'       => 'create from here',
+            'game_board.statistics.we'          => 'We',
+            'game_board.statistics.you'         => 'You',
         ];
     }
     
     private function getBulgarianTranslations():array
     {
         return [
-            'game_board.statistics.we'  => 'Ние',
-            'game_board.statistics.you' => 'Вие',
+            'dialogs.close'                     => 'Close',
+            'dialogs.login'                     => 'Login',
+            'dialogs.not_loggedin_message'      => 'You are NOT Logged In.',
+            'dialogs.not_an_account_question'   => 'if you have not an account',
+            'dialogs.create_account_link'       => 'create from here',
+            'game_board.statistics.we'          => 'Ние',
+            'game_board.statistics.you'         => 'Вие',
         ];
     }
 }

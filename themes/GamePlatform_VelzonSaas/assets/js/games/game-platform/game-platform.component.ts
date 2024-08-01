@@ -7,7 +7,6 @@ import { map, merge } from 'rxjs';
 import { AuthService } from '../application/services/auth.service'
 import { ApiService } from '../application/services/api.service'
 import { IGame } from '../application/interfaces/game';
-import { UserLoginComponent } from '../application/components/authentication/user-login/user-login.component';
 
 import cssString from './game-platform.component.scss'
 import templateString from './game-platform.component.html'
@@ -86,11 +85,13 @@ export class GamePlatformComponent implements OnInit, OnDestroy
     
     showLoginForm( event: any ): void
     {
+        /*
         const modalRef = this.ngbModal.open( UserLoginComponent );
-        modalRef.componentInstance.closeModalLogin.subscribe( () => {
+        modalRef.componentInstance.closeModal.subscribe( () => {
             // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
             modalRef.dismiss();
         });
+        */
     }
     
     showMyProfile( event: any ): void

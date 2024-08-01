@@ -9,7 +9,7 @@ import Announce from '_@/GamePlatform/CardGameAnnounce/Announce';
 import { BridgeBeloteProvider } from '../../../../providers/bridge-belote-provider';
 import templateString from './card-game-board.component.html'
 
-import { UserLoginComponent } from '../../../authentication/user-login/user-login.component';
+import { UserNotLoggedInComponent } from '../../dialogs/not-loggedin-dialog/not-loggedin-dialog.component';
 
 import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
@@ -127,8 +127,8 @@ export class CardGameBoardComponent implements OnInit, OnDestroy
     
     openLoginForm(): void
     {
-        const modalRef = this.ngbModal.open( UserLoginComponent );
-        modalRef.componentInstance.closeModalLogin.subscribe( () => {
+        const modalRef = this.ngbModal.open( UserNotLoggedInComponent );
+        modalRef.componentInstance.closeModal.subscribe( () => {
             // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
             modalRef.dismiss();
         });

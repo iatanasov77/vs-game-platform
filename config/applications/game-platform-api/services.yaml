@@ -45,6 +45,7 @@ services:
             - '../../../src/Controller/'
             - '../../../src/Widgets/'
             - '../../../src/Component/'
+            - '../../../src/EventListener/'
             - '../../../src/GamePlatformAPIKernel.php'
         autowire: true
 

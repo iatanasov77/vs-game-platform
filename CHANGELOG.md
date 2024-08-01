@@ -1,3 +1,19 @@
+0.8.2	|	Release date: **01.08.2024**
+============================================
+* New Features and Improvements:
+  - Move Card Game Table into Shared Modules.
+  - Improve User Entity With API Verify Signature.
+  - Remove Loading API Bundles in Main Application.
+  - Improve WebPackEncore Configs.
+  - Add an Application Games Controller.
+  - Improve Application Menu Configs.
+  - Add Translation Feature in Angular.
+  - Fix Application DefaultController Routes.
+  - Improve Static Pages.
+  - Remove Authentication Modules From Angular Application.
+  - Translate All Strings in Angular Application.
+
+
 0.8.1	|	Release date: **28.07.2024**
 ============================================
 * New Features:

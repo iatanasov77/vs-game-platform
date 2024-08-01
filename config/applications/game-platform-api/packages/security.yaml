@@ -31,6 +31,13 @@ security:
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
+        api_token_refresh:
+            pattern: ^/api/token/refresh
+            stateless: '%env(bool:ENABLE_API_STATELESS_REQUESTS)%'
+            provider: api_provider
+            refresh_jwt:
+                check_path: api_refresh_token
+        
         api_main:
             pattern:   ^/api
             stateless: '%env(bool:ENABLE_API_STATELESS_REQUESTS)%'
@@ -72,10 +79,11 @@ security:
         - { path: /_profiler/.*, roles: PUBLIC_ACCESS }
         
         # API Routes
-        - { path: ^/api/api-docs, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
+        - { path: ^/api/recurring-payment, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
+        - { path: ^/api-docs, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
         - { path: ^/api/login, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
-        #- { path: ^/api/login-by-signature, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
-        
+        - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
+        - { path: ^/api/get-translations, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
         - { path: ^/api/games, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
         
         - { path: ^/api, roles: [ROLE_SUPER_ADMIN,ROLE_VANKOSOFT_API_ADMIN], requires_channel: '%env(SECURE_SCHEME)%' }

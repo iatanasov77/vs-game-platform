@@ -52,7 +52,7 @@ return [
 
     Vankosoft\CatalogBundle\VSCatalogBundle::class => ['all' => true],
 	
-	Vankosoft\ApiBundle\VSApiBundle::class => ['all' => true],
-    Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle::class => ['all' => true],
-    Gesdinet\JWTRefreshTokenBundle\GesdinetJWTRefreshTokenBundle::class => ['all' => true],
+// 	Vankosoft\ApiBundle\VSApiBundle::class => ['all' => true],
+//     Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle::class => ['all' => true],
+//     Gesdinet\JWTRefreshTokenBundle\GesdinetJWTRefreshTokenBundle::class => ['all' => true],
 ];

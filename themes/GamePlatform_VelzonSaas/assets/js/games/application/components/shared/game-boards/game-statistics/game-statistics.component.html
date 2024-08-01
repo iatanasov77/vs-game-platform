@@ -1,0 +1,16 @@
+<div class="game-statistics-container">
+    <table>
+        <thead>
+            <tr>
+                <th class="border-end border-bottom p-2 font-weight-bold">{{ 'game_board.statistics.we' | translate }}</th>
+                <th class="border-start border-bottom p-2 font-weight-bold">{{ 'game_board.statistics.you' | translate }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let res of gameResults; index as i">
+                <td class="border-end border-bottom p-2"></td>
+                <td class="border-start border-bottom p-2"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

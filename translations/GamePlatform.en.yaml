@@ -21,6 +21,12 @@ game_platform:
             documentation: Documentation
             about_application: About Application
             logout: Logout
+            
+        games:
+            bridge_belote: Bridge Belote
+            contract_bridge: Contract Bridge
+            chess: Chess
+            backgammon: Backgammon
         
     form:
         login:

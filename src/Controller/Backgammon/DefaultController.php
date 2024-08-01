@@ -10,12 +10,12 @@ class DefaultController extends GameController
     {
         $gameSlug   = 'backgammon';
         $game       = $this->gamesRepository->findOneBy( ['slug' => $gameSlug] );
-        $signature  = $this->getVerifySignature();
+        $signature  = $this->getUser() ? $this->getUser()->getApiVerifySiganature() : null;
         
         return new Response(
             $this->templatingEngine->render( $this->getTemplate( $gameSlug , 'Pages/Backgammon/index.html.twig' ), [
                 'game'                  => $game,
-                'urlLoginBySignature'   => $signature ? $signature->getSignedUrl() : null,
+                'apiVerifySiganature'   => $signature,
             ])
         );
     }

@@ -18,8 +18,6 @@ import { Effects } from '../application/+store/effects';
 import { AppRoutingModule } from './app-routing.module';
 
 import { GamePlatformComponent } from './game-platform.component';
-
-import { AuthenticationModule } from '../application/components/authentication/authentication.module';
 import { SharedModule } from '../application/components/shared/shared.module';
 
 @NgModule({
@@ -36,8 +34,6 @@ import { SharedModule } from '../application/components/shared/shared.module';
         StoreModule.forRoot( reducers ),
         EffectsModule.forRoot( [Effects] ),
         //StoreRouterConnectingModule.forRoot( { serializer: CustomSerializer } ),
-        
-        AuthenticationModule,
         SharedModule,
     ],
     bootstrap: [GamePlatformComponent],

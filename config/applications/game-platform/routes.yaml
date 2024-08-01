@@ -4,13 +4,13 @@ app_home:
 
 admin_panel:
     path: /admin
-    controller: App\Controller\Application\DefaultController::openAdminPanel
+    controller: App\Controller\GamePlatformNew\DefaultController::openAdminPanel
 
 app_set_lang:
     path: /set_lang/{lang}
-    controller: App\Controller\Application\DefaultController::setLanguage
+    controller: App\Controller\GamePlatformNew\DefaultController::setLanguage
 
 app_set_locale:
     path: /set_locale/{locale}
-    controller: App\Controller\Application\DefaultController::setLocale
+    controller: App\Controller\GamePlatformNew\DefaultController::setLocale
     

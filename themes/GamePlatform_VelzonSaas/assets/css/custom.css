@@ -85,3 +85,19 @@ label.required:after {
 .tree-file {
 	background: url( "~jquery-easyui/images/tree_icons.png" ) no-repeat -208px 0 !important;
 }
+
+.static-page-title {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+.static-page-title-head {
+    display: block;
+    font-size: calc(1.269375rem + 0.2325vw);
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: 600;
+    unicode-bidi: isolate;
+}

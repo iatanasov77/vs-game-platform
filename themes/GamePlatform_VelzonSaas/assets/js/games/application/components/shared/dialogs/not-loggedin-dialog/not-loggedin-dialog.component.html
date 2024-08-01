@@ -1,0 +1,20 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{ 'dialogs.login' | translate }}</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="dismissModal()"></button>
+</div>
+
+<div class="modal-body">
+    <p>{{ 'dialogs.not_loggedin_message' | translate }}</p>
+</div>
+
+<div class="modal-footer">
+    <div class="row">
+        <div class="col-10">
+            <span class="me-2">{{ 'dialogs.not_an_account_question' | translate }},</span>
+            <a href="/register">{{ 'dialogs.create_account_link' | translate }}</a>
+        </div>
+        <div class="col-2">
+            <button type="button" class="btn btn-outline-dark" (click)="dismissModal()">{{ 'dialogs.close' | translate }}</button>
+        </div>
+    </div>
+</div>

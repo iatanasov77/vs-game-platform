@@ -3,7 +3,7 @@ import { Component, OnInit, OnDestroy, Inject, ElementRef, isDevMode } from '@an
 import { AuthService } from '../application/services/auth.service'
 import { ApiService } from '../application/services/api.service'
 
-import cssCardGameString from '../application/assets/CardGame.scss'
+import cssCardGameString from '../application/assets/css/CardGame.scss'
 import cssGameString from './bridge-belote.component.scss'
 import templateString from './bridge-belote.component.html'
 
@@ -21,29 +21,29 @@ declare var $: any;
 })
 export class BridgeBeloteComponent implements OnInit, OnDestroy
 {
-    urlLoginBySignature?: string;
+    apiVerifySiganature?: string;
     
     isLoggedIn: boolean         = false;
     developementClass: string   = '';
     
     constructor(
-        @Inject(ElementRef) private elementRef: ElementRef,
-        @Inject(AuthService) private authStore: AuthService,
-        @Inject(ApiService) private apiService: ApiService
+        @Inject( ElementRef ) private elementRef: ElementRef,
+        @Inject( AuthService ) private authStore: AuthService,
+        @Inject( ApiService ) private apiService: ApiService
     ) {
         if( isDevMode() ) {
             this.developementClass  = 'developement';
         }
         
-        this.urlLoginBySignature = this.elementRef.nativeElement.getAttribute( 'urlLoginBySignature' );
+        this.apiVerifySiganature = this.elementRef.nativeElement.getAttribute( 'apiVerifySiganature' );
         
         this.authStore.isLoggedIn().subscribe( ( isLoggedIn: boolean ) => {
             //alert( isLoggedIn );
             this.isLoggedIn = isLoggedIn;
         });
     
-        if ( ! this.isLoggedIn && this.urlLoginBySignature?.length ) {
-            this.apiService.loginBySignedUrl( this.urlLoginBySignature )
+        if ( ! this.isLoggedIn && this.apiVerifySiganature?.length ) {
+             this.apiService.loginBySignature( this.apiVerifySiganature );
         }
         
         //this.debugApplication();
@@ -61,8 +61,8 @@ export class BridgeBeloteComponent implements OnInit, OnDestroy
     
     debugApplication()
     {
-        if ( this.urlLoginBySignature?.length ) {
-            alert( this.urlLoginBySignature );
+        if ( this.apiVerifySiganature?.length ) {
+            alert( this.apiVerifySiganature );
         } else {
             alert( 'Missing Login By Signature URL !!!' );
         }

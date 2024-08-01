@@ -1,5 +1,14 @@
 {% extends "base.html.twig" %}
 
+{% block title %}{{ parent() }} :: {{ 'game_platform.template.games.backgammon' | trans( {},'GamePlatform' ) }}{% endblock %}
+{% block pageTitle %}{{ 'game_platform.template.games.backgammon' | trans( {},'GamePlatform' ) }}{% endblock %}
+
+{% block content %}
+    <div class="container text-center" id="GameContainer" data-locale="{{ app.request.locale }}">
+        <app-backgammon apiVerifySiganature="{{ apiVerifySiganature }}"></app-backgammon>
+    </div>
+{% endblock %}
+
 {% block head_styles %}
     {{ parent() }}
 
@@ -7,12 +16,5 @@
 {% endblock %}
 
 {% block javascripts %}
-	{{ encore_entry_script_tags( 'js/backgammon', null, 'GameplatformVelzonsaasTheme' ) }}
-{% endblock %}
-
-{% block content %}
-	
-    <div class="container text-center">
-        <app-backgammon urlLoginBySignature="{{ urlLoginBySignature }}"></app-backgammon>
-    </div>
+    {{ encore_entry_script_tags( 'js/backgammon', null, 'GameplatformVelzonsaasTheme' ) }}
 {% endblock %}

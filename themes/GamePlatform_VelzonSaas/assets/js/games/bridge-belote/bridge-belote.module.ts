@@ -4,6 +4,10 @@ import { APP_BASE_HREF, Location } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { HttpClient } from '@angular/common/http';
+import { CustomTranslateLoader } from '../application/providers/i18n-provider';
+
 import { RestangularModule } from 'ngx-restangular';
 import { RestangularConfigFactory } from '../application/restangular.config';
 
@@ -18,9 +22,6 @@ import { Effects } from '../application/+store/effects';
 import { AppRoutingModule } from './app-routing.module';
 
 import { BridgeBeloteComponent } from './bridge-belote.component';
-import { GameTableModule } from './components/game-table.module';
-
-import { AuthenticationModule } from '../application/components/authentication/authentication.module';
 import { SharedModule } from '../application/components/shared/shared.module';
 
 @NgModule({
@@ -31,15 +32,20 @@ import { SharedModule } from '../application/components/shared/shared.module';
         BrowserModule,
         MatTooltipModule,
         NgbModule,
+        TranslateModule.forRoot({
+            defaultLanguage: 'en',
+            loader: {
+                provide: TranslateLoader,
+                useClass: CustomTranslateLoader,
+                deps: [HttpClient]
+            }
+        }),
         
         AppRoutingModule,
         RestangularModule.forRoot( RestangularConfigFactory ),
         StoreModule.forRoot( reducers ),
         EffectsModule.forRoot( [Effects] ),
         //StoreRouterConnectingModule.forRoot( { serializer: CustomSerializer } ),
-        
-        GameTableModule,
-        AuthenticationModule,
         SharedModule,
     ],
     bootstrap: [BridgeBeloteComponent],

@@ -48,7 +48,7 @@ class GameController extends AbstractController
     
     protected function getVerifySignature(): ?string
     {
-        $signature  = null;
+        $signedUrl  = null;
         $appHost    = $this->getParameter( 'vankosoft_host' );
         
         try {
@@ -57,13 +57,13 @@ class GameController extends AbstractController
             //echo '<pre>'; var_dump( $decodedPayload ); die;
             
             if ( isset( $decodedPayload['status'] ) && $decodedPayload['status'] == Status::STATUS_OK ) {
-                $signature  = $response['signature'];
+                $signedUrl  = $decodedPayload['signedUrl'];
             }
             
-            return $signature;
+            return $signedUrl;
         }
         catch ( ClientException $e ) {
-            return $signature;
+            return $signedUrl;
         }
         catch ( JWTEncodeFailureException $e ) {
             throw new ApiLoginException( 'JWTEncodeFailureException: ' . $e->getMessage() );

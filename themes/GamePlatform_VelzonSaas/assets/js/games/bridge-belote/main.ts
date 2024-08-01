@@ -15,5 +15,5 @@ if ( context.isProduction ) {
     enableProdMode();
 }
 
-platformBrowserDynamic().bootstrapModule(BridgeBeloteModule)
+platformBrowserDynamic().bootstrapModule( BridgeBeloteModule )
                         .catch( ( err: any ) => console.error( err ) );

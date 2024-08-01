@@ -1,0 +1,37 @@
+<div id="game-board" align="center">
+    <div id="card-table">
+        <ng-container *ngFor="let player of game.getPlayers(); let i = index">
+            <div [ngClass]="developementClass"
+                class="{{ player.containerId.charAt( 0 ).toLowerCase() + player.containerId.slice( 1 ) }}"
+	            id="{{ player.containerId }}"
+	        >
+	            <div id="{{ player.cardsId }}" class="playerCards float-start"></div>
+	            <player-announce [player]="player"></player-announce>
+	        </div>
+	    </ng-container>
+    </div>
+    
+    <div id="card-actions">
+        <div class="p-2 float-start">
+            <a class="btn btn-primary" id="btnStartGame" (click)="onStartGame( $event )">
+                {{ 'game_board.start_game' | translate }}
+            </a>
+        </div>
+        <div class="float-end">
+            <div id="AnnounceContainer">
+                <ng-container *ngFor="let icon of announceSymbols; let i = index">
+					<a href="#" 
+					    id="{{ icon.key }}"
+					    (click)="onPlayerAnnounce( icon.id, $event )"
+					>
+                        <span class="announce-button" [innerHTML]="icon.value"></span>
+                    </a>
+			    </ng-container>
+            </div>
+            <div id="GameAnnounce">
+                <span class="announce-button">{{ 'game_board.game' | translate }}:</span>&nbsp;
+                <span class="announce-button" [innerHTML]="gameAnnounceIcon"></span>
+            </div>
+        </div>
+    </div>
+</div>

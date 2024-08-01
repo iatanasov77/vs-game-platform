@@ -61,9 +61,49 @@ vs_application:
                 attributes:
                     iconClass: "bx bxs-dashboard"
                 display: false
+            
+            #########################################
+            # Static Pages
+            #########################################
+            page_contact:
+                name: vs_application.menu.contact
+                route: vs_application_contact
+                display: false
+            page_about_application:
+                name: vs_application.menu.about_application
+                route: app_about_application
+                display: false
+                
+            #########################################
+            # Game Pages
+            #########################################
             games:
                 name: vs_application.menu.list_games
-                route: vsapp_games_index
+                route: app_games
+                attributes:
+                    iconClass: "bx bxs-dashboard"
+            games_bridge_belote:
+                name: vs_application.menu.games.bridge_belote
+                route: bridge_belote
+                display: false
+                attributes:
+                    iconClass: "bx bxs-dashboard"
+            games_contract_bridge:
+                name: vs_application.menu.games.contract_bridge
+                route: contract_bridge
+                display: false
+                attributes:
+                    iconClass: "bx bxs-dashboard"
+            games_chess:
+                name: vs_application.menu.games.chess
+                route: chess
+                display: false
+                attributes:
+                    iconClass: "bx bxs-dashboard"
+            games_backgammon:
+                name: vs_application.menu.games.backgammon
+                route: backgammon
+                display: false
                 attributes:
                     iconClass: "bx bxs-dashboard"
             user_register:
@@ -85,18 +125,6 @@ vs_application:
                 route: vs_users_profile_show
                 attributes:
                     iconClass: "mdi mdi-account-circle text-muted fs-16 align-middle me-1"
-                    
-            documentation:
-                name: vs_application.menu.documentation
-                uri: "javascript:;"
-                attributes:
-                    iconClass: "mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"
-                    
-#             about:
-#                 name: vs_application.menu.about_application
-#                 route: wgp_about_application
-#                 attributes:
-#                     iconClass: "mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"
                   
             divider_1:
                 isDivider: true

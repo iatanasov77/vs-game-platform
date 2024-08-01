@@ -6,9 +6,8 @@ import { AuthService } from './auth.service';
 import { IAuth } from '../interfaces/auth';
 import { ISignedUrlResponse } from '../interfaces/signed-url-response';
 
-import {AppConstants} from "../constants";
-const {context} = require( '../context' );
-const backendURL = context.backendURL;
+import { AppConstants } from "../constants";
+const { context } = require( '../context' );
 
 /**
  * Restangular Manual: https://github.com/2muchcoffeecom/ngx-restangular
@@ -18,11 +17,20 @@ const backendURL = context.backendURL;
 })
 export class ApiService
 {
+    backendURL: string;
+    
     constructor(
         @Inject(HttpClient) private httpClient: HttpClient,
         @Inject(Restangular) private restangular: Restangular,
         @Inject(AuthService) private authStore: AuthService
-    ) { }
+    ) {
+        this.backendURL = context.backendURL;
+    }
+    
+    loadTranslations( locale: string )
+    {
+        return this.restangular.one( 'get-translations/' + locale ).get();
+    }
     
     /*
      * Centralize Get Api Token To Can Check if Expired and someday to use a reffreah token
@@ -54,15 +62,17 @@ export class ApiService
         return this.restangular.all( "users/register" ).post( formData );
     }
     
-    loginBySignedUrl( signedUrl: string )
+    loginBySignature( apiVerifySiganature: string )
     {
-        this.httpClient.get<ISignedUrlResponse>( signedUrl ).subscribe( ( response: ISignedUrlResponse ) => {            
+        var url = this.backendURL + '/login-by-signature/' + apiVerifySiganature;
+        
+        this.httpClient.get<ISignedUrlResponse>( url ).subscribe( ( response: ISignedUrlResponse ) => {            
             if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
                 let auth: IAuth = {
                     id: response.data.user.id,
                     
                     email: response.data.user.email,
-                    username: response.data.user.email.username,
+                    username: response.data.user.username,
                     
                     fullName: response.data.user.firstName + ' ' + response.data.user.lastName,
                     

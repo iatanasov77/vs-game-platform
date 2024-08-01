@@ -31,10 +31,16 @@ Encore
     }))
     
     /* Embed Angular Component Templates. */
-    .addLoader({
-        test: /\.(html)$/,
-        use: 'raw-loader',
-    })
+    .addLoader(
+        {
+            test: /\.(html)$/,
+            use: 'raw-loader',
+        },
+        {
+            test: /\.(xlf)$/,
+            loader: 'raw-loader'
+        }
+    )
 
     /**
      * Add Entries
@@ -73,6 +79,7 @@ Encore
     .addEntry( 'js/profile', './themes/GamePlatform_VelzonSaas/assets/js/pages/profile.js' )
     .addEntry( 'js/pricing-plans', './themes/GamePlatform_VelzonSaas/assets/js/pages/pricing-plans.js' )
     .addEntry( 'js/home', './themes/GamePlatform_VelzonSaas/assets/js/pages/home.js' )
+    .addEntry( 'js/games', './themes/GamePlatform_VelzonSaas/assets/js/pages/games.js' )
     
     // Games
     .addEntry( 'js/game-platform', './themes/GamePlatform_VelzonSaas/assets/js/games/game-platform/index.js' )

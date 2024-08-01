@@ -4,24 +4,80 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Vankosoft\UsersBundle\Security\SecurityBridge;
 use Vankosoft\ApiBundle\Security\ApiManager;
 use Vankosoft\ApplicationBundle\Component\Status;
 
 class DefaultController extends AbstractController
 {
+    /** @var SecurityBridge */
+    protected $vsSecurityBridge;
+    
     /** @var ApiManager */
     protected $apiManager;
     
+    public function __construct(
+        SecurityBridge $vsSecurityBridge,
+        ApiManager $apiManager
+    ) {
+        $this->vsSecurityBridge = $vsSecurityBridge;
+        $this->apiManager       = $apiManager;
+    }
+    
+    public function getTranslationsAction( $locale, Request $request ): Response
+    {
+        switch ( $locale ) {
+            case 'bg_BG':
+                $translations   = $this->getBulgarianTranslations();
+                break;
+            default:
+                $translations   = $this->getEnglishTranslations();
+        }
+        
+        return new JsonResponse( $translations );
+    }
+    
     public function getVerifySignatureAction( Request $request ): Response
     {
-        $signature  = null;
-        if ( $this->getUser() ) {
-            $signature  = $this->apiManager->getVerifySignature( $this->getUser(), 'vs_api_login_by_signature' );
+        $user                   = $this->vsSecurityBridge->getUser();
+        $signatureComponents    = null;
+        if ( $user ) {
+            $signatureComponents    = $this->apiManager->getVerifySignature( $user, 'vs_api_login_by_signature' );
         }
         
         return new JsonResponse([
             'status'    => Status::STATUS_OK,
-            'signature' => $signature,
+            'signedUrl' => $signatureComponents ? $signatureComponents->getSignedUrl() : null,
         ]);
+    }
+    
+    private function getEnglishTranslations():array
+    {
+        return [
+            'dialogs.close'                     => 'Close',
+            'dialogs.login'                     => 'Login',
+            'dialogs.not_loggedin_message'      => 'You are NOT Logged In.',
+            'dialogs.not_an_account_question'   => 'if you have not an account',
+            'dialogs.create_account_link'       => 'create from here',
+            'game_board.statistics.we'          => 'We',
+            'game_board.statistics.you'         => 'You',
+            'game_board.start_game'             => 'Start Game',
+            'game_board.game'                   => 'Game',
+        ];
+    }
+    
+    private function getBulgarianTranslations():array
+    {
+        return [
+            'dialogs.close'                     => 'Close',
+            'dialogs.login'                     => 'Login',
+            'dialogs.not_loggedin_message'      => 'You are NOT Logged In.',
+            'dialogs.not_an_account_question'   => 'if you have not an account',
+            'dialogs.create_account_link'       => 'create from here',
+            'game_board.statistics.we'          => 'Ние',
+            'game_board.statistics.you'         => 'Вие',
+            'game_board.start_game'             => 'Start Game',
+            'game_board.game'                   => 'Game',
+        ];
     }
 }

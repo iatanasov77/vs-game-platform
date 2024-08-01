@@ -99,17 +99,10 @@ class RegisterController extends BaseRegisterController
             $oUser->setEnabled( false );
             
             /** Populate UserInfo Values */
-            $oUser->getInfo()->setTitle( $form->get( "title" )->getData() );
+            //$oUser->getInfo()->setTitle( $form->get( "title" )->getData() );
             $oUser->getInfo()->setFirstName( $form->get( "firstName" )->getData() );
             $oUser->getInfo()->setLastName( $form->get( "lastName" )->getData() );
-            $oUser->getInfo()->setBirthday( $form->get( "birthday" )->getData() );
-            $oUser->getInfo()->setCountry( $form->get( "country" )->getData() );
-            $oUser->getInfo()->setState( $form->get( "state" )->getData() );
-            $oUser->getInfo()->setCity( $form->get( "city" )->getData() );
-            $oUser->getInfo()->setAddress( $form->get( "address" )->getData() );
-            $oUser->getInfo()->setZip( $form->get( "zip" )->getData() );
-            $oUser->getInfo()->setPhone( $form->get( "phone" )->getData() );
-            $oUser->getInfo()->setMobile( $form->get( "mobile" )->getData() );
+            //$oUser->getInfo()->setBirthday( $form->get( "birthday" )->getData() );
             
             $em->persist( $oUser );
             $em->flush();

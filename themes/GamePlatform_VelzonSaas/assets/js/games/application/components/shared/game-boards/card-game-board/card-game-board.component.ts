@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, Inject, Input } from '@angular/core';
-
+import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import BeloteCardGame from '_@/GamePlatform/Game/BeloteCardGame';
@@ -44,11 +44,11 @@ export class CardGameBoardComponent implements OnInit, OnDestroy
     gameAnnounceIcon: any;
     
     constructor(
-        //private providerBridgeBelote: BridgeBeloteProvider,
-        @Inject(NgbModal) private ngbModal: NgbModal,
+        @Inject( TranslateService ) private translate: TranslateService,
+        @Inject( NgbModal ) private ngbModal: NgbModal,
         
-        @Inject(Store) private store: Store,
-        @Inject(Actions) private actions$: Actions
+        @Inject( Store ) private store: Store,
+        @Inject( Actions ) private actions$: Actions
     ) {
         // DI Not Worked
         this.providerBridgeBelote   = new BridgeBeloteProvider();

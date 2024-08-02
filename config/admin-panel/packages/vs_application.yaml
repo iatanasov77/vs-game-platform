@@ -690,7 +690,7 @@ vs_application:
         
         mainVankosoftMenu:
             games:
-                name: vs_application.menu.game_platform
+                name: vs_application.menu.list_games
                 uri: "javascript:;"
                 attributes:
                     iconClass: icon_genius
@@ -724,6 +724,13 @@ vs_application:
                           id: int
                         display: false
                         
+            game_rooms:
+                name: vs_application.menu.list_game_rooms
+                uri: "javascript:;"
+                attributes:
+                    iconClass: icon_genius
+                    breadcrumb_route: vsapp_game_rooms_index
+                childs:
                     list_rooms:
                         name: vs_application.menu.list_game_rooms
                         route: vsapp_game_rooms_index
@@ -734,6 +741,20 @@ vs_application:
                     update_room:
                         name: vs_application.menu.edit_game_room
                         route: vsapp_game_rooms_update
+                        routeParameters:
+                          id: int
+                        display: false
+                        
+                    list_players:
+                        name: vs_application.menu.list_game_players
+                        route: vsapp_game_players_index
+                    create_player:
+                        name: vs_application.menu.create_new_game_player
+                        route: vsapp_game_players_create
+                        display: true
+                    update_player:
+                        name: vs_application.menu.edit_game_player
+                        route: vsapp_game_players_update
                         routeParameters:
                           id: int
                         display: false

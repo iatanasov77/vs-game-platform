@@ -5,6 +5,8 @@ game_platform:
         list_games: List Games
         list_game_rooms: Game Rooms
         game_room: Game Room
+        list_game_players: Game Players
+        game_player: Game Player
         game: Game
         
         remember_my_password: Wait, I remember my password...
@@ -32,6 +34,10 @@ game_platform:
             contract_bridge: Contract Bridge
             chess: Chess
             backgammon: Backgammon
+            
+        game_players:
+            type: Player Type
+            user: User
         
     form:
         login:
@@ -55,4 +61,11 @@ game_platform:
             game_placeholder: '-- Choose a Game --'
             players: Players
             players_placeholder: '-- Select Players --'
+            
+        game_player:
+            type: Player Type
+            user: User
+            user_placeholder: '-- Attach an User --'
+            rooms: Rooms
+            rooms_placeholder: '-- Select Rooms --'
     

@@ -5,11 +5,12 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 use App\Entity\GameRoom;
 use App\Entity\Game;
-use App\Entity\UserManagement\User;
+use App\Entity\GamePlayer;
 
 class GameRoomForm extends AbstractForm
 {
@@ -25,6 +26,11 @@ class GameRoomForm extends AbstractForm
                 'data'      => \json_encode( $entity->getPlayers()->getKeys() )
             ])
         
+            ->add( 'name', TextType::class, [
+                'label'                 => 'vs_application.form.name',
+                'translation_domain'    => 'VSApplicationBundle',
+            ])
+            
             ->add( 'game', EntityType::class, [
                 'label'                 => 'game_platform.form.game_room.game',
                 'placeholder'           => 'game_platform.form.game_room.game_placeholder',
@@ -42,8 +48,8 @@ class GameRoomForm extends AbstractForm
                 'required'              => true,
                 'mapped'                => true,
                 'multiple'              => true,
-                'class'                 => User::class,
-                'choice_label'          => 'email',
+                'class'                 => GamePlayer::class,
+                'choice_label'          => 'name',
             ])
         ;
     }

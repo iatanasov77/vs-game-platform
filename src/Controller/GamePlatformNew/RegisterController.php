@@ -16,10 +16,14 @@ use Vankosoft\UsersBundle\Security\AnotherLoginFormAuthenticator;
 use Symfony\Component\IntlSubdivision\IntlSubdivision;
 
 use App\Entity\UserManagement\UserInfo;
+use App\Entity\GamePlayer;
 
 class RegisterController extends BaseRegisterController
 {
     use GlobalFormsTrait;
+    
+    /** @var Factory */
+    private $playersFactory;
     
     public function __construct(
         ManagerRegistry $doctrine,
@@ -33,7 +37,8 @@ class RegisterController extends BaseRegisterController
         RepositoryInterface $pagesRepository,
         UserAuthenticatorInterface $guardHandler,
         AnotherLoginFormAuthenticator $authenticator,
-        array $parameters
+        array $parameters,
+        Factory $playersFactory
     ) {
         parent::__construct(
             $doctrine,
@@ -49,6 +54,8 @@ class RegisterController extends BaseRegisterController
             $authenticator,
             $parameters
         );
+        
+        $this->playersFactory   = $playersFactory;
     }
     
     public function index( Request $request, MailerInterface $mailer ): Response
@@ -99,10 +106,13 @@ class RegisterController extends BaseRegisterController
             $oUser->setEnabled( false );
             
             /** Populate UserInfo Values */
+            $oUser->getInfo()->setDesignation( 'Game Platform User' );
             //$oUser->getInfo()->setTitle( $form->get( "title" )->getData() );
             $oUser->getInfo()->setFirstName( $form->get( "firstName" )->getData() );
             $oUser->getInfo()->setLastName( $form->get( "lastName" )->getData() );
             //$oUser->getInfo()->setBirthday( $form->get( "birthday" )->getData() );
+            
+            $this->createPlayer( $oUser );
             
             $em->persist( $oUser );
             $em->flush();
@@ -111,5 +121,18 @@ class RegisterController extends BaseRegisterController
             
             return $this->redirectToRoute( $this->params['defaultRedirect'] );
         }
+    }
+    
+    private function createPlayer( &$oUser )
+    {
+        $oPlayer    = $this->playersFactory->createNew();
+        
+        $oPlayer->setUser( $oUser );
+        $oPlayer->setName( $oUser->getUsername() );
+        $oPlayer->setType( GamePlayer::TYPE_USER );
+        
+        $em         = $this->doctrine->getManager();
+        $em->persist( $oPlayer );
+        $em->flush();
     }
 }

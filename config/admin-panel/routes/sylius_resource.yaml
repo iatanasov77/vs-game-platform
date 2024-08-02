@@ -22,3 +22,11 @@ vsapp_game_rooms:
         path: /game-rooms
         templates: "Pages/GameRooms"
     type: sylius.resource
+    
+vsapp_game_players:
+    resource: |
+        alias: vsapp.game_players
+        except: ['show']
+        path: /game-players
+        templates: "Pages/GamePlayers"
+    type: sylius.resource

@@ -17,7 +17,7 @@ use Vankosoft\ApiBundle\Model\Traits\ApiUserEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-use App\Entity\GameRoom;
+use App\Entity\GamePlayer;
 
 #[ORM\Entity]
 #[ORM\Table(name: "VSUM_Users")]
@@ -34,16 +34,15 @@ class User extends BaseUser implements
     use UserSubscriptionAwareEntity;
     use ApiUserEntity;
     
-    #[ORM\ManyToMany(targetEntity: GameRoom::class, mappedBy: "players", indexBy: "id")]
-    private $gameRooms;
+    /** @var GamePlayer */
+    #[ORM\OneToOne(targetEntity: GamePlayer::class, mappedBy: "user", cascade: ["persist", "remove"], orphanRemoval: true)]
+    private $player;
     
     public function __construct()
     {
         $this->newsletterSubscriptions  = new ArrayCollection();
         $this->orders                   = new ArrayCollection();
         $this->pricingPlanSubscriptions = new ArrayCollection();
-        
-        $this->gameRooms                = new ArrayCollection();
         
         parent::__construct();
     }
@@ -57,8 +56,15 @@ class User extends BaseUser implements
         return $this->getRolesFromCollection();
     }
     
-    public function getGameRooms(): Collection
+    public function getPlayer(): ?GamePlayer
     {
-        return $this->gameRooms;
+        return $this->player;
+    }
+    
+    public function setPlayer( GamePlayer $player ): self
+    {
+        $this->player = $player;
+        
+        return $this;
     }
 }

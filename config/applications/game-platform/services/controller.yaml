@@ -84,7 +84,7 @@ services:
                 defaultRedirect: '%vs_users.default_redirect%',
                 mailerUser: '%vs_application.mailer_user%',
             }
-            - '@vs_payment.repository.customer_group'
+            - '@vsapp.factory.game_players'
         calls:
             - setTokenGenerator: ['@?symfonycasts.verify_email.token_generator']
             - setVerifyEmailHelper: ['@?symfonycasts.verify_email.helper']

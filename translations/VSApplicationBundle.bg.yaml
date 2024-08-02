@@ -15,6 +15,9 @@ vs_application:
         list_game_rooms: Game Rooms
         create_new_game_room: Create Game Room
         edit_game_room: Edit Game Room
+        list_game_players: Game Players
+        create_new_game_player: Create Game Player
+        edit_game_player: Edit Game Player
         
         profile: Профил
         my_profile: Моят Профил

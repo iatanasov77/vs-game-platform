@@ -21,3 +21,10 @@ sylius_resource:
                 repository: Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository
                 controller: App\Controller\AdminPanel\GameRoomController
                 form: App\Form\GameRoomForm
+        vsapp.game_players:
+            driver: doctrine/orm
+            classes:
+                model: App\Entity\GamePlayer
+                repository: Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository
+                controller: App\Controller\AdminPanel\GamePlayerController
+                form: App\Form\GamePlayerForm

@@ -6,7 +6,8 @@
         <tr>
             <th>{{ 'vs_application.template.items_index_row_number' | trans( {},'VSApplicationBundle' ) }}</th>
             <th>{{ 'vs_application.template.items_index_row_name' | trans( {},'VSApplicationBundle' ) }}</th>
-            <th>{{ 'game_platform.template.items_index_row_game' | trans( {},'GamePlatform' ) }}</th>
+            <th>{{ 'game_platform.template.game_players.type' | trans( {},'GamePlatform' ) }}</th>
+            <th>{{ 'game_platform.template.game_players.user' | trans( {},'GamePlatform' ) }}</th>
             <th>{{ 'vs_application.template.items_index_row_action' | trans( {},'VSApplicationBundle' ) }}</th>
         </tr>
     </thead>
@@ -15,17 +16,18 @@
             <tr>
                 <td>{{ loop.index }}</td>
                 <td>{{ item.name }}</td>
-                <td>{{ item.game.title }}</td>
+                <td>{{ item.type }}</td>
+                <td>{% if item.user %}{{ item.user.username }}{% endif %}</td>
                 <td>
                     <div class="btn-group">
                         <a class="btn btn-primary"
-                            href="{{ path('vsapp_game_rooms_update', {'id': item.id}) }}"
+                            href="{{ path('vsapp_game_players_update', {'id': item.id}) }}"
                             title="{{ 'vs_application.template.items_index_row_action_edit' | trans( {},'VSApplicationBundle' ) }}"
                         >
                             <i class="fas fa-edit"></i>
                         </a>
                         <a class="btn btn-danger btnDelete" 
-                            href="{{ path('vsapp_game_rooms_delete', {'id': item.id}) }}"
+                            href="{{ path('vsapp_game_players_delete', {'id': item.id}) }}"
                             data-csrfToken="{{ csrf_token( item.id ) }}"
                             title="{{ 'vs_application.template.items_index_row_action_delete' | trans( {},'VSApplicationBundle' ) }}"
                         >
@@ -36,7 +38,7 @@
             </tr>
         {% else %}
             <tr>
-                <td colspan="4">
+                <td colspan="5">
                     {{ alerts.info( 'vs_application.template.there_are_no_items_to_display' | trans( {},'VSApplicationBundle' ) ) }}
                 </td>
             </tr>

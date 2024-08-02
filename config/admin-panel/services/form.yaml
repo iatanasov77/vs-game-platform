@@ -38,3 +38,10 @@ services:
             - '%vsapp.model.game_rooms.class%'
         tags:
             - form.type
+    vsapp.form.game_players:
+        public: true
+        class: App\Form\GamePlayerForm
+        arguments:
+            - '%vsapp.model.game_players.class%'
+        tags:
+            - form.type

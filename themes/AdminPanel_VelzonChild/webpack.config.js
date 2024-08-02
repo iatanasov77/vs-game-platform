@@ -148,6 +148,8 @@ Encore
     .addEntry( 'js/games', './themes/AdminPanel_VelzonChild/assets/js/pages/games.js' )
     .addEntry( 'js/game-rooms', './themes/AdminPanel_VelzonChild/assets/js/pages/game-rooms.js' )
     .addEntry( 'js/game-rooms-edit', './themes/AdminPanel_VelzonChild/assets/js/pages/game-rooms-edit.js' )
+    .addEntry( 'js/game-players', './themes/AdminPanel_VelzonChild/assets/js/pages/game-players.js' )
+    .addEntry( 'js/game-players-edit', './themes/AdminPanel_VelzonChild/assets/js/pages/game-players-edit.js' )
 ;
 
 //////////////////////////////////////////////////////////////////

@@ -19,5 +19,15 @@ services:
         tags: ['controller.service_arguments']
         calls:
             - [ setContainer, [ '@service_container' ] ]
-
-
+            
+    App\Controller\Api\Games\CreateRoomController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        
+    App\Controller\Api\Games\EditRoomController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        
+    App\Controller\Api\Games\DeleteRoomController:
+        tags: ['controller.service_arguments']
+        autowire: true

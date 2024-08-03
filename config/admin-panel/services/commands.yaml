@@ -1,0 +1,15 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: true
+    
+    vsapp.command.generate_players:
+        autowire: false
+        class: App\Command\GeneratePlayersCommand
+        arguments:
+            - '@doctrine'
+            - '@vsapp.repository.game_players'
+            - '@vsapp.factory.game_players'
+        tags:
+            - 'console.command'

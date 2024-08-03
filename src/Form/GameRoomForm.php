@@ -45,7 +45,7 @@ class GameRoomForm extends AbstractForm
                 'label'                 => 'game_platform.form.game_room.players',
                 'placeholder'           => 'game_platform.form.game_room.players_placeholder',
                 'translation_domain'    => 'GamePlatform',
-                'required'              => true,
+                'required'              => false,
                 'mapped'                => true,
                 'multiple'              => true,
                 'class'                 => GamePlayer::class,

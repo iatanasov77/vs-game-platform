@@ -8,7 +8,7 @@ imports:
 
 api_platform:
     eager_loading:
-        max_joins: 100
+        max_joins: 10
 
 vs_api:
     enabled: true

@@ -7,11 +7,11 @@ vs_application:
     project_type: extended_application
     
     vankosoft_api:
-        enabled: false
+        enabled: true
         project: 'game-platform'
         connection:
-            host: 'http://api.vankosoft.org/api'
-            user: apiadmin
+            host: '%env(VANKOSOFT_API_HOST)%'
+            user: '%env(VANKOSOFT_API_USER)%'
             password: '%env(VANKOSOFT_API_PASSWORD)%'
     
     resources:

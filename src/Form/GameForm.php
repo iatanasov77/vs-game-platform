@@ -104,7 +104,8 @@ class GameForm extends AbstractForm
         parent::configureOptions( $resolver );
         
         $resolver->setDefaults([
-            'data_class' => Game::class
+            'csrf_protection'   => false,
+            'data_class'        => Game::class
         ]);
     }
     

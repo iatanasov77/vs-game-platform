@@ -59,7 +59,8 @@ class GameRoomForm extends AbstractForm
         parent::configureOptions( $resolver );
         
         $resolver->setDefaults([
-            'data_class' => GameRoom::class
+            'csrf_protection'   => false,
+            'data_class'        => GameRoom::class
         ]);
     }
     

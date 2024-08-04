@@ -62,6 +62,11 @@ class GameCategoryForm extends AbstractForm
     public function configureOptions( OptionsResolver $resolver ): void
     {
         parent::configureOptions( $resolver );
+        
+        $resolver->setDefaults([
+            'csrf_protection'   => false,
+            'data_class'        => GameCategory::class
+        ]);
     }
     
     public function getName(): string

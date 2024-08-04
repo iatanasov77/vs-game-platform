@@ -1,0 +1,35 @@
+{% extends "@VSApplication/layout.html.twig" %}
+
+{# Import Macros #}
+{% from "@VSApplication/Macros/pagination.html.twig" import pagination %}
+
+{# Override Blocs #}
+{% block title %}{{ parent() }} :: {{ 'game_platform.template.list_game_rooms' | trans( {},'GamePlatform' ) }}{% endblock %}
+{% block pageTitle %}
+	<h4 class="pageheader-title">
+    	<i class="icon_genius"></i> 
+        {{ 'game_platform.template.list_game_rooms' | trans( {},'GamePlatform' ) }}
+   	</h4>
+{% endblock %}
+
+{% block content %}
+	<div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+            {% include 'Pages/GameRooms/_table.html.twig' %}
+        </div>
+    </div>
+
+    {% include '@VSApplication/Partial/resource-delete.html.twig' %}
+{% endblock %}
+
+{% block head_styles %}
+    {{ parent() }}
+    
+    {{ encore_entry_link_tags( 'js/game-rooms', null, 'VelzonTheme' ) }}
+{% endblock %}
+
+{% block body_scripts %}
+    {{ parent() }}
+    
+    {{ encore_entry_script_tags( 'js/game-rooms', null, 'VelzonTheme' ) }}
+{% endblock %}

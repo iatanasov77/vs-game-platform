@@ -133,4 +133,5 @@ vs_application:
                 name: vs_application.menu.logout
                 route: app_logout
                 attributes:
+                    id: application_logout
                     iconClass: "mdi mdi-logout text-muted fs-16 align-middle me-1"

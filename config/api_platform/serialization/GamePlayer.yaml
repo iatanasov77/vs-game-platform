@@ -1,0 +1,10 @@
+App\Entity\GamePlayer:
+    attributes:
+        id:
+            groups: ['game-room:read']
+        type:
+            groups: ['game-room:read', 'game-room:create', 'game-room:update']
+        name:
+            groups: ['game-room:read', 'game-room:create', 'game-room:update']
+#         rooms:
+#             groups: ['game-room:read', 'game-room:create', 'game-room:update']

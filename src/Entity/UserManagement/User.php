@@ -17,6 +17,8 @@ use Vankosoft\ApiBundle\Model\Traits\ApiUserEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
+use App\Entity\GamePlayer;
+
 #[ORM\Entity]
 #[ORM\Table(name: "VSUM_Users")]
 class User extends BaseUser implements
@@ -31,6 +33,10 @@ class User extends BaseUser implements
     use CustomerEntity;
     use UserSubscriptionAwareEntity;
     use ApiUserEntity;
+    
+    /** @var GamePlayer */
+    #[ORM\OneToOne(targetEntity: GamePlayer::class, mappedBy: "user", cascade: ["persist", "remove"], orphanRemoval: true)]
+    private $player;
     
     public function __construct()
     {
@@ -48,5 +54,17 @@ class User extends BaseUser implements
     {
         /* Use RolesCollection */
         return $this->getRolesFromCollection();
+    }
+    
+    public function getPlayer(): ?GamePlayer
+    {
+        return $this->player;
+    }
+    
+    public function setPlayer( GamePlayer $player ): self
+    {
+        $this->player = $player;
+        
+        return $this;
     }
 }

@@ -88,6 +88,7 @@ class BeloteCardGame extends AbstractGame
         
         //Create a new deck of cards
         this.deck    = new cards.Deck();
+        
         //cards.all contains all cards, put them all in the deck
         this.deck.addCards( cards.all );
         

@@ -8,8 +8,7 @@ import Announce from '_@/GamePlatform/CardGameAnnounce/Announce';
 
 import { BridgeBeloteProvider } from '../../../../providers/bridge-belote-provider';
 import templateString from './card-game-board.component.html'
-
-import { UserNotLoggedInComponent } from '../../dialogs/not-loggedin-dialog/not-loggedin-dialog.component';
+import styleString from './card-game-board.component.scss'
 
 import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
@@ -31,12 +30,16 @@ declare var $: any;
     selector: 'card-game-board',
     
     template: templateString || 'Template Not Loaded !!!',
-    styles: []
+    styles: [
+        styleString || 'CSS Not Loaded !!!'
+    ]
 })
 export class CardGameBoardComponent implements OnInit, OnDestroy
 {
     @Input() isLoggedIn: boolean        = false;
     @Input() developementClass: string  = '';
+
+    gameStarted: boolean = false;
 
     providerBridgeBelote: any;
     game: any;
@@ -84,26 +87,6 @@ export class CardGameBoardComponent implements OnInit, OnDestroy
         });
     }
     
-    onStartGame( event: any ): void
-    {
-        //event.preventDefault();
-        if ( ! this.isLoggedIn ) {
-            this.openLoginForm();
-            return;
-        }
-        
-        this.game.startGame();
-        $( '#btnStartGame' ).hide();
-    }
-    
-    onStartGameNew( event: any )
-    {
-        this.store.dispatch( startGame() );
-        this.store.subscribe( ( state: any ) => {
-            //this.showSpinner    = state.main.latestTablatures == null;
-        });
-    }
-    
     onPlayerAnnounce( announceId: any, event: any )
     {
         event.preventDefault();
@@ -122,15 +105,6 @@ export class CardGameBoardComponent implements OnInit, OnDestroy
         this.store.dispatch( playerAnnounce() );
         this.store.subscribe( ( state: any ) => {
             //this.showSpinner    = state.main.latestTablatures == null;
-        });
-    }
-    
-    openLoginForm(): void
-    {
-        const modalRef = this.ngbModal.open( UserNotLoggedInComponent );
-        modalRef.componentInstance.closeModal.subscribe( () => {
-            // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
-            modalRef.dismiss();
         });
     }
 }

@@ -1,9 +1,7 @@
-
-
 vsapp_games:
     resource: |
         alias: vsapp.games
-        #except: ['show']
+        except: ['show']
         path: /games
         templates: "Pages/Games"
     type: sylius.resource
@@ -12,7 +10,23 @@ vsapp_games:
 vsapp_game_categories:
     resource: |
         alias: vsapp.game_categories
-        #except: ['show']
+        except: ['show']
         path: /game-categories
         templates: "Pages/GameCategories"
+    type: sylius.resource
+    
+vsapp_game_rooms:
+    resource: |
+        alias: vsapp.game_rooms
+        except: ['show']
+        path: /game-rooms
+        templates: "Pages/GameRooms"
+    type: sylius.resource
+    
+vsapp_game_players:
+    resource: |
+        alias: vsapp.game_players
+        except: ['show']
+        path: /game-players
+        templates: "Pages/GamePlayers"
     type: sylius.resource

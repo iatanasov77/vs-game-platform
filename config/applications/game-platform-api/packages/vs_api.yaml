@@ -1,10 +1,14 @@
 imports:
-    #- { resource: "@VSApiBundle/Resources/config/app/security.yaml" }
     - { resource: "@VSApiBundle/Resources/config/app/api_platform.yaml" }
     - { resource: "@VSApiBundle/Resources/config/app/serializer.yaml" }
     - { resource: "@VSApiBundle/Resources/config/app/lexik_jwt_authentication.yaml" }
+    - { resource: "@VSApiBundle/Resources/config/app/gesdinet_jwt_refresh_token.yaml" }
     - { resource: "@VSApiBundle/Resources/config/app/nelmio_cors.yaml" }
     - { resource: "@VSApiBundle/Resources/config/app/mercure.yaml" }
+
+api_platform:
+    eager_loading:
+        max_joins: 10
 
 vs_api:
     enabled: true

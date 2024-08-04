@@ -14,7 +14,11 @@
             <a href="/register">{{ 'dialogs.create_account_link' | translate }}</a>
         </div>
         <div class="col-2">
-            <button type="button" class="btn btn-outline-dark" (click)="dismissModal()">{{ 'dialogs.close' | translate }}</button>
+            <button type="button" class="btn btn-outline-dark float-end"
+                (click)="dismissModal()"
+            >
+                {{ 'dialogs.close' | translate }}
+            </button>
         </div>
     </div>
 </div>

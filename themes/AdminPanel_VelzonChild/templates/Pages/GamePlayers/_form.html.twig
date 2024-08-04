@@ -1,0 +1,52 @@
+{% import "@VSApplication/Macros/form.html.twig" as vs_form %}
+
+{% if formErrors is defined %}
+    {{ vs_form.errors( formErrors ) }}
+{% endif %}
+    
+{% if useFormMethod is defined %}{% set formMethod = useFormMethod %}{% else %}{% set formMethod = 'PUT' %}{% endif %}
+{{ form_start( form, { 'attr': {'class': 'form-horizontal', 'id': 'form-post'}, 'method': formMethod } ) }}
+    
+    <div class="form-group">
+        {{ form_label(form.user, null, {
+            'label_attr': {'class': 'form-label'}
+            }) 
+        }}
+        
+        {{ form_widget(form.user, {'attr': {'class': 'form-select'}}) }}
+    </div>
+    
+    {{ form_widget( form.playerRooms ) }}
+    <div class="form-group">
+        {{ form_label(form.rooms, null, {
+            'label_attr': {'class': 'form-label'}
+            }) 
+        }}
+        
+        {{ form_widget(form.rooms, {
+            'attr': {
+                'class': 'form-select',
+            }
+        }) }}
+    </div>
+    
+    <div class="form-group">
+        {{ form_label(form.type, null, {
+            'label_attr': {'class': 'form-label'}
+            }) 
+        }}
+        
+        {{ form_widget(form.type, {'attr': {'class': 'form-select'}}) }}
+    </div>
+    
+    <div class="form-group">
+        {{ form_label(form.name, null, {
+            'label_attr': {'class': 'form-label'}
+            }) 
+        }}
+        
+        {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+    </div>
+    
+    {{ vs_form.buttons( form ) }}
+{{ form_end( form, {'render_rest': false} ) }}

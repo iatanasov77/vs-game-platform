@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
-import cssCardGameString from '../application/assets/css/CardGame.scss'
 import cssGameString from './contract-bridge.component.scss'
 import templateString from './contract-bridge.component.html'
 
@@ -11,7 +10,6 @@ declare var $: any;
     
     template: templateString || 'Template Not Loaded !!!',
     styles: [
-        cssCardGameString || 'Template Not Loaded !!!',
         cssGameString || 'Template Not Loaded !!!',
     ]
 })

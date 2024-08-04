@@ -1,3 +1,7 @@
+##############################################################
+# Cannot Remove Sylius Themes From API Application Because 
+# It is Used in Vankosoft ApplicationBundle Theme Services.
+##############################################################
 sylius_theme:
     sources:
         filesystem:

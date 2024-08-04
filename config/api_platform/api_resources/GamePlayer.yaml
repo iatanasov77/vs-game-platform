@@ -1,0 +1,9 @@
+resources:
+    App\Entity\GamePlayer:
+        operations:
+            players_get:
+                class: ApiPlatform\Metadata\GetCollection
+                method: GET
+                uriTemplate: /players
+                normalizationContext:
+                    groups: ['game-room:read']

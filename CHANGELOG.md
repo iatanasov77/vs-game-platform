@@ -1,3 +1,18 @@
+0.8.3	|	Release date: **04.08.2024**
+============================================
+* New Features:
+  - Create Login/Logout Angular Application on Symfony Login/Logout Actions.
+  - Make User Registration.
+  - Create a GameRoom Resource.
+  - Create a GamePlayer Resource.
+  - Use VankoSoft API Credentials from ENV Variables.
+  - Add GameRoom and GamePlayer API Resources.
+* Bug-Fixes and Improvements:
+  - Improve API Configuration.
+  - Fix All AdminPanel Forms.
+  - Refactoring of Angular Components.
+
+
 0.8.2	|	Release date: **01.08.2024**
 ============================================
 * New Features and Improvements:

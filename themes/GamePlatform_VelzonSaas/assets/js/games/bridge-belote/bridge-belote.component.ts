@@ -5,7 +5,6 @@ import { loginBySignature } from '../application/+store/login.actions';
 import { selectAuth, selectError, selectIsLoading } from '../application/+store/login.selectors';
 
 import { AuthService } from '../application/services/auth.service'
-import { ApiService } from '../application/services/api.service'
 
 import cssGameString from './bridge-belote.component.scss'
 import templateString from './bridge-belote.component.html'
@@ -35,8 +34,6 @@ export class BridgeBeloteComponent implements OnInit, OnDestroy
     constructor(
         @Inject( ElementRef ) private elementRef: ElementRef,
         @Inject( AuthService ) private authStore: AuthService,
-        @Inject( ApiService ) private apiService: ApiService,
-        
         @Inject( Store ) private store: Store
     ) {
         this.store.select( selectAuth ).subscribe( state => ( this.auth = state ) );

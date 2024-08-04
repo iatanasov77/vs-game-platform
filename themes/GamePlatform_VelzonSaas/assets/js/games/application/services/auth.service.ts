@@ -1,7 +1,13 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Injectable, Inject } from '@angular/core';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 
+import { HttpClient } from '@angular/common/http'
+import { Restangular } from 'ngx-restangular';
+
+const { context } = require( '../context' );
+import { AppConstants } from "../constants";
 import { IAuth } from '../interfaces/auth';
+import { ISignedUrlResponse } from '../interfaces/signed-url-response';
 
 /**
  * Manual: https://blog.jscrambler.com/working-with-angular-local-storage/
@@ -13,13 +19,19 @@ import { IAuth } from '../interfaces/auth';
 })
 export class AuthService
 {
+    backendURL: string;
+    
     authKey = "auth";
     
     loggedIn: boolean;
     loggedIn$: BehaviorSubject<boolean>;
     
-    constructor()
-    {
+    constructor(
+        @Inject( HttpClient ) private httpClient: HttpClient,
+        @Inject( Restangular ) private restangular: Restangular
+    ) {
+        this.backendURL = context.backendURL;
+        
         let auth        = this.getAuth();
         this.loggedIn   = auth && auth.apiToken ? true : false;
         this.loggedIn$  = new BehaviorSubject<boolean>( this.loggedIn );
@@ -28,6 +40,65 @@ export class AuthService
     public isLoggedIn(): Observable<boolean>
     {
         return this.loggedIn$.asObservable();
+    }
+    
+    /*
+     * Centralize Get Api Token To Can Check if Expired and someday to use a reffreah token
+     * ===========================================================================================
+     *      https://github.com/markitosgv/JWTRefreshTokenBundle
+     *      https://symfony.com/bundles/LexikJWTAuthenticationBundle/current/index.html#about-token-expiration
+     */
+     getApiToken(): string
+     {
+        let auth        = this.getAuth();
+        
+        return auth ? auth.apiToken : '';
+     }
+    
+    login( credentials: any )
+    {
+        return this.restangular.all( "login_check" ).post( credentials );
+    }
+    
+    loginBySignature( apiVerifySiganature: string ): Observable<IAuth>
+    {
+        var url = this.backendURL + '/login-by-signature/' + apiVerifySiganature;
+        
+        return this.httpClient.get<ISignedUrlResponse>( url )
+        .pipe(
+            tap( ( response: any ) => {
+                if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
+                    let auth: IAuth = {
+                        id: response.data.user.id,
+                        
+                        email: response.data.user.email,
+                        username: response.data.user.username,
+                        
+                        fullName: response.data.user.firstName + ' ' + response.data.user.lastName,
+                        
+                        apiToken: response.data.tokenString,
+                        tokenCreated: response.data.token.iat,
+                        tokenExpired: response.data.token.exp,
+                        
+                        apiRefreshToken: response.data.refreshToken,
+                    };
+                    
+                    this.createAuth( auth );
+                }
+            })
+        );
+    }
+    
+    logout()
+    {
+        // Need to Logout From Api Server
+    
+        this.removeAuth();
+    }
+    
+    register( formData: any )
+    {
+        return this.restangular.all( "users/register" ).post( formData );
     }
     
     public checkTokenExpired( auth: IAuth ): boolean

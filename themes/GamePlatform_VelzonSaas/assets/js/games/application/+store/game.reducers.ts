@@ -4,7 +4,7 @@ import {
     startGameSuccess,
     playerAnnounceSuccess,
     loadGameSuccess
-} from "./actions";
+} from "./game.actions";
 
 import ICardGame from '_@/GamePlatform/Game/CardGameInterface';
 import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
@@ -23,29 +23,27 @@ interface IAppState
     router: ReturnType<typeof routerReducer>
 }
 
-const mainInitialState: IMainState = {
+const initialState: IMainState = {
     cardGame:   null,
     announce:   null,
     game:       null
 };
 
-const mainReducer = createReducer<IMainState>(
-    mainInitialState,
-    
+const mainReducer = createReducer<IMainState>( initialState,
     on( startGameSuccess, ( state, { cardGame } ) => {
-      return { ...state, cardGame };
+        return { ...state, cardGame };
     }),
     
     on( playerAnnounceSuccess, ( state, { announce } ) => {
-      return { ...state, announce };
+        return { ...state, announce };
     }),
     
     on( loadGameSuccess, ( state, { game } ) => {
-      return { ...state, game };
+        return { ...state, game };
     })
 );
 
-export const reducers: ActionReducerMap<IAppState> = {
+export const gameReducers: ActionReducerMap<IAppState> = {
     main: mainReducer,
     router: routerReducer,
 };

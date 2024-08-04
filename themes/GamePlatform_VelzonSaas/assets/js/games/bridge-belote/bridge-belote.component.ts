@@ -1,4 +1,8 @@
 import { Component, OnInit, OnDestroy, Inject, ElementRef, isDevMode } from '@angular/core';
+import { Store } from '@ngrx/store';
+
+import { loginBySignature } from '../application/+store/login.actions';
+import { selectAuth, selectError, selectIsLoading } from '../application/+store/login.selectors';
 
 import { AuthService } from '../application/services/auth.service'
 import { ApiService } from '../application/services/api.service'
@@ -24,25 +28,37 @@ export class BridgeBeloteComponent implements OnInit, OnDestroy
     isLoggedIn: boolean         = false;
     developementClass: string   = '';
     
+    auth        = null;
+    error       = '';
+    isLoading   = false;
+  
     constructor(
         @Inject( ElementRef ) private elementRef: ElementRef,
         @Inject( AuthService ) private authStore: AuthService,
-        @Inject( ApiService ) private apiService: ApiService
+        @Inject( ApiService ) private apiService: ApiService,
+        
+        @Inject( Store ) private store: Store
     ) {
+        this.store.select( selectAuth ).subscribe( state => ( this.auth = state ) );
+        this.store.select( selectError ).subscribe( state => ( this.error = state ) );
+        this.store.select( selectIsLoading ).subscribe( state => ( this.isLoading = state ) );
+    
         if( isDevMode() ) {
             this.developementClass  = 'developement';
         }
         
         this.apiVerifySiganature = this.elementRef.nativeElement.getAttribute( 'apiVerifySiganature' );
-    
-        if ( ! this.isLoggedIn && this.apiVerifySiganature?.length ) {
-             this.apiService.loginBySignature( this.apiVerifySiganature );
-        }
         
         this.authStore.isLoggedIn().subscribe( ( isLoggedIn: boolean ) => {
             //alert( isLoggedIn );
             this.isLoggedIn = isLoggedIn;
         });
+        
+        if ( ! this.isLoggedIn && this.apiVerifySiganature?.length ) {
+             //this.apiService.loginBySignature( this.apiVerifySiganature );
+             
+             this.store.dispatch( loginBySignature( { apiVerifySiganature: this.apiVerifySiganature } ) );
+        }
         
         //this.debugApplication();
     }

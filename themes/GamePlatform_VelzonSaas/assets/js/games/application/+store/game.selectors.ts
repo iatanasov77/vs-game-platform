@@ -1,5 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store'
-import { IMainState } from './index';
+import { IMainState } from './game.reducers';
 import { RouterStateUrl } from './router';
 
 const mainSelector                  = createFeatureSelector<IMainState>( 'main' );

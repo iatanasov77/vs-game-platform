@@ -21,8 +21,8 @@ import {
     playerAnnounce,
     playerAnnounceFailure,
     playerAnnounceSuccess
-} from '../../../../+store/actions';
-import { runStartGame, runMakeAnnounce } from '../../../../+store/selectors';
+} from '../../../../+store/game.actions';
+import { runStartGame, runMakeAnnounce } from '../../../../+store/game.selectors';
 
 declare var $: any;
 

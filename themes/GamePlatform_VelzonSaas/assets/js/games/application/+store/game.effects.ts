@@ -15,13 +15,11 @@ import {
     loadGame,
     loadGameFailure,
     loadGameSuccess
-} from "./actions";
+} from "./game.actions";
 
 import { GameService } from "../services/game.service";
 import ICardGame from '_@/GamePlatform/Game/CardGameInterface';
 import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
-
-import { ApiService } from "../services/api.service";
 import { IGame } from '../interfaces/game';
 
 /**
@@ -40,8 +38,7 @@ export class Effects
 {
     constructor(
         @Inject(Actions) private actions$: Actions,
-        @Inject(GameService) private gameService: GameService,
-        @Inject(ApiService) private apiService: ApiService
+        @Inject(GameService) private gameService: GameService
     ) { }
     
     startGame = createEffect( (): any => this.actions$.pipe(
@@ -62,7 +59,7 @@ export class Effects
     
     loadGame = createEffect( (): any => this.actions$.pipe(
         ofType( loadGame ),
-        switchMap( ( { id } ) => this.apiService.loadGame( id ).pipe(
+        switchMap( ( { id } ) => this.gameService.loadGame( id ).pipe(
             map( ( game: IGame ) => loadGameSuccess( { game } ) ),
             catchError( error => [loadGameFailure( { error } )] )
         ))

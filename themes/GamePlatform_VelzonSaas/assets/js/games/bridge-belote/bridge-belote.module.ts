@@ -15,9 +15,11 @@ import { StoreModule } from '@ngrx/store';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { EffectsModule } from '@ngrx/effects';
 
-import { reducers } from '../application/+store';
+import { loginReducer } from '../application/+store/login.reducers';
+
+import { gameReducers } from '../application/+store/game.reducers';
 import { CustomSerializer } from '../application/+store/router';
-import { Effects } from '../application/+store/effects';
+import { Effects } from '../application/+store/game.effects';
 
 import { AppRoutingModule } from './app-routing.module';
 
@@ -40,13 +42,17 @@ import { SharedModule } from '../application/components/shared/shared.module';
                 deps: [HttpClient]
             }
         }),
+        SharedModule,
         
         AppRoutingModule,
-        RestangularModule.forRoot( RestangularConfigFactory ),
-        StoreModule.forRoot( reducers ),
-        EffectsModule.forRoot( [Effects] ),
         //StoreRouterConnectingModule.forRoot( { serializer: CustomSerializer } ),
-        SharedModule,
+        
+        RestangularModule.forRoot( RestangularConfigFactory ),
+        //EffectsModule.forRoot( [Effects] ),
+        StoreModule.forRoot({
+            game: gameReducers,
+            state: loginReducer,
+        } as any),
     ],
     bootstrap: [BridgeBeloteComponent],
     providers: [

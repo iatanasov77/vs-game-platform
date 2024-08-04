@@ -3,7 +3,6 @@ import { Component, OnInit, OnDestroy, Inject, ElementRef, isDevMode } from '@an
 import { AuthService } from '../application/services/auth.service'
 import { ApiService } from '../application/services/api.service'
 
-import cssCardGameString from '../application/assets/css/CardGame.scss'
 import cssGameString from './bridge-belote.component.scss'
 import templateString from './bridge-belote.component.html'
 
@@ -14,7 +13,6 @@ declare var $: any;
     
     template: templateString || 'Template Not Loaded !!!',
     styles: [
-        cssCardGameString || 'CardGame CSS Not Loaded !!!',
         cssGameString || 'Game CSS Not Loaded !!!',
     ],
     providers: [AuthService]

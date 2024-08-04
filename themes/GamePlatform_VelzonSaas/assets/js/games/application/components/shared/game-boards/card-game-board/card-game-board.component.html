@@ -12,26 +12,7 @@
     </div>
     
     <div id="card-actions">
-        <div class="p-2 float-start">
-            <a class="btn btn-primary" id="btnStartGame" (click)="onStartGame( $event )">
-                {{ 'game_board.start_game' | translate }}
-            </a>
-        </div>
-        <div class="float-end">
-            <div id="AnnounceContainer">
-                <ng-container *ngFor="let icon of announceSymbols; let i = index">
-					<a href="#" 
-					    id="{{ icon.key }}"
-					    (click)="onPlayerAnnounce( icon.id, $event )"
-					>
-                        <span class="announce-button" [innerHTML]="icon.value"></span>
-                    </a>
-			    </ng-container>
-            </div>
-            <div id="GameAnnounce">
-                <span class="announce-button">{{ 'game_board.game' | translate }}:</span>&nbsp;
-                <span class="announce-button" [innerHTML]="gameAnnounceIcon"></span>
-            </div>
-        </div>
+        <game-start *ngIf="gameStarted != true" [game]="game"></game-start>
+        <card-game-announce *ngIf="gameStarted == true"></card-game-announce>
     </div>
 </div>

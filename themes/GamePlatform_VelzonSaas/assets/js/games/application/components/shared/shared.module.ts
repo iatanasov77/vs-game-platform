@@ -11,6 +11,8 @@ import { UserNotLoggedInComponent } from './dialogs/not-loggedin-dialog/not-logg
 import { PlayerAnnounceComponent } from './game-boards/player-announce/player-announce.component';
 import { GameStatisticsComponent } from './game-boards/game-statistics/game-statistics.component';
 import { CardGameBoardComponent } from './game-boards/card-game-board/card-game-board.component';
+import { GameStartComponent } from './game-boards/board-actions/game-start/game-start.component';
+import { CardGameAnnounceComponent } from './game-boards/board-actions/card-game-announce/card-game-announce.component';
 
 @NgModule({
     declarations: [
@@ -22,7 +24,9 @@ import { CardGameBoardComponent } from './game-boards/card-game-board/card-game-
         // Game Boards
         PlayerAnnounceComponent,
         GameStatisticsComponent,
-        CardGameBoardComponent
+        CardGameBoardComponent,
+        GameStartComponent,
+        CardGameAnnounceComponent
     ],
     imports: [
         CommonModule,
@@ -37,7 +41,9 @@ import { CardGameBoardComponent } from './game-boards/card-game-board/card-game-
         // Game Boards
         PlayerAnnounceComponent,
         GameStatisticsComponent,
-        CardGameBoardComponent
+        CardGameBoardComponent,
+        GameStartComponent,
+        CardGameAnnounceComponent
     ]
 })
 export class SharedModule { }

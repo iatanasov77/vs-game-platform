@@ -61,6 +61,9 @@ class DefaultController extends AbstractController
             'dialogs.create_account_link'       => 'create from here',
             'game_board.statistics.we'          => 'We',
             'game_board.statistics.you'         => 'You',
+            
+            'game_board.play_with_computer'     => 'Play with Computer',
+            'game_board.play_with_friends'      => 'Play with Friends',
             'game_board.start_game'             => 'Start Game',
             'game_board.game'                   => 'Game',
         ];
@@ -76,6 +79,9 @@ class DefaultController extends AbstractController
             'dialogs.create_account_link'       => 'create from here',
             'game_board.statistics.we'          => 'Ние',
             'game_board.statistics.you'         => 'Вие',
+            
+            'game_board.play_with_computer'     => 'Play with Computer',
+            'game_board.play_with_friends'      => 'Play with Friends',
             'game_board.start_game'             => 'Start Game',
             'game_board.game'                   => 'Game',
         ];

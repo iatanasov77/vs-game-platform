@@ -11,15 +11,16 @@ import { CustomTranslateLoader } from '../application/providers/i18n-provider';
 import { RestangularModule } from 'ngx-restangular';
 import { RestangularConfigFactory } from '../application/restangular.config';
 
-import { StoreModule } from '@ngrx/store';
+import { StoreModule, provideStore } from '@ngrx/store';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { EffectsModule } from '@ngrx/effects';
 
 import { loginReducer } from '../application/+store/login.reducers';
+import { LoginEffects } from '../application/+store/login.effects';
 
 import { gameReducers } from '../application/+store/game.reducers';
 import { CustomSerializer } from '../application/+store/router';
-import { Effects } from '../application/+store/game.effects';
+import { GameEffects } from '../application/+store/game.effects';
 
 import { AppRoutingModule } from './app-routing.module';
 
@@ -44,15 +45,18 @@ import { SharedModule } from '../application/components/shared/shared.module';
         }),
         SharedModule,
         
-        AppRoutingModule,
+        //AppRoutingModule,
         //StoreRouterConnectingModule.forRoot( { serializer: CustomSerializer } ),
-        
         RestangularModule.forRoot( RestangularConfigFactory ),
-        //EffectsModule.forRoot( [Effects] ),
-        StoreModule.forRoot({
-            game: gameReducers,
-            state: loginReducer,
-        } as any),
+        
+        StoreModule.forRoot([
+            loginReducer
+            //gameReducers,
+        ]),
+        EffectsModule.forRoot([
+            LoginEffects,
+            //GameEffects
+        ])
     ],
     bootstrap: [BridgeBeloteComponent],
     providers: [

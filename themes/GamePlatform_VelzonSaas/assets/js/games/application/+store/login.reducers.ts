@@ -6,13 +6,13 @@ import {
     loginBySignatureFailure
 } from "./login.actions";
 
-export interface State {
+export interface AuthState {
     auth: any;
     error: any;
     isLoading: boolean;
 }
 
-const initialState: State = {
+const initialState: AuthState = {
     auth: null,
     error: null,
     isLoading: false
@@ -20,6 +20,6 @@ const initialState: State = {
 
 export const loginReducer = createReducer( initialState,
     on( loginBySignature, state => ( { ...state, isLoading: true } ) ),
-    on( loginBySignatureSuccess, ( state, { auth }) => ( { ...state, auth, isLoading: false } ) ),
-    on( loginBySignatureFailure, ( state, { error }) => ( { ...state, error, isLoading: false } ) )
+    on( loginBySignatureSuccess, ( state, { auth } ) => ( { ...state, auth, isLoading: false } ) ),
+    on( loginBySignatureFailure, ( state, { error } ) => ( { ...state, error, isLoading: false } ) )
 );

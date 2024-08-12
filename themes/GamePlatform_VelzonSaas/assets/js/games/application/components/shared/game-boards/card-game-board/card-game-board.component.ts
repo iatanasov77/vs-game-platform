@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Inject, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -34,7 +34,7 @@ declare var $: any;
         styleString || 'CSS Not Loaded !!!'
     ]
 })
-export class CardGameBoardComponent implements OnInit, OnDestroy
+export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
 {
     @Input() isLoggedIn: boolean        = false;
     @Input() developementClass: string  = '';
@@ -73,6 +73,23 @@ export class CardGameBoardComponent implements OnInit, OnDestroy
     ngOnDestroy(): void
     {
 
+    }
+    
+    ngOnChanges( changes: SimpleChanges )
+    {
+        for ( const propName in changes ) {
+            //alert( propName );
+            const changedProp = changes[propName];
+            
+            switch ( propName ) {
+                case 'developementClass':
+                    this.developementClass = changedProp.currentValue;
+                    break;
+                case 'isLoggedIn':
+                    this.isLoggedIn = changedProp.currentValue;
+                    break;
+            }
+        }
     }
     
     listenForGameEvents()

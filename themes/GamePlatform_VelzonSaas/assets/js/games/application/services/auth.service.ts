@@ -64,29 +64,27 @@ export class AuthService
     {
         var url = this.backendURL + '/login-by-signature/' + apiVerifySiganature;
         
-        return this.httpClient.get<ISignedUrlResponse>( url )
-        .pipe(
-            tap( ( response: any ) => {
-                if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
-                    let auth: IAuth = {
-                        id: response.data.user.id,
-                        
-                        email: response.data.user.email,
-                        username: response.data.user.username,
-                        
-                        fullName: response.data.user.firstName + ' ' + response.data.user.lastName,
-                        
-                        apiToken: response.data.tokenString,
-                        tokenCreated: response.data.token.iat,
-                        tokenExpired: response.data.token.exp,
-                        
-                        apiRefreshToken: response.data.refreshToken,
-                    };
-                    
-                    this.createAuth( auth );
-                }
-            })
-        );
+        return this.httpClient.get<ISignedUrlResponse>( url ).pipe(
+                    tap( ( response: any ) => {
+                        if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
+                            let auth: IAuth = {
+                                id: response.data.user.id,
+                                
+                                email: response.data.user.email,
+                                username: response.data.user.username,
+                                
+                                fullName: response.data.user.firstName + ' ' + response.data.user.lastName,
+                                
+                                apiToken: response.data.tokenString,
+                                tokenCreated: response.data.token.iat,
+                                tokenExpired: response.data.token.exp,
+                                
+                                apiRefreshToken: response.data.refreshToken,
+                            };
+                            
+                            this.createAuth( auth );
+                        }
+                    }));
     }
     
     logout()

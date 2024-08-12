@@ -72,7 +72,8 @@
         "@angular/localize": "^15.2.9",
         "@ng-bootstrap/ng-bootstrap": "^14.1.1",
         "@ngx-translate/core": "^14.0",
-        "@ngx-translate/http-loader": "^7.0"
+        "@ngx-translate/http-loader": "^7.0",
+        "sweetalert2": "^11.12"
     },
     "devDependencies": {
         "@angular-devkit/build-angular": "^15.0.1",

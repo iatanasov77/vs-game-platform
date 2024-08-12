@@ -1,10 +1,15 @@
-import { Component, OnInit, OnDestroy, Inject, ElementRef, isDevMode } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { Component, OnInit, Inject, ElementRef, isDevMode } from '@angular/core';
+import { Observable, tap } from 'rxjs';
+import { pluck, map } from 'rxjs/operators';
+import { Store, provideStore } from '@ngrx/store';
+import { provideEffects } from '@ngrx/effects';
+import Swal from 'sweetalert2'
 
-import { loginBySignature } from '../application/+store/login.actions';
+import { loginBySignature, loginBySignatureSuccess } from '../application/+store/login.actions';
 import { selectAuth, selectError, selectIsLoading } from '../application/+store/login.selectors';
-
+import { AuthState } from '../application/+store/login.reducers';
 import { AuthService } from '../application/services/auth.service'
+import { IAuth } from '../application/interfaces/auth';
 
 import cssGameString from './bridge-belote.component.scss'
 import templateString from './bridge-belote.component.html'
@@ -17,67 +22,44 @@ declare var $: any;
     template: templateString || 'Template Not Loaded !!!',
     styles: [
         cssGameString || 'Game CSS Not Loaded !!!',
-    ],
-    providers: [AuthService]
+    ]
 })
-export class BridgeBeloteComponent implements OnInit, OnDestroy
+export class BridgeBeloteComponent implements OnInit
 {
-    apiVerifySiganature?: string;
+    auth$: Observable<AuthState>;
     
     isLoggedIn: boolean         = false;
     developementClass: string   = '';
-    
-    auth        = null;
-    error       = '';
-    isLoading   = false;
-  
+    apiVerifySiganature?: string;
+
     constructor(
         @Inject( ElementRef ) private elementRef: ElementRef,
-        @Inject( AuthService ) private authStore: AuthService,
+        @Inject( AuthService ) private authService: AuthService,
         @Inject( Store ) private store: Store
     ) {
-        this.store.select( selectAuth ).subscribe( state => ( this.auth = state ) );
-        this.store.select( selectError ).subscribe( state => ( this.error = state ) );
-        this.store.select( selectIsLoading ).subscribe( state => ( this.isLoading = state ) );
-    
         if( isDevMode() ) {
             this.developementClass  = 'developement';
         }
         
         this.apiVerifySiganature = this.elementRef.nativeElement.getAttribute( 'apiVerifySiganature' );
-        
-        this.authStore.isLoggedIn().subscribe( ( isLoggedIn: boolean ) => {
-            //alert( isLoggedIn );
+        this.auth$     = this.store.select( selectAuth );
+
+        if ( this.apiVerifySiganature?.length ) {
+            this.store.dispatch( loginBySignature( { apiVerifySiganature: this.apiVerifySiganature } ) );
+        }
+    }
+    
+    ngOnInit()
+    {
+        this.authService.isLoggedIn().subscribe( ( isLoggedIn: boolean ) => {
+            //console.log( isLoggedIn );
+            //console.log( this.getAuthFromService() );
             this.isLoggedIn = isLoggedIn;
         });
-        
-        if ( ! this.isLoggedIn && this.apiVerifySiganature?.length ) {
-             //this.apiService.loginBySignature( this.apiVerifySiganature );
-             
-             this.store.dispatch( loginBySignature( { apiVerifySiganature: this.apiVerifySiganature } ) );
-        }
-        
-        //this.debugApplication();
     }
     
-    ngOnInit(): void
+    public getAuthFromService()
     {
-        
+        return this.authService.getAuth();
     }
-    
-    ngOnDestroy()
-    {
-
-    }
-    
-    debugApplication()
-    {
-        if ( this.apiVerifySiganature?.length ) {
-            alert( this.apiVerifySiganature );
-        } else {
-            alert( 'Missing Login By Signature URL !!!' );
-        }
-        
-        alert( this.isLoggedIn );
-    }  
 }

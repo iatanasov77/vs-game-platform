@@ -1,7 +1,7 @@
 import { Injectable, Inject } from "@angular/core";
 
 import { createEffect, Actions, ofType } from '@ngrx/effects';
-import { catchError, map, switchMap } from "rxjs";
+import { catchError, map, switchMap } from "rxjs/operators";
 
 import {
     loginBySignature,
@@ -21,22 +21,24 @@ import { IAuth } from '../interfaces/auth';
  * multiple events, and other external interactions where your components don't need explicit knowledge of these interactions.
  */
 
-@Injectable({
-    providedIn: 'root'
-})
-export class Effects
+@Injectable()
+export class LoginEffects
 {
     constructor(
         @Inject( Actions ) private actions$: Actions,
         @Inject( AuthService ) private authService: AuthService
     ) { }
     
-    loginBySignature = createEffect( (): any => this.actions$.pipe(
-        ofType( loginBySignature ),
-        switchMap( ( { apiVerifySiganature } ) => this.authService.loginBySignature( apiVerifySiganature ).pipe(
-            map( auth => loginBySignatureSuccess( { auth } ) ),
-            catchError( error => [loginBySignatureFailure( { error } )] )
-        ))
-    ));
+    loginBySignature$ = createEffect( (): any =>
+        this.actions$.pipe(
+            ofType( loginBySignature ),
+            switchMap( ( { apiVerifySiganature } ) =>
+                this.authService.loginBySignature( apiVerifySiganature ).pipe(
+                    map( auth => loginBySignatureSuccess( { auth } ) ),
+                    catchError( error => [loginBySignatureFailure( { error } )] )
+                )
+            )
+        )
+    );
 }
 

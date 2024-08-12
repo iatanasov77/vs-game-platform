@@ -34,7 +34,7 @@ import { IGame } from '../interfaces/game';
 @Injectable({
     providedIn: 'root'
 })
-export class Effects
+export class GameEffects
 {
     constructor(
         @Inject(Actions) private actions$: Actions,

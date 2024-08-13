@@ -54,10 +54,10 @@ Encore
     })
 
     // Application Images
-    .copyFiles({
-         from: './themes/GamePlatform_VelzonSaas/assets/images',
-         to: 'images/[path][name].[ext]',
-     })
+    .copyFiles([
+        {from: './assets/library/GamePlatform/Einaregilsson_Cards.Js/img', to: 'einaregilsson-cards.js/img/[path][name].[ext]'},
+        {from: './themes/GamePlatform_VelzonSaas/assets/images', to: 'images/[path][name].[ext]'},
+     ])
      
      // Velzon Images
     .copyFiles([
@@ -89,7 +89,8 @@ Encore
 ;
 
 Encore.configureDefinePlugin( ( options ) => {
-    options.IS_PRODUCTION = JSON.stringify( Encore.isProduction() );
+    options.IS_PRODUCTION       = JSON.stringify( Encore.isProduction() );
+    options.THEME_BUILD_PATH    = JSON.stringify( '/build/gameplatform-velzonsaas-theme' );
 });
 
 const config = Encore.getWebpackConfig();

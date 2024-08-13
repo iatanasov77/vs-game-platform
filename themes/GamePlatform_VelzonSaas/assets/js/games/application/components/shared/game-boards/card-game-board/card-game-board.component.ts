@@ -24,6 +24,7 @@ import {
 } from '../../../../+store/game.actions';
 import { runStartGame, runMakeAnnounce } from '../../../../+store/game.selectors';
 
+const { context } = require( '../../../../context' );
 declare var $: any;
 
 @Component({
@@ -56,7 +57,7 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
         // DI Not Worked
         this.providerBridgeBelote   = new BridgeBeloteProvider();
         
-        this.game                   = new BeloteCardGame( '#card-table', '/build/game-platform-spa' );
+        this.game                   = new BeloteCardGame( '#card-table', context.themeBuildPath );
         this.gameAnnounceIcon       = null;
         this.announceSymbols        = this.providerBridgeBelote.getAnnounceSymbols();
     }

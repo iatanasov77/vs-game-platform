@@ -10,8 +10,8 @@ import { StoreModule } from '@ngrx/store';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { EffectsModule } from '@ngrx/effects';
 
-import { gameReducers } from '../application/+store/game.reducers';
-import { CustomSerializer } from '../application/+store/router';
+//import { gameReducers } from '../application/+store/game.reducers';
+//import { CustomSerializer } from '../application/+store/router';
 //import { Effects } from '../+store/game.effects';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -29,7 +29,7 @@ import { ContractBridgeComponent } from './contract-bridge.component';
         
         AppRoutingModule,
         RestangularModule.forRoot( RestangularConfigFactory ),
-        StoreModule.forRoot( gameReducers ),
+        //StoreModule.forRoot( gameReducers ),
         //EffectsModule.forRoot( [Effects] ),
         //StoreRouterConnectingModule.forRoot( { serializer: CustomSerializer } ),
     ],

@@ -76,7 +76,13 @@ export class GameStartComponent implements OnChanges
     
     onStartGame( event: any )
     {
-        //alert( this.isLoggedIn );this.store.dispatch( startGame() );
+        //alert( this.isLoggedIn );
+        if ( ! this.isLoggedIn ) {
+            this.openLoginForm();
+            return;
+        }
+        
+        this.store.dispatch( startGame() );
         this.store.subscribe( ( state: any ) => {
             //this.showSpinner    = state.main.latestTablatures == null;
         });

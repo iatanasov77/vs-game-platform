@@ -1,5 +1,4 @@
 import { ActionReducerMap, createReducer, on } from "@ngrx/store";
-import { routerReducer } from '@ngrx/router-store';
 import {
     startGameSuccess,
     playerAnnounceSuccess,
@@ -10,26 +9,20 @@ import ICardGame from '_@/GamePlatform/Game/CardGameInterface';
 import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
 import { IGame } from '../interfaces/game';
 
-export interface IMainState
+export interface GameState
 {
     cardGame:   null | ICardGame;
     announce:   null | ICardGameAnnounce;
     game:       null | IGame;
 }
 
-interface IAppState
-{
-    main: IMainState;
-    router: ReturnType<typeof routerReducer>
-}
-
-const initialState: IMainState = {
+const initialState: GameState = {
     cardGame:   null,
     announce:   null,
     game:       null
 };
 
-const mainReducer = createReducer<IMainState>( initialState,
+export const gameReducer = createReducer<GameState>( initialState,
     on( startGameSuccess, ( state, { cardGame } ) => {
         return { ...state, cardGame };
     }),
@@ -42,8 +35,3 @@ const mainReducer = createReducer<IMainState>( initialState,
         return { ...state, game };
     })
 );
-
-export const gameReducers: ActionReducerMap<IAppState> = {
-    main: mainReducer,
-    router: routerReducer,
-};

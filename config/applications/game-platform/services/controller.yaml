@@ -17,20 +17,20 @@ services:
         autowire: true
         autoconfigure: true
 
-    App\Controller\GamePlatformNew\:
-        resource: '../../../../src/Controller/GamePlatformNew'
+    App\Controller\GamePlatform\:
+        resource: '../../../../src/Controller/GamePlatform'
         tags: ['controller.service_arguments']
         autowire: true
         exclude:
-            - '../../../../src/Controller/GamePlatformNew/ProductController.php'
+            - '../../../../src/Controller/GamePlatform/ProductController.php'
     
-    App\Controller\GamePlatformNew\PagesController:
+    App\Controller\GamePlatform\PagesController:
         tags: ['controller.service_arguments']
         autowire: true
         arguments:
             - '@vs_cms.repository.pages'
     
-    App\Controller\GamePlatformNew\ContactController:
+    App\Controller\GamePlatform\ContactController:
         tags: ['controller.service_arguments']
         autowire: true
         arguments:
@@ -46,7 +46,7 @@ services:
             - '@vs_users.notifications'
             - '@doctrine'
             
-    App\Controller\GamePlatformNew\ProfileController:
+    App\Controller\GamePlatform\ProfileController:
         public: true
         autowire: true
         tags: ['controller.service_arguments']
@@ -62,7 +62,7 @@ services:
             - '@vs_catalog.repository.pricing_plan_category'
             - '@vs_catalog.repository.pricing_plan_subscription'
             
-    App\Controller\GamePlatformNew\RegisterController:
+    App\Controller\GamePlatform\RegisterController:
         public: true
         autowire: true
         tags: ['controller.service_arguments']
@@ -89,7 +89,7 @@ services:
             - setTokenGenerator: ['@?symfonycasts.verify_email.token_generator']
             - setVerifyEmailHelper: ['@?symfonycasts.verify_email.helper']
             
-    App\Controller\GamePlatformNew\ForgotPasswordController:
+    App\Controller\GamePlatform\ForgotPasswordController:
         public: true
         autowire: true
         tags: ['controller.service_arguments']
@@ -107,7 +107,7 @@ services:
         calls:
             - setResetPasswordHelper: ['@?symfonycasts.reset_password.helper']
 
-    App\Controller\GamePlatformNew\AuthController:
+    App\Controller\GamePlatform\AuthController:
         tags: ['controller.service_arguments']
         autowire: true
         arguments:
@@ -115,7 +115,7 @@ services:
             - '@twig'
             - '@doctrine'
     
-    App\Controller\GamePlatformNew\DefaultController:
+    App\Controller\GamePlatform\DefaultController:
         tags: ['controller.service_arguments']
         autowire: true
         arguments:
@@ -123,7 +123,7 @@ services:
             - '@twig'
             - '@vsapp.repository.game_categories'
     
-    App\Controller\GamePlatformNew\CreditCardController:
+    App\Controller\GamePlatform\CreditCardController:
         tags: ['controller.service_arguments']
         autowire: false
         arguments:
@@ -132,7 +132,7 @@ services:
         calls:
             - [ setContainer, [ '@service_container' ] ]
             
-    App\Controller\GamePlatformNew\ShoppingCartCheckoutController:
+    App\Controller\GamePlatform\ShoppingCartCheckoutController:
         tags: ['controller.service_arguments']
         autowire: false
         arguments:
@@ -142,7 +142,7 @@ services:
         calls:
             - [ setContainer, [ '@service_container' ] ]
             
-    App\Controller\GamePlatformNew\PricingPlanCheckoutController:
+    App\Controller\GamePlatform\PricingPlanCheckoutController:
         tags: ['controller.service_arguments']
         autowire: true
         arguments:
@@ -162,7 +162,7 @@ services:
         calls:
             - [ setContainer, [ '@service_container' ] ]
             
-    App\Controller\GamePlatformNew\CatalogController:
+    App\Controller\GamePlatform\CatalogController:
         tags: ['controller.service_arguments']
         autowire: true
         arguments:
@@ -173,7 +173,7 @@ services:
         calls:
             - [ setContainer, [ '@service_container' ] ]
             
-    App\Controller\GamePlatformNew\GamesController:
+    App\Controller\GamePlatform\GamesController:
         tags: ['controller.service_arguments']
         autowire: true
         arguments:

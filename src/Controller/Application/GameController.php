@@ -10,6 +10,9 @@ use Vankosoft\ApplicationBundle\Component\Context\ApplicationContextInterface;
 use Vankosoft\ApiBundle\Exception\ApiLoginException;
 use Vankosoft\ApplicationBundle\Component\Status;
 
+/**
+ * Extending From All Game Controllers
+ */
 class GameController extends AbstractController
 {
     /** @var ApplicationContextInterface */

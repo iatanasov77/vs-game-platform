@@ -1,10 +1,10 @@
 app_about_application:
     path: /about-application
-    controller: App\Controller\GamePlatformNew\PagesController::aboutApplication
+    controller: App\Controller\GamePlatform\PagesController::aboutApplication
 
 app_games:
     path: /games
-    controller: App\Controller\GamePlatformNew\GamesController::index
+    controller: App\Controller\GamePlatform\GamesController::index
 
 bridge_belote:
     path: /games/bridge-belote

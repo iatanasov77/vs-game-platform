@@ -49,6 +49,7 @@ game_platform:
             login_page_title: Application Login
             
         register:
+            register: Register
             button_register: Register An Account
             agreement_text: By creating an account, you agree the
             terms_and_conditions: terms and conditions

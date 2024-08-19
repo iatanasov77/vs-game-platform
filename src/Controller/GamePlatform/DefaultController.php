@@ -1,4 +1,4 @@
-<?php namespace App\Controller\GamePlatformNew;
+<?php namespace App\Controller\GamePlatform;
 
 use App\Controller\Application\DefaultController as BaseDefaultController;
 use Symfony\Component\HttpFoundation\Request;

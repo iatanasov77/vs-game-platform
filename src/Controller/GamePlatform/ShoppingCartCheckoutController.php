@@ -1,4 +1,4 @@
-<?php namespace App\Controller\GamePlatformNew;
+<?php namespace App\Controller\GamePlatform;
 
 use Vankosoft\PaymentBundle\Controller\ShoppingCart\ShoppingCartCheckoutController as BaseShoppingCartCheckoutController;
 use Symfony\Component\HttpFoundation\Response;

@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, Input } from '@angular/core';
+import { Component, Inject, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -14,8 +14,8 @@ import {
     playerAnnounce,
     playerAnnounceFailure,
     playerAnnounceSuccess
-} from '../../../../../+store/actions';
-import { runStartGame, runMakeAnnounce } from '../../../../../+store/selectors';
+} from '../../../../../+store/game.actions';
+import { runStartGame, runMakeAnnounce } from '../../../../../+store/game.selectors';
 
 import { UserNotLoggedInComponent } from '../../../dialogs/not-loggedin-dialog/not-loggedin-dialog.component';
 
@@ -28,7 +28,7 @@ declare var $: any;
     template: templateString || 'Template Not Loaded !!!',
     styles: []
 })
-export class GameStartComponent implements OnInit
+export class GameStartComponent implements OnChanges
 {
     @Input() isLoggedIn: boolean        = false;
     @Input() game: any;
@@ -43,9 +43,21 @@ export class GameStartComponent implements OnInit
     
     }
     
-    ngOnInit(): void
+    ngOnChanges( changes: SimpleChanges )
     {
-    
+        for ( const propName in changes ) {
+            //alert( propName );
+            const changedProp = changes[propName];
+            
+            switch ( propName ) {
+                case 'isLoggedIn':
+                    this.isLoggedIn = changedProp.currentValue;
+                    break;
+                case 'game':
+                    this.game = changedProp.currentValue;
+                    break;
+            }
+        }
     }
     
     /*
@@ -64,12 +76,11 @@ export class GameStartComponent implements OnInit
     
     onStartGame( event: any )
     {
-        /*
+        //alert( this.isLoggedIn );
         if ( ! this.isLoggedIn ) {
             this.openLoginForm();
             return;
         }
-        */
         
         this.store.dispatch( startGame() );
         this.store.subscribe( ( state: any ) => {

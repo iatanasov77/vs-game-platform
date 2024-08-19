@@ -1,8 +1,10 @@
-{% extends "base.html.twig" %}
+{% extends "base-login.html.twig" %}
+
+{# Import Macros #}
+{% import "@VSApplication/Macros/alerts.html.twig" as alerts %}
 
 {# Override Blocs #}
-{% block title %}{{ parent() }} :: {{ 'game_platform.form.login.login' | trans( {},'GamePlatform' ) }}{% endblock %}
-{% block pageTitle %}{{ 'game_platform.form.login.login' | trans( {},'GamePlatform' ) }}{% endblock %}
+{% block title %}{{ parent() }} :: {{ 'vs_wgp.template.menu.login' | trans( {},'WebGuitarPro' ) }}{% endblock %}
 
 {% block content %}
     <div class="row justify-content-center">

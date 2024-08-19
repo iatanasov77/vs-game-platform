@@ -8,28 +8,28 @@ vs_user_proffile:
 
 app_login:
     path: /login
-    controller: App\Controller\GamePlatformNew\AuthController::login
+    controller: App\Controller\GamePlatform\AuthController::login
 
 app_logout:
     path: /logout
-    controller: App\Controller\GamePlatformNew\AuthController::logout
+    controller: App\Controller\GamePlatform\AuthController::logout
 
 vs_users_register_form:
     path:     /register
-    controller: App\Controller\GamePlatformNew\RegisterController::index
+    controller: App\Controller\GamePlatform\RegisterController::index
 
 vs_users_profile_show:
     path:     /profile
-    controller: App\Controller\GamePlatformNew\ProfileController::indexAction
+    controller: App\Controller\GamePlatform\ProfileController::indexAction
     
 vs_users_profile_edit:
     path:     /profile/edit
-    controller: App\Controller\GamePlatformNew\ProfileController::editAction
+    controller: App\Controller\GamePlatform\ProfileController::editAction
 
 vs_users_forgot_password_form:
     path:     /forgot-password
-    controller: App\Controller\GamePlatformNew\ForgotPasswordController::indexAction
+    controller: App\Controller\GamePlatform\ForgotPasswordController::indexAction
 
 vs_users_forgot_password_reset:
     path:     /forgot-password/reset/{token}
-    controller: App\Controller\GamePlatformNew\ForgotPasswordController::resetAction
+    controller: App\Controller\GamePlatform\ForgotPasswordController::resetAction

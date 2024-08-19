@@ -12,7 +12,7 @@
     </div>
     
     <div id="card-actions">
-        <game-start *ngIf="gameStarted != true" [game]="game"></game-start>
+        <game-start *ngIf="gameStarted != true" [isLoggedIn]="isLoggedIn" [game]="game"></game-start>
         <card-game-announce *ngIf="gameStarted == true"></card-game-announce>
     </div>
 </div>

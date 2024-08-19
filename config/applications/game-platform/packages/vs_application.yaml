@@ -107,13 +107,13 @@ vs_application:
                 attributes:
                     iconClass: "bx bxs-dashboard"
             user_register:
-                name: vs_wgp.form.login.register
+                name: vs_application.menu.site_main.register
                 route: vs_users_register_form
                 attributes:
                     id: user_register
                     iconClass: "bx bx-user-circle"
             user_login:
-                name: vs_wgp.template.menu.login
+                name: vs_application.menu.site_main.login
                 route: app_login
                 attributes:
                     id: user_login

@@ -18,4 +18,4 @@ vs_application_frontend:
 
 vs_application_contact:
     path: /contact
-    controller: App\Controller\GamePlatformNew\ContactController::index
+    controller: App\Controller\GamePlatform\ContactController::index

@@ -1,4 +1,4 @@
-<?php namespace App\Controller\GamePlatformNew;
+<?php namespace App\Controller\GamePlatform;
 
 use Vankosoft\CatalogBundle\Controller\PricingPlanCheckoutController as BasePricingPlanCheckoutController;
 use Symfony\Component\HttpFoundation\Request;

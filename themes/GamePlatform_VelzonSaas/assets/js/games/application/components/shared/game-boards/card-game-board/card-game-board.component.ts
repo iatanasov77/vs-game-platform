@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Inject, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -21,9 +21,10 @@ import {
     playerAnnounce,
     playerAnnounceFailure,
     playerAnnounceSuccess
-} from '../../../../+store/actions';
-import { runStartGame, runMakeAnnounce } from '../../../../+store/selectors';
+} from '../../../../+store/game.actions';
+import { runStartGame, runMakeAnnounce } from '../../../../+store/game.selectors';
 
+const { context } = require( '../../../../context' );
 declare var $: any;
 
 @Component({
@@ -34,7 +35,7 @@ declare var $: any;
         styleString || 'CSS Not Loaded !!!'
     ]
 })
-export class CardGameBoardComponent implements OnInit, OnDestroy
+export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
 {
     @Input() isLoggedIn: boolean        = false;
     @Input() developementClass: string  = '';
@@ -56,7 +57,7 @@ export class CardGameBoardComponent implements OnInit, OnDestroy
         // DI Not Worked
         this.providerBridgeBelote   = new BridgeBeloteProvider();
         
-        this.game                   = new BeloteCardGame( '#card-table', '/build/game-platform-spa' );
+        this.game                   = new BeloteCardGame( '#card-table', context.themeBuildPath );
         this.gameAnnounceIcon       = null;
         this.announceSymbols        = this.providerBridgeBelote.getAnnounceSymbols();
     }
@@ -73,6 +74,23 @@ export class CardGameBoardComponent implements OnInit, OnDestroy
     ngOnDestroy(): void
     {
 
+    }
+    
+    ngOnChanges( changes: SimpleChanges )
+    {
+        for ( const propName in changes ) {
+            //alert( propName );
+            const changedProp = changes[propName];
+            
+            switch ( propName ) {
+                case 'developementClass':
+                    this.developementClass = changedProp.currentValue;
+                    break;
+                case 'isLoggedIn':
+                    this.isLoggedIn = changedProp.currentValue;
+                    break;
+            }
+        }
     }
     
     listenForGameEvents()

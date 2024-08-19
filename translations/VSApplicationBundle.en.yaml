@@ -28,6 +28,7 @@ vs_application:
         site_main:
             home: Home
             login: Login
+            register: Register
             
         games:
             bridge_belote: Bridge Belote

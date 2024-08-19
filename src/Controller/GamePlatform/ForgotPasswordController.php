@@ -1,4 +1,4 @@
-<?php namespace App\Controller\GamePlatformNew;
+<?php namespace App\Controller\GamePlatform;
 
 use Vankosoft\UsersBundle\Controller\ForgotPasswordController as BaseForgotPasswordController;
 

@@ -49,6 +49,7 @@ game_platform:
             login_page_title: Вход
             
         register:
+            register: Регистрация
             button_register: Регистрирай Акаунт
             agreement_text: Чрез създаване на акаунт, вие се съгласявате със
             terms_and_conditions: правилата и условията

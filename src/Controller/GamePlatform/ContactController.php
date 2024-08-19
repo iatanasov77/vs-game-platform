@@ -1,4 +1,4 @@
-<?php namespace App\Controller\GamePlatformNew;
+<?php namespace App\Controller\GamePlatform;
 
 use Vankosoft\ApplicationBundle\Controller\ContactController as BaseContactController;
 use Symfony\Component\HttpFoundation\Response;

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 
+const { context } = require( '../context' );
 import Announce from '_@/GamePlatform/CardGameAnnounce/Announce';
 
 @Injectable({
@@ -15,10 +16,10 @@ export class BridgeBeloteProvider
     ];
     
     AnnounceSymbols: any   = [
-        { id: Announce.CLOVER, key: "btnClover", value: '<img src="/build/game-platform-spa/images/icons/Suites/clover.png" width="40" height="40" style="vertical-align: inherit;" />' },
-        { id: Announce.DIAMOND, key: "btnDiamond", value: '<img src="/build/game-platform-spa/images/icons/Suites/diamond.png" width="40" height="40" style="vertical-align: inherit;" />' },
-        { id: Announce.HEART, key: "btnHeart", value: '<img src="/build/game-platform-spa/images/icons/Suites/hearts.png" width="40" height="40" style="vertical-align: inherit;" />' },
-        { id: Announce.SPADE, key: "btnSpade", value: '<img src="/build/game-platform-spa/images/icons/Suites/symbol-of-spades.png" width="40" height="40" style="vertical-align: inherit;" />' },
+        { id: Announce.CLOVER, key: "btnClover", value: '<img src="' + context.themeBuildPath + '/images/icons/Suites/clover.png" width="40" height="40" style="vertical-align: inherit;" />' },
+        { id: Announce.DIAMOND, key: "btnDiamond", value: '<img src="' + context.themeBuildPath + '/images/icons/Suites/diamond.png" width="40" height="40" style="vertical-align: inherit;" />' },
+        { id: Announce.HEART, key: "btnHeart", value: '<img src="' + context.themeBuildPath + '/images/icons/Suites/hearts.png" width="40" height="40" style="vertical-align: inherit;" />' },
+        { id: Announce.SPADE, key: "btnSpade", value: '<img src="' + context.themeBuildPath + '/images/icons/Suites/symbol-of-spades.png" width="40" height="40" style="vertical-align: inherit;" />' },
         { id: Announce.BEZ_KOZ, key: "btnBezKoz", value: '<span class="announce-button">a</span>' },
         { id: Announce.VSICHKO_KOZ, key: "btnVsichkoKoz", value: '<span class="announce-button">j</span>' },
         { id: Announce.KONTRA, key: "btnKontra", value: '<span class="announce-button">kra</span>' },

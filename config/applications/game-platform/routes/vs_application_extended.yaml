@@ -1,7 +1,7 @@
 app_pricing_plans:
     path: /pricing-plans
-    controller: App\Controller\GamePlatformNew\PricingPlansController::index
+    controller: App\Controller\GamePlatform\PricingPlansController::index
 
 app_pricing_plans_select:
     path: /pricing-plans/select/{pricingPlanId}
-    controller: App\Controller\GamePlatformNew\PricingPlansController::selectPricingPlan
+    controller: App\Controller\GamePlatform\PricingPlansController::selectPricingPlan

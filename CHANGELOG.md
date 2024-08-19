@@ -1,3 +1,14 @@
+0.8.4	|	Release date: **19.08.2024**
+============================================
+* Bug-Fixes and Improvements:
+  - Refactoring of All NgRx Store Classes.
+  - Angular Application Login By Signature is Done.
+  - Improve Founf Theme Build Path.
+  - Add a a Feature State Store for Game Reducers.
+  - Rename GamePlatform Application Controllers Namespace.
+  - Improve Login Forms.
+
+
 0.8.3	|	Release date: **04.08.2024**
 ============================================
 * New Features:

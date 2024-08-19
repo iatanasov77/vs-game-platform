@@ -29,6 +29,7 @@ vs_application:
         site_main:
             home: Начало
             login: Вход
+            register: Регистрация
             
         games:
             bridge_belote: Bridge Belote

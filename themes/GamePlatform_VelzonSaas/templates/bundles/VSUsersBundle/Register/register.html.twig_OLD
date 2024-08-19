@@ -1,8 +1,4 @@
-{% extends 'base.html.twig' %} 
-
-{# Override Blocs #}
-{% block title %}{{ parent() }} :: {{ 'game_platform.form.register.register' | trans( {},'GamePlatform' ) }}{% endblock %}
-{% block pageTitle %}{{ 'game_platform.form.register.register' | trans( {},'GamePlatform' ) }}{% endblock %}
+{% extends 'base-login.html.twig' %} 
 
 {% block content %}
     <div class="row justify-content-center">

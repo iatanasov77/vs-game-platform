@@ -2,11 +2,9 @@ import { Component, OnInit, OnDestroy, Inject, Input, OnChanges, SimpleChanges }
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import BeloteCardGame from '_@/GamePlatform/Game/BeloteCardGame';
 import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
 import Announce from '_@/GamePlatform/CardGameAnnounce/Announce';
 
-import { BridgeBeloteProvider } from '../../../../providers/bridge-belote-provider';
 import templateString from './card-game-board.component.html'
 import styleString from './card-game-board.component.scss'
 
@@ -24,7 +22,6 @@ import {
 } from '../../../../+store/game.actions';
 import { runStartGame, runMakeAnnounce } from '../../../../+store/game.selectors';
 
-const { context } = require( '../../../../context' );
 declare var $: any;
 
 @Component({
@@ -39,13 +36,13 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
 {
     @Input() isLoggedIn: boolean        = false;
     @Input() developementClass: string  = '';
+    
+    @Input() game?: any;
+    @Input() gameProvider?: any;
 
     gameStarted: boolean = false;
-
-    providerBridgeBelote: any;
-    game: any;
-    announceSymbols: any;
     gameAnnounceIcon: any;
+    announceSymbols: any;
     
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,
@@ -54,17 +51,13 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
         @Inject( Store ) private store: Store,
         @Inject( Actions ) private actions$: Actions
     ) {
-        // DI Not Worked
-        this.providerBridgeBelote   = new BridgeBeloteProvider();
-        
-        this.game                   = new BeloteCardGame( '#card-table', context.themeBuildPath );
-        this.gameAnnounceIcon       = null;
-        this.announceSymbols        = this.providerBridgeBelote.getAnnounceSymbols();
+        this.gameAnnounceIcon   = null;
     }
     
     ngOnInit(): void
     {
-        this.game.initBoard();
+        this.announceSymbols    = this.gameProvider?.getAnnounceSymbols();
+        this.game?.initBoard();
         this.listenForGameEvents();
         
         $( '#AnnounceContainer' ).hide();
@@ -98,7 +91,7 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
         $( "#card-table" ).get( 0 ).addEventListener( GameEvents.GAME_START_EVENT_NAME, ( event: any ) => {
             const { announceId }    = event.detail;
             
-            this.gameAnnounceIcon   = this.providerBridgeBelote.getAnnounceSymbol( announceId )?.value;
+            this.gameAnnounceIcon   = this.gameProvider.getAnnounceSymbol( announceId )?.value;
             
             $( '#AnnounceContainer' ).hide();
             $( '#GameAnnounce' ).show();

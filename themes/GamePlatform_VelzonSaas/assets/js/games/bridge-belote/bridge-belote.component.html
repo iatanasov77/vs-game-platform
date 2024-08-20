@@ -4,6 +4,11 @@
     </div>
     
     <div class="col-10">
-        <card-game-board [isLoggedIn]="isLoggedIn" [developementClass]="developementClass"></card-game-board>
+        <card-game-board
+            [isLoggedIn]="isLoggedIn"
+            [developementClass]="developementClass"
+            [game]="game"
+            [gameProvider]="providerBridgeBelote"
+        ></card-game-board>
     </div>
 </div>

@@ -1,9 +1,10 @@
-import GamePlayersIterator from "./GamePlayersIterator";
+import GameInterface from "./GameInterface";
 
-interface ICardGame
+interface ICardGame extends GameInterface
 {
-    deck: any;
-    players: GamePlayersIterator;
+    //deck: any;
+    
+    getHands(): any;
 }
 
 export default ICardGame;

@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 
 const { context } = require( '../context' );
+import ICardGameProvider from '../interfaces/card-game-provider';
 import Announce from '_@/GamePlatform/CardGameAnnounce/Announce';
 
 @Injectable({
     providedIn: 'root'
 })
-export class BridgeBeloteProvider
+export class BridgeBeloteProvider implements ICardGameProvider
 {
     Players: any    = [
         { id: 'left', announce: null },

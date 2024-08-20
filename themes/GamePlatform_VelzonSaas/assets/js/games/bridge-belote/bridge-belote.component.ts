@@ -11,9 +11,14 @@ import { AuthState } from '../application/+store/login.reducers';
 import { AuthService } from '../application/services/auth.service'
 import { IAuth } from '../application/interfaces/auth';
 
+import { BridgeBeloteProvider } from '../application/providers/bridge-belote-provider';
+import ICardGameProvider from '../application/interfaces/card-game-provider';
+import BeloteCardGame from '_@/GamePlatform/Game/BeloteCardGame';
+
 import cssGameString from './bridge-belote.component.scss'
 import templateString from './bridge-belote.component.html'
 
+const { context } = require( '../application/context' );
 declare var $: any;
 
 @Component({
@@ -31,6 +36,9 @@ export class BridgeBeloteComponent implements OnInit
     isLoggedIn: boolean         = false;
     developementClass: string   = '';
     apiVerifySiganature?: string;
+    
+    providerBridgeBelote: ICardGameProvider;
+    game: BeloteCardGame;
 
     constructor(
         @Inject( ElementRef ) private elementRef: ElementRef,
@@ -47,6 +55,10 @@ export class BridgeBeloteComponent implements OnInit
         if ( this.apiVerifySiganature?.length ) {
             this.store.dispatch( loginBySignature( { apiVerifySiganature: this.apiVerifySiganature } ) );
         }
+        
+        // DI Not Worked
+        this.providerBridgeBelote   = new BridgeBeloteProvider();
+        this.game                   = new BeloteCardGame( '#card-table', context.themeBuildPath );
     }
     
     ngOnInit()

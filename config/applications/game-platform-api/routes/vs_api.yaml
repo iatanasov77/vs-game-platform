@@ -9,5 +9,3 @@ vs_api_users:
 vs_api_test_index:
     path: /api/test-index
     controller: App\Controller\Api\TestController::index
-
-

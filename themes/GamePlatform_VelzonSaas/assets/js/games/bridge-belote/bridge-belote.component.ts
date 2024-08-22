@@ -11,6 +11,8 @@ import { AuthState } from '../application/+store/login.reducers';
 import { AuthService } from '../application/services/auth.service'
 import { IAuth } from '../application/interfaces/auth';
 
+import { loadGameBySlug } from '../application/+store/game.actions';
+
 import { BridgeBeloteProvider } from '../application/providers/bridge-belote-provider';
 import ICardGameProvider from '../application/interfaces/card-game-provider';
 import BeloteCardGame from '_@/GamePlatform/Game/BeloteCardGame';
@@ -49,29 +51,30 @@ export class BridgeBeloteComponent implements OnInit
             this.developementClass  = 'developement';
         }
         
-        this.apiVerifySiganature = this.elementRef.nativeElement.getAttribute( 'apiVerifySiganature' );
-        this.auth$     = this.store.select( selectAuth );
-
-        if ( this.apiVerifySiganature?.length ) {
-            this.store.dispatch( loginBySignature( { apiVerifySiganature: this.apiVerifySiganature } ) );
-        }
+        this.apiVerifySiganature    = this.elementRef.nativeElement.getAttribute( 'apiVerifySiganature' );
+        this.auth$                  = this.store.select( selectAuth );
+        this.authenticate();
         
         // DI Not Worked
         this.providerBridgeBelote   = new BridgeBeloteProvider();
-        this.game                   = new BeloteCardGame( '#card-table', context.themeBuildPath );
+        this.game                   = new BeloteCardGame( 'bridge-belote', context.themeBuildPath ); // , '#card-table'
     }
     
     ngOnInit()
     {
         this.authService.isLoggedIn().subscribe( ( isLoggedIn: boolean ) => {
-            //console.log( isLoggedIn );
-            //console.log( this.getAuthFromService() );
             this.isLoggedIn = isLoggedIn;
         });
     }
     
-    public getAuthFromService()
+    authenticate(): void
     {
-        return this.authService.getAuth();
+        if ( this.apiVerifySiganature?.length ) {
+            this.store.dispatch( loginBySignature( { apiVerifySiganature: this.apiVerifySiganature } ) );
+            this.store.dispatch( loadGameBySlug( { slug: 'bridge-belote' } ) );
+            return;
+        }
+        
+        this.authService.removeAuth();
     }
 }

@@ -62,6 +62,13 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
         
         $( '#AnnounceContainer' ).hide();
         $( '#GameAnnounce' ).hide();
+        
+        this.store.subscribe( ( state: any ) => {
+            //console.log( state.app.main );
+            if ( state.app.main.cardGame ) {
+                this.gameStarted    = true;
+            }
+        });
     }
     
     ngOnDestroy(): void

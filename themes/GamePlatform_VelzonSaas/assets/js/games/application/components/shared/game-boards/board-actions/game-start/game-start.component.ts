@@ -1,10 +1,10 @@
-import { Component, Inject, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Inject, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { Store } from '@ngrx/store';
+import { Store, State } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
-import { map, merge } from 'rxjs';
+import { Observable, map, merge, take } from 'rxjs';
 
 import {
     startGame,
@@ -15,7 +15,9 @@ import {
     playerAnnounceFailure,
     playerAnnounceSuccess
 } from '../../../../../+store/game.actions';
-import { runStartGame, runMakeAnnounce } from '../../../../../+store/game.selectors';
+import { getGame, runStartGame, runMakeAnnounce } from '../../../../../+store/game.selectors';
+import { GameState } from '../../../../../+store/game.reducers';
+import { IGame } from '../../../../../interfaces/game';
 
 import { UserNotLoggedInComponent } from '../../../dialogs/not-loggedin-dialog/not-loggedin-dialog.component';
 
@@ -28,7 +30,7 @@ declare var $: any;
     template: templateString || 'Template Not Loaded !!!',
     styles: []
 })
-export class GameStartComponent implements OnChanges
+export class GameStartComponent implements OnInit, OnChanges
 {
     @Input() isLoggedIn: boolean        = false;
     @Input() game: any;
@@ -40,13 +42,19 @@ export class GameStartComponent implements OnChanges
         @Inject( Store ) private store: Store,
         @Inject( Actions ) private actions$: Actions
     ) {
+        
+    }
     
+    ngOnInit(): void
+    {
+        this.store.subscribe( ( state: any ) => {
+            console.log( state.app.main );
+        });
     }
     
     ngOnChanges( changes: SimpleChanges )
     {
         for ( const propName in changes ) {
-            //alert( propName );
             const changedProp = changes[propName];
             
             switch ( propName ) {
@@ -60,32 +68,15 @@ export class GameStartComponent implements OnChanges
         }
     }
     
-    /*
-    onStartGame( event: any ): void
+    onPlayWithComputer( event: any )
     {
-        //event.preventDefault();
         if ( ! this.isLoggedIn ) {
             this.openLoginForm();
             return;
         }
         
         this.game.startGame();
-        $( '#btnStartGame' ).hide();
-    }
-    */
-    
-    onStartGame( event: any )
-    {
-        //alert( this.isLoggedIn );
-        if ( ! this.isLoggedIn ) {
-            this.openLoginForm();
-            return;
-        }
-        
-        this.store.dispatch( startGame() );
-        this.store.subscribe( ( state: any ) => {
-            //this.showSpinner    = state.main.latestTablatures == null;
-        });
+        this.store.dispatch( startGame( this.game ) );
     }
     
     onPlayWithFriends( event: any )

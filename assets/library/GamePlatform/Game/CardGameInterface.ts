@@ -2,7 +2,8 @@ import GameInterface from "./GameInterface";
 
 interface ICardGame extends GameInterface
 {
-    //deck: any;
+    id: any;
+    deck: any;
     
     getHands(): any;
 }

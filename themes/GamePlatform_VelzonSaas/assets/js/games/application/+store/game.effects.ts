@@ -13,6 +13,7 @@ import {
     playerAnnounceSuccess,
     
     loadGame,
+    loadGameBySlug,
     loadGameFailure,
     loadGameSuccess
 } from "./game.actions";
@@ -37,32 +38,56 @@ import { IGame } from '../interfaces/game';
 export class GameEffects
 {
     constructor(
-        @Inject(Actions) private actions$: Actions,
-        @Inject(GameService) private gameService: GameService
+        @Inject( Actions ) private actions$: Actions,
+        @Inject( GameService ) private gameService: GameService
     ) { }
     
-    startGame = createEffect( (): any => this.actions$.pipe(
-        ofType( startGame ),
-        switchMap( () => this.gameService.startGame().pipe(
-            map( ( cardGame: ICardGame ) => startGameSuccess( { cardGame } ) ),
-            catchError( error => [startGameFailure( { error } )] )
-        ))
-    ));
+    startGame = createEffect( (): any =>
+        this.actions$.pipe(
+            ofType( startGame ),
+            switchMap( ( { game } ) =>
+                this.gameService.startGame( game ).pipe(
+                    map( ( cardGame: ICardGame ) => startGameSuccess( { cardGame } ) ),
+                    catchError( error => [startGameFailure( { error } )] )
+                )
+            )
+        )
+    );
     
-    playerAnnounce = createEffect( (): any => this.actions$.pipe(
-        ofType( playerAnnounce ),
-        switchMap( () => this.gameService.playerAnnounce().pipe(
-            map( ( announce: ICardGameAnnounce ) => playerAnnounceSuccess( { announce } ) ),
-            catchError( error => [playerAnnounceFailure( { error } )] )
-        ))
-    ));
+    playerAnnounce = createEffect( (): any =>
+        this.actions$.pipe(
+            ofType( playerAnnounce ),
+            switchMap( () =>
+                this.gameService.playerAnnounce().pipe(
+                    map( ( announce: ICardGameAnnounce ) => playerAnnounceSuccess( { announce } ) ),
+                    catchError( error => [playerAnnounceFailure( { error } )] )
+                )
+            )
+        )
+    );
     
-    loadGame = createEffect( (): any => this.actions$.pipe(
-        ofType( loadGame ),
-        switchMap( ( { id } ) => this.gameService.loadGame( id ).pipe(
-            map( ( game: IGame ) => loadGameSuccess( { game } ) ),
-            catchError( error => [loadGameFailure( { error } )] )
-        ))
-    ));
+    loadGame = createEffect( (): any =>
+        this.actions$.pipe(
+            ofType( loadGame ),
+            switchMap( ( { id } ) =>
+                this.gameService.loadGame( id ).pipe(
+                    map( ( game: IGame ) => loadGameSuccess( { game } ) ),
+                    catchError( error => [loadGameFailure( { error } )] )
+                )
+            )
+        )
+    );
+    
+    loadGameBySlug = createEffect( (): any =>
+        this.actions$.pipe(
+            ofType( loadGameBySlug ),
+            switchMap( ( { slug } ) =>
+                this.gameService.loadGameBySlug( slug ).pipe(
+                    map( ( game: IGame ) => loadGameSuccess( { game } ) ),
+                    catchError( error => [loadGameFailure( { error } )] )
+                )
+            )
+        )
+    );
 }
 

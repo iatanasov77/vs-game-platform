@@ -6,7 +6,10 @@
 	            id="{{ player.containerId }}"
 	        >
 	            <div id="{{ player.cardsId }}" class="playerCards float-start"></div>
-	            <player-announce [player]="player"></player-announce>
+	            <player-announce
+	               [gameProvider]="gameProvider"
+	               [player]="player"
+	           ></player-announce>
 	        </div>
 	    </ng-container>
     </div>

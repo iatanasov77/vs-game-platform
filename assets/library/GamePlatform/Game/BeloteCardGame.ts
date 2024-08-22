@@ -19,9 +19,6 @@ declare global {
 
 class BeloteCardGame extends AbstractGame implements ICardGame
 {
-    /** Public Root Path for Assets */
-    publicRootPath: string
-    
     /** Cards Deck */
     deck: any;
     
@@ -42,11 +39,9 @@ class BeloteCardGame extends AbstractGame implements ICardGame
     /** Array */
     announces: any;
     
-    constructor( boardSelector: string, publicRootPath: string = '' )
+    constructor( id: string, publicRootPath: string, boardSelector: string = '#card-table' )
     {
-        super( boardSelector );
-        
-        this.publicRootPath = publicRootPath;
+        super( id, publicRootPath, boardSelector );
         
         //Now lets create a couple of hands, one face down, one face up.
         this.players  = new GamePlayersIterator([

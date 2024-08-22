@@ -59,7 +59,10 @@ export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppSta
             LoginEffects,
         ]),
         
-        StoreModule.forFeature( 'game', FEATURE_REDUCER_TOKEN ),
+        StoreModule.forFeature( 'app', FEATURE_REDUCER_TOKEN ),
+        EffectsModule.forFeature([
+            GameEffects,
+        ]),
     ],
     bootstrap: [BridgeBeloteComponent],
     providers: [

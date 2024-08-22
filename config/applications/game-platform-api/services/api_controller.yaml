@@ -12,13 +12,17 @@ services:
             
     App\Controller\Api\Games\ShowGameController:
         arguments:
-            - '@doctrine'
-            - '@vs_users.security_bridge'
             - '@vsapp.repository.games'
         autowire: false
         tags: ['controller.service_arguments']
         calls:
             - [ setContainer, [ '@service_container' ] ]
+            
+    App\Controller\Api\Games\ShowGameBySlugController:
+        arguments:
+            - '@vsapp.repository.games'
+        autowire: true
+        tags: ['controller.service_arguments']
             
     App\Controller\Api\Games\CreateRoomController:
         tags: ['controller.service_arguments']

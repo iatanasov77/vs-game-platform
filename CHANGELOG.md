@@ -1,3 +1,12 @@
+0.9.0	|	Release date: **22.08.2024**
+============================================
+* New Features and Improvements:
+  - Add Using Mercure for Server-Sent Events.
+  - Refactoring BridgeBelote Game Initialization.
+  - Load Game on Start Application and Improve App Authentication.
+  - Improve Game Announce Component.
+
+
 0.8.4	|	Release date: **19.08.2024**
 ============================================
 * Bug-Fixes and Improvements:

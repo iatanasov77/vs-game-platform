@@ -3,6 +3,7 @@
         <ng-container *ngFor="let icon of announceSymbols; let i = index">
             <a href="#" 
                 id="{{ icon.key }}"
+                ngbTooltip="{{ icon.tooltip }}" placement="top"
                 (click)="onPlayerAnnounce( icon.id, $event )"
             >
                 <span class="announce-button" [innerHTML]="icon.value"></span>

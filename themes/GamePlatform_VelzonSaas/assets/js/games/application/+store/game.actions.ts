@@ -20,7 +20,7 @@ const actionTypes = {
     loadGameFailure:            'LOAD_GAME_FAILURE',
 };
 
-export const startGame                  = createAction( actionTypes.startGame );
+export const startGame                  = createAction( actionTypes.startGame, props<{ game: any }>() );
 export const startGameSuccess           = createAction( actionTypes.startGameSuccess, props<{ cardGame: ICardGame }>() );
 export const startGameFailure           = createAction( actionTypes.startGameFailure, props<{ error: any }>() );
 

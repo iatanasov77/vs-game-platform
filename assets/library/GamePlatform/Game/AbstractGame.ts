@@ -7,14 +7,22 @@
  */
 class AbstractGame
 {
+    /** Game Slug */
+    id: string;
+    
+    /** Public Root Path for Assets */
+    publicRootPath: string
+    
     boardSelector: string;
     
-    constructor( boardSelector: string )
+    constructor( id: string, publicRootPath: string, boardSelector: string )
     {
         if ( this.constructor == AbstractGame ) {
             throw new Error( "Abstract classes can't be instantiated." );
         }
         
+        this.id             = id;
+        this.publicRootPath = publicRootPath;
         this.boardSelector  = boardSelector;
     }
     

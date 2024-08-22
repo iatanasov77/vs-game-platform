@@ -43,7 +43,6 @@ return [
     FOS\JsRoutingBundle\FOSJsRoutingBundle::class => ['all' => true],
     Bazinga\Bundle\JsTranslationBundle\BazingaJsTranslationBundle::class => ['all' => true],
     Hackzilla\Bundle\PasswordGeneratorBundle\HackzillaPasswordGeneratorBundle::class => ['all' => true],
-    Symfony\UX\TogglePassword\TogglePasswordBundle::class => ['all' => true],
     
     Vankosoft\AgentBundle\VSAgentBundle::class => ['all' => true],
     Vankosoft\ApplicationInstalatorBundle\VSApplicationInstalatorBundle::class => ['all' => true],

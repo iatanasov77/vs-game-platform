@@ -17,50 +17,31 @@ declare global {
     }
 }
 
-class BeloteCardGame extends AbstractGame
+class BeloteCardGame extends AbstractGame implements ICardGame
 {
-    /**
-     * Public Root Path for Assets
-     */
-    publicRootPath: string
-    
-    /**
-     * Cards Deck
-     */
+    /** Cards Deck */
     deck: any;
     
-    /**
-     * Game Players
-     */
+    /** Game Players */
     players: GamePlayersIterator;
     
-    /**
-     * Players Hands
-     */
+    /** Players Hands */
     handKeys: Array<string>;
     
-    /**
-     * Current Dealer
-     */
+    /** Current Dealer */
     currentDealer: number;
     
-    /**
-     * Assync Function
-     */
+    /** Assync Function */
     waitMyAnnounce: any;
+    
     waitAnnounces: any;
     
-    /**
-     * Array
-     */
+    /** Array */
     announces: any;
     
-    
-    constructor( boardSelector: string, publicRootPath: string = '' )
+    constructor( id: string, publicRootPath: string, boardSelector: string = '#card-table' )
     {
-        super( boardSelector );
-        
-        this.publicRootPath = publicRootPath;
+        super( id, publicRootPath, boardSelector );
         
         //Now lets create a couple of hands, one face down, one face up.
         this.players  = new GamePlayersIterator([
@@ -101,7 +82,7 @@ class BeloteCardGame extends AbstractGame
         // Start Game
         this.dealCards( 5 );
         
-        this.announces   = new Array() ;
+        this.announces   = new Array();
         this.startAnnounce();
     }
     

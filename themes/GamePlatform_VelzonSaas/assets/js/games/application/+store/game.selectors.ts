@@ -7,28 +7,23 @@ const routerSelector                = createFeatureSelector<{ state: RouterState
 
 export const getUrl                 = createSelector(
     routerSelector,
-    //s => s?.state?.url
     s => s?.state?.url
 );
 export const getRouteParams         = createSelector(
     routerSelector,
-    //s => s?.state?.params
     s => s?.state?.params
 );
 
 export const runStartGame           = createSelector(
     mainSelector,
-    //s => s.game
-    ( s: GameState ) => s?.game
+    ( s: GameState ) => s?.cardGame
 );
 export const runMakeAnnounce        = createSelector(
     mainSelector,
-    //s => s.announce
     ( s: GameState ) => s?.announce
 );
 
 export const getGame                = createSelector(
     mainSelector,
-    //s => s.game
     ( s: GameState ) => s?.game
 );

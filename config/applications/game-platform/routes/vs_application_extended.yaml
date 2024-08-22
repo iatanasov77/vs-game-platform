@@ -5,3 +5,11 @@ app_pricing_plans:
 app_pricing_plans_select:
     path: /pricing-plans/select/{pricingPlanId}
     controller: App\Controller\GamePlatform\PricingPlansController::selectPricingPlan
+
+vs_api_test_mercure_index:
+    path: /test-mercure
+    controller: App\Controller\Application\TestMercureController::index
+
+vs_api_test_mercure_publish:
+    path: /test-mercure/publish
+    controller: App\Controller\Application\TestMercureController::publish

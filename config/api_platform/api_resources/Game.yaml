@@ -10,9 +10,17 @@ resources:
             game_show:
                 class: ApiPlatform\Metadata\Get
                 method: GET
-                #uriTemplate: /games/{slug}
                 uriTemplate: /games/{id}
                 controller: App\Controller\Api\Games\ShowGameController
+                normalizationContext:
+                    groups: ['game:read']
+            game_show_by_slug:
+                class: ApiPlatform\Metadata\Get
+                method: GET
+                uriTemplate: /games-ext/{slug}
+                requirements:
+                    slug: '\w+'
+                controller: App\Controller\Api\Games\ShowGameBySlugController
                 normalizationContext:
                     groups: ['game:read']
           

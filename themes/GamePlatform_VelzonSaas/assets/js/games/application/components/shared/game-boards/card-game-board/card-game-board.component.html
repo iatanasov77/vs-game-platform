@@ -6,13 +6,23 @@
 	            id="{{ player.containerId }}"
 	        >
 	            <div id="{{ player.cardsId }}" class="playerCards float-start"></div>
-	            <player-announce [player]="player"></player-announce>
+	            <player-announce
+	               [gameProvider]="gameProvider"
+	               [player]="player"
+	           ></player-announce>
 	        </div>
 	    </ng-container>
     </div>
     
     <div id="card-actions">
-        <game-start *ngIf="gameStarted != true" [isLoggedIn]="isLoggedIn" [game]="game"></game-start>
-        <card-game-announce *ngIf="gameStarted == true"></card-game-announce>
+        <game-start *ngIf="gameStarted != true"
+            [isLoggedIn]="isLoggedIn"
+            [game]="game"
+        ></game-start>
+        
+        <card-game-announce *ngIf="gameStarted == true"
+            [gameAnnounceIcon]="gameAnnounceIcon"
+            [announceSymbols]="announceSymbols"
+        ></card-game-announce>
     </div>
 </div>

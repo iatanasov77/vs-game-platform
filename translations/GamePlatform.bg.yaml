@@ -20,6 +20,7 @@ game_platform:
         items_index_row_game: Игра
         
         menu:
+            test_mercure: Test Mercure
             welcome: Добре дошъл
             login: Вход
             profile: Профил

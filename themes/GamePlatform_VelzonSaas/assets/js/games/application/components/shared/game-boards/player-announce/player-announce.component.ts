@@ -20,6 +20,7 @@ declare var $: any;
 })
 export class PlayerAnnounceComponent implements OnInit, OnDestroy
 {
+    @Input() gameProvider?: any;
     @Input() player?: CardGamePlayer;
     
     providerBridgeBelote: any;
@@ -33,9 +34,6 @@ export class PlayerAnnounceComponent implements OnInit, OnDestroy
     constructor(
         //private providerBridgeBelote: BridgeBeloteProvider
     ) {
-        // DI Not Worked
-        this.providerBridgeBelote   = new BridgeBeloteProvider();
-        
         this.announceIcon   = null;
         
         this.className   = 'playerAnnounce';
@@ -85,10 +83,10 @@ export class PlayerAnnounceComponent implements OnInit, OnDestroy
         $( "#" + this.player?.containerId ).get( 0 ).addEventListener( GameEvents.PLAYER_ANNOUNCE_EVENT_NAME, ( event:any ) => {
             const { announceId }    = event.detail;
             
-            this.providerBridgeBelote.setAnnounce( this.player?.id, announceId );
+            this.gameProvider.setAnnounce( this.player?.id, announceId );
             if ( this.position === this.player?.id ) {
                 //alert( announceId );
-                this.announceIcon   = this.providerBridgeBelote.getAnnounceSymbol( announceId )?.value;
+                this.announceIcon   = this.gameProvider.getAnnounceSymbol( announceId )?.value;
             }
         });
     }

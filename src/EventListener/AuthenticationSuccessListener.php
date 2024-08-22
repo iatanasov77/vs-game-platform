@@ -24,17 +24,19 @@ class AuthenticationSuccessListener implements EventSubscriberInterface
     public function onAuthenticationSuccess( AuthenticationSuccessEvent $event ): void
     {
         $user       = $event->getAuthenticationToken()->getUser();
-        if ( $user instanceof ApiUserInterface ) {
-            $verifier   = $this->randomGenerator->getRandomAlphaNumStr();
-            $expiresAt  = new \DateTimeImmutable( \sprintf( '+%d seconds', 3600 ) );
-            
-            $user->setApiVerifySiganature( $verifier );
-            $user->setApiVerifyExpiresAt( \DateTime::createFromImmutable( $expiresAt ) );
-            
-            $em         = $this->doctrine->getManager();
-            $em->persist( $user );
-            $em->flush();
+        if ( ! ( $user instanceof ApiUserInterface ) ) {
+            return;
         }
+        
+        $verifier   = $this->randomGenerator->getRandomAlphaNumStr();
+        $expiresAt  = new \DateTimeImmutable( \sprintf( '+%d seconds', 3600 ) );
+        
+        $user->setApiVerifySiganature( $verifier );
+        $user->setApiVerifyExpiresAt( \DateTime::createFromImmutable( $expiresAt ) );
+        
+        $em         = $this->doctrine->getManager();
+        $em->persist( $user );
+        $em->flush();
     }
     
     public static function getSubscribedEvents(): array

@@ -55,3 +55,21 @@ declare module '_@/GamePlatform/CardGameAnnounce/Announce' {
     }
     export = Announce;
 }
+
+declare module '_@/GamePlatform/Model/CardGamePlayerModel' {
+    interface CardGamePlayerModel {
+        id: string;
+        announce: null | string;
+    }
+    export = CardGamePlayerModel;
+}
+
+declare module '_@/GamePlatform/Model/CardGameAnnounceSymbolModel' {
+    interface CardGameAnnounceSymbolModel {
+        id: string;
+        key: string;
+        tooltip: string;
+        value: string;
+    }
+    export = CardGameAnnounceSymbolModel;
+}

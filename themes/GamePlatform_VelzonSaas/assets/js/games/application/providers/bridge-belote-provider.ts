@@ -3,13 +3,15 @@ import { Injectable } from '@angular/core';
 const { context } = require( '../context' );
 import ICardGameProvider from '../interfaces/card-game-provider';
 import Announce from '_@/GamePlatform/CardGameAnnounce/Announce';
+import CardGamePlayerModel from '_@/GamePlatform/Model/CardGamePlayerModel';
+import CardGameAnnounceSymbolModel from '_@/GamePlatform/Model/CardGameAnnounceSymbolModel';
 
 @Injectable({
     providedIn: 'root'
 })
 export class BridgeBeloteProvider implements ICardGameProvider
 {
-    Players: any    = [
+    Players: Array<CardGamePlayerModel>  = [
         {
             id: 'left',
             announce: null
@@ -28,7 +30,7 @@ export class BridgeBeloteProvider implements ICardGameProvider
         }
     ];
     
-    AnnounceSymbols: any   = [
+    AnnounceSymbols: Array<CardGameAnnounceSymbolModel>  = [
         {
             id: Announce.CLOVER,
             key: "btnClover",
@@ -85,12 +87,12 @@ export class BridgeBeloteProvider implements ICardGameProvider
         }
     ];
     
-    getPlayers(): Array<Object>
+    getPlayers(): Array<CardGamePlayerModel>
     {
         return this.Players;
     }
     
-    getAnnounceSymbols(): Array<Object>
+    getAnnounceSymbols(): Array<CardGameAnnounceSymbolModel>
     {
         return this.AnnounceSymbols;
     }

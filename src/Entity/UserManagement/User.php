@@ -11,8 +11,8 @@ use Vankosoft\PaymentBundle\Model\Interfaces\CustomerInterface;
 use Vankosoft\PaymentBundle\Model\Traits\CustomerEntity;
 use Vankosoft\CatalogBundle\Model\Interfaces\UserSubscriptionAwareInterface;
 use Vankosoft\CatalogBundle\Model\Traits\UserSubscriptionAwareEntity;
-use Vankosoft\ApiBundle\Model\Interfaces\ApiUserInterface;
-use Vankosoft\ApiBundle\Model\Traits\ApiUserEntity;
+use Vankosoft\UsersBundle\Model\Interfaces\ApiUserInterface;
+use Vankosoft\UsersBundle\Model\Traits\ApiUserEntity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

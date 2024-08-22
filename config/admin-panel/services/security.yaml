@@ -27,10 +27,3 @@ services:
     _defaults:
         autowire: true
         autoconfigure: true
-        
-    App\EventListener\AuthenticationSuccessListener:
-        tags:
-             - { name: 'kernel.event_subscriber', method: 'onAuthenticationSuccess' }
-        arguments:
-            - '@doctrine'
-            - '@symfonycasts.reset_password.random_generator'

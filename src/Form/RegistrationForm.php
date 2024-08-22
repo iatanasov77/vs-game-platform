@@ -14,7 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\BirthdayType;
 
 use Vankosoft\UsersBundle\Form\UserFormType;
-use Vankosoft\UsersBundle\Model\UserInterface;
+use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use Vankosoft\UsersBundle\Form\Traits\UserInfoFormTrait;
 use Vankosoft\PaymentBundle\Model\Interfaces\PricingPlanInterface;
 

@@ -5,13 +5,14 @@ import { Store, provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import Swal from 'sweetalert2'
 
-import { loginBySignature, loginBySignatureSuccess } from '../application/+store/login.actions';
-import { selectAuth, selectError, selectIsLoading } from '../application/+store/login.selectors';
+import { loginBySignature } from '../application/+store/login.actions';
+import { selectAuth } from '../application/+store/login.selectors';
 import { AuthState } from '../application/+store/login.reducers';
 import { AuthService } from '../application/services/auth.service'
 import { IAuth } from '../application/interfaces/auth';
 
 import { loadGameBySlug } from '../application/+store/game.actions';
+import { getGame } from '../application/+store/game.selectors';
 
 import { BridgeBeloteProvider } from '../application/providers/bridge-belote-provider';
 import ICardGameProvider from '../application/interfaces/card-game-provider';
@@ -33,8 +34,6 @@ declare var $: any;
 })
 export class BridgeBeloteComponent implements OnInit
 {
-    auth$: Observable<AuthState>;
-    
     isLoggedIn: boolean         = false;
     developementClass: string   = '';
     apiVerifySiganature?: string;
@@ -52,7 +51,6 @@ export class BridgeBeloteComponent implements OnInit
         }
         
         this.apiVerifySiganature    = this.elementRef.nativeElement.getAttribute( 'apiVerifySiganature' );
-        this.auth$                  = this.store.select( selectAuth );
         this.authenticate();
         
         // DI Not Worked

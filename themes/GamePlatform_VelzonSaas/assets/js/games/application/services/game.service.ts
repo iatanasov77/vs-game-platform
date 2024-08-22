@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@angular/core';
-import { Observable, tap, of } from 'rxjs';
+import { Observable, tap, map, of } from 'rxjs';
 
 import { HttpClient } from '@angular/common/http'
 import { Restangular } from 'ngx-restangular';
@@ -31,39 +31,22 @@ export class GameService
     
     loadGameBySlug( slug: string ): Observable<IGame>
     {
-        let gameResponse    = this.restangular.one( 'games-ext/' + slug ).customGET( 
+        return this.restangular.one( 'games-ext/' + slug ).customGET( 
             undefined,
             undefined,
             { "Authorization": 'Bearer ' + this.authService.getApiToken() }
-        );
-        
-        return gameResponse.pipe(
-            tap( ( response: any ) => {
-                if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
-                    let game: IGame = {
-                        id: response.data.id,
-                        slug: response.data.slug,
-                        title: response.data.title,
-                        
-                        __v: 1,
-                    };
-                }
-            })
+        ).pipe(
+            map( ( response: any ) => this.mapGame( response ) )
         );
     }
     
-    startGame( game: IGame ): Observable<ICardGame>
+    startGame( game: any ): Observable<ICardGame>
     {
         if ( ! game ) {
             return new Observable;
         }
         
-        let cardGame: ICardGame = {
-            //id: game.id,
-            deck: game.deck
-        };
-        
-        return of( cardGame );
+        return of( game ).pipe( map( ( game: IGame ) => this.mapCardGame( game ) ) );
     }
     
     playerAnnounce(): Observable<ICardGameAnnounce>
@@ -72,5 +55,32 @@ export class GameService
         let announceId  = 'pass';
         
         return new Observable;
+    }
+    
+    private mapGame( response: any ): IGame | string
+    {
+        if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
+            let game: IGame = {
+                id: response.data.id,
+                slug: response.data.slug,
+                title: response.data.title,
+                
+                __v: 1,
+            };
+            
+            return game;
+        }
+        
+        return response.message;
+    }
+    
+    private mapCardGame( game: IGame ): ICardGame
+    {
+        let cardGame: ICardGame = {
+            //id: game.id,
+            deck: game.deck
+        };
+        
+        return cardGame;
     }
 }

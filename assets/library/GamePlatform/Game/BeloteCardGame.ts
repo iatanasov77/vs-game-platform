@@ -82,7 +82,7 @@ class BeloteCardGame extends AbstractGame implements ICardGame
         // Start Game
         this.dealCards( 5 );
         
-        this.announces   = new Array() ;
+        this.announces   = new Array();
         this.startAnnounce();
     }
     

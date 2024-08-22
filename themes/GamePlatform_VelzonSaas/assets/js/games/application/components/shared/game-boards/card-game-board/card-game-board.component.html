@@ -15,7 +15,14 @@
     </div>
     
     <div id="card-actions">
-        <game-start *ngIf="gameStarted != true" [isLoggedIn]="isLoggedIn" [game]="game"></game-start>
-        <card-game-announce *ngIf="gameStarted == true"></card-game-announce>
+        <game-start *ngIf="gameStarted != true"
+            [isLoggedIn]="isLoggedIn"
+            [game]="game"
+        ></game-start>
+        
+        <card-game-announce *ngIf="gameStarted == true"
+            [gameAnnounceIcon]="gameAnnounceIcon"
+            [announceSymbols]="announceSymbols"
+        ></card-game-announce>
     </div>
 </div>

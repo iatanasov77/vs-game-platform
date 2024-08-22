@@ -6,18 +6,8 @@ import { Store, State } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
 import { Observable, map, merge, take } from 'rxjs';
 
-import {
-    startGame,
-    startGameFailure,
-    startGameSuccess,
-    
-    playerAnnounce,
-    playerAnnounceFailure,
-    playerAnnounceSuccess
-} from '../../../../../+store/game.actions';
-import { getGame, runStartGame, runMakeAnnounce } from '../../../../../+store/game.selectors';
+import { startGame } from '../../../../../+store/game.actions';
 import { GameState } from '../../../../../+store/game.reducers';
-import { IGame } from '../../../../../interfaces/game';
 
 import { UserNotLoggedInComponent } from '../../../dialogs/not-loggedin-dialog/not-loggedin-dialog.component';
 
@@ -35,6 +25,8 @@ export class GameStartComponent implements OnInit, OnChanges
     @Input() isLoggedIn: boolean        = false;
     @Input() game: any;
     
+    appState?: GameState;
+    
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,
         @Inject( NgbModal ) private ngbModal: NgbModal,
@@ -49,6 +41,7 @@ export class GameStartComponent implements OnInit, OnChanges
     {
         this.store.subscribe( ( state: any ) => {
             console.log( state.app.main );
+            this.appState   = state.app.main;
         });
     }
     
@@ -76,7 +69,9 @@ export class GameStartComponent implements OnInit, OnChanges
         }
         
         this.game.startGame();
-        this.store.dispatch( startGame( this.game ) );
+        if ( this?.appState ) {
+            this.store.dispatch( startGame( this?.appState ) );
+        }
     }
     
     onPlayWithFriends( event: any )

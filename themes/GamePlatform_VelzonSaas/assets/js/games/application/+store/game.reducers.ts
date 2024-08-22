@@ -22,16 +22,8 @@ const initialState: GameState = {
     announce:   null,
 };
 
-export const gameReducer = createReducer<GameState>( initialState,
-    on( loadGameSuccess, ( state, { game } ) => {
-        return { ...state, game };
-    }),
-    
-    on( startGameSuccess, ( state, { cardGame } ) => {
-        return { ...state, cardGame };
-    }),
-    
-    on( playerAnnounceSuccess, ( state, { announce } ) => {
-        return { ...state, announce };
-    })
+export const gameReducer = createReducer( initialState,
+    on( loadGameSuccess, ( state, { game } ) => ( { ...state, game } ) ),
+    on( startGameSuccess, ( state, { cardGame } ) => ( { ...state, cardGame } ) ),
+    on( playerAnnounceSuccess, ( state, { announce } ) => ( { ...state, announce } ) )
 );

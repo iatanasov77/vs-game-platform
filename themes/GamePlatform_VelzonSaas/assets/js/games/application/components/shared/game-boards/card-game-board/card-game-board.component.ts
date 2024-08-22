@@ -1,27 +1,12 @@
-import { Component, OnInit, OnDestroy, Inject, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Inject, OnInit, OnDestroy, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Store } from '@ngrx/store';
 
 import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
-import Announce from '_@/GamePlatform/CardGameAnnounce/Announce';
 
 import templateString from './card-game-board.component.html'
 import styleString from './card-game-board.component.scss'
-
-import { Store } from '@ngrx/store';
-import { Actions, ofType } from '@ngrx/effects';
-import { map, merge } from 'rxjs';
-import {
-    startGame,
-    startGameFailure,
-    startGameSuccess,
-    
-    playerAnnounce,
-    playerAnnounceFailure,
-    playerAnnounceSuccess
-} from '../../../../+store/game.actions';
-import { runStartGame, runMakeAnnounce } from '../../../../+store/game.selectors';
-
 declare var $: any;
 
 @Component({
@@ -47,9 +32,7 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,
         @Inject( NgbModal ) private ngbModal: NgbModal,
-        
-        @Inject( Store ) private store: Store,
-        @Inject( Actions ) private actions$: Actions
+        @Inject( Store ) private store: Store
     ) {
         this.gameAnnounceIcon   = null;
     }
@@ -64,7 +47,6 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
         $( '#GameAnnounce' ).hide();
         
         this.store.subscribe( ( state: any ) => {
-            //console.log( state.app.main );
             if ( state.app.main.cardGame ) {
                 this.gameStarted    = true;
             }
@@ -79,7 +61,6 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
     ngOnChanges( changes: SimpleChanges )
     {
         for ( const propName in changes ) {
-            //alert( propName );
             const changedProp = changes[propName];
             
             switch ( propName ) {
@@ -102,27 +83,6 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
             
             $( '#AnnounceContainer' ).hide();
             $( '#GameAnnounce' ).show();
-        });
-    }
-    
-    onPlayerAnnounce( announceId: any, event: any )
-    {
-        event.preventDefault();
-        
-        $( "#BottomPlayer" ).get( 0 ).dispatchEvent(
-            new CustomEvent( GameEvents.PLAYER_ANNOUNCE_EVENT_NAME, {
-                detail: {
-                    announceId: announceId
-                },
-            })
-        );
-    }
-    
-    onPlayerAnnounceNew( announceId: any, event: any )
-    {
-        this.store.dispatch( playerAnnounce() );
-        this.store.subscribe( ( state: any ) => {
-            //this.showSpinner    = state.main.latestTablatures == null;
         });
     }
 }

@@ -35,25 +35,33 @@ export class BridgeBeloteProvider implements ICardGameProvider
             id: Announce.CLOVER,
             key: "btnClover",
             tooltip: "Clover",
-            value: '<img src="' + context.themeBuildPath + '/images/icons/Suites/clover.png" width="40" height="40" style="vertical-align: inherit;" />'
+            
+            value: '<i class="fi fi-sr-club"></i>'
+            //value: '<img src="' + context.themeBuildPath + '/images/icons/Suites/clover.png" width="40" height="40" style="vertical-align: inherit;" />'
         },
         {
             id: Announce.DIAMOND,
             key: "btnDiamond",
             tooltip: "Diamond",
-            value: '<img src="' + context.themeBuildPath + '/images/icons/Suites/diamond.png" width="40" height="40" style="vertical-align: inherit;" />'
+            
+            value: '<i class="fi fi-sr-card-diamond"></i>'
+            //value: '<img src="' + context.themeBuildPath + '/images/icons/Suites/diamond.png" width="40" height="40" style="vertical-align: inherit;" />'
         },
         {
             id: Announce.HEART,
             key: "btnHeart",
             tooltip: "Heart",
-            value: '<img src="' + context.themeBuildPath + '/images/icons/Suites/hearts.png" width="40" height="40" style="vertical-align: inherit;" />'
+            
+            value: '<i class="fi fi-sr-heart"></i>'
+            //value: '<img src="' + context.themeBuildPath + '/images/icons/Suites/hearts.png" width="40" height="40" style="vertical-align: inherit;" />'
         },
         {
             id: Announce.SPADE,
             key: "btnSpade",
             tooltip: "Spade",
-            value: '<img src="' + context.themeBuildPath + '/images/icons/Suites/symbol-of-spades.png" width="40" height="40" style="vertical-align: inherit;" />'
+            
+            value: '<i class="fi fi-sr-spade"></i>'
+            //value: '<img src="' + context.themeBuildPath + '/images/icons/Suites/symbol-of-spades.png" width="40" height="40" style="vertical-align: inherit;" />'
         },
         {
             id: Announce.BEZ_KOZ,

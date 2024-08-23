@@ -43,9 +43,6 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
         this.game?.initBoard();
         this.listenForGameEvents();
         
-        $( '#AnnounceContainer' ).hide();
-        $( '#GameAnnounce' ).hide();
-        
         this.store.subscribe( ( state: any ) => {
             if ( state.app.main.cardGame ) {
                 this.gameStarted    = true;

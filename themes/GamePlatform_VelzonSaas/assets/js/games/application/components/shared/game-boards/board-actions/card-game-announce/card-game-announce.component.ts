@@ -1,4 +1,4 @@
-import { Component, Inject, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Inject, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
@@ -16,7 +16,7 @@ declare var $: any;
     template: templateString || 'Template Not Loaded !!!',
     styles: []
 })
-export class CardGameAnnounceComponent implements OnChanges
+export class CardGameAnnounceComponent implements OnInit, OnChanges
 {
     @Input() gameAnnounceIcon: any;
     @Input() announceSymbols: any;
@@ -28,6 +28,12 @@ export class CardGameAnnounceComponent implements OnChanges
         this.announceSymbols    = [];
     }
     
+    ngOnInit(): void
+    {
+        $( '#AnnounceContainer' ).hide();
+        $( '#GameAnnounce' ).hide();
+    }
+        
     ngOnChanges( changes: SimpleChanges )
     {
         for ( const propName in changes ) {

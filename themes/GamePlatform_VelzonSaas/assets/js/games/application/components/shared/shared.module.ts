@@ -11,6 +11,7 @@ import { UserNotLoggedInComponent } from './dialogs/not-loggedin-dialog/not-logg
 
 // Game Boards
 import { PlayerAnnounceComponent } from './game-boards/player-announce/player-announce.component';
+import { GamePlayersComponent } from './game-boards/game-players/game-players.component';
 import { GameStatisticsComponent } from './game-boards/game-statistics/game-statistics.component';
 import { CardGameBoardComponent } from './game-boards/card-game-board/card-game-board.component';
 import { GameStartComponent } from './game-boards/board-actions/game-start/game-start.component';
@@ -25,6 +26,7 @@ import { CardGameAnnounceComponent } from './game-boards/board-actions/card-game
         
         // Game Boards
         PlayerAnnounceComponent,
+        GamePlayersComponent,
         GameStatisticsComponent,
         CardGameBoardComponent,
         GameStartComponent,
@@ -44,6 +46,7 @@ import { CardGameAnnounceComponent } from './game-boards/board-actions/card-game
         
         // Game Boards
         PlayerAnnounceComponent,
+        GamePlayersComponent,
         GameStatisticsComponent,
         CardGameBoardComponent,
         GameStartComponent,

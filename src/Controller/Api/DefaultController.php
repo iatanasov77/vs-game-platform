@@ -68,6 +68,8 @@ class DefaultController extends AbstractController
             'game_board.play_with_friends'      => 'Play with Friends',
             'game_board.start_game'             => 'Start Game',
             'game_board.game'                   => 'Game',
+            
+            'game_board.players.title'          => 'Players',
         ];
     }
     
@@ -88,6 +90,8 @@ class DefaultController extends AbstractController
             'game_board.play_with_friends'      => 'Play with Friends',
             'game_board.start_game'             => 'Start Game',
             'game_board.game'                   => 'Game',
+            
+            'game_board.players.title'          => 'Players',
         ];
     }
 }

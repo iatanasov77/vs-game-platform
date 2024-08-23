@@ -8,6 +8,7 @@ import ICardGame from '_@/GamePlatform/Game/CardGameInterface';
 import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
 import { AuthService } from './auth.service';
 import { IGame } from '../interfaces/game';
+import { IPlayer } from '../interfaces/player';
 import { AppConstants } from "../constants";
 
 /**
@@ -38,6 +39,11 @@ export class GameService
         ).pipe(
             map( ( response: any ) => this.mapGame( response ) )
         );
+    }
+    
+    loadPlayers(): Observable<IPlayer[]>
+    {
+        return this.restangular.all( 'players' ).customGET( '' );
     }
     
     startGame( game: any ): Observable<ICardGame>

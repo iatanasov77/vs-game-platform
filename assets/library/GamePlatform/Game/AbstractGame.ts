@@ -1,3 +1,5 @@
+import CardGamePlayer from './CardGamePlayer';
+
 /**
  * Abstract Class AbstractGame.
  * Manual: https://stackoverflow.com/questions/597769/how-do-i-create-an-abstract-base-class-in-javascript
@@ -26,9 +28,14 @@ class AbstractGame
         this.boardSelector  = boardSelector;
     }
     
+    public initPlayers(): Array<CardGamePlayer>
+    {
+        throw new Error( "Method 'initPlayers()' must be implemented." );
+    }
+    
     public initBoard(): void
     {
-        throw new Error( "Method 'initCardsDeck()' must be implemented." );
+        throw new Error( "Method 'initBoard()' must be implemented." );
     }
     
     public startGame(): void

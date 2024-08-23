@@ -86,6 +86,7 @@ security:
         
         - { path: ^/api/get-translations, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
         - { path: ^/api/games, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
+        - { path: ^/api/players, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
         
         - { path: ^/api, roles: [ROLE_SUPER_ADMIN,ROLE_VANKOSOFT_API_ADMIN], requires_channel: '%env(SECURE_SCHEME)%' }
 

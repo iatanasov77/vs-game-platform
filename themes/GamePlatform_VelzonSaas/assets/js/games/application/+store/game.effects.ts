@@ -15,13 +15,18 @@ import {
     loadGame,
     loadGameBySlug,
     loadGameFailure,
-    loadGameSuccess
+    loadGameSuccess,
+    
+    loadPlayers,
+    loadPlayersFailure,
+    loadPlayersSuccess
 } from "./game.actions";
 
 import { GameService } from "../services/game.service";
 import ICardGame from '_@/GamePlatform/Game/CardGameInterface';
 import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
 import { IGame } from '../interfaces/game';
+import { IPlayer } from '../interfaces/player';
 
 /**
  * Effects are an RxJS powered side effect model for Store. Effects use streams to provide new sources of actions to reduce state based on external interactions such 
@@ -65,6 +70,16 @@ export class GameEffects
             )
         )
     );
+    
+    loadPlayers = createEffect( (): any =>
+        this.actions$.pipe(
+            ofType( loadPlayers ),
+            switchMap( () => this.gameService.loadPlayers().pipe(
+                map( ( players: IPlayer[] ) => loadPlayersSuccess( { players } ) ),
+                catchError( error => [loadPlayersFailure( { error } )] )
+            )
+        )
+    ));
     
     startGame = createEffect( (): any =>
         this.actions$.pipe(

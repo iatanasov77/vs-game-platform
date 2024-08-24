@@ -9,7 +9,7 @@
         </thead>
         <tbody *ngIf="! ( isFetchingPlayers$ | async )">
             <tr *ngFor="let player of players">
-                <td class="border-bottom p-2">{{ player.name }}</td>
+                <td *ngIf="player.type == 'user'" class="border-bottom p-2">{{ player.name }}</td>
             </tr>
         </tbody>
     </table>

@@ -27,3 +27,11 @@ services:
     _defaults:
         autowire: true
         autoconfigure: true
+        
+    App\EventListener\AuthenticationListener:
+        tags:
+             - { name: 'kernel.event_subscriber', method: 'onAuthenticationSuccess' }
+        arguments:
+            - '@doctrine'
+            - '@vsapp.repository.mercure_connections'
+            - '@vsapp.factory.mercure_connections'

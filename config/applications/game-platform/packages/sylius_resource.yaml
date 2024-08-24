@@ -35,3 +35,8 @@ sylius_resource:
             classes:
                 model: App\Entity\GamePlayer
                 repository: Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository
+        vsapp.mercure_connections:
+            driver: doctrine/orm
+            classes:
+                model: App\Entity\MercureConnection
+                repository: Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository

@@ -49,7 +49,6 @@ export class BridgeBeloteComponent implements OnInit
         if( isDevMode() ) {
             this.developementClass  = 'developement';
         }
-        
         this.apiVerifySiganature    = this.elementRef.nativeElement.getAttribute( 'apiVerifySiganature' );
         this.authenticate();
         

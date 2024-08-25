@@ -1,0 +1,9 @@
+resources:
+    App\Entity\MercureConnection:
+        operations:
+            connections_get:
+                class: ApiPlatform\Metadata\GetCollection
+                method: GET
+                uriTemplate: /connections
+                normalizationContext:
+                    groups: ['game-room:read']

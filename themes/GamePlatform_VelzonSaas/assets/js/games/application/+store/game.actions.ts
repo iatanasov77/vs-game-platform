@@ -5,6 +5,7 @@ import ICardGame from '_@/GamePlatform/Game/CardGameInterface';
 import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
 import { IGame } from '../interfaces/game';
 import { IPlayer } from '../interfaces/player';
+import { IConnection } from '../interfaces/connection';
 
 const actionTypes = {
     startGame:                  'START_GAME',
@@ -23,6 +24,10 @@ const actionTypes = {
     loadPlayers:                'LOAD_PLAYERS',
     loadPlayersSuccess:         'LOAD_PLAYERS_SUCCESS',
     loadPlayersFailure:         'LOAD_PLAYERS_FAILURE',
+    
+    loadConnections:            'LOAD_CONNECTIONS',
+    loadConnectionsSuccess:     'LOAD_CONNECTIONS_SUCCESS',
+    loadConnectionsFailure:     'LOAD_CONNECTIONS_FAILURE',
 };
 
 export const startGame                  = createAction( actionTypes.startGame, props<{ game: any }>() );
@@ -41,3 +46,7 @@ export const loadGameFailure            = createAction( actionTypes.loadGameFail
 export const loadPlayers                = createAction( actionTypes.loadPlayers );
 export const loadPlayersSuccess         = createAction( actionTypes.loadPlayersSuccess, props<{ players: IPlayer[] }>() );
 export const loadPlayersFailure         = createAction( actionTypes.loadPlayersFailure, props<{ error: any }>() );
+
+export const loadConnections            = createAction( actionTypes.loadConnections );
+export const loadConnectionsSuccess     = createAction( actionTypes.loadConnectionsSuccess, props<{ connections: IConnection[] }>() );
+export const loadConnectionsFailure     = createAction( actionTypes.loadConnectionsFailure, props<{ error: any }>() );

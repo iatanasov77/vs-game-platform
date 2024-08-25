@@ -40,6 +40,7 @@ services:
         tags:
              - { name: 'kernel.event_listener', event: 'kernel.request', method: 'onKernelRequest' }
         arguments:
-            - '@request_stack'
             - '@vs_users.security_bridge'
             - '@vsapp.repository.mercure_connections'
+            - '@mercure.hub.default'
+            - '%kernel.project_dir%'

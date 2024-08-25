@@ -4,8 +4,13 @@
 {% block pageTitle %}{{ 'game_platform.template.games.bridge_belote' | trans( {},'GamePlatform' ) }}{% endblock %}
 
 {% block content %}
-    <div class="container text-center" id="GameContainer" data-locale="{{ app.request.locale }}">
-        <app-bridge-belote apiVerifySiganature="{{ apiVerifySiganature }}"></app-bridge-belote>
+    <div class="container text-center" id="GameContainer"
+        data-locale="{{ app.request.locale }}"
+        data-mercureEventSource="{{ mercure( '/active_connections' ) | escape( 'html_attr' ) }}"
+    >
+        <app-bridge-belote
+            apiVerifySiganature="{{ apiVerifySiganature }}"
+        ></app-bridge-belote>
     </div>
 {% endblock %}
 

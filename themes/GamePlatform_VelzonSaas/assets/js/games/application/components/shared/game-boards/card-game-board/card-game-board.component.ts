@@ -20,6 +20,7 @@ declare var $: any;
 export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
 {
     @Input() isLoggedIn: boolean        = false;
+    @Input() hasPlayer: boolean         = false;
     @Input() developementClass: string  = '';
     
     @Input() game?: any;
@@ -55,7 +56,7 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
 
     }
     
-    ngOnChanges( changes: SimpleChanges )
+    ngOnChanges( changes: SimpleChanges ): void
     {
         for ( const propName in changes ) {
             const changedProp = changes[propName];
@@ -67,11 +68,14 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
                 case 'isLoggedIn':
                     this.isLoggedIn = changedProp.currentValue;
                     break;
+                case 'hasPlayer':
+                    this.hasPlayer = changedProp.currentValue;
+                    break;
             }
         }
     }
     
-    listenForGameEvents()
+    listenForGameEvents(): void
     {
         $( "#card-table" ).get( 0 ).addEventListener( GameEvents.GAME_START_EVENT_NAME, ( event: any ) => {
             const { announceId }    = event.detail;

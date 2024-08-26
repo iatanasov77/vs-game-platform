@@ -4,5 +4,5 @@ App\Entity\MercureConnection:
             groups: ['game-room:read']
         enabled:
             groups: ['game-room:read', 'game-room:create', 'game-room:update']
-        user:
-            groups: ['game-room:read', 'game-room:create', 'game-room:update']
+#         user:
+#             groups: ['game-room:read', 'game-room:create', 'game-room:update']

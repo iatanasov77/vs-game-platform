@@ -8,6 +8,7 @@ import { map, merge } from 'rxjs';
 
 import { IPlayer } from '../../../../interfaces/player';
 import { IConnection } from '../../../../interfaces/connection';
+import { IMercureAction } from '../../../../interfaces/mercure-action';
 
 import {
     loadPlayers,
@@ -91,7 +92,9 @@ export class GamePlayersComponent implements OnInit, OnDestroy
             ['activeConnectionUpdate']
         ).subscribe({
             next: data => {
-                console.log( data );
+                let action: IMercureAction  = JSON.parse( data.data );
+                //console.log( action );
+                this.updatePlayers( action );
             },
             error: error => {
                 console.log( error );
@@ -99,9 +102,14 @@ export class GamePlayersComponent implements OnInit, OnDestroy
         });
     }
     
-    ngOnDestroy()
+    ngOnDestroy(): void
     {
         this.eventSourceSubscription.unsubscribe();
         this.eventSourceService.close();
+    }
+    
+    updatePlayers( action: IMercureAction ): void
+    {
+    
     }
 }

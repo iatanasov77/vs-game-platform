@@ -182,3 +182,11 @@ services:
     App\Controller\Application\TestMercureController:
         tags: ['controller.service_arguments']
         autowire: true
+        
+    App\Controller\GamePlatform\AjaxController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@doctrine'
+            - '@vs_users.repository.users'
+            - '@vsapp.factory.game_players'

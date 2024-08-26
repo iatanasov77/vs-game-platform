@@ -41,12 +41,12 @@ export class EventSourceService
      *
      * @param eventNames - all event names except error (listens by default) you want to listen to
      */
-    connectToServerSentEvents( url: string, options: EventSourceInit, eventNames: string[] = [] ): Observable<Event>
+    connectToServerSentEvents( url: string, options: EventSourceInit, eventNames: string[] = [] ): Observable<MessageEvent>
     {
         this.eventSource    = new EventSourcePolyfill( url, options );
         //alert( this.eventSource.url );
         
-        return new Observable( ( subscriber: Subscriber<Event> ) => {
+        return new Observable( ( subscriber: Subscriber<MessageEvent> ) => {
             if ( this.eventSource ) {
                 this.eventSource.onerror = error => {
                     this.zone.run( () => subscriber.error( error ) );
@@ -57,7 +57,8 @@ export class EventSourceService
                 //alert( event );
                 if ( this.eventSource ) {
                     this.eventSource.addEventListener( event, data => {
-                       this.zone.run( () => subscriber.next( data ) );
+                        console.log( data.data );
+                        this.zone.run( () => subscriber.next( data ) );
                     });
                 }
             });

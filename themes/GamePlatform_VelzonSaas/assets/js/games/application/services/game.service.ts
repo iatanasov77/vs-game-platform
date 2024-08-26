@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@angular/core';
-import { Observable, tap, map, of } from 'rxjs';
+import { BehaviorSubject, Observable, tap, map, of } from 'rxjs';
 
 import { HttpClient } from '@angular/common/http'
 import { Restangular } from 'ngx-restangular';
@@ -19,11 +19,20 @@ import { AppConstants } from "../constants";
 })
 export class GameService
 {
+    hasPlayer$: BehaviorSubject<boolean>;
+    
     constructor(
         @Inject( HttpClient ) private httpClient: HttpClient,
         @Inject( Restangular ) private restangular: Restangular,
         @Inject( AuthService ) private authService: AuthService
-    ) { }
+    ) {
+        this.hasPlayer$ = new BehaviorSubject<boolean>( false );
+    }
+    
+    public hasPlayer(): Observable<boolean>
+    {
+        return this.hasPlayer$.asObservable();
+    }
     
     loadGame( id: number ): Observable<IGame>
     {
@@ -44,6 +53,38 @@ export class GameService
     loadPlayers(): Observable<IPlayer[]>
     {
         return this.restangular.all( 'players' ).customGET( '' );
+    }
+    
+    loadPlayerByUser( userId: number ): Observable<IPlayer>
+    {
+        return this.restangular.one( 'players-ext/' + userId ).customGET(
+            undefined,
+            undefined,
+            { "Authorization": 'Bearer ' + this.authService.getApiToken() }
+        ).pipe(
+            map( ( response: any ) => {
+                //console.log( response );
+                if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
+                    let player: IPlayer = {
+                        id: response.data.id,
+                        type: response.data.type,
+                        name: response.data.name,
+                        rooms: [],
+                        __v: response.data.id
+                    };
+                    
+                    localStorage.setItem( 'player', JSON.stringify( player ) );
+                    this.hasPlayer$.next( true );
+                    
+                    return player;
+                } else {
+                    localStorage.removeItem( 'player' );
+                    this.hasPlayer$.next( false );
+                    
+                    return new Observable;
+                }
+            })
+        );
     }
     
     startGame( game: any ): Observable<ICardGame>

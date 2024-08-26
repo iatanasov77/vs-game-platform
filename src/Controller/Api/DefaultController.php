@@ -61,6 +61,11 @@ class DefaultController extends AbstractController
             'dialogs.login_link'                => 'login from here',
             'dialogs.not_an_account_question'   => 'if you have not an account',
             'dialogs.create_account_link'       => 'create from here',
+            
+            'dialogs.has_no_player_message'     => 'You have NOT a Player',
+            'dialogs.create_a_player_question'  => 'You can create a Player',
+            'dialogs.create_player_link'        => 'from here',
+            
             'game_board.statistics.we'          => 'We',
             'game_board.statistics.you'         => 'You',
             
@@ -83,6 +88,11 @@ class DefaultController extends AbstractController
             'dialogs.login_link'                => 'login from here',
             'dialogs.not_an_account_question'   => 'if you have not an account',
             'dialogs.create_account_link'       => 'create from here',
+            
+            'dialogs.has_no_player_message'     => 'You have NOT a Player',
+            'dialogs.create_a_player_question'  => 'You can create a Player',
+            'dialogs.create_player_link'        => 'from here',
+            
             'game_board.statistics.we'          => 'Ние',
             'game_board.statistics.you'         => 'Вие',
             

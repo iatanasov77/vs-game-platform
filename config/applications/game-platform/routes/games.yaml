@@ -21,3 +21,7 @@ chess:
 backgammon:
     path: /games/backgammon
     controller: App\Controller\Backgammon\DefaultController::index
+    
+app_ajax_create_player:
+    path: /ajax/create-player-for-user/{userId}
+    controller: App\Controller\GamePlatform\AjaxController::createPlayerForUser

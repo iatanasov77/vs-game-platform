@@ -46,9 +46,13 @@ final class ApplicationRequestListener
         }
     }
     
-    private function publishConnection( ?MercureConnection $connection ): void
+    private function publishConnection( MercureConnection $connection ): void
     {
-        $publishData    = json_encode( ['update' => 'New update received at ' . date( "h:i:sa" )] );
+        $publishData    = json_encode([
+            'type'      => 'activeConnectionUpdate',
+            'action'    => 'login',
+            'target'    => $connection->getUser()->getUsername(),
+        ]);
         
         $update = new Update(
             '/active_connections',

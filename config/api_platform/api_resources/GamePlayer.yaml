@@ -7,3 +7,23 @@ resources:
                 uriTemplate: /players
                 normalizationContext:
                     groups: ['game-room:read']
+                forceEager: false
+            player_by_user:
+                class: ApiPlatform\Metadata\Get
+                method: GET
+                uriTemplate: /players-ext/{id}
+                controller: App\Controller\Api\Games\ShowPlayerByUserController
+                normalizationContext:
+                    groups: ['game-room:read']
+                    
+        properties:
+            id:
+                identifier: true
+                writeable: false
+                required: false
+            type:
+                writeable: true
+                required: true
+            name:
+                writeable: true
+                required: true

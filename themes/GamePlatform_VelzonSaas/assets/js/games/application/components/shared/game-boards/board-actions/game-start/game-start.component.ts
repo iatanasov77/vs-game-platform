@@ -9,7 +9,7 @@ import { Observable, map, merge, take } from 'rxjs';
 import { startGame } from '../../../../../+store/game.actions';
 import { GameState } from '../../../../../+store/game.reducers';
 
-import { UserNotLoggedInComponent } from '../../../dialogs/not-loggedin-dialog/not-loggedin-dialog.component';
+import { GameRequirementsDialogComponent } from '../../../dialogs/game-requirements-dialog/game-requirements-dialog.component';
 
 import templateString from './game-start.component.html'
 declare var $: any;
@@ -22,7 +22,8 @@ declare var $: any;
 })
 export class GameStartComponent implements OnInit, OnChanges
 {
-    @Input() isLoggedIn: boolean        = false;
+    @Input() isLoggedIn: boolean    = false;
+    @Input() hasPlayer: boolean     = false;
     @Input() game: any;
     
     appState?: GameState;
@@ -45,7 +46,7 @@ export class GameStartComponent implements OnInit, OnChanges
         });
     }
     
-    ngOnChanges( changes: SimpleChanges )
+    ngOnChanges( changes: SimpleChanges ): void
     {
         for ( const propName in changes ) {
             const changedProp = changes[propName];
@@ -54,6 +55,9 @@ export class GameStartComponent implements OnInit, OnChanges
                 case 'isLoggedIn':
                     this.isLoggedIn = changedProp.currentValue;
                     break;
+                case 'hasPlayer':
+                    this.hasPlayer = changedProp.currentValue;
+                    break;
                 case 'game':
                     this.game = changedProp.currentValue;
                     break;
@@ -61,10 +65,10 @@ export class GameStartComponent implements OnInit, OnChanges
         }
     }
     
-    onPlayWithComputer( event: any )
+    onPlayWithComputer( event: any ): void
     {
-        if ( ! this.isLoggedIn ) {
-            this.openLoginForm();
+        if ( ! this.isLoggedIn || ! this.hasPlayer ) {
+            this.openRequirementsDialog();
             return;
         }
         
@@ -74,17 +78,21 @@ export class GameStartComponent implements OnInit, OnChanges
         }
     }
     
-    onPlayWithFriends( event: any )
+    onPlayWithFriends( event: any ): void
     {
-        if ( ! this.isLoggedIn ) {
-            this.openLoginForm();
+        if ( ! this.isLoggedIn || ! this.hasPlayer ) {
+            this.openRequirementsDialog();
             return;
         }
     }
     
-    openLoginForm(): void
+    openRequirementsDialog(): void
     {
-        const modalRef = this.ngbModal.open( UserNotLoggedInComponent );
+        const modalRef = this.ngbModal.open( GameRequirementsDialogComponent );
+        
+        modalRef.componentInstance.isLoggedIn   = this.isLoggedIn;
+        modalRef.componentInstance.hasPlayer    = this.hasPlayer;
+        
         modalRef.componentInstance.closeModal.subscribe( () => {
             // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
             modalRef.dismiss();

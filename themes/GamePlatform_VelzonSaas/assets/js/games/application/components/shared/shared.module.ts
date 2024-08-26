@@ -7,7 +7,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { LoaderComponent } from './loader/loader.component';
 
 // Dialogs
-import { UserNotLoggedInComponent } from './dialogs/not-loggedin-dialog/not-loggedin-dialog.component';
+import { GameRequirementsDialogComponent } from './dialogs/game-requirements-dialog/game-requirements-dialog.component';
 
 // Game Boards
 import { PlayerAnnounceComponent } from './game-boards/player-announce/player-announce.component';
@@ -22,7 +22,7 @@ import { CardGameAnnounceComponent } from './game-boards/board-actions/card-game
         LoaderComponent,
         
         // Dialogs
-        UserNotLoggedInComponent,
+        GameRequirementsDialogComponent,
         
         // Game Boards
         PlayerAnnounceComponent,
@@ -42,7 +42,7 @@ import { CardGameAnnounceComponent } from './game-boards/board-actions/card-game
         LoaderComponent,
         
         // Dialogs
-        UserNotLoggedInComponent,
+        GameRequirementsDialogComponent,
         
         // Game Boards
         PlayerAnnounceComponent,

@@ -19,11 +19,7 @@ import {
     
     loadPlayers,
     loadPlayersFailure,
-    loadPlayersSuccess,
-    
-    loadConnections,
-    loadConnectionsFailure,
-    loadConnectionsSuccess
+    loadPlayersSuccess
 } from "./game.actions";
 
 import { GameService } from "../services/game.service";
@@ -33,7 +29,6 @@ import ICardGame from '_@/GamePlatform/Game/CardGameInterface';
 import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
 import { IGame } from '../interfaces/game';
 import { IPlayer } from '../interfaces/player';
-import { IConnection } from '../interfaces/connection';
 
 /**
  * Effects are an RxJS powered side effect model for Store. Effects use streams to provide new sources of actions to reduce state based on external interactions such 
@@ -85,16 +80,6 @@ export class GameEffects
             switchMap( () => this.gameService.loadPlayers().pipe(
                 map( ( players: IPlayer[] ) => loadPlayersSuccess( { players } ) ),
                 catchError( error => [loadPlayersFailure( { error } )] )
-            )
-        )
-    ));
-    
-    loadConnections = createEffect( (): any =>
-        this.actions$.pipe(
-            ofType( loadConnections ),
-            switchMap( () => this.eventSourceService.loadUserConnections().pipe(
-                map( ( connections: IConnection[] ) => loadConnectionsSuccess( { connections } ) ),
-                catchError( error => [loadConnectionsFailure( { error } )] )
             )
         )
     ));

@@ -7,17 +7,12 @@ import { Actions, ofType } from '@ngrx/effects';
 import { map, merge } from 'rxjs';
 
 import { IPlayer } from '../../../../interfaces/player';
-import { IConnection } from '../../../../interfaces/connection';
 import { IMercureAction } from '../../../../interfaces/mercure-action';
 
 import {
     loadPlayers,
     loadPlayersFailure,
-    loadPlayersSuccess,
-    
-    loadConnections,
-    loadConnectionsFailure,
-    loadConnectionsSuccess
+    loadPlayersSuccess
 } from '../../../../+store/game.actions';
 
 
@@ -38,7 +33,6 @@ export class GamePlayersComponent implements OnInit, OnDestroy
     
     showSpinner = true;
     players: null | IPlayer[] = null;
-    connections: null | IConnection[] = null;
     
     isFetchingPlayers$ = merge(
         this.actions$.pipe(
@@ -55,21 +49,6 @@ export class GamePlayersComponent implements OnInit, OnDestroy
         )
     );
     
-    isFetchingConnections$ = merge(
-        this.actions$.pipe(
-            ofType( loadConnections ),
-            map( () => true )
-        ),
-        this.actions$.pipe(
-            ofType( loadConnectionsSuccess ),
-            map( () => false )
-        ),
-        this.actions$.pipe(
-            ofType( loadConnectionsFailure ),
-            map( () => false )
-        )
-    );
-    
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,
         @Inject( EventSourceService ) private eventSourceService: EventSourceService,
@@ -80,7 +59,6 @@ export class GamePlayersComponent implements OnInit, OnDestroy
         this.store.subscribe( ( state: any ) => {
             this.showSpinner    = state.app.main.players == null;
             this.players        = state.app.main.players;
-            this.connections    = state.app.main.connections;
         });
     }
     
@@ -93,7 +71,6 @@ export class GamePlayersComponent implements OnInit, OnDestroy
         ).subscribe({
             next: data => {
                 let action: IMercureAction  = JSON.parse( data.data );
-                //console.log( action );
                 this.updatePlayers( action );
             },
             error: error => {
@@ -110,6 +87,6 @@ export class GamePlayersComponent implements OnInit, OnDestroy
     
     updatePlayers( action: IMercureAction ): void
     {
-    
+        console.log( action );
     }
 }

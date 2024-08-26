@@ -7,7 +7,7 @@
                 <th class="border-bottom p-2 font-weight-bold">{{ 'game_board.players.title' | translate }}</th>
             </tr>
         </thead>
-        <tbody *ngIf="! ( isFetchingPlayers$ | async ) && ! ( isFetchingConnections$ | async )">
+        <tbody *ngIf="! ( isFetchingPlayers$ | async )">
             <tr *ngFor="let player of players">
                 <td *ngIf="player.type == 'user'" class="border-bottom p-2">
                     <ng-container *ngIf="player.connected == true">

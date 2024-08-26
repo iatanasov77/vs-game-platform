@@ -2,8 +2,6 @@ import { Injectable, Inject, NgZone } from '@angular/core';
 import { Observable, Subscriber } from 'rxjs';
 import { Restangular } from 'ngx-restangular';
 
-import { IConnection } from '../interfaces/connection';
-
 const EventSource: any = window["EventSource"];
 import { EventSourcePolyfill } from "event-source-polyfill";
 
@@ -76,10 +74,5 @@ export class EventSourceService
     
         this.eventSource.close();
         this.eventSource = null;
-    }
-    
-    loadUserConnections(): Observable<IConnection[]>
-    {
-        return this.restangular.all( 'connections' ).customGET( '' );
     }
 }

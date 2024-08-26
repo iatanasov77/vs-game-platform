@@ -24,6 +24,12 @@ services:
         autowire: true
         tags: ['controller.service_arguments']
         
+    App\Controller\Api\Games\GetPlayersController:
+        arguments:
+            - '@vsapp.repository.game_players'
+        autowire: true
+        tags: ['controller.service_arguments']
+    
     App\Controller\Api\Games\ShowPlayerByUserController:
         arguments:
             - '@vs_users.repository.users'

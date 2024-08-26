@@ -5,6 +5,7 @@ resources:
                 class: ApiPlatform\Metadata\GetCollection
                 method: GET
                 uriTemplate: /players
+                controller: App\Controller\Api\Games\GetPlayersController
                 normalizationContext:
                     groups: ['game-room:read']
                 forceEager: false

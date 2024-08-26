@@ -30,9 +30,10 @@ class ShowPlayerByUserController extends AbstractController
         }
         
         $playerData   = [
-            'id'    => $player->getId(),
-            'name'  => $player->getName(),
-            'type'  => $player->getType(),
+            'id'        => $player->getId(),
+            'name'      => $player->getName(),
+            'type'      => $player->getType(),
+            'connected' => true,
         ];
         
         return new JsonResponse([

@@ -1,7 +1,6 @@
 <?php namespace App\Controller\Api\Games;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpFoundation\Request;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 

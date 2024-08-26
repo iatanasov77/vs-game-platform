@@ -7,6 +7,7 @@ export interface IPlayer
     id: number;
     type: string;
     name: string;
+    connected: any;
     
     __v: number;
 }

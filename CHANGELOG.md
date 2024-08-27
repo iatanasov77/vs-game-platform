@@ -1,3 +1,18 @@
+0.9.1	|	Release date: **27.08.2024**
+============================================
+* New Features and Improvements:
+  - Create Types for Game Provider.
+  - Move Creation of Api Verification Signature in Vankosoft Application Bundle.
+  - Use FlatIcons Lib For Announce Symbols.
+  - Create a Game Player Component to List Players on Side of Game Board.
+  - Create a MercureConnection Entity to Store Active Players.
+  - Create a EventSource Service to Receive Mercure Hub Messages and Subscribe to It.
+  - Load Player For Current User or Show Link to Create it If Not Exists.
+  - Show Connected Players in Players Side Bar.
+  - Remove 'connections' From App State.
+  - Improve Login / Logout Listeners that publish on Mercure.
+
+
 0.9.0	|	Release date: **22.08.2024**
 ============================================
 * New Features and Improvements:

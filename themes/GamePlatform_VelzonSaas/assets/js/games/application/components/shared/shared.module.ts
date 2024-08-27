@@ -11,6 +11,7 @@ import { GameRequirementsDialogComponent } from './dialogs/game-requirements-dia
 
 // Game Boards
 import { PlayerAnnounceComponent } from './game-boards/player-announce/player-announce.component';
+import { GameRoomsComponent } from './game-boards/game-rooms/game-rooms.component';
 import { GamePlayersComponent } from './game-boards/game-players/game-players.component';
 import { GameStatisticsComponent } from './game-boards/game-statistics/game-statistics.component';
 import { CardGameBoardComponent } from './game-boards/card-game-board/card-game-board.component';
@@ -26,6 +27,7 @@ import { CardGameAnnounceComponent } from './game-boards/board-actions/card-game
         
         // Game Boards
         PlayerAnnounceComponent,
+        GameRoomsComponent,
         GamePlayersComponent,
         GameStatisticsComponent,
         CardGameBoardComponent,
@@ -46,6 +48,7 @@ import { CardGameAnnounceComponent } from './game-boards/board-actions/card-game
         
         // Game Boards
         PlayerAnnounceComponent,
+        GameRoomsComponent,
         GamePlayersComponent,
         GameStatisticsComponent,
         CardGameBoardComponent,

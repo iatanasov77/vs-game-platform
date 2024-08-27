@@ -4,6 +4,4 @@ export interface IGame
     slug: string;
     title: string;
     deck?: any;
-    
-    __v: number;
 }

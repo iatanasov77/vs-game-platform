@@ -44,15 +44,12 @@ class Game implements ResourceInterface
     #[Gedmo\Translatable]
     private $slug;
     
-    /**
-     * @Gedmo\SortablePosition
-     * @ORM\Column(name="position", type="integer")
-     */
     /** @var int */
     #[ORM\Column(type: "integer")]
     #[Gedmo\SortablePosition]
     private $position;
     
+    /** @var GamePicture */
     #[ORM\OneToOne(targetEntity: GamePicture::class, mappedBy: "owner", cascade: ["persist", "remove"], orphanRemoval: true)]
     #[ORM\JoinColumn(name: "picture_id", referencedColumnName: "id", nullable: true)]
     private $picture;

@@ -3,11 +3,13 @@ import {
     loadGameSuccess,
     startGameSuccess,
     playerAnnounceSuccess,
-    loadPlayersSuccess
+    loadPlayersSuccess,
+    loadGameRoomsSuccess
 } from "./game.actions";
 
 import { IGame } from '../interfaces/game';
 import { IPlayer } from '../interfaces/player';
+import { IGameRoom } from '../interfaces/game-room';
 import ICardGame from '_@/GamePlatform/Game/CardGameInterface';
 import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
 
@@ -17,18 +19,21 @@ export interface GameState
     cardGame:       null | ICardGame;
     announce:       null | ICardGameAnnounce;
     players:        null | IPlayer[];
+    rooms:          null | IGameRoom[];
 }
 
 const initialState: GameState = {
     game:           null,
     cardGame:       null,
     announce:       null,
-    players:        null
+    players:        null,
+    rooms:          null
 };
 
 export const gameReducer = createReducer( initialState,
     on( loadGameSuccess, ( state, { game } ) => ( { ...state, game } ) ),
     on( startGameSuccess, ( state, { cardGame } ) => ( { ...state, cardGame } ) ),
     on( playerAnnounceSuccess, ( state, { announce } ) => ( { ...state, announce } ) ),
+    on( loadGameRoomsSuccess, ( state, { rooms } ) => ( { ...state, rooms } ) ),
     on( loadPlayersSuccess, ( state, { players } ) => ( { ...state, players } ) ),
 );

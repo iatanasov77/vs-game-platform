@@ -56,6 +56,14 @@ declare module '_@/GamePlatform/CardGameAnnounce/Announce' {
     export = Announce;
 }
 
+declare module '_@/GamePlatform/Model/GameRoomModel' {
+    interface GameRoomModel {
+        id: string;
+        players: Array<any>;
+    }
+    export = GameRoomModel;
+}
+
 declare module '_@/GamePlatform/Model/CardGamePlayerModel' {
     interface CardGamePlayerModel {
         id: string;

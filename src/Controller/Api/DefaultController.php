@@ -75,6 +75,7 @@ class DefaultController extends AbstractController
             'game_board.game'                   => 'Game',
             
             'game_board.players.title'          => 'Players',
+            'game_board.rooms.title'            => 'Game Rooms',
         ];
     }
     
@@ -102,6 +103,7 @@ class DefaultController extends AbstractController
             'game_board.game'                   => 'Game',
             
             'game_board.players.title'          => 'Players',
+            'game_board.rooms.title'            => 'Game Rooms',
         ];
     }
 }

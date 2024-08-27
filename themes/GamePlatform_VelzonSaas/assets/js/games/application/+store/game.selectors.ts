@@ -32,3 +32,8 @@ export const getPlayers             = createSelector(
     mainSelector,
     ( s: GameState ) => s?.players
 );
+
+export const getRooms               = createSelector(
+    mainSelector,
+    ( s: GameState ) => s?.rooms
+);

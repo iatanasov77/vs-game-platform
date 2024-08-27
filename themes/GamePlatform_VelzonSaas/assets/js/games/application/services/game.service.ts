@@ -9,6 +9,7 @@ import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounce
 import { AuthService } from './auth.service';
 import { IGame } from '../interfaces/game';
 import { IPlayer } from '../interfaces/player';
+import { IGameRoom } from '../interfaces/game-room';
 import { AppConstants } from "../constants";
 
 /**
@@ -50,6 +51,11 @@ export class GameService
         );
     }
     
+    loadGameRooms(): Observable<IGameRoom[]>
+    {
+        return this.restangular.all( 'rooms' ).customGET( '' );
+    }
+    
     loadPlayers(): Observable<IPlayer[]>
     {
         return this.restangular.all( 'players' ).customGET( '' );
@@ -71,7 +77,6 @@ export class GameService
                         name: response.data.name,
                         connected: response.data.connected,
                         rooms: [],
-                        __v: response.data.id
                     };
                     
                     localStorage.setItem( 'player', JSON.stringify( player ) );
@@ -112,8 +117,6 @@ export class GameService
                 id: response.data.id,
                 slug: response.data.slug,
                 title: response.data.title,
-                
-                __v: 1,
             };
             
             return game;

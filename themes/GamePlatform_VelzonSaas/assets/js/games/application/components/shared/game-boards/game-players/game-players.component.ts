@@ -59,6 +59,7 @@ export class GamePlayersComponent implements OnInit, OnDestroy
         this.store.subscribe( ( state: any ) => {
             this.showSpinner    = state.app.main.players == null;
             this.players        = state.app.main.players;
+            //console.log( this.players );
         });
     }
     
@@ -87,6 +88,7 @@ export class GamePlayersComponent implements OnInit, OnDestroy
     
     updatePlayers( action: IMercureAction ): void
     {
-        console.log( action );
+        //console.log( action );
+        this.store.dispatch( loadPlayers() );
     }
 }

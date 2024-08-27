@@ -1,14 +1,16 @@
 App\Entity\UserManagement\User:
     attributes:
         username:
-            groups: ['game:read']
+            groups: ['game:read','game-room:read']
         info:
-            groups: ['game:read']
+            groups: ['game:read','game-room:read']
+        mercureConnection:
+            groups: ['game-room:read', 'game-room:create', 'game-room:update']
 
 App\Entity\UserManagement\UserInfo:
     attributes:
         firstName:
-            groups: ['game:read']
+            groups: ['game:read','game-room:read']
         lastName:
-            groups: ['game:read']
+            groups: ['game:read','game-room:read']
             

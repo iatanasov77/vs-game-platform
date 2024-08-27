@@ -27,3 +27,8 @@ export const getGame                = createSelector(
     mainSelector,
     ( s: GameState ) => s?.game
 );
+
+export const getPlayers             = createSelector(
+    mainSelector,
+    ( s: GameState ) => s?.players
+);

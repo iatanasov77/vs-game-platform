@@ -1,0 +1,24 @@
+<div class="game-players-container float-end">
+    <app-loader *ngIf="showSpinner"></app-loader>
+    
+    <table>
+        <thead>
+            <tr>
+                <th class="border-bottom p-2 font-weight-bold">{{ 'game_board.players.title' | translate }}</th>
+            </tr>
+        </thead>
+        <tbody *ngIf="! ( isFetchingPlayers$ | async )">
+            <tr *ngFor="let player of players">
+                <td *ngIf="player.type == 'user'" class="border-bottom p-2">
+                    <ng-container *ngIf="player.connected == true">
+                        <i class="fas fa-check me-2" style="color: #82c91e;"></i>
+                    </ng-container>
+                    <ng-container *ngIf="player.connected == false">
+                        <i class="fas fa-times" style="color: #ff1e1e;"></i>
+                    </ng-container>
+                    {{ player.name }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

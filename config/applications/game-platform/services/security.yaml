@@ -28,9 +28,11 @@ services:
         autowire: true
         autoconfigure: true
         
-    App\EventListener\AuthenticationSuccessListener:
+    App\EventListener\AuthenticationListener:
         tags:
              - { name: 'kernel.event_subscriber', method: 'onAuthenticationSuccess' }
         arguments:
             - '@doctrine'
-            - '@symfonycasts.reset_password.random_generator'
+            - '@vsapp.repository.mercure_connections'
+            - '@vsapp.factory.mercure_connections'
+            - '@mercure.hub.default'

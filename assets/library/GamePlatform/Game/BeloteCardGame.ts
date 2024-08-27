@@ -42,19 +42,27 @@ class BeloteCardGame extends AbstractGame implements ICardGame
     constructor( id: string, publicRootPath: string, boardSelector: string = '#card-table' )
     {
         super( id, publicRootPath, boardSelector );
+        let playersList = this.initPlayers();
         
         //Now lets create a couple of hands, one face down, one face up.
-        this.players  = new GamePlayersIterator([
-            ( new CardGamePlayer( 'left', 'LeftPlayer', 'Left Player', 'computer' ) ).setHand( new cards.Hand({ faceUp:false, x:75, y:225 }) ),
-            ( new CardGamePlayer( 'top', 'TopPlayer', 'Top Player', 'computer' ) ).setHand( new cards.Hand({ faceUp:false, x:335, y:52 }) ),
-            ( new CardGamePlayer( 'right', 'RightPlayer', 'Right Player', 'computer' ) ).setHand( new cards.Hand({ faceUp:false, x:605, y:227 }) ),
-            ( new CardGamePlayer( 'bottom', 'BottomPlayer', 'Bottom Player', 'player', true ) ).setHand( new cards.Hand({ faceUp:true, x:335, y:415 }) ),
-        ], false);
+        this.players  = new GamePlayersIterator( playersList, false );
         
         this.handKeys   = ['lefthand', 'upperhand', 'righthand', 'lowerhand'];
         
         this.currentDealer  = 4;
         //this.currentDealer  = 2;
+    }
+    
+    public override initPlayers(): Array<CardGamePlayer>
+    {
+        let players = [
+            ( new CardGamePlayer( 'left', 'LeftPlayer', 'Left Player', 'computer' ) ).setHand( new cards.Hand({ faceUp:false, x:75, y:225 }) ),
+            ( new CardGamePlayer( 'top', 'TopPlayer', 'Top Player', 'computer' ) ).setHand( new cards.Hand({ faceUp:false, x:335, y:52 }) ),
+            ( new CardGamePlayer( 'right', 'RightPlayer', 'Right Player', 'computer' ) ).setHand( new cards.Hand({ faceUp:false, x:605, y:227 }) ),
+            ( new CardGamePlayer( 'bottom', 'BottomPlayer', 'Bottom Player', 'player', true ) ).setHand( new cards.Hand({ faceUp:true, x:335, y:415 }) ),
+        ];
+        
+        return players;
     }
     
     public override initBoard(): void
@@ -126,6 +134,7 @@ class BeloteCardGame extends AbstractGame implements ICardGame
                 lefthand[i].el.css( 'top', ( i * 20 ) + 'px' );
                 
                 lefthand[i].el.moveTo( '#lefthand' );   // https://stackoverflow.com/questions/2596833/how-to-move-child-element-from-one-parent-to-another-using-jquery
+                lefthand[i].el.css( 'z-index', '0' );
             }
             
             for ( i = 0; i < upperhand.length; i++ ) {
@@ -133,6 +142,7 @@ class BeloteCardGame extends AbstractGame implements ICardGame
                 upperhand[i].el.css( 'top', '0px' );
                 
                 upperhand[i].el.moveTo( '#upperhand' );   // https://stackoverflow.com/questions/2596833/how-to-move-child-element-from-one-parent-to-another-using-jquery
+                upperhand[i].el.css( 'z-index', '0' );
             }
             
             for ( i = 0; i < righthand.length; i++ ) {
@@ -142,6 +152,7 @@ class BeloteCardGame extends AbstractGame implements ICardGame
                 righthand[i].el.css( 'top', ( i * 20 ) + 'px' );
                 
                 righthand[i].el.moveTo( '#righthand' ); // https://stackoverflow.com/questions/2596833/how-to-move-child-element-from-one-parent-to-another-using-jquery
+                righthand[i].el.css( 'z-index', '0' );
             }
             
             for ( i = 0; i < lowerhand.length; i++ ) {
@@ -149,6 +160,7 @@ class BeloteCardGame extends AbstractGame implements ICardGame
                 lowerhand[i].el.css( 'top', '45px' );
 
                 lowerhand[i].el.moveTo( '#lowerhand' );   // https://stackoverflow.com/questions/2596833/how-to-move-child-element-from-one-parent-to-another-using-jquery
+                lowerhand[i].el.css( 'z-index', '0' );
             }
         });
     }

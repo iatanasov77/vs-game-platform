@@ -17,6 +17,7 @@
     <div id="card-actions">
         <game-start *ngIf="gameStarted != true"
             [isLoggedIn]="isLoggedIn"
+            [hasPlayer]="hasPlayer"
             [game]="game"
         ></game-start>
         

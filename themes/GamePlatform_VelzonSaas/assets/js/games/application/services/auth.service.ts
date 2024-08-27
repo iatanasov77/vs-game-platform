@@ -128,7 +128,7 @@ export class AuthService
             auth    = null;
         }
         
-        return auth; 
+        return auth;
     }
     
     public removeAuth()

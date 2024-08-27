@@ -6,5 +6,7 @@ App\Entity\GamePlayer:
             groups: ['game-room:read', 'game-room:create', 'game-room:update']
         name:
             groups: ['game-room:read', 'game-room:create', 'game-room:update']
+        user:
+            groups: ['game-room:read', 'game-room:create', 'game-room:update']
 #         rooms:
 #             groups: ['game-room:read', 'game-room:create', 'game-room:update']

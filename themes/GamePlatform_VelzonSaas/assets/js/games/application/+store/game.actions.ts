@@ -4,6 +4,7 @@ import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
 import ICardGame from '_@/GamePlatform/Game/CardGameInterface';
 import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
 import { IGame } from '../interfaces/game';
+import { IPlayer } from '../interfaces/player';
 
 const actionTypes = {
     startGame:                  'START_GAME',
@@ -18,6 +19,10 @@ const actionTypes = {
     loadGameBySlug:             'LOAD_GAME_BY_SLUG',
     loadGameSuccess:            'LOAD_GAME_SUCCESS',
     loadGameFailure:            'LOAD_GAME_FAILURE',
+    
+    loadPlayers:                'LOAD_PLAYERS',
+    loadPlayersSuccess:         'LOAD_PLAYERS_SUCCESS',
+    loadPlayersFailure:         'LOAD_PLAYERS_FAILURE',
 };
 
 export const startGame                  = createAction( actionTypes.startGame, props<{ game: any }>() );
@@ -32,3 +37,7 @@ export const loadGame                   = createAction( actionTypes.loadGame, pr
 export const loadGameBySlug             = createAction( actionTypes.loadGameBySlug, props<{ slug: string }>() );
 export const loadGameSuccess            = createAction( actionTypes.loadGameSuccess, props<{ game: IGame }>() );
 export const loadGameFailure            = createAction( actionTypes.loadGameFailure, props<{ error: any }>() );
+
+export const loadPlayers                = createAction( actionTypes.loadPlayers );
+export const loadPlayersSuccess         = createAction( actionTypes.loadPlayersSuccess, props<{ players: IPlayer[] }>() );
+export const loadPlayersFailure         = createAction( actionTypes.loadPlayersFailure, props<{ error: any }>() );

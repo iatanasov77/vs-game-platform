@@ -7,9 +7,11 @@ import { Restangular } from 'ngx-restangular';
 import ICardGame from '_@/GamePlatform/Game/CardGameInterface';
 import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
 import { AuthService } from './auth.service';
-import { IGame } from '../interfaces/game';
-import { IPlayer } from '../interfaces/player';
-import { IGameRoom } from '../interfaces/game-room';
+
+import IGame from '../interfaces/game';
+import IPlayer from '../interfaces/player';
+import IGameRoom from '../interfaces/game-room';
+
 import { AppConstants } from "../constants";
 
 /**

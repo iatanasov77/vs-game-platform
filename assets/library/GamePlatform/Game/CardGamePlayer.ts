@@ -1,4 +1,6 @@
-class CardGamePlayer
+import ICardGamePlayer from '../Model/CardGamePlayerModel';
+
+class CardGamePlayer implements ICardGamePlayer
 {
     id: any;
     
@@ -43,24 +45,24 @@ class CardGamePlayer
         }
     }
     
-    getHand()
+    getHand(): any
     {
         return this.hand;
     }
     
-    setHand( hand: any )
+    setHand( hand: any ): this
     {
         this.hand   = hand;
         
         return this;
     }
     
-    getAnnounce()
+    getAnnounce(): any
     {
         return this.announce;
     }
     
-    setAnnounce( announce: any )
+    setAnnounce( announce: any ): this
     {
         this.announce   = announce;
         

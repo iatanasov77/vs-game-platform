@@ -72,8 +72,12 @@ export class GameStartComponent implements OnInit, OnChanges
             return;
         }
         
-        this.game.startGame();
         if ( this?.appState ) {
+            // Try With This Room Only For Now
+            let gameRoom    = this?.appState?.rooms?.find( ( item: any ) => item?.slug === 'test-bridge-belote-room' );
+            console.log( gameRoom );
+            
+            this.game.startGame( gameRoom );
             this.store.dispatch( startGame( this?.appState ) );
         }
     }

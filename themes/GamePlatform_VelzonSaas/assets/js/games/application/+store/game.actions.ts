@@ -3,9 +3,10 @@ import { createAction, props } from "@ngrx/store";
 import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
 import ICardGame from '_@/GamePlatform/Game/CardGameInterface';
 import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
-import { IGame } from '../interfaces/game';
-import { IPlayer } from '../interfaces/player';
-import { IGameRoom } from '../interfaces/game-room';
+
+import IGame from '../interfaces/game';
+import IPlayer from '../interfaces/player';
+import IGameRoom from '../interfaces/game-room';
 
 const actionTypes = {
     startGame:                  'START_GAME',

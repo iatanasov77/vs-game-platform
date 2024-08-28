@@ -1,14 +1,14 @@
-import CardGamePlayer from './CardGamePlayer';
+import ICardGamePlayer from '../Model/CardGamePlayerModel';
 
-class GamePlayersIterator implements Iterator<CardGamePlayer>
+class GamePlayersIterator implements Iterator<ICardGamePlayer>
 {
     private currentIndex: number;
     private startIterationIndex: number;
     
-    private players: Array<CardGamePlayer>;
+    private players: Array<ICardGamePlayer>;
     private clockwise: boolean;
     
-    constructor( players: Array<CardGamePlayer>, clockwise: boolean = true  )
+    constructor( players: Array<ICardGamePlayer>, clockwise: boolean = true  )
     {
         this.currentIndex           = 0;
         this.startIterationIndex    = 0;
@@ -22,12 +22,12 @@ class GamePlayersIterator implements Iterator<CardGamePlayer>
         return this.players[index];
     }
     
-    public getPlayers(): Array<CardGamePlayer>
+    public getPlayers(): Array<ICardGamePlayer>
     {
         return this.players;
     }
     
-    public geCurrentPlayer(): CardGamePlayer
+    public geCurrentPlayer(): ICardGamePlayer
     {
         return this.players[this.currentIndex];
     }
@@ -53,7 +53,7 @@ class GamePlayersIterator implements Iterator<CardGamePlayer>
         this.currentIndex   = 0;
     }
     
-    public next(): IteratorResult<CardGamePlayer>
+    public next(): IteratorResult<ICardGamePlayer>
     {
         let currentPlayer   = this.players[this.currentIndex];
         this.currentIndex++;
@@ -64,7 +64,7 @@ class GamePlayersIterator implements Iterator<CardGamePlayer>
         };
     }
     
-    public nextPlayer(): IteratorResult<CardGamePlayer>
+    public nextPlayer(): IteratorResult<ICardGamePlayer>
     {
         if ( this.clockwise ) {
             return this.nextPlayerClockwise();
@@ -73,7 +73,7 @@ class GamePlayersIterator implements Iterator<CardGamePlayer>
         }
     }
     
-    private nextPlayerClockwise(): IteratorResult<CardGamePlayer>
+    private nextPlayerClockwise(): IteratorResult<ICardGamePlayer>
     {
         let currentPlayer   = this.players[this.currentIndex];
         this.currentIndex++;
@@ -87,7 +87,7 @@ class GamePlayersIterator implements Iterator<CardGamePlayer>
         };
     }
     
-    private nextPlayerBackClockwise(): IteratorResult<CardGamePlayer>
+    private nextPlayerBackClockwise(): IteratorResult<ICardGamePlayer>
     {
         let currentPlayer   = this.players[this.currentIndex];
         this.currentIndex--;

@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
 import { map, merge } from 'rxjs';
 
-import { IGameRoom } from '../../../../interfaces/game-room';
+import IGameRoom from '../../../../interfaces/game-room';
 
 import {
     loadGameRooms,

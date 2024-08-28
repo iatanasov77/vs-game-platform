@@ -31,9 +31,10 @@ import { EventSourceService } from "../services/event-source.service";
 
 import ICardGame from '_@/GamePlatform/Game/CardGameInterface';
 import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
-import { IGame } from '../interfaces/game';
-import { IPlayer } from '../interfaces/player';
-import { IGameRoom } from '../interfaces/game-room';
+
+import IGame from '../interfaces/game';
+import IPlayer from '../interfaces/player';
+import IGameRoom from '../interfaces/game-room';
 
 /**
  * Effects are an RxJS powered side effect model for Store. Effects use streams to provide new sources of actions to reduce state based on external interactions such 

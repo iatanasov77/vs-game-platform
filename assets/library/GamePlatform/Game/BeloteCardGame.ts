@@ -2,7 +2,8 @@ require( '../Einaregilsson_Cards.Js/deckType' );
 const cards = require( '../Einaregilsson_Cards.Js/cards' );
 
 import AbstractGame from './AbstractGame';
-import ICardGame from './CardGameInterface';
+import ICardGamePlay from '../Model/CardGamePlayModel';
+import ICardGamePlayer from '../Model/CardGamePlayerModel';
 import CardGamePlayer from './CardGamePlayer';
 import GamePlayersIterator from './GamePlayersIterator';
 
@@ -17,7 +18,7 @@ declare global {
     }
 }
 
-class BeloteCardGame extends AbstractGame implements ICardGame
+class BeloteCardGame extends AbstractGame implements ICardGamePlay
 {
     /** Cards Deck */
     deck: any;
@@ -110,7 +111,7 @@ class BeloteCardGame extends AbstractGame implements ICardGame
         return hands;
     }
     
-    public getPlayers(): Array<CardGamePlayer>
+    public getPlayers(): Array<ICardGamePlayer>
     {
         return this.players.getPlayers();
     }
@@ -180,7 +181,7 @@ class BeloteCardGame extends AbstractGame implements ICardGame
         }
     }
     
-    public afterAnnounce( player: CardGamePlayer, oAnnounce: BeloteCardGameAnnounce )
+    public afterAnnounce( player: ICardGamePlayer, oAnnounce: BeloteCardGameAnnounce )
     {
         let setImmediate = global.setImmediate || ( ( fn: any, ...args: any[] ) => global.setTimeout( fn, 0, ...args ) );
         const unblock = () => new Promise( setImmediate );
@@ -225,8 +226,8 @@ class BeloteCardGame extends AbstractGame implements ICardGame
         this.initAnnounceEventListeners();
         
         let waitTimeout;
-        let player: CardGamePlayer;
-        let nextPlayer: CardGamePlayer; // Using for current Iteration
+        let player: ICardGamePlayer;
+        let nextPlayer: ICardGamePlayer; // Using for current Iteration
         let lastAnnounce;
         let oAnnounce       = new BeloteCardGameAnnounce();
         let loopIndex       = 1;
@@ -287,7 +288,7 @@ class BeloteCardGame extends AbstractGame implements ICardGame
     continueAnnounce( loopIndex: number )
     {
         let waitTimeout;
-        let nextPlayer: CardGamePlayer; // Using for current Iteration
+        let nextPlayer: ICardGamePlayer; // Using for current Iteration
         let lastAnnounce;
         let oAnnounce   = new BeloteCardGameAnnounce();
         

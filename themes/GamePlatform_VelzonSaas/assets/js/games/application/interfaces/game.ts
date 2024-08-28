@@ -1,7 +1,9 @@
-export interface IGame
+interface IGame
 {
     id: number;
     slug: string;
     title: string;
     deck?: any;
 }
+
+export default IGame;

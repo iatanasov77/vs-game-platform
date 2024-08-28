@@ -7,11 +7,12 @@ import {
     loadGameRoomsSuccess
 } from "./game.actions";
 
-import { IGame } from '../interfaces/game';
-import { IPlayer } from '../interfaces/player';
-import { IGameRoom } from '../interfaces/game-room';
 import ICardGame from '_@/GamePlatform/Game/CardGameInterface';
 import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
+
+import IGame from '../interfaces/game';
+import IPlayer from '../interfaces/player';
+import IGameRoom from '../interfaces/game-room';
 
 export interface GameState
 {

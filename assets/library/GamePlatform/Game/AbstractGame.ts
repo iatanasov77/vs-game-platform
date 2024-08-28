@@ -1,4 +1,6 @@
+import IGameRoom from '../Model/GameRoomModel';
 import CardGamePlayer from './CardGamePlayer';
+import GamePlayersIterator from './GamePlayersIterator';
 
 /**
  * Abstract Class AbstractGame.
@@ -11,6 +13,10 @@ class AbstractGame
 {
     /** Game Slug */
     id: string;
+    room: null | IGameRoom;
+    
+    /** Game Players */
+    players?: GamePlayersIterator;
     
     /** Public Root Path for Assets */
     publicRootPath: string
@@ -26,6 +32,8 @@ class AbstractGame
         this.id             = id;
         this.publicRootPath = publicRootPath;
         this.boardSelector  = boardSelector;
+        this.room           = null;
+        this.players        = new GamePlayersIterator( [], false );
     }
     
     public initPlayers(): Array<CardGamePlayer>

@@ -1,7 +1,32 @@
+declare module '_@/GamePlatform/Model/GameRoomModel' {
+    interface IGameRoom {
+        id: string;
+        players: Array<any>;
+    }
+    export = IGameRoom;
+}
+
+declare module '_@/GamePlatform/Model/GamePlayerModel' {
+    interface IGamePlayer
+    {
+        id: string;
+        
+        containerId: string;
+        name: string;
+        type: string;
+    }
+    export = IGamePlayer;
+}
+
 declare module '_@/GamePlatform/Model/GamePlayModel' {
+    import IGameRoom from '_@/GamePlatform/Model/GameRoomModel';
+    import IGamePlayer from '_@/GamePlatform/Model/GamePlayerModel';
+    
     interface IGamePlay
     {
         id: any;
+        room: null | IGameRoom;
+        players: null | Iterator<IGamePlayer>;
     }
     export = IGamePlay;
 }
@@ -53,14 +78,6 @@ declare module '_@/GamePlatform/CardGameAnnounce/Announce' {
         static RE_KONTRA: string;
     }
     export = Announce;
-}
-
-declare module '_@/GamePlatform/Model/GameRoomModel' {
-    interface GameRoomModel {
-        id: string;
-        players: Array<any>;
-    }
-    export = GameRoomModel;
 }
 
 declare module '_@/GamePlatform/Model/CardGamePlayerModel' {

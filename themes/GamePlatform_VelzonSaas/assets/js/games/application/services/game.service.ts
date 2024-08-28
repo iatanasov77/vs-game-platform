@@ -130,8 +130,10 @@ export class GameService
     private mapGamePlay( game: IGame ): IGamePlay
     {
         let gamePlay: IGamePlay = {
+            //id: game.id,
             id: "New Game Play",
-            //deck: game.deck
+            room: null,
+            players: null
         };
         
         return gamePlay;

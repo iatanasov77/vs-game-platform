@@ -1,9 +1,9 @@
-import ICardGamePlayer from './CardGamePlayerModel';
+import IGamePlayer from './GamePlayerModel';
 
-interface GameRoomModel
+interface IGameRoom
 {
     id: string;
-    players: Array<ICardGamePlayer>;
+    players: Array<IGamePlayer>;
 }
 
-export default GameRoomModel;
+export default IGameRoom;

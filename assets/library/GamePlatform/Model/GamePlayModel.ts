@@ -1,9 +1,12 @@
+import IGameRoom from './GameRoomModel';
 import IGamePlayer from './GamePlayerModel';
 
 interface IGamePlay
 {
     id: any;
-    players: Iterator<IGamePlayer>;
+    room: null | IGameRoom;
+    
+    players?: Iterator<IGamePlayer>;
     
     initPlayers(): Array<IGamePlayer>;
     initBoard(): void;

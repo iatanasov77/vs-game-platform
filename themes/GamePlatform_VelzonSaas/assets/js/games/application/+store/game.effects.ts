@@ -29,7 +29,7 @@ import {
 import { GameService } from "../services/game.service";
 import { EventSourceService } from "../services/event-source.service";
 
-import ICardGame from '_@/GamePlatform/Game/CardGameInterface';
+import IGamePlay from '_@/GamePlatform/Model/GamePlayModel';
 import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
 
 import IGame from '../interfaces/game';
@@ -109,7 +109,7 @@ export class GameEffects
             ofType( startGame ),
             switchMap( ( { game } ) =>
                 this.gameService.startGame( game ).pipe(
-                    map( ( cardGame: ICardGame ) => startGameSuccess( { cardGame } ) ),
+                    map( ( gamePlay: IGamePlay ) => startGameSuccess( { gamePlay } ) ),
                     catchError( error => [startGameFailure( { error } )] )
                 )
             )

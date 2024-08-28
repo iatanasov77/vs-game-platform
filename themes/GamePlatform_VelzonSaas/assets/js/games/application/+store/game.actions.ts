@@ -1,7 +1,7 @@
 import { createAction, props } from "@ngrx/store";
 
 import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
-import ICardGame from '_@/GamePlatform/Game/CardGameInterface';
+import IGamePlay from '_@/GamePlatform/Model/GamePlayModel';
 import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
 
 import IGame from '../interfaces/game';
@@ -32,7 +32,7 @@ const actionTypes = {
 };
 
 export const startGame                  = createAction( actionTypes.startGame, props<{ game: any }>() );
-export const startGameSuccess           = createAction( actionTypes.startGameSuccess, props<{ cardGame: ICardGame }>() );
+export const startGameSuccess           = createAction( actionTypes.startGameSuccess, props<{ gamePlay: IGamePlay }>() );
 export const startGameFailure           = createAction( actionTypes.startGameFailure, props<{ error: any }>() );
 
 export const playerAnnounce             = createAction( actionTypes.playerAnnounce );

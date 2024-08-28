@@ -1,10 +1,9 @@
-declare module '_@/GamePlatform/Game/CardGameInterface' {
-    interface ICardGame
+declare module '_@/GamePlatform/Model/GamePlayModel' {
+    interface IGamePlay
     {
-        deck: any;
-        //players: GamePlayersIterator;
+        id: any;
     }
-    export = ICardGame;
+    export = IGamePlay;
 }
 
 declare module '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface' {

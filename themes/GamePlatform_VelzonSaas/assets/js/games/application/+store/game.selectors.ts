@@ -16,7 +16,7 @@ export const getRouteParams         = createSelector(
 
 export const runStartGame           = createSelector(
     mainSelector,
-    ( s: GameState ) => s?.cardGame
+    ( s: GameState ) => s?.gamePlay
 );
 export const runMakeAnnounce        = createSelector(
     mainSelector,

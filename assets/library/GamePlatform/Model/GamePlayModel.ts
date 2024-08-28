@@ -1,10 +1,11 @@
-import ICardGamePlayer from './CardGamePlayerModel';
+import IGamePlayer from './GamePlayerModel';
 
 interface IGamePlay
 {
-    players: Iterator<ICardGamePlayer>;
+    id: any;
+    players: Iterator<IGamePlayer>;
     
-    initPlayers(): Array<ICardGamePlayer>;
+    initPlayers(): Array<IGamePlayer>;
     initBoard(): void;
     startGame(): void;
     nextGame(): void;

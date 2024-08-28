@@ -1,11 +1,7 @@
-interface ICardGamePlayer
+import IGamePlayer from './GamePlayerModel'
+
+interface ICardGamePlayer extends IGamePlayer
 {
-    id: string;
-    
-    containerId: string;
-    name: string;
-    type: string;
-        
     announce: null | string;
     
     getHand(): any;

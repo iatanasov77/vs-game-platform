@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable, tap, map, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http'
 import { Restangular } from 'ngx-restangular';
 
-import ICardGame from '_@/GamePlatform/Game/CardGameInterface';
+import IGamePlay from '_@/GamePlatform/Model/GamePlayModel';
 import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
 import { AuthService } from './auth.service';
 
@@ -95,13 +95,13 @@ export class GameService
         );
     }
     
-    startGame( game: any ): Observable<ICardGame>
+    startGame( game: any ): Observable<IGamePlay>
     {
         if ( ! game ) {
             return new Observable;
         }
         
-        return of( game ).pipe( map( ( game: IGame ) => this.mapCardGame( game ) ) );
+        return of( game ).pipe( map( ( game: IGame ) => this.mapGamePlay( game ) ) );
     }
     
     playerAnnounce(): Observable<ICardGameAnnounce>
@@ -127,13 +127,13 @@ export class GameService
         return response.message;
     }
     
-    private mapCardGame( game: IGame ): ICardGame
+    private mapGamePlay( game: IGame ): IGamePlay
     {
-        let cardGame: ICardGame = {
-            //id: game.id,
-            deck: game.deck
+        let gamePlay: IGamePlay = {
+            id: "New Game Play",
+            //deck: game.deck
         };
         
-        return cardGame;
+        return gamePlay;
     }
 }

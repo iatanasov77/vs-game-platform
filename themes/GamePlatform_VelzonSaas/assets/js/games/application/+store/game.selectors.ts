@@ -5,6 +5,8 @@ import { RouterStateUrl } from './router';
 const mainSelector                  = createFeatureSelector<GameState>( 'main' );
 const routerSelector                = createFeatureSelector<{ state: RouterStateUrl }>( 'router' );
 
+import IGameRoom from '../interfaces/game-room';
+
 export const getUrl                 = createSelector(
     routerSelector,
     s => s?.state?.url
@@ -12,15 +14,6 @@ export const getUrl                 = createSelector(
 export const getRouteParams         = createSelector(
     routerSelector,
     s => s?.state?.params
-);
-
-export const runStartGame           = createSelector(
-    mainSelector,
-    ( s: GameState ) => s?.gamePlay
-);
-export const runMakeAnnounce        = createSelector(
-    mainSelector,
-    ( s: GameState ) => s?.announce
 );
 
 export const getGame                = createSelector(
@@ -36,4 +29,19 @@ export const getPlayers             = createSelector(
 export const getRooms               = createSelector(
     mainSelector,
     ( s: GameState ) => s?.rooms
+);
+
+export const selectGameRoom           = createSelector(
+    mainSelector,
+    ( s: GameState ) => s?.game
+);
+
+export const runStartGame           = createSelector(
+    mainSelector,
+    ( s: GameState ) => s?.gamePlay
+);
+
+export const runMakeAnnounce        = createSelector(
+    mainSelector,
+    ( s: GameState ) => s?.announce
 );

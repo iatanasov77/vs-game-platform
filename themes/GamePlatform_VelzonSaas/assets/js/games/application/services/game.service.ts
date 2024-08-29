@@ -95,6 +95,20 @@ export class GameService
         );
     }
     
+    selectGameRoom( select: any ): Observable<IGame>
+    {
+        //console.log( select );
+        if ( ! select ) {
+            return new Observable;
+        }
+        
+        return of( select ).pipe( map( ( game: IGame ) => {
+            select.game.room = select.room;
+            console.log( select );
+            return select;
+        }));
+    }
+    
     startGame( game: any ): Observable<IGamePlay>
     {
         if ( ! game ) {

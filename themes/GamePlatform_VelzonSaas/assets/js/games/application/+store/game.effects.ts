@@ -1,17 +1,9 @@
 import { Injectable, Inject } from "@angular/core";
 
 import { createEffect, Actions, ofType } from '@ngrx/effects';
-import { catchError, map, switchMap } from "rxjs";
+import { switchMap, map, catchError } from "rxjs";
 
 import {
-    startGame,
-    startGameFailure,
-    startGameSuccess,
-    
-    playerAnnounce,
-    playerAnnounceFailure,
-    playerAnnounceSuccess,
-    
     loadGame,
     loadGameBySlug,
     loadGameFailure,
@@ -23,7 +15,19 @@ import {
     
     loadGameRooms,
     loadGameRoomsFailure,
-    loadGameRoomsSuccess
+    loadGameRoomsSuccess,
+    
+    selectGameRoom,
+    selectGameRoomFailure,
+    selectGameRoomSuccess,
+    
+    startGame,
+    startGameFailure,
+    startGameSuccess,
+    
+    playerAnnounce,
+    playerAnnounceFailure,
+    playerAnnounceSuccess
 } from "./game.actions";
 
 import { GameService } from "../services/game.service";
@@ -99,6 +103,18 @@ export class GameEffects
                 this.gameService.loadPlayers().pipe(
                     map( ( players: IPlayer[] ) => loadPlayersSuccess( { players } ) ),
                     catchError( error => [loadPlayersFailure( { error } )] )
+                )
+            )
+        )
+    );
+    
+    selectGameRoom = createEffect( (): any =>
+        this.actions$.pipe(
+            ofType( selectGameRoom ),
+            switchMap( ( game ) =>
+                this.gameService.selectGameRoom( game ).pipe(
+                    map( ( game: IGame ) => selectGameRoomSuccess( { game } ) ),
+                    catchError( error => [selectGameRoomFailure( { error } )] )
                 )
             )
         )

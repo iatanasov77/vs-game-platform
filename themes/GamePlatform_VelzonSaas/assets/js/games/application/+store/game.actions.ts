@@ -9,14 +9,6 @@ import IPlayer from '../interfaces/player';
 import IGameRoom from '../interfaces/game-room';
 
 const actionTypes = {
-    startGame:                  'START_GAME',
-    startGameSuccess:           'START_GAME_SUCCESS',
-    startGameFailure:           'START_GAME_FAILURE',
-    
-    playerAnnounce:             'PLAYER_ANNOUNCE',
-    playerAnnounceSuccess:      'PLAYER_ANNOUNCE_SUCCESS',
-    playerAnnounceFailure:      'PLAYER_ANNOUNCE_FAILURE',
-    
     loadGame:                   'LOAD_GAME',
     loadGameBySlug:             'LOAD_GAME_BY_SLUG',
     loadGameSuccess:            'LOAD_GAME_SUCCESS',
@@ -26,18 +18,22 @@ const actionTypes = {
     loadPlayersSuccess:         'LOAD_PLAYERS_SUCCESS',
     loadPlayersFailure:         'LOAD_PLAYERS_FAILURE',
     
-    loadGameRooms:                'LOAD_GAME_ROOMS',
-    loadGameRoomsSuccess:         'LOAD_GAME_ROOMS_SUCCESS',
-    loadGameRoomsFailure:         'LOAD_GAME_ROOMS_FAILURE',
+    loadGameRooms:              'LOAD_GAME_ROOMS',
+    loadGameRoomsSuccess:       'LOAD_GAME_ROOMS_SUCCESS',
+    loadGameRoomsFailure:       'LOAD_GAME_ROOMS_FAILURE',
+    
+    selectGameRoom:             'SELECT_GAME_ROOM',
+    selectGameRoomSuccess:      'SELECT_GAME_ROOM_SUCCESS',
+    selectGameRoomFailure:      'SELECT_GAME_ROOM_FAILURE',
+    
+    startGame:                  'START_GAME',
+    startGameSuccess:           'START_GAME_SUCCESS',
+    startGameFailure:           'START_GAME_FAILURE',
+    
+    playerAnnounce:             'PLAYER_ANNOUNCE',
+    playerAnnounceSuccess:      'PLAYER_ANNOUNCE_SUCCESS',
+    playerAnnounceFailure:      'PLAYER_ANNOUNCE_FAILURE',
 };
-
-export const startGame                  = createAction( actionTypes.startGame, props<{ game: any }>() );
-export const startGameSuccess           = createAction( actionTypes.startGameSuccess, props<{ gamePlay: IGamePlay }>() );
-export const startGameFailure           = createAction( actionTypes.startGameFailure, props<{ error: any }>() );
-
-export const playerAnnounce             = createAction( actionTypes.playerAnnounce );
-export const playerAnnounceSuccess      = createAction( actionTypes.playerAnnounceSuccess, props<{ announce: ICardGameAnnounce }>() );
-export const playerAnnounceFailure      = createAction( actionTypes.playerAnnounceFailure, props<{ error: any }>() );
 
 export const loadGame                   = createAction( actionTypes.loadGame, props<{ id: number }>() );
 export const loadGameBySlug             = createAction( actionTypes.loadGameBySlug, props<{ slug: string }>() );
@@ -51,3 +47,15 @@ export const loadPlayersFailure         = createAction( actionTypes.loadPlayersF
 export const loadGameRooms              = createAction( actionTypes.loadGameRooms );
 export const loadGameRoomsSuccess       = createAction( actionTypes.loadGameRoomsSuccess, props<{ rooms: IGameRoom[] }>() );
 export const loadGameRoomsFailure       = createAction( actionTypes.loadGameRoomsFailure, props<{ error: any }>() );
+
+export const selectGameRoom             = createAction( actionTypes.selectGameRoom, props<{ game: IGame; room: IGameRoom }>() );
+export const selectGameRoomSuccess      = createAction( actionTypes.selectGameRoomSuccess, props<{ game: IGame }>() );
+export const selectGameRoomFailure      = createAction( actionTypes.selectGameRoomFailure, props<{ error: any }>() );
+
+export const startGame                  = createAction( actionTypes.startGame, props<{ game: any }>() );
+export const startGameSuccess           = createAction( actionTypes.startGameSuccess, props<{ gamePlay: IGamePlay }>() );
+export const startGameFailure           = createAction( actionTypes.startGameFailure, props<{ error: any }>() );
+
+export const playerAnnounce             = createAction( actionTypes.playerAnnounce );
+export const playerAnnounceSuccess      = createAction( actionTypes.playerAnnounceSuccess, props<{ announce: ICardGameAnnounce }>() );
+export const playerAnnounceFailure      = createAction( actionTypes.playerAnnounceFailure, props<{ error: any }>() );

@@ -36,3 +36,10 @@ services:
             - '@vsapp.repository.mercure_connections'
             - '@vsapp.factory.mercure_connections'
             - '@mercure.hub.default'
+            
+    App\EventListener\ActivityListener:
+        tags:
+             - { name: 'kernel.event_listener', event: 'kernel.request', method: 'onKernelRequest' }
+        arguments:
+            - '@doctrine'
+            - '@vs_users.security_bridge'

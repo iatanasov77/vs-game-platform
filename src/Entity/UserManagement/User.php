@@ -43,6 +43,10 @@ class User extends BaseUser implements
     #[ORM\OneToOne(targetEntity: MercureConnection::class, mappedBy: "user", cascade: ["persist", "remove"], orphanRemoval: true)]
     private $mercureConnection;
     
+    /** @var \Datetime */
+    #[ORM\Column(name: "last_active_at", type: "datetime", nullable: true)]
+    private $lastActiveAt;
+    
     public function __construct()
     {
         $this->newsletterSubscriptions  = new ArrayCollection();
@@ -83,5 +87,15 @@ class User extends BaseUser implements
         $this->mercureConnection = $mercureConnection;
         
         return $this;
+    }
+    
+    public function getLastActiveAt()
+    {
+        return $this->lastActiveAt;
+    }
+    
+    public function setLastActiveAt( $lastActiveAt )
+    {
+        $this->lastActiveAt = $lastActiveAt;
     }
 }

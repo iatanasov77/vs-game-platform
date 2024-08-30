@@ -1,0 +1,18 @@
+<div class="game-rooms-container float-end">
+    <app-loader *ngIf="showSpinner"></app-loader>
+    
+    <table><!-- class="loader-target" -->
+        <thead>
+            <tr>
+                <th class="border-bottom p-2 font-weight-bold">{{ 'game_board.rooms.title' | translate }}</th>
+            </tr>
+        </thead>
+        <tbody *ngIf="! ( isFetchingRooms$ | async )">
+            <tr *ngFor="let room of rooms">
+                <td class="border-bottom p-2">
+                    {{ room.name }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

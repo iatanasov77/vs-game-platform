@@ -1,7 +1,13 @@
-interface CardGamePlayerModel
+import IGamePlayer from './GamePlayerModel'
+
+interface ICardGamePlayer extends IGamePlayer
 {
-    id: string;
     announce: null | string;
+    
+    getHand(): any;
+    setHand( hand: any ): this;
+    getAnnounce(): any;
+    setAnnounce( announce: any ): this;
 }
 
-export default CardGamePlayerModel;
+export default ICardGamePlayer;

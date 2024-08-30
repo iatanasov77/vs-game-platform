@@ -2,7 +2,8 @@ require( '../Einaregilsson_Cards.Js/deckType' );
 const cards = require( '../Einaregilsson_Cards.Js/cards' );
 
 import AbstractGame from './AbstractGame';
-import ICardGame from './CardGameInterface';
+import ICardGamePlay from '../Model/CardGamePlayModel';
+import ICardGamePlayer from '../Model/CardGamePlayerModel';
 import CardGamePlayer from './CardGamePlayer';
 import GamePlayersIterator from './GamePlayersIterator';
 
@@ -17,13 +18,10 @@ declare global {
     }
 }
 
-class BeloteCardGame extends AbstractGame implements ICardGame
+class BeloteCardGame extends AbstractGame implements ICardGamePlay
 {
     /** Cards Deck */
     deck: any;
-    
-    /** Game Players */
-    players: GamePlayersIterator;
     
     /** Players Hands */
     handKeys: Array<string>;
@@ -42,6 +40,7 @@ class BeloteCardGame extends AbstractGame implements ICardGame
     constructor( id: string, publicRootPath: string, boardSelector: string = '#card-table' )
     {
         super( id, publicRootPath, boardSelector );
+        
         let playersList = this.initPlayers();
         
         //Now lets create a couple of hands, one face down, one face up.
@@ -102,17 +101,21 @@ class BeloteCardGame extends AbstractGame implements ICardGame
     public override getHands(): any
     {
         let hands   = new Map();
-        this.players.setStartIterationIndex( this.currentDealer - 1 );
-        do {
-            hands.set( this.handKeys[this.players.getCurrentIndex()], this.players.geCurrentPlayer().getHand() );
-        } while( this.players.nextPlayer().done === false );
+        
+        if ( this.players ) {
+            this.players.setStartIterationIndex( this.currentDealer - 1 );
+            
+            do {
+                hands.set( this.handKeys[this.players.getCurrentIndex()], this.players.geCurrentPlayer().getHand() );
+            } while( this.players.nextPlayer().done === false );
+        }
         
         return hands;
     }
     
-    public getPlayers(): Array<CardGamePlayer>
+    public getPlayers(): Array<ICardGamePlayer>
     {
-        return this.players.getPlayers();
+        return this.players ? this.players.getPlayers() : [];
     }
     
     public dealCards( count: number ): void
@@ -180,7 +183,7 @@ class BeloteCardGame extends AbstractGame implements ICardGame
         }
     }
     
-    public afterAnnounce( player: CardGamePlayer, oAnnounce: BeloteCardGameAnnounce )
+    public afterAnnounce( player: ICardGamePlayer, oAnnounce: BeloteCardGameAnnounce )
     {
         let setImmediate = global.setImmediate || ( ( fn: any, ...args: any[] ) => global.setTimeout( fn, 0, ...args ) );
         const unblock = () => new Promise( setImmediate );
@@ -225,8 +228,8 @@ class BeloteCardGame extends AbstractGame implements ICardGame
         this.initAnnounceEventListeners();
         
         let waitTimeout;
-        let player: CardGamePlayer;
-        let nextPlayer: CardGamePlayer; // Using for current Iteration
+        let player: ICardGamePlayer;
+        let nextPlayer: ICardGamePlayer; // Using for current Iteration
         let lastAnnounce;
         let oAnnounce       = new BeloteCardGameAnnounce();
         let loopIndex       = 1;
@@ -241,44 +244,47 @@ class BeloteCardGame extends AbstractGame implements ICardGame
             $( '#' + announceContainerId ).show();
         }).bind( this );
       
-        this.players.setStartIterationIndex( this.currentDealer -1 );
-        do {
-            nextPlayer  = this.players.geCurrentPlayer();
-            
-            waitTimeout = loopIndex * 2000;
-            
-            if ( nextPlayer.type == 'player' ) {
-                waitMyAnnounce  = true;
-                player          = nextPlayer;
-                setTimeout( playerBoundMethod, waitTimeout, 'AnnounceContainer' );
+        if( this.players ) {
+            this.players.setStartIterationIndex( this.currentDealer -1 );
+            do {
+                nextPlayer  = this.players.geCurrentPlayer();
                 
-                // Wait For Player Announce
-                this.waitMyAnnounce()
-                    .then(() => {
-                        lastAnnounce    = window.playerAnnounce;
-                        this.announces.push( lastAnnounce );
-                        //alert( 'My Announce: ' + window.playerAnnounce );
+                waitTimeout = loopIndex * 2000;
+                
+                if ( nextPlayer.type == 'player' ) {
+                    waitMyAnnounce  = true;
+                    player          = nextPlayer;
+                    setTimeout( playerBoundMethod, waitTimeout, 'AnnounceContainer' );
+                    
+                    // Wait For Player Announce
+                    this.waitMyAnnounce()
+                        .then(() => {
+                            lastAnnounce    = window.playerAnnounce;
+                            this.announces.push( lastAnnounce );
+                            //alert( 'My Announce: ' + window.playerAnnounce );
+                            
+                            this.fireAnnounceEvent( player.containerId, lastAnnounce );
+                            this.continueAnnounce( ++loopIndex );
+                        });
                         
-                        this.fireAnnounceEvent( player.containerId, lastAnnounce );
-                        this.continueAnnounce( ++loopIndex );
-                    });
-                    
-                // After Announce Begin Playing
-                this.afterAnnounce( player, oAnnounce );
-            } else {
-                if ( ! waitMyAnnounce ) {
-                    // Create Announce for Partner Gamer
-                    lastAnnounce    = oAnnounce.announce( nextPlayer.getHand(), lastAnnounce );
-                    this.announces.push( lastAnnounce );
-                    
-                    nextPlayer.setAnnounce( lastAnnounce );
-                    
-                    setTimeout( partnerBoundMethod, waitTimeout, nextPlayer.containerId, lastAnnounce );
+                    // After Announce Begin Playing
+                    this.afterAnnounce( player, oAnnounce );
+                } else {
+                    if ( ! waitMyAnnounce ) {
+                        // Create Announce for Partner Gamer
+                        lastAnnounce    = oAnnounce.announce( nextPlayer.getHand(), lastAnnounce );
+                        this.announces.push( lastAnnounce );
+                        
+                        nextPlayer.setAnnounce( lastAnnounce );
+                        
+                        setTimeout( partnerBoundMethod, waitTimeout, nextPlayer.containerId, lastAnnounce );
+                    }
                 }
-            }
-            
-            loopIndex++;
-        } while( this.players.nextPlayer().done === false );
+                
+                loopIndex++;
+            } while( this.players.nextPlayer().done === false );
+        
+        }
     }
     
     /**
@@ -287,7 +293,7 @@ class BeloteCardGame extends AbstractGame implements ICardGame
     continueAnnounce( loopIndex: number )
     {
         let waitTimeout;
-        let nextPlayer: CardGamePlayer; // Using for current Iteration
+        let nextPlayer: ICardGamePlayer; // Using for current Iteration
         let lastAnnounce;
         let oAnnounce   = new BeloteCardGameAnnounce();
         
@@ -296,21 +302,23 @@ class BeloteCardGame extends AbstractGame implements ICardGame
             this.fireAnnounceEvent( containerId, lastAnnounce );
         }).bind( this );
         
-        do {
-            nextPlayer  = this.players.geCurrentPlayer();
-            
-            waitTimeout = loopIndex * 2000;
-            
-            // Create Announce for Partner Gamer
-            lastAnnounce    = oAnnounce.announce( nextPlayer.getHand(), lastAnnounce );
-            this.announces.push( lastAnnounce );
-            
-            nextPlayer.setAnnounce( lastAnnounce );
-            
-            setTimeout( partnerBoundMethod, waitTimeout, nextPlayer.containerId, lastAnnounce );
-            
-            loopIndex++;
-        } while( this.players.nextPlayer().done === false );
+        if ( this.players ) {
+            do {
+                nextPlayer  = this.players.geCurrentPlayer();
+                
+                waitTimeout = loopIndex * 2000;
+                
+                // Create Announce for Partner Gamer
+                lastAnnounce    = oAnnounce.announce( nextPlayer.getHand(), lastAnnounce );
+                this.announces.push( lastAnnounce );
+                
+                nextPlayer.setAnnounce( lastAnnounce );
+                
+                setTimeout( partnerBoundMethod, waitTimeout, nextPlayer.containerId, lastAnnounce );
+                
+                loopIndex++;
+            } while( this.players.nextPlayer().done === false );
+        }
     }
     
     beginPlaying( playerHand: any )

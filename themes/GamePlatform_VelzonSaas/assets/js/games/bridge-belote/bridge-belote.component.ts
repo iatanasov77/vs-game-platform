@@ -10,7 +10,7 @@ import { AuthState } from '../application/+store/login.reducers';
 import { AuthService } from '../application/services/auth.service'
 import { IAuth } from '../application/interfaces/auth';
 import { GameService } from '../application/services/game.service'
-import { IPlayer } from '../application/interfaces/player';
+import IPlayer from '../application/interfaces/player';
 
 import { loadGameBySlug } from '../application/+store/game.actions';
 import { getGame } from '../application/+store/game.selectors';

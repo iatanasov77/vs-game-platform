@@ -13,3 +13,13 @@ services:
             - '@vsapp.factory.game_players'
         tags:
             - 'console.command'
+            
+    vsapp.command.clear_inactive_players:
+        autowire: false
+        class: App\Command\ClearInactivePlayersCommand
+        arguments:
+            - '@doctrine'
+            - '@vsapp.repository.mercure_connections'
+            - '%vs_users.cookie.lifetime%'
+        tags:
+            - 'console.command'

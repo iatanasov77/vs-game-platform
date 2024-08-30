@@ -1,10 +1,34 @@
-declare module '_@/GamePlatform/Game/CardGameInterface' {
-    interface ICardGame
-    {
-        deck: any;
-        //players: GamePlayersIterator;
+declare module '_@/GamePlatform/Model/GameRoomModel' {
+    interface IGameRoom {
+        id: string;
+        players: Array<any>;
     }
-    export = ICardGame;
+    export = IGameRoom;
+}
+
+declare module '_@/GamePlatform/Model/GamePlayerModel' {
+    interface IGamePlayer
+    {
+        id: string;
+        
+        containerId: string;
+        name: string;
+        type: string;
+    }
+    export = IGamePlayer;
+}
+
+declare module '_@/GamePlatform/Model/GamePlayModel' {
+    import IGameRoom from '_@/GamePlatform/Model/GameRoomModel';
+    import IGamePlayer from '_@/GamePlatform/Model/GamePlayerModel';
+    
+    interface IGamePlay
+    {
+        id: any;
+        room: null | IGameRoom;
+        players: null | Iterator<IGamePlayer>;
+    }
+    export = IGamePlay;
 }
 
 declare module '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface' {

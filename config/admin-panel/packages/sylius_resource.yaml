@@ -28,6 +28,11 @@ sylius_resource:
                 repository: Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository
                 controller: App\Controller\AdminPanel\GamePlayerController
                 form: App\Form\GamePlayerForm
+        vsapp.game_sessions:
+            driver: doctrine/orm
+            classes:
+                model: App\Entity\GamePlay
+                repository: Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository
         vsapp.mercure_connections:
             driver: doctrine/orm
             classes:

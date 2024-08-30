@@ -6,7 +6,7 @@ import { Store, State } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
 import { Observable, map, merge, take } from 'rxjs';
 
-import { startGame } from '../../../../../+store/game.actions';
+import { selectGameRoom, startGame } from '../../../../../+store/game.actions';
 import { GameState } from '../../../../../+store/game.reducers';
 
 import { GameRequirementsDialogComponent } from '../../../dialogs/game-requirements-dialog/game-requirements-dialog.component';
@@ -43,6 +43,11 @@ export class GameStartComponent implements OnInit, OnChanges
         this.store.subscribe( ( state: any ) => {
             console.log( state.app.main );
             this.appState   = state.app.main;
+            
+            if( this?.appState?.gamePlay && this?.appState?.gamePlay?.room ) {
+                this.game.setRoom( this?.appState?.gamePlay?.room );
+                //console.log( this.game );
+            }
         });
     }
     
@@ -72,9 +77,19 @@ export class GameStartComponent implements OnInit, OnChanges
             return;
         }
         
-        this.game.startGame();
-        if ( this?.appState ) {
-            this.store.dispatch( startGame( this?.appState ) );
+        if ( this.appState && this.appState.game ) {
+            if ( ! this.appState.game.room ) {
+                // Try With This Room Only For Now
+                let gameRoom    = this?.appState?.rooms?.find( ( item: any ) => item?.slug === 'test-bridge-belote-room' );
+                //console.log( gameRoom );
+                
+                if ( gameRoom ) {
+                    this.store.dispatch( selectGameRoom( { game: this.appState.game, room:  gameRoom } ) );
+                }
+                this.store.dispatch( startGame( this.appState ) );
+            }
+            
+            this.game.startGame();
         }
     }
     

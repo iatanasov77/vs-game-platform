@@ -1,17 +1,9 @@
 import { Injectable, Inject } from "@angular/core";
 
 import { createEffect, Actions, ofType } from '@ngrx/effects';
-import { catchError, map, switchMap } from "rxjs";
+import { switchMap, map, catchError } from "rxjs";
 
 import {
-    startGame,
-    startGameFailure,
-    startGameSuccess,
-    
-    playerAnnounce,
-    playerAnnounceFailure,
-    playerAnnounceSuccess,
-    
     loadGame,
     loadGameBySlug,
     loadGameFailure,
@@ -19,16 +11,35 @@ import {
     
     loadPlayers,
     loadPlayersFailure,
-    loadPlayersSuccess
+    loadPlayersSuccess,
+    
+    loadGameRooms,
+    loadGameRoomsFailure,
+    loadGameRoomsSuccess,
+    
+    selectGameRoom,
+    selectGameRoomFailure,
+    selectGameRoomSuccess,
+    
+    startGame,
+    startGameFailure,
+    startGameSuccess,
+    
+    playerAnnounce,
+    playerAnnounceFailure,
+    playerAnnounceSuccess
 } from "./game.actions";
 
 import { GameService } from "../services/game.service";
+import { GamePlayService } from "../services/game-play.service";
 import { EventSourceService } from "../services/event-source.service";
 
-import ICardGame from '_@/GamePlatform/Game/CardGameInterface';
+import IGamePlay from '_@/GamePlatform/Model/GamePlayModel';
 import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
-import { IGame } from '../interfaces/game';
-import { IPlayer } from '../interfaces/player';
+
+import IGame from '../interfaces/game';
+import IPlayer from '../interfaces/player';
+import IGameRoom from '../interfaces/game-room';
 
 /**
  * Effects are an RxJS powered side effect model for Store. Effects use streams to provide new sources of actions to reduce state based on external interactions such 
@@ -47,6 +58,7 @@ export class GameEffects
     constructor(
         @Inject( Actions ) private actions$: Actions,
         @Inject( GameService ) private gameService: GameService,
+        @Inject( GamePlayService ) private gamePlayService: GamePlayService,
         @Inject( EventSourceService ) private eventSourceService: EventSourceService
     ) { }
     
@@ -74,22 +86,48 @@ export class GameEffects
         )
     );
     
+    loadGameRooms = createEffect( (): any =>
+        this.actions$.pipe(
+            ofType( loadGameRooms ),
+            switchMap( () =>
+                this.gameService.loadGameRooms().pipe(
+                    map( ( rooms: IGameRoom[] ) => loadGameRoomsSuccess( { rooms } ) ),
+                    catchError( error => [loadGameRoomsFailure( { error } )] )
+                )
+            )
+        )
+    );
+    
     loadPlayers = createEffect( (): any =>
         this.actions$.pipe(
             ofType( loadPlayers ),
-            switchMap( () => this.gameService.loadPlayers().pipe(
-                map( ( players: IPlayer[] ) => loadPlayersSuccess( { players } ) ),
-                catchError( error => [loadPlayersFailure( { error } )] )
+            switchMap( () =>
+                this.gameService.loadPlayers().pipe(
+                    map( ( players: IPlayer[] ) => loadPlayersSuccess( { players } ) ),
+                    catchError( error => [loadPlayersFailure( { error } )] )
+                )
             )
         )
-    ));
+    );
+    
+    selectGameRoom = createEffect( (): any =>
+        this.actions$.pipe(
+            ofType( selectGameRoom ),
+            switchMap( ( inputProps ) =>
+                this.gamePlayService.selectGameRoom( inputProps ).pipe(
+                    map( ( game: IGame ) => selectGameRoomSuccess( { game } ) ),
+                    catchError( error => [selectGameRoomFailure( { error } )] )
+                )
+            )
+        )
+    );
     
     startGame = createEffect( (): any =>
         this.actions$.pipe(
             ofType( startGame ),
             switchMap( ( { game } ) =>
-                this.gameService.startGame( game ).pipe(
-                    map( ( cardGame: ICardGame ) => startGameSuccess( { cardGame } ) ),
+                this.gamePlayService.startGame( game ).pipe(
+                    map( ( gamePlay: IGamePlay ) => startGameSuccess( { gamePlay } ) ),
                     catchError( error => [startGameFailure( { error } )] )
                 )
             )
@@ -100,7 +138,7 @@ export class GameEffects
         this.actions$.pipe(
             ofType( playerAnnounce ),
             switchMap( () =>
-                this.gameService.playerAnnounce().pipe(
+                this.gamePlayService.playerAnnounce().pipe(
                     map( ( announce: ICardGameAnnounce ) => playerAnnounceSuccess( { announce } ) ),
                     catchError( error => [playerAnnounceFailure( { error } )] )
                 )

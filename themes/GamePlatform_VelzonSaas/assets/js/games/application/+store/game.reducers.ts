@@ -1,34 +1,49 @@
 import { ActionReducerMap, createReducer, on } from "@ngrx/store";
+
 import {
     loadGameSuccess,
+    loadPlayersSuccess,
+    loadGameRoomsSuccess,
+    
+    selectGameRoom,
+    selectGameRoomSuccess,
+    
     startGameSuccess,
-    playerAnnounceSuccess,
-    loadPlayersSuccess
+    playerAnnounceSuccess
 } from "./game.actions";
 
-import { IGame } from '../interfaces/game';
-import { IPlayer } from '../interfaces/player';
-import ICardGame from '_@/GamePlatform/Game/CardGameInterface';
+import IGamePlay from '_@/GamePlatform/Model/GamePlayModel';
 import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
+
+import IGame from '../interfaces/game';
+import IPlayer from '../interfaces/player';
+import IGameRoom from '../interfaces/game-room';
 
 export interface GameState
 {
     game:           null | IGame;
-    cardGame:       null | ICardGame;
-    announce:       null | ICardGameAnnounce;
     players:        null | IPlayer[];
+    rooms:          null | IGameRoom[];
+    
+    gamePlay:       null | IGamePlay;
+    announce:       null | ICardGameAnnounce;
 }
 
 const initialState: GameState = {
     game:           null,
-    cardGame:       null,
-    announce:       null,
-    players:        null
+    players:        null,
+    rooms:          null,
+    
+    gamePlay:       null,
+    announce:       null
 };
 
 export const gameReducer = createReducer( initialState,
     on( loadGameSuccess, ( state, { game } ) => ( { ...state, game } ) ),
-    on( startGameSuccess, ( state, { cardGame } ) => ( { ...state, cardGame } ) ),
-    on( playerAnnounceSuccess, ( state, { announce } ) => ( { ...state, announce } ) ),
     on( loadPlayersSuccess, ( state, { players } ) => ( { ...state, players } ) ),
+    on( loadGameRoomsSuccess, ( state, { rooms } ) => ( { ...state, rooms } ) ),
+    
+    on( selectGameRoomSuccess, ( state, { game } ) => ( { ...state, game } ) ),
+    on( startGameSuccess, ( state, { gamePlay } ) => ( { ...state, gamePlay } ) ),
+    on( playerAnnounceSuccess, ( state, { announce } ) => ( { ...state, announce } ) ),
 );

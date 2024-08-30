@@ -1,3 +1,16 @@
+0.9.2	|	Release date: **30.08.2024**
+============================================
+* New Features and Improvements:
+  - Centering Loader Component in Component that is Used.
+  - Create a GamePlay Entity for Game Sessions and a Game Rooms Component in frontend to Show Available Rooms.
+  - Refactoring Typescript Game Interfaces.
+  - Create a New NgRx Store Action for Select Cureent Game Room.
+  - Create User Activity Listener.
+  - Create Clear Innactive Players Command.
+  - Initialize Game with GameRoom on Start New Game.
+  - Refactoring of Angular Services.
+
+
 0.9.1	|	Release date: **27.08.2024**
 ============================================
 * New Features and Improvements:

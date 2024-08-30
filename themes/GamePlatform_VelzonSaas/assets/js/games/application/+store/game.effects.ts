@@ -111,8 +111,8 @@ export class GameEffects
     selectGameRoom = createEffect( (): any =>
         this.actions$.pipe(
             ofType( selectGameRoom ),
-            switchMap( ( game ) =>
-                this.gameService.selectGameRoom( game ).pipe(
+            switchMap( ( inputProps ) =>
+                this.gameService.selectGameRoom( inputProps ).pipe(
                     map( ( game: IGame ) => selectGameRoomSuccess( { game } ) ),
                     catchError( error => [selectGameRoomFailure( { error } )] )
                 )

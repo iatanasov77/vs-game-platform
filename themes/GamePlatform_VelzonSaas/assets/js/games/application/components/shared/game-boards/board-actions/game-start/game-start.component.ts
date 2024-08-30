@@ -43,6 +43,11 @@ export class GameStartComponent implements OnInit, OnChanges
         this.store.subscribe( ( state: any ) => {
             console.log( state.app.main );
             this.appState   = state.app.main;
+            
+            if( this?.appState?.gamePlay && this?.appState?.gamePlay?.room ) {
+                this.game.setRoom( this?.appState?.gamePlay?.room );
+                //console.log( this.game );
+            }
         });
     }
     
@@ -80,9 +85,7 @@ export class GameStartComponent implements OnInit, OnChanges
                 
                 if ( gameRoom ) {
                     this.store.dispatch( selectGameRoom( { game: this.appState.game, room:  gameRoom } ) );
-                    //this.store.select( selectGameRoom( gameRoom ) );
                 }
-                
                 this.store.dispatch( startGame( this.appState ) );
             }
             

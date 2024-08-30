@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@angular/core';
-import { BehaviorSubject, Observable, tap, map, of } from 'rxjs';
+import { BehaviorSubject, Observable, tap, map, of, switchMap } from 'rxjs';
 
 import { HttpClient } from '@angular/common/http'
 import { Restangular } from 'ngx-restangular';
@@ -95,18 +95,13 @@ export class GameService
         );
     }
     
-    selectGameRoom( select: any ): Observable<IGame>
+    selectGameRoom( inputProps: any ): Observable<IGame>
     {
-        //console.log( select );
-        if ( ! select ) {
-            return new Observable;
-        }
-        
-        return of( select ).pipe( map( ( game: IGame ) => {
-            select.game.room = select.room;
-            console.log( select );
-            return select;
-        }));
+        //console.log( inputProps );
+        return of( inputProps.game ).pipe( map( ( game: IGame ) => ({
+            ...game,
+            room: inputProps.room
+        })));
     }
     
     startGame( game: any ): Observable<IGamePlay>
@@ -146,7 +141,7 @@ export class GameService
         let gamePlay: IGamePlay = {
             //id: game.id,
             id: "New Game Play",
-            room: null,
+            room: game.room,
             players: null
         };
         

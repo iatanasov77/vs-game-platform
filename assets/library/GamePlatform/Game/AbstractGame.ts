@@ -63,6 +63,13 @@ class AbstractGame
     {
         throw new Error( "Method 'getHands()' must be implemented." );
     }
+    
+    public setRoom( room?: IGameRoom ): void
+    {
+        if ( room ) {
+            this.room   = room;
+        }
+    }
 }
 
 export default AbstractGame;

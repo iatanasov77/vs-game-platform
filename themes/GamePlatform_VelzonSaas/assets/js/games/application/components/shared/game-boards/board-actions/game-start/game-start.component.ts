@@ -89,7 +89,7 @@ export class GameStartComponent implements OnInit, OnChanges
                 this.store.dispatch( startGame( this.appState ) );
             }
             
-            //this.game.startGame();
+            this.game.startGame();
         }
     }
     

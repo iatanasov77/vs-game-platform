@@ -31,6 +31,7 @@ import {
 } from "./game.actions";
 
 import { GameService } from "../services/game.service";
+import { GamePlayService } from "../services/game-play.service";
 import { EventSourceService } from "../services/event-source.service";
 
 import IGamePlay from '_@/GamePlatform/Model/GamePlayModel';
@@ -57,6 +58,7 @@ export class GameEffects
     constructor(
         @Inject( Actions ) private actions$: Actions,
         @Inject( GameService ) private gameService: GameService,
+        @Inject( GamePlayService ) private gamePlayService: GamePlayService,
         @Inject( EventSourceService ) private eventSourceService: EventSourceService
     ) { }
     
@@ -112,7 +114,7 @@ export class GameEffects
         this.actions$.pipe(
             ofType( selectGameRoom ),
             switchMap( ( inputProps ) =>
-                this.gameService.selectGameRoom( inputProps ).pipe(
+                this.gamePlayService.selectGameRoom( inputProps ).pipe(
                     map( ( game: IGame ) => selectGameRoomSuccess( { game } ) ),
                     catchError( error => [selectGameRoomFailure( { error } )] )
                 )
@@ -124,7 +126,7 @@ export class GameEffects
         this.actions$.pipe(
             ofType( startGame ),
             switchMap( ( { game } ) =>
-                this.gameService.startGame( game ).pipe(
+                this.gamePlayService.startGame( game ).pipe(
                     map( ( gamePlay: IGamePlay ) => startGameSuccess( { gamePlay } ) ),
                     catchError( error => [startGameFailure( { error } )] )
                 )
@@ -136,7 +138,7 @@ export class GameEffects
         this.actions$.pipe(
             ofType( playerAnnounce ),
             switchMap( () =>
-                this.gameService.playerAnnounce().pipe(
+                this.gamePlayService.playerAnnounce().pipe(
                     map( ( announce: ICardGameAnnounce ) => playerAnnounceSuccess( { announce } ) ),
                     catchError( error => [playerAnnounceFailure( { error } )] )
                 )

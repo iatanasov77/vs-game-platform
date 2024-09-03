@@ -36,6 +36,12 @@ services:
         autowire: true
         tags: ['controller.service_arguments']
             
+    App\Controller\Api\Games\GetRoomsController:
+        arguments:
+            - '@vsapp.repository.game_rooms'
+        autowire: true
+        tags: ['controller.service_arguments']
+    
     App\Controller\Api\Games\CreateRoomController:
         tags: ['controller.service_arguments']
         autowire: true
@@ -47,3 +53,20 @@ services:
     App\Controller\Api\Games\DeleteRoomController:
         tags: ['controller.service_arguments']
         autowire: true
+        
+    App\Controller\Api\Games\StartGameController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@doctrine'
+            - '@vsapp.repository.game_rooms'
+            - '@vsapp.factory.game_sessions'
+            - '@mercure.hub.default'
+        
+    App\Controller\Api\Games\FinishGameController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@doctrine'
+            - '@vsapp.repository.game_sessions'
+            - '@mercure.hub.default'

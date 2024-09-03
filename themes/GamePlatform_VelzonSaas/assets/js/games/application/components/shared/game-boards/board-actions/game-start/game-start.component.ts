@@ -6,7 +6,12 @@ import { Store, State } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
 import { Observable, map, merge, take } from 'rxjs';
 
-import { selectGameRoom, startGame } from '../../../../../+store/game.actions';
+import {
+    selectGameRoom,
+    startGame,
+    startGameSuccess,
+    loadGameRooms
+} from '../../../../../+store/game.actions';
 import { GameState } from '../../../../../+store/game.reducers';
 
 import { GameRequirementsDialogComponent } from '../../../dialogs/game-requirements-dialog/game-requirements-dialog.component';
@@ -43,11 +48,13 @@ export class GameStartComponent implements OnInit, OnChanges
         this.store.subscribe( ( state: any ) => {
             console.log( state.app.main );
             this.appState   = state.app.main;
+        });
+        
+        this.actions$.pipe( ofType( startGameSuccess ) ).subscribe( () => {
+            this.store.dispatch( loadGameRooms() );
             
-            if( this?.appState?.gamePlay && this?.appState?.gamePlay?.room ) {
-                this.game.setRoom( this?.appState?.gamePlay?.room );
-                //console.log( this.game );
-            }
+            this.game.setRoom( this?.appState?.gamePlay?.room );
+            this.game.startGame();
         });
     }
     
@@ -85,11 +92,9 @@ export class GameStartComponent implements OnInit, OnChanges
                 
                 if ( gameRoom ) {
                     this.store.dispatch( selectGameRoom( { game: this.appState.game, room:  gameRoom } ) );
+                    this.store.dispatch( startGame( this.appState ) );
                 }
-                this.store.dispatch( startGame( this.appState ) );
             }
-            
-            this.game.startGame();
         }
     }
     

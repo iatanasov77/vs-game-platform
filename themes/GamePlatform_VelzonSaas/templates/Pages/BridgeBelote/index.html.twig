@@ -6,7 +6,7 @@
 {% block content %}
     <div class="container text-center" id="GameContainer"
         data-locale="{{ app.request.locale }}"
-        data-mercureEventSource="{{ mercure( '/active_connections' ) | escape( 'html_attr' ) }}"
+        data-mercureEventSource="{{ mercure( '/game-play' ) | escape( 'html_attr' ) }}"
     >
         <app-bridge-belote
             apiVerifySiganature="{{ apiVerifySiganature }}"

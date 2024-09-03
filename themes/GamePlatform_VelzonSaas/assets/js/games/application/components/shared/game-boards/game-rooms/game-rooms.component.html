@@ -1,18 +1,26 @@
-<div class="game-rooms-container float-end">
+<div class="table-responsive game-rooms-container float-start">
     <app-loader *ngIf="showSpinner"></app-loader>
     
-    <table><!-- class="loader-target" -->
-        <thead>
-            <tr>
-                <th class="border-bottom p-2 font-weight-bold">{{ 'game_board.rooms.title' | translate }}</th>
-            </tr>
-        </thead>
+    <caption class="font-weight-bold text-nowrap">{{ 'game_board.rooms.title' | translate }}</caption>
+    <table class="table caption-top">
         <tbody *ngIf="! ( isFetchingRooms$ | async )">
-            <tr *ngFor="let room of rooms">
-                <td class="border-bottom p-2">
-                    {{ room.name }}
-                </td>
-            </tr>
+            <ng-container *ngFor="let room of rooms">
+                <tr>
+                    <td class="text-start p-1">
+                        <ng-container *ngIf="room.isPlaying == true">
+                            <span class="text-success">
+                                <i class="ri-checkbox-circle-line fs-17 align-middle"></i>
+                            </span>
+                        </ng-container>
+                        <ng-container *ngIf="room.isPlaying == false">
+                            <span class="text-danger">
+                                <i class="ri-close-circle-line fs-17 align-middle"></i>
+                            </span>
+                        </ng-container>
+                        {{ room.name }}
+                    </td>
+                </tr>
+            </ng-container>
         </tbody>
     </table>
 </div>

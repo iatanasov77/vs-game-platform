@@ -1,9 +1,10 @@
-import IGame from './game'
-import IPlayer from './player'
+import IGame from './GameInterface'
+import IPlayer from './PlayerInterface'
 
 interface IGameRoom
 {
     id: number;
+    isPlaying: boolean;
     game: IGame;
     slug: string;
     name: string;

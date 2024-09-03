@@ -1,24 +1,26 @@
-<div class="game-players-container float-end">
+<div class="table-responsive game-players-container float-start">
     <app-loader *ngIf="showSpinner"></app-loader>
     
-    <table><!-- class="loader-target" -->
-        <thead>
-            <tr>
-                <th class="border-bottom p-2 font-weight-bold">{{ 'game_board.players.title' | translate }}</th>
-            </tr>
-        </thead>
+    <caption class="font-weight-bold">{{ 'game_board.players.title' | translate }}</caption>
+    <table class="table caption-top">
         <tbody *ngIf="! ( isFetchingPlayers$ | async )">
-            <tr *ngFor="let player of players">
-                <td *ngIf="player.type == 'user'" class="border-bottom p-2">
-                    <ng-container *ngIf="player.connected == true">
-                        <i class="fas fa-check me-2" style="color: #82c91e;"></i>
-                    </ng-container>
-                    <ng-container *ngIf="player.connected == false">
-                        <i class="fas fa-times" style="color: #ff1e1e;"></i>
-                    </ng-container>
-                    {{ player.name }}
-                </td>
-            </tr>
+            <ng-container *ngFor="let player of players">
+                <tr *ngIf="player.type == 'user'">
+                    <td class="text-start p-1">
+                        <ng-container *ngIf="player.connected == true">
+                            <span class="text-success">
+                                <i class="ri-checkbox-circle-line fs-17 align-middle"></i>
+                            </span>
+                        </ng-container>
+                        <ng-container *ngIf="player.connected == false">
+                            <span class="text-danger">
+                                <i class="ri-close-circle-line fs-17 align-middle"></i>
+                            </span>
+                        </ng-container>
+                        {{ player.name }}
+                    </td>
+                </tr>
+            </ng-container>
         </tbody>
     </table>
 </div>

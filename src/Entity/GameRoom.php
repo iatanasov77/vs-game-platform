@@ -3,6 +3,7 @@
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Sylius\Component\Resource\Model\ResourceInterface;
+use Sylius\Component\Resource\Model\ToggleableTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
@@ -10,6 +11,8 @@ use Doctrine\Common\Collections\Collection;
 #[ORM\Table(name: "VSGP_GameRooms")]
 class GameRoom implements ResourceInterface
 {
+    use ToggleableTrait;
+    
     /** @var int */
     #[ORM\Id, ORM\Column(type: "integer"), ORM\GeneratedValue(strategy: "IDENTITY")]
     private $id;
@@ -37,6 +40,10 @@ class GameRoom implements ResourceInterface
     /** @var Collection | GamePlay[] */
     #[ORM\OneToMany(targetEntity: GamePlay::class, mappedBy: "gameRoom", cascade: ["persist", "remove"], orphanRemoval: true)]
     private $playSessions;
+    
+    /** @var bool */
+    #[ORM\Column(name: "is_playing", type: "boolean", options: ["default" => 0])]
+    protected $enabled = true;
     
     public function __construct()
     {
@@ -133,6 +140,18 @@ class GameRoom implements ResourceInterface
         if ( $this->playSessions->contains( $playSession ) ) {
             $this->playSessions->removeElement( $playSession );
         }
+        
+        return $this;
+    }
+    
+    public function isPlaying(): bool
+    {
+        return $this->isEnabled();
+    }
+    
+    public function setIsPlaying( bool $isPlaying ): self
+    {
+        $this->setEnabled( $isPlaying );
         
         return $this;
     }

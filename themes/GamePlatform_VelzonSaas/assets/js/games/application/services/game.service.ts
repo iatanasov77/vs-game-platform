@@ -3,9 +3,9 @@ import { BehaviorSubject, Observable, tap, map, of } from 'rxjs';
 import { Restangular } from 'ngx-restangular';
 import { AuthService } from './auth.service';
 
-import IGame from '../interfaces/game';
-import IPlayer from '../interfaces/player';
-import IGameRoom from '../interfaces/game-room';
+import IGame from '_@/GamePlatform/Model/GameInterface';
+import IPlayer from '_@/GamePlatform/Model/PlayerInterface';
+import IGameRoom from '_@/GamePlatform/Model/GameRoomInterface';
 
 import { AppConstants } from "../constants";
 

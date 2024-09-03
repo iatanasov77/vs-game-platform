@@ -1,3 +1,44 @@
+declare module '_@/GamePlatform/Model/GameInterface' {
+    interface IGame {
+        id: number;
+        slug: string;
+        title: string;
+        
+        room?: any;
+        deck?: any;
+    }
+    export = IGame;
+}
+
+declare module '_@/GamePlatform/Model/PlayerInterface' {
+    import IGameRoom from '_@/GamePlatform/Model/GameRoomInterface';
+    
+    interface IPlayer {
+        rooms: IGameRoom[];
+    
+        id: number;
+        type: string;
+        name: string;
+        connected: any;
+    }
+    export = IPlayer;
+}
+
+declare module '_@/GamePlatform/Model/GameRoomInterface' {
+    import IGame from '_@/GamePlatform/Model/GameInterface'
+    import IPlayer from '_@/GamePlatform/Model/PlayerInterface'
+    
+    interface IGameRoom {
+        id: number;
+        isPlaying: boolean;
+        game: IGame;
+        slug: string;
+        name: string;
+        players: IPlayer[];
+    }
+    export = IGameRoom;
+}
+
 declare module '_@/GamePlatform/Model/GameRoomModel' {
     interface IGameRoom {
         id: string;

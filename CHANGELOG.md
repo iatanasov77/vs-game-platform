@@ -1,3 +1,11 @@
+0.9.3	|	Release date: **03.09.2024**
+============================================
+* New Features and Improvements:
+  - Improve Game Sidebar Components.
+  - Add isPlaying Status on GameRoom Entity.
+  - Move Angular Game Interfces into GamePlatform Library.
+
+
 0.9.2	|	Release date: **30.08.2024**
 ============================================
 * New Features and Improvements:

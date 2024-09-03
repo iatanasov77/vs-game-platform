@@ -26,7 +26,7 @@ class GetRoomsController extends AbstractController
                 'name'      => $room->getName(),
                 'players'   => $room->getPlayers(),
                 
-                'isPlaying' => false,
+                'isPlaying' => $room->isPlaying(),
             ];
         }
         

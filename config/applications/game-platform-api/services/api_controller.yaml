@@ -36,6 +36,12 @@ services:
         autowire: true
         tags: ['controller.service_arguments']
             
+    App\Controller\Api\Games\GetRoomsController:
+        arguments:
+            - '@vsapp.repository.game_rooms'
+        autowire: true
+        tags: ['controller.service_arguments']
+    
     App\Controller\Api\Games\CreateRoomController:
         tags: ['controller.service_arguments']
         autowire: true

@@ -94,7 +94,7 @@ final class AuthenticationListener implements EventSubscriberInterface
         ]);
         
         $update = new Update(
-            '/active_connections',
+            '/game-play',
             $publishData,
             false,
             null,

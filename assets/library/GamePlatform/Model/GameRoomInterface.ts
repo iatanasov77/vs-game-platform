@@ -1,5 +1,5 @@
-import IGame from './game'
-import IPlayer from './player'
+import IGame from './GameInterface'
+import IPlayer from './PlayerInterface'
 
 interface IGameRoom
 {

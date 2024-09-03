@@ -15,9 +15,9 @@ import {
 import IGamePlay from '_@/GamePlatform/Model/GamePlayModel';
 import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
 
-import IGame from '../interfaces/game';
-import IPlayer from '../interfaces/player';
-import IGameRoom from '../interfaces/game-room';
+import IGame from '_@/GamePlatform/Model/GameInterface';
+import IPlayer from '_@/GamePlatform/Model/PlayerInterface';
+import IGameRoom from '_@/GamePlatform/Model/GameRoomInterface';
 
 export interface GameState
 {

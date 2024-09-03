@@ -1,4 +1,4 @@
-import IGameRoom from './game-room';
+import IGameRoom from './GameRoomInterface';
 
 interface IPlayer
 {

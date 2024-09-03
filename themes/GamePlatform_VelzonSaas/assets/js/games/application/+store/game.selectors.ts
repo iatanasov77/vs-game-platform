@@ -5,7 +5,7 @@ import { RouterStateUrl } from './router';
 const mainSelector                  = createFeatureSelector<GameState>( 'main' );
 const routerSelector                = createFeatureSelector<{ state: RouterStateUrl }>( 'router' );
 
-import IGameRoom from '../interfaces/game-room';
+import IGameRoom from '_@/GamePlatform/Model/GameRoomInterface';
 
 export const getUrl                 = createSelector(
     routerSelector,

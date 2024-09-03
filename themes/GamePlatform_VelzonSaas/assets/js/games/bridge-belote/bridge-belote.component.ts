@@ -4,20 +4,22 @@ import { Store, provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import Swal from 'sweetalert2'
 
+import BeloteCardGame from '_@/GamePlatform/Game/BeloteCardGame';
+import IPlayer from '_@/GamePlatform/Model/PlayerInterface';
+
 import { loginBySignature } from '../application/+store/login.actions';
 import { selectAuth } from '../application/+store/login.selectors';
 import { AuthState } from '../application/+store/login.reducers';
 import { AuthService } from '../application/services/auth.service'
 import { IAuth } from '../application/interfaces/auth';
 import { GameService } from '../application/services/game.service'
-import IPlayer from '../application/interfaces/player';
 
 import { loadGameBySlug } from '../application/+store/game.actions';
 import { getGame } from '../application/+store/game.selectors';
 
 import { BridgeBeloteProvider } from '../application/providers/bridge-belote-provider';
 import ICardGameProvider from '../application/interfaces/card-game-provider';
-import BeloteCardGame from '_@/GamePlatform/Game/BeloteCardGame';
+
 
 import cssGameString from './bridge-belote.component.scss'
 import templateString from './bridge-belote.component.html'

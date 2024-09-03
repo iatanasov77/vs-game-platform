@@ -48,12 +48,12 @@ export class AuthService
      *      https://github.com/markitosgv/JWTRefreshTokenBundle
      *      https://symfony.com/bundles/LexikJWTAuthenticationBundle/current/index.html#about-token-expiration
      */
-     getApiToken(): string
-     {
+    getApiToken(): string
+    {
         let auth        = this.getAuth();
         
         return auth ? auth.apiToken : '';
-     }
+    }
     
     login( credentials: any )
     {

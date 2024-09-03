@@ -3,6 +3,7 @@
 use Doctrine\ORM\Mapping as ORM;
 use Sylius\Component\Resource\Model\ResourceInterface;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Sylius\Component\Resource\Model\ToggleableTrait;
 
 /**
  * GamePlay Entity
@@ -14,6 +15,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 class GamePlay implements ResourceInterface
 {
     use TimestampableEntity;
+    use ToggleableTrait;
     
     /** @var int */
     #[ORM\Id, ORM\Column(type: "integer"), ORM\GeneratedValue(strategy: "IDENTITY")]
@@ -27,6 +29,10 @@ class GamePlay implements ResourceInterface
     /** @var array */
     #[ORM\Column(type: "json", nullable: true)]
     private $score;
+    
+    /** @var bool */
+    #[ORM\Column(name: "active", type: "boolean", options: ["default" => 0])]
+    protected $enabled = true;
     
     public function getId(): ?int
     {
@@ -53,6 +59,18 @@ class GamePlay implements ResourceInterface
     public function setScore($score)
     {
         $this->score = $score;
+        
+        return $this;
+    }
+    
+    public function isActive(): bool
+    {
+        return $this->isEnabled();
+    }
+    
+    public function setActive( bool $active ): self
+    {
+        $this->setEnabled( $active );
         
         return $this;
     }

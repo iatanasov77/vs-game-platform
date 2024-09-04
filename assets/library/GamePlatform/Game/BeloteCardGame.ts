@@ -1,6 +1,8 @@
 require( '../Einaregilsson_Cards.Js/deckType' );
 const cards = require( '../Einaregilsson_Cards.Js/cards' );
 
+import IGameRoom from '../Model/GameRoomModel';
+import IGamePlayer from '../Model/GamePlayerModel';
 import AbstractGame from './AbstractGame';
 import ICardGamePlay from '../Model/CardGamePlayModel';
 import ICardGamePlayer from '../Model/CardGamePlayerModel';
@@ -10,6 +12,13 @@ import GamePlayersIterator from './GamePlayersIterator';
 import Announce from '../CardGameAnnounce/Announce';
 import BeloteCardGameAnnounce from '../CardGameAnnounce/BeloteCardGameAnnounce';
 import * as GameEvents from './GameEvents';
+
+interface PlayerOptions {
+    id: string;
+    containerId: string;
+    xPos: number;
+    yPos: number;
+}
 
 declare var $: any;
 declare global {
@@ -26,6 +35,9 @@ class BeloteCardGame extends AbstractGame implements ICardGamePlay
     /** Players Hands */
     handKeys: Array<string>;
     
+    /** Players Hands */
+    playerOptions: Array<PlayerOptions>;
+    
     /** Current Dealer */
     currentDealer: number;
     
@@ -41,27 +53,36 @@ class BeloteCardGame extends AbstractGame implements ICardGamePlay
     {
         super( id, publicRootPath, boardSelector );
         
-        let playersList = this.initPlayers();
-        
-        //Now lets create a couple of hands, one face down, one face up.
-        this.players  = new GamePlayersIterator( playersList, false );
-        
         this.handKeys   = ['lefthand', 'upperhand', 'righthand', 'lowerhand'];
+        
+        this.playerOptions  = [
+            {id: 'left', containerId: 'LeftPlayer', xPos: 75, yPos: 225},
+            {id: 'top', containerId: 'TopPlayer', xPos: 335, yPos: 52},
+            {id: 'right', containerId: 'RightPlayer', xPos: 605, yPos: 227},
+            {id: 'bottom', containerId: 'BottomPlayer', xPos: 335, yPos: 415}
+        ];
         
         this.currentDealer  = 4;
         //this.currentDealer  = 2;
     }
     
-    public override initPlayers(): Array<CardGamePlayer>
+    public override initPlayers( room: IGameRoom ): void
     {
-        let players = [
-            ( new CardGamePlayer( 'left', 'LeftPlayer', 'Left Player', 'computer' ) ).setHand( new cards.Hand({ faceUp:false, x:75, y:225 }) ),
-            ( new CardGamePlayer( 'top', 'TopPlayer', 'Top Player', 'computer' ) ).setHand( new cards.Hand({ faceUp:false, x:335, y:52 }) ),
-            ( new CardGamePlayer( 'right', 'RightPlayer', 'Right Player', 'computer' ) ).setHand( new cards.Hand({ faceUp:false, x:605, y:227 }) ),
-            ( new CardGamePlayer( 'bottom', 'BottomPlayer', 'Bottom Player', 'player', true ) ).setHand( new cards.Hand({ faceUp:true, x:335, y:415 }) ),
-        ];
+        let playersList = [];
+        let i = 0;
         
-        return players;
+        const lastKey = Object.keys( room.players ).pop();
+        for ( var k in room.players ) {
+            let gamePlayer  = new CardGamePlayer( this.playerOptions[i].id, this.playerOptions[i].containerId, room.players[k].name, room.players[k].type );
+            let faceUp      = ( k == lastKey );
+            
+            gamePlayer.setHand( new cards.Hand( { faceUp:faceUp, x:this.playerOptions[i].xPos, y:this.playerOptions[i].yPos } ) );
+            playersList.push( gamePlayer );
+            i++;
+        }
+        
+        //Now lets create a couple of hands, one face down, one face up.
+        this.players  = new GamePlayersIterator( playersList, false );
     }
     
     public override initBoard(): void
@@ -98,7 +119,7 @@ class BeloteCardGame extends AbstractGame implements ICardGamePlay
         this.currentDealer++
     }
     
-    public override getHands(): any
+    public getHands(): any
     {
         let hands   = new Map();
         
@@ -111,11 +132,6 @@ class BeloteCardGame extends AbstractGame implements ICardGamePlay
         }
         
         return hands;
-    }
-    
-    public getPlayers(): Array<ICardGamePlayer>
-    {
-        return this.players ? this.players.getPlayers() : [];
     }
     
     public dealCards( count: number ): void
@@ -251,7 +267,7 @@ class BeloteCardGame extends AbstractGame implements ICardGamePlay
                 
                 waitTimeout = loopIndex * 2000;
                 
-                if ( nextPlayer.type == 'player' ) {
+                if ( nextPlayer.type == 'user' ) {
                     waitMyAnnounce  = true;
                     player          = nextPlayer;
                     setTimeout( playerBoundMethod, waitTimeout, 'AnnounceContainer' );

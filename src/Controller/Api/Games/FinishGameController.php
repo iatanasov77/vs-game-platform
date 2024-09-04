@@ -67,7 +67,7 @@ class FinishGameController extends AbstractController
             false,
             null,
             'GamePlayRoomUpdate'
-            );
+        );
         
         $this->hub->publish( $update );
     }

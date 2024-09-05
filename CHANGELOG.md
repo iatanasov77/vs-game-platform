@@ -1,3 +1,13 @@
+0.9.4	|	Release date: **05.09.2024**
+============================================
+* New Features and Improvements:
+  - Create API Endpoint for Finish Game Action.
+  - Improve Sidebar Components.
+  - Initialize Bridge Belote Players from Server API.
+  - Improve GamePlatform Frontend Library.
+  - Create a GamePlatformSettings Resource and use it in Game Initialization.
+
+
 0.9.3	|	Release date: **03.09.2024**
 ============================================
 * New Features and Improvements:

@@ -689,6 +689,39 @@ vs_application:
                         display: false
         
         mainVankosoftMenu:
+            settings:
+                name: vs_application.menu.game_platform_settings
+                uri: "javascript:;"
+                attributes:
+                    iconClass: ri-cloud-line
+                    breadcrumb_route: vsapp_game_platform_settings_index
+                childs:
+                    list_applications:
+                        name: vs_application.menu.list_game_platform_applications
+                        route: vsapp_game_platform_application_index
+                    create_application:
+                        name: vs_application.menu.create_new_game_platform_application
+                        route: vsapp_game_platform_application_create
+                        display: false
+                    update_application:
+                        name: vs_application.menu.edit_game_platform_application
+                        route: vsapp_game_platform_application_update
+                        routeParameters:
+                          id: int
+                        display: false
+                    list_settings:
+                        name: vs_application.menu.list_game_platform_settings
+                        route: vsapp_game_platform_settings_index
+                    create_settings:
+                        name: vs_application.menu.create_new_game_platform_setting
+                        route: vsapp_game_platform_settings_create
+                        display: true
+                    update_settings:
+                        name: vs_application.menu.edit_game_platform_setting
+                        route: vsapp_game_platform_settings_update
+                        routeParameters:
+                          id: int
+                        display: false
             games:
                 name: vs_application.menu.list_games
                 uri: "javascript:;"

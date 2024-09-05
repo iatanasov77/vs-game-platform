@@ -1,3 +1,4 @@
+import GameSettings from './GameSettings';
 import IGameRoom from '../Model/GameRoomModel';
 import IGamePlayer from '../Model/GamePlayerModel';
 import GamePlayersIterator from './GamePlayersIterator';
@@ -23,19 +24,23 @@ class AbstractGame
     
     boardSelector: string;
     
+    timeoutBetweenPlayers: number;
+    
     /** GamePlayer That Play with this Web Session */
     player?: IGamePlayer;
     
-    constructor( id: string, publicRootPath: string, boardSelector: string )
+    constructor( gameSettings: GameSettings )
     {
         if ( this.constructor == AbstractGame ) {
             throw new Error( "Abstract classes can't be instantiated." );
         }
         
-        this.id             = id;
-        this.publicRootPath = publicRootPath;
-        this.boardSelector  = boardSelector;
-        this.room           = null;
+        this.id                     = gameSettings.id;
+        this.publicRootPath         = gameSettings.publicRootPath;
+        this.boardSelector          = gameSettings.boardSelector;
+        this.timeoutBetweenPlayers  = gameSettings.timeoutBetweenPlayers;
+        
+        this.room                   = null;
     }
     
     public initPlayers( room: IGameRoom ): void

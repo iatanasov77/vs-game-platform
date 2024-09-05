@@ -1,6 +1,7 @@
 require( '../Einaregilsson_Cards.Js/deckType' );
 const cards = require( '../Einaregilsson_Cards.Js/cards' );
 
+import GameSettings from './GameSettings';
 import IGameRoom from '../Model/GameRoomModel';
 import IGamePlayer from '../Model/GamePlayerModel';
 import AbstractGame from './AbstractGame';
@@ -53,9 +54,9 @@ class BeloteCardGame extends AbstractGame implements ICardGamePlay
     /** Array */
     announces: any;
     
-    constructor( id: string, publicRootPath: string, boardSelector: string = '#card-table' )
+    constructor( gameSettings: GameSettings )
     {
-        super( id, publicRootPath, boardSelector );
+        super( gameSettings );
         
         this.handKeys   = ['lefthand', 'upperhand', 'righthand', 'lowerhand'];
         
@@ -272,7 +273,7 @@ class BeloteCardGame extends AbstractGame implements ICardGamePlay
             this.players.setStartIterationIndex( this.currentDealer -1 );
             do {
                 nextPlayer  = this.players.geCurrentPlayer();
-                waitTimeout = loopIndex * 2000;
+                waitTimeout = loopIndex * this.timeoutBetweenPlayers;
                 
                 if ( nextPlayer.id == this.player.id ) {
                     waitMyAnnounce  = true;
@@ -326,7 +327,7 @@ class BeloteCardGame extends AbstractGame implements ICardGamePlay
             do {
                 nextPlayer  = this.players.geCurrentPlayer();
                 
-                waitTimeout = loopIndex * 2000;
+                waitTimeout = loopIndex * this.timeoutBetweenPlayers;
                 
                 // Create Announce for Partner Gamer
                 lastAnnounce    = oAnnounce.announce( nextPlayer.getHand(), lastAnnounce );

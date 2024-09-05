@@ -1,3 +1,19 @@
+vsapp_game_platform_applications:
+    resource: |
+        alias: vsapp.game_platform_application
+        except: ['show']
+        path: /game-platform-applications
+        templates: "Pages/GamePlatformApplications"
+    type: sylius.resource
+    
+vsapp_game_platform_settings:
+    resource: |
+        alias: vsapp.game_platform_settings
+        except: ['show']
+        path: /game-platform-settings
+        templates: "Pages/GamePlatformSettings"
+    type: sylius.resource
+
 vsapp_games:
     resource: |
         alias: vsapp.games
@@ -5,7 +21,6 @@ vsapp_games:
         path: /games
         templates: "Pages/Games"
     type: sylius.resource
-
 
 vsapp_game_categories:
     resource: |

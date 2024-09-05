@@ -17,17 +17,16 @@
 {% block head_styles %}
     {{ parent() }}
     
-    {#
-    {{ encore_entry_link_tags( 'js/game-platform', null, 'GameplatformVelzonsaasTheme' ) }}
-    #}
     {{ encore_entry_link_tags( 'js/bridge-belote', null, 'GameplatformVelzonsaasTheme' ) }}
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
     
-    {#
-    {{ encore_entry_script_tags( 'js/game-platform', null, 'GameplatformVelzonsaasTheme' ) }}
-    #}
+    <script type="text/javascript">
+        const gamePlatformSettings  = {{ ( gameSettings | json_encode | raw ) }};
+        window.gamePlatformSettings = gamePlatformSettings;
+    </script>
+    
     {{ encore_entry_script_tags( 'js/bridge-belote', null, 'GameplatformVelzonsaasTheme' ) }}
 {% endblock %}

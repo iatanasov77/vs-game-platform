@@ -1,0 +1,61 @@
+{% extends "@VSApplication/layout.html.twig" %}
+
+{# Import Macros #}
+{% import "@VSApplication/Macros/alerts.html.twig" as alerts %}
+{% from "@VSApplication/Macros/pagination.html.twig" import pagination %}
+
+{# Override Blocs #}
+{% block title %}{{ parent() }} :: {{ 'game_platform.template.page_title_game_platform_application_listing' | trans( {},'GamePlatform' ) }}{% endblock %}
+{% block pageTitle %}
+	<h4 class="pageheader-title">
+    	<i class="ri-settings-5-line"></i> 
+        {{ 'game_platform.template.page_title_game_platform_application_listing' | trans( {},'GamePlatform' ) }}
+   	</h4>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+            <table class="table table-striped table-advance table-hover vsTableSortable">
+                <thead class="table-light">
+                    <tr>
+                        <th></th>
+                        <th data-sortable="true" data-field="title">{{ 'vs_application.template.items_index_row_title' | trans( {},'VSApplicationBundle' ) }}</th>
+                        <th>{{ 'game_platform.form.settings' | trans( {},'GamePlatform' ) }}</th>
+                        <th width="150">{{ 'vs_application.template.items_index_row_action' | trans( {},'VSApplicationBundle' ) }}</th>
+                    </tr>
+                </thead>
+                <tbody id="storagesContainer">
+                    {% for app in applications %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            
+                            <td>{{ app.title }}</td>
+                            <td>{% if app.gamePlatformApplication %}{{ app.gamePlatformApplication.settings.settingsKey }}{% endif %}</td>
+                            
+                            <td>
+                                <div class="btn-group">
+                                    {% if app.gamePlatformApplication %}
+                                    	<a class="btn btn-primary"
+                                    	   href="{{ path('vsapp_game_platform_application_update', {'id': app.gamePlatformApplication.id}) }}?applicationCode={{ app.code }}"
+                                    	   title="{{ 'vs_application.template.items_index_row_action_edit' | trans( {},'VSApplicationBundle' ) }}"   
+                                        >
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    {% else %}
+                                        <a class="btn btn-primary"
+                                           href="{{ path('vsapp_game_platform_application_create') }}?applicationCode={{ app.code }}"
+                                           title="{{ 'vs_application.template.items_index_row_action_create' | trans( {},'VSApplicationBundle' ) }}"   
+                                        >
+                                            <i class="fas fa-store"></i>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

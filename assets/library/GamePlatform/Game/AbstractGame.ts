@@ -1,5 +1,6 @@
+import GameSettings from './GameSettings';
 import IGameRoom from '../Model/GameRoomModel';
-import CardGamePlayer from './CardGamePlayer';
+import IGamePlayer from '../Model/GamePlayerModel';
 import GamePlayersIterator from './GamePlayersIterator';
 
 /**
@@ -23,20 +24,26 @@ class AbstractGame
     
     boardSelector: string;
     
-    constructor( id: string, publicRootPath: string, boardSelector: string )
+    timeoutBetweenPlayers: number;
+    
+    /** GamePlayer That Play with this Web Session */
+    player?: IGamePlayer;
+    
+    constructor( gameSettings: GameSettings )
     {
         if ( this.constructor == AbstractGame ) {
             throw new Error( "Abstract classes can't be instantiated." );
         }
         
-        this.id             = id;
-        this.publicRootPath = publicRootPath;
-        this.boardSelector  = boardSelector;
-        this.room           = null;
-        this.players        = new GamePlayersIterator( [], false );
+        this.id                     = gameSettings.id;
+        this.publicRootPath         = gameSettings.publicRootPath;
+        this.boardSelector          = gameSettings.boardSelector;
+        this.timeoutBetweenPlayers  = gameSettings.timeoutBetweenPlayers;
+        
+        this.room                   = null;
     }
     
-    public initPlayers(): Array<CardGamePlayer>
+    public initPlayers( room: IGameRoom ): void
     {
         throw new Error( "Method 'initPlayers()' must be implemented." );
     }
@@ -56,18 +63,16 @@ class AbstractGame
         throw new Error( "Method 'nextGame()' must be implemented." );
     }
     
-    /**
-     * Used in Card Games Only
-     */
-    public getHands(): any
+    public getPlayers(): Array<IGamePlayer>
     {
-        throw new Error( "Method 'getHands()' must be implemented." );
+        return this.players ? this.players.getPlayers() : [];
     }
     
     public setRoom( room?: IGameRoom ): void
     {
         if ( room ) {
             this.room   = room;
+            this.initPlayers( room );
         }
     }
 }

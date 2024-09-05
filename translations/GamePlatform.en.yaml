@@ -1,5 +1,14 @@
 game_platform:
     template:
+        page_title_game_platform_application_listing: Game Platform Applications
+        page_title_game_platform_settings_listing: Game Platform Settings
+        items_index_row_settings_key: Settings Key
+        page_title_game_platform_settings_create: Create Game Platform Settings
+        page_title_game_platform_settings_update: Edit Game Platform Settings
+        page_title_game_platform_settings_details: Game Platform Settings
+        page_title_game_platform_application_create: Create Game Platform Application
+        page_title_game_platform_application_update: Edit Game Platform Application
+        
         list_game_categories: List Game Categories
         game_category: Game Category
         list_games: List Games
@@ -41,6 +50,16 @@ game_platform:
             user: User
         
     form:
+        settings: Settings
+        game_platform_settings_label: GamePlatform Settings
+        game_platform_settings_placeholder: '-- Choose a GamePlatform Settings'
+        
+        game_platform_settings:
+            settings_key: Settings Key
+            settings_key_help: Used to load different Settings in Different Application Environements.
+            game_settings: Game Settings
+            timeout_between_players: Timeout between Players
+        
         login:
             email: Email address
             password: Password

@@ -13,6 +13,20 @@ services:
     _defaults:
         autowire: true
         autoconfigure: true
+    vsapp.form.game_platform_application:
+        public: true
+        class: App\Form\GamePlatformApplicationForm
+        arguments:
+            - '%vsapp.model.game_platform_application.class%'
+        tags:
+            - form.type
+    vsapp.form.game_platform_settings:
+        public: true
+        class: App\Form\GamePlatformSettingsForm
+        arguments:
+            - '%vsapp.model.game_platform_settings.class%'
+        tags:
+            - form.type
     vsapp.form.games:
         public: true
         class: App\Form\GameForm

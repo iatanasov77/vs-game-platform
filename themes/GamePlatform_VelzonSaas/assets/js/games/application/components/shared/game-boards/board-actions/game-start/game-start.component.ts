@@ -8,6 +8,7 @@ import { Observable, map, merge, take } from 'rxjs';
 
 import {
     selectGameRoom,
+    selectGameRoomSuccess,
     startGame,
     startGameSuccess,
     loadGameRooms
@@ -27,8 +28,9 @@ declare var $: any;
 })
 export class GameStartComponent implements OnInit, OnChanges
 {
-    @Input() isLoggedIn: boolean    = false;
-    @Input() hasPlayer: boolean     = false;
+    @Input() isLoggedIn: boolean        = false;
+    @Input() hasPlayer: boolean         = false;
+    @Input() isRoomSelected: boolean    = false;
     @Input() game: any;
     
     appState?: GameState;
@@ -52,8 +54,6 @@ export class GameStartComponent implements OnInit, OnChanges
         
         this.actions$.pipe( ofType( startGameSuccess ) ).subscribe( () => {
             this.store.dispatch( loadGameRooms() );
-            
-            this.game.setRoom( this?.appState?.gamePlay?.room );
             this.game.startGame();
         });
     }
@@ -70,6 +70,9 @@ export class GameStartComponent implements OnInit, OnChanges
                 case 'hasPlayer':
                     this.hasPlayer = changedProp.currentValue;
                     break;
+                case 'isRoomSelected':
+                    this.isRoomSelected = changedProp.currentValue;
+                    break;
                 case 'game':
                     this.game = changedProp.currentValue;
                     break;
@@ -77,7 +80,7 @@ export class GameStartComponent implements OnInit, OnChanges
         }
     }
     
-    onPlayWithComputer( event: any ): void
+    onSelectGameRoom( event: any ): void
     {
         if ( ! this.isLoggedIn || ! this.hasPlayer ) {
             this.openRequirementsDialog();
@@ -92,17 +95,22 @@ export class GameStartComponent implements OnInit, OnChanges
                 
                 if ( gameRoom ) {
                     this.store.dispatch( selectGameRoom( { game: this.appState.game, room:  gameRoom } ) );
-                    this.store.dispatch( startGame( this.appState ) );
                 }
             }
         }
     }
     
+    onPlayWithComputer( event: any ): void
+    {
+        if ( this.appState && this.appState.game ) {
+            this.store.dispatch( startGame( this.appState ) );
+        }
+    }
+    
     onPlayWithFriends( event: any ): void
     {
-        if ( ! this.isLoggedIn || ! this.hasPlayer ) {
-            this.openRequirementsDialog();
-            return;
+        if ( this.appState && this.appState.game ) {
+            this.store.dispatch( startGame( this.appState ) );
         }
     }
     

@@ -4,6 +4,7 @@ import { Store, provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import Swal from 'sweetalert2'
 
+import GameSettings from '_@/GamePlatform/Game/GameSettings';
 import BeloteCardGame from '_@/GamePlatform/Game/BeloteCardGame';
 import IPlayer from '_@/GamePlatform/Model/PlayerInterface';
 
@@ -26,7 +27,13 @@ import templateString from './bridge-belote.component.html'
 
 import { AppConstants } from '../application/constants';
 const { context } = require( '../application/context' );
+
 declare var $: any;
+declare global {
+    interface Window {
+        gamePlatformSettings: any;
+    }
+}
 
 @Component({
     selector: 'app-bridge-belote',
@@ -59,9 +66,8 @@ export class BridgeBeloteComponent implements OnInit
         this.apiVerifySiganature    = this.elementRef.nativeElement.getAttribute( 'apiVerifySiganature' );
         this.authenticate();
         
-        // DI Not Worked
         this.providerBridgeBelote   = new BridgeBeloteProvider();
-        this.game                   = new BeloteCardGame( 'bridge-belote', context.themeBuildPath ); // , '#card-table'
+        this.game                   = new BeloteCardGame( this.gameSettings() );
     }
     
     ngOnInit()
@@ -94,5 +100,17 @@ export class BridgeBeloteComponent implements OnInit
         }
         
         this.authService.removeAuth();
+    }
+    
+    gameSettings(): GameSettings
+    {
+        let gameSettings: GameSettings = {
+            id: 'bridge-belote',
+            publicRootPath: context.themeBuildPath,
+            boardSelector: '#card-table',
+            timeoutBetweenPlayers: window.gamePlatformSettings.timeoutBetweenPlayers,
+        };
+        
+        return gameSettings;
     }
 }

@@ -1,3 +1,5 @@
+import ICardGameAnnounce from './CardGameAnnounceInterface'
+
 /**
  * Abstract Class AbstractCardGameAnnounce.
  * Manual: https://stackoverflow.com/questions/597769/how-do-i-create-an-abstract-base-class-in-javascript
@@ -5,7 +7,7 @@
  *
  * @class AbstractCardGameAnnounce
  */
-class AbstractCardGameAnnounce
+class AbstractCardGameAnnounce implements ICardGameAnnounce
 {
     constructor()
     {
@@ -14,12 +16,12 @@ class AbstractCardGameAnnounce
         }
     }
     
-    announce( hand: any, lastAnnounce: any )
+    announce( hand: any, lastAnnounce: any ): string
     {
         throw new Error( "Method 'announce()' must be implemented." );
     }
     
-    getAnnounce( announces: any )
+    getAnnounce( announces: any ): string
     {
         throw new Error( "Method 'getAnnounce()' must be implemented." );
     }

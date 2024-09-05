@@ -1,8 +1,16 @@
 <div class="p-2 float-start">
-    <a class="btn btn-primary me-2" id="btnStartGame" (click)="onPlayWithComputer( $event )">
-        {{ 'game_board.play_with_computer' | translate }}
-    </a>
-    <a class="btn btn-primary" id="btnPlayWithFriends" (click)="onPlayWithFriends( $event )">
-        {{ 'game_board.play_with_friends' | translate }}
-    </a>
+    <ng-container *ngIf="! isRoomSelected">
+        <a class="btn btn-primary me-2" id="btnStartGame" (click)="onSelectGameRoom( $event )">
+            {{ 'game_board.select_room' | translate }}
+        </a>
+    </ng-container>
+    
+    <ng-container *ngIf="isRoomSelected">
+        <a class="btn btn-primary me-2" id="btnStartGame" (click)="onPlayWithComputer( $event )">
+            {{ 'game_board.play_with_computer' | translate }}
+        </a>
+        <a class="btn btn-primary" id="btnPlayWithFriends" (click)="onPlayWithFriends( $event )">
+            {{ 'game_board.play_with_friends' | translate }}
+        </a>
+    </ng-container>
 </div>

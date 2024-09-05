@@ -5,6 +5,15 @@ vs_application:
         
         admin_panel: Admin Panel
         game_platform: Game Platform
+        
+        game_platform_settings: Game Platform Settings
+        list_game_platform_applications: Game Platform Applications
+        create_new_game_platform_application: Create Game Platform Application
+        edit_game_platform_application: Edit Game Platform Application
+        list_game_platform_settings: Game Platform Settings
+        create_new_game_platform_setting: Create Game Platform Settings
+        edit_game_platform_setting: Edit Game Platform Settings
+        
         list_games: Games
         create_new_game: Create New Game
         edit_game: Edit Game

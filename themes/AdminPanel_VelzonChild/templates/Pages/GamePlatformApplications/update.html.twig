@@ -1,0 +1,55 @@
+{% extends "@VSApplication/layout.html.twig" %}
+
+{# Import Macros #}
+{% from '@SyliusResource/Macros/actions.html.twig' import create %}
+{% import "@VSApplication/Macros/form.html.twig" as vs_form %}
+
+{% if( item.id ) %}
+    {% set pageTitle = 'game_platform.template.page_title_game_platform_application_update' | trans( {},'GamePlatform' ) %}
+{% else %}
+    {% set pageTitle = 'game_platform.template.page_title_game_platform_application_create' | trans( {},'GamePlatform' ) %}
+{% endif %}
+
+{% block title %}{{ parent() }} :: {{ pageTitle }}{% endblock %}
+{% block pageTitle %}
+	<h4 class="pageheader-title">
+    	<i class="ri-settings-5-line"></i> 
+        {{ pageTitle }}
+   	</h4>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+            <div class="card">
+            	<h5 class="card-header"></h5>
+            	<div class="card-body">
+            	   {% if form_errors(form) is not empty %}
+                        <div class="alert alert-block alert-danger fade in">
+                            <button type="button" class="close close-sm" data-dismiss="alert">
+                                <i class="fa fa-times"></i>
+                            </button>
+                            <strong>Error!</strong> {{ form_errors(form) }}
+                        </div>
+                    {% endif %}
+            	
+                    {% if(item.id) %}{% set method = "PUT" %}{% else %}{% set method = "POST" %}{% endif %}
+                    {{ form_start(form, { 'attr': {'class': 'form-horizontal ', 'id': 'FormVideoPlatformStorage'}, 'method': method }) }}
+                        {{ form_widget( form.applicationCode, { 'value' : applicationCode } ) }}
+                        
+    					<div class="form-group">
+                            {{ form_label(form.settings, null, {
+                                'label_attr': {'class': 'form-label'}
+                                }) 
+                            }}
+                            
+                            {{ form_widget( form.settings, {'attr': {'class': 'form-select'}} ) }}
+                        </div>
+                        
+            			{{ vs_form.buttons( form, metadata ) }}
+                    {{ form_end(form, {'render_rest': false}) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

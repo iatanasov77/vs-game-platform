@@ -48,4 +48,18 @@ export class GamePlayService
         
         return new Observable;
     }
+    
+    finishGame( gamePlay: any ): Observable<IGamePlay>
+    {
+        if ( ! gamePlay ) {
+            return new Observable;
+        }
+        
+        return this.restangular.all( "finish-game" ).customPOST(
+            {game_play: gamePlay.id},
+            '',
+            {},
+            {Authorization: 'Bearer ' + this.authService.getApiToken()}
+        );
+    }
 }

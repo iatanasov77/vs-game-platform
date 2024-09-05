@@ -143,6 +143,7 @@ Encore
     
     // Custom Entries
     /////////////////////////////////////////////////////////////////////////////////////////////////
+    .addEntry( 'js/game-platform-settings', './themes/AdminPanel_VelzonChild/assets/js/pages/game-platform-settings.js' )
     .addEntry( 'js/games-categories-edit', './themes/AdminPanel_VelzonChild/assets/js/pages/games-categories-edit.js' )
     .addEntry( 'js/games-edit', './themes/AdminPanel_VelzonChild/assets/js/pages/games-edit.js' )
     .addEntry( 'js/games', './themes/AdminPanel_VelzonChild/assets/js/pages/games.js' )

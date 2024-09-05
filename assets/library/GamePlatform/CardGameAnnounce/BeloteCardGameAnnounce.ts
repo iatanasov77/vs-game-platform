@@ -4,7 +4,7 @@ import Announce from './Announce';
 
 class BeloteCardGameAnnounce extends AbstractCardGameAnnounce
 {
-    public override announce( hand: any, lastAnnounce: any )
+    public override announce( hand: any, lastAnnounce: any ): string
     {
         switch ( lastAnnounce ) {
             case undefined:
@@ -16,7 +16,7 @@ class BeloteCardGameAnnounce extends AbstractCardGameAnnounce
         }
     }
     
-    public override getAnnounce( announces: any )
+    public override getAnnounce( announces: any ): string
     {
         if ( ! Array.isArray( announces ) ) {
             throw new Error( "The parameter 'announces' should be an Array object !!!" );

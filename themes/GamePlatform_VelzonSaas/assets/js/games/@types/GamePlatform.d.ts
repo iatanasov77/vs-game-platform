@@ -1,3 +1,14 @@
+declare module '_@/GamePlatform/Game/GameSettings' {
+    type GameSettings = {
+        id: string;
+        publicRootPath: string;
+        boardSelector: string;
+        timeoutBetweenPlayers: number;
+    };
+    
+    export = GameSettings;
+}
+
 declare module '_@/GamePlatform/Model/GameInterface' {
     interface IGame {
         id: number;
@@ -88,8 +99,10 @@ declare module '_@/GamePlatform/Game/GameEvents' {
 }
 
 declare module '_@/GamePlatform/Game/BeloteCardGame' {
+    import GameSettings from '_@/GamePlatform/Game/GameSettings';
+    
     class BeloteCardGame {
-        constructor( boardSelector: string, publicRootPath: string )
+        constructor( gameSettings: GameSettings )
     }
     export = BeloteCardGame;
 }

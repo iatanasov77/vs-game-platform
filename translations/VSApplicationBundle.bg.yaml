@@ -4,8 +4,16 @@ vs_application:
         snippets: Снипети
         
         admin_panel: Админ Панел
-
         game_platform: Игрална Платформа
+        
+        game_platform_settings: Game Platform Settings
+        list_game_platform_applications: Game Platform Applications
+        create_new_game_platform_application: Create Game Platform Application
+        edit_game_platform_application: Edit Game Platform Application
+        list_game_platform_settings: Game Platform Settings
+        create_new_game_platform_setting: Create Game Platform Settings
+        edit_game_platform_setting: Edit Game Platform Settings
+        
         list_games: Игри
         create_new_game: Създай Нова Игра
         edit_game: Радакция на Игра

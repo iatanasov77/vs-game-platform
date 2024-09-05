@@ -8,7 +8,7 @@ interface IGamePlay
     
     players?: Iterator<IGamePlayer>;
     
-    initPlayers(): Array<IGamePlayer>;
+    initPlayers( room: IGameRoom ): void;
     initBoard(): void;
     startGame(): void;
     nextGame(): void;

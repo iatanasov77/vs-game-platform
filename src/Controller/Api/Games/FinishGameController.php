@@ -8,6 +8,7 @@ use Symfony\Component\Mercure\Update;
 use Doctrine\Persistence\ManagerRegistry;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Vankosoft\ApplicationBundle\Component\Status;
+use App\Entity\GamePlay;
 
 class FinishGameController extends AbstractController
 {
@@ -32,14 +33,42 @@ class FinishGameController extends AbstractController
     
     public function __invoke( Request $request ): JsonResponse
     {
+        $gamePlay   = $this->gamePlayRepository->find( $request->request->get( 'game_play' ) );
+        $em         = $this->doctrine->getManager();
         
+        $gamePlay->setActive( false );
+        $gamePlay->getGameRoom()->setIsPlaying( false );
         
+        $em->persist( $gamePlay );
+        $em->flush();
+        
+        $this->publishGamePlay( $gamePlay );
         
         return new JsonResponse([
             'status'    => Status::STATUS_OK,
             'data'      => [
-                
+                'id'        => $gamePlay->getId(),
+                'room'      => $gamePlay->getGameRoom(),
             ],
         ]);
+    }
+    
+    private function publishGamePlay( GamePlay $gamePlay ): void
+    {
+        $publishData    = json_encode([
+            'type'      => 'GamePlayRoomUpdate',
+            'action'    => 'FinishGame',
+            'target'    => $gamePlay->getGameRoom(),
+        ]);
+        
+        $update = new Update(
+            '/game-play',
+            $publishData,
+            false,
+            null,
+            'GamePlayRoomUpdate'
+        );
+        
+        $this->hub->publish( $update );
     }
 }

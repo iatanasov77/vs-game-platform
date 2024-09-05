@@ -1,0 +1,84 @@
+{% extends "@VSApplication/layout.html.twig" %}
+
+{# Import Macros #}
+{% from '@SyliusResource/Macros/actions.html.twig' import create %}
+{% import "@VSApplication/Macros/form.html.twig" as vs_form %}
+{% import "@VSApplication/Macros/tree.html.twig" as vs_tree %}
+{% import "@VSApplication/Macros/OneUpUpload/progressbar.html.twig" as vs_progressbar %}
+{% import "@VSApplication/Macros/OneUpUpload/oneup_upload.html.twig" as vs_oneup_upload %}
+
+{% if( item.id ) %}
+    {% set pageTitle = ( 'game_platform.template.page_title_game_platform_settings_update' | trans( {},'GamePlatform' ) ) ~ ': ' ~ item.settingsKey %}
+{% else %}
+    {% set pageTitle = 'game_platform.template.page_title_game_platform_settings_create' | trans( {},'GamePlatform' ) %}
+{% endif %}
+
+{% block title %}{{ parent() }} :: {{ pageTitle }}{% endblock %}
+{% block pageTitle %}
+	<h4 class="pageheader-title">
+    	<i class="ri-settings-5-line"></i> 
+        {{ pageTitle }}
+   	</h4>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+            <div class="card">
+            	<h5 class="card-header">{{ 'game_platform.template.page_title_game_platform_settings_details'  | trans( {},'GamePlatform' ) }}</h5>
+            	
+            	{% if(item.id) %}{% set method = "PUT" %}{% else %}{% set method = "POST" %}{% endif %}
+                {{ form_start(form, { 'attr': {'class': 'form-horizontal ', 'id': 'FormVideoPlatformSettings'}, 'method': method }) }}
+                
+                    <div class="card-body">
+                    
+                        {% if form_errors(form) is not empty %}
+                            <div class="alert alert-block alert-danger fade in">
+                                <button type="button" class="close close-sm" data-dismiss="alert">
+                                    <i class="fa fa-times"></i>
+                                </button>
+                                <strong>Error!</strong> {{ form_errors(form) }}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="form-group">
+                            {{ form_label(form.settingsKey, null, {
+                                'label_attr': {'class': 'form-label'}
+                                }) 
+                            }}
+                            
+                            {{ form_widget(form.settingsKey, {'attr': {'class': 'form-control'}}) }}
+                            
+                            <p>{{ 'game_platform.form.game_platform_settings.settings_key_help'  | trans( {},'GamePlatform' ) }}</p>
+                        </div>
+                    </div>
+                    
+                    {#    
+                	<h5 class="card-header sub-header">{{ 'game_platform.template.game_platform_settings.general_settings'  | trans( {},'GamePlatform' ) }}</h5>
+                	#}
+                	<div class="card-body">
+                        
+                        <fieldset class="border border-dark rounded p-3">
+                            <legend class="w-auto float-none ps-2 pe-2">{{ 'game_platform.form.game_platform_settings.game_settings' | trans( {},'GamePlatform' ) }}</legend>
+                        
+                            <div class="form-group">
+                                {{ form_label(form.timeoutBetweenPlayers, null, {
+                                    'label_attr': {'class': 'form-label'}
+                                    }) 
+                                }}
+                                
+                                {{ form_widget(form.timeoutBetweenPlayers, {'attr': {'class': 'form-control'}}) }}
+                            </div>
+                        </fieldset>
+                        
+                	</div>
+                	
+                    <div class="card-body">
+                        {{ vs_form.buttons( form, metadata ) }}
+                    </div>
+                
+                {{ form_end(form, {'render_rest': false}) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -10,6 +10,7 @@ import CardGamePlayer from './CardGamePlayer';
 import GamePlayersIterator from './GamePlayersIterator';
 
 import Announce from '../CardGameAnnounce/Announce';
+import ICardGameAnnounce from '../CardGameAnnounce/CardGameAnnounceInterface';
 import BeloteCardGameAnnounce from '../CardGameAnnounce/BeloteCardGameAnnounce';
 import * as GameEvents from './GameEvents';
 
@@ -38,6 +39,9 @@ class BeloteCardGame extends AbstractGame implements ICardGamePlay
     /** Players Hands */
     playerOptions: Array<PlayerOptions>;
     
+    /** ICardGameAnnounce */
+    oAnnounce: ICardGameAnnounce
+    
     /** Current Dealer */
     currentDealer: number;
     
@@ -62,8 +66,10 @@ class BeloteCardGame extends AbstractGame implements ICardGamePlay
             {id: 'bottom', containerId: 'BottomPlayer', xPos: 335, yPos: 415}
         ];
         
-        this.currentDealer  = 4;
-        //this.currentDealer  = 2;
+        this.oAnnounce      = new BeloteCardGameAnnounce();
+        
+        //this.currentDealer  = 4;
+        this.currentDealer  = 2;
     }
     
     public override initPlayers( room: IGameRoom ): void
@@ -78,10 +84,14 @@ class BeloteCardGame extends AbstractGame implements ICardGamePlay
             
             gamePlayer.setHand( new cards.Hand( { faceUp:faceUp, x:this.playerOptions[i].xPos, y:this.playerOptions[i].yPos } ) );
             playersList.push( gamePlayer );
+            
+            if ( this.playerOptions[i].id == 'bottom' ) {
+                this.player = gamePlayer;
+            }
+            
             i++;
         }
         
-        //Now lets create a couple of hands, one face down, one face up.
         this.players  = new GamePlayersIterator( playersList, false );
     }
     
@@ -199,7 +209,7 @@ class BeloteCardGame extends AbstractGame implements ICardGamePlay
         }
     }
     
-    public afterAnnounce( player: ICardGamePlayer, oAnnounce: BeloteCardGameAnnounce )
+    public afterAnnounce()
     {
         let setImmediate = global.setImmediate || ( ( fn: any, ...args: any[] ) => global.setTimeout( fn, 0, ...args ) );
         const unblock = () => new Promise( setImmediate );
@@ -219,14 +229,14 @@ class BeloteCardGame extends AbstractGame implements ICardGamePlay
         }
         
         this.waitAnnounces().then( () => {
-            let announce    = oAnnounce.getAnnounce( this.announces );
+            let announce    = this.oAnnounce.getAnnounce( this.announces );
             
             // Deal After Anounce If The Announce is not PASS
             if ( announce == Announce.PASS ) {
                 $( '#btnStartGame' ).show();
             } else {
                 this.dealCards( 3 );
-                let pile    = this.beginPlaying( player.getHand() );
+                let pile    = this.beginPlaying();
                 
                 $( this.boardSelector ).get( 0 ).dispatchEvent(
                     new CustomEvent( GameEvents.GAME_START_EVENT_NAME, {
@@ -244,10 +254,8 @@ class BeloteCardGame extends AbstractGame implements ICardGamePlay
         this.initAnnounceEventListeners();
         
         let waitTimeout;
-        let player: ICardGamePlayer;
         let nextPlayer: ICardGamePlayer; // Using for current Iteration
         let lastAnnounce;
-        let oAnnounce       = new BeloteCardGameAnnounce();
         let loopIndex       = 1;
         let waitMyAnnounce  = false;
         
@@ -260,35 +268,29 @@ class BeloteCardGame extends AbstractGame implements ICardGamePlay
             $( '#' + announceContainerId ).show();
         }).bind( this );
       
-        if( this.players ) {
+        if( this.players && this.player ) {
             this.players.setStartIterationIndex( this.currentDealer -1 );
             do {
                 nextPlayer  = this.players.geCurrentPlayer();
-                
                 waitTimeout = loopIndex * 2000;
                 
-                if ( nextPlayer.type == 'user' ) {
+                if ( nextPlayer.id == this.player.id ) {
                     waitMyAnnounce  = true;
-                    player          = nextPlayer;
                     setTimeout( playerBoundMethod, waitTimeout, 'AnnounceContainer' );
                     
                     // Wait For Player Announce
-                    this.waitMyAnnounce()
-                        .then(() => {
-                            lastAnnounce    = window.playerAnnounce;
-                            this.announces.push( lastAnnounce );
-                            //alert( 'My Announce: ' + window.playerAnnounce );
-                            
-                            this.fireAnnounceEvent( player.containerId, lastAnnounce );
-                            this.continueAnnounce( ++loopIndex );
-                        });
+                    this.waitMyAnnounce().then( () => {
+                        lastAnnounce    = window.playerAnnounce;
+                        this.announces.push( lastAnnounce );
+                        //alert( 'My Announce: ' + window.playerAnnounce );
                         
-                    // After Announce Begin Playing
-                    this.afterAnnounce( player, oAnnounce );
+                        this.fireAnnounceEvent( this?.player?.containerId, lastAnnounce );
+                        this.continueAnnounce( ++loopIndex );
+                    });
                 } else {
                     if ( ! waitMyAnnounce ) {
                         // Create Announce for Partner Gamer
-                        lastAnnounce    = oAnnounce.announce( nextPlayer.getHand(), lastAnnounce );
+                        lastAnnounce    = this.oAnnounce.announce( nextPlayer.getHand(), lastAnnounce );
                         this.announces.push( lastAnnounce );
                         
                         nextPlayer.setAnnounce( lastAnnounce );
@@ -300,6 +302,8 @@ class BeloteCardGame extends AbstractGame implements ICardGamePlay
                 loopIndex++;
             } while( this.players.nextPlayer().done === false );
         
+            // After Announce Begin Playing
+            this.afterAnnounce();
         }
     }
     
@@ -337,9 +341,10 @@ class BeloteCardGame extends AbstractGame implements ICardGamePlay
         }
     }
     
-    beginPlaying( playerHand: any )
+    beginPlaying()
     {
-        let pile    = new cards.Deck( {faceUp:true} );
+        let playerHand  = ( this?.player as ICardGamePlayer )?.getHand();
+        let pile            = new cards.Deck( {faceUp:true} );
         
         let leftOffset = 20;
         playerHand.click( function( card: any )

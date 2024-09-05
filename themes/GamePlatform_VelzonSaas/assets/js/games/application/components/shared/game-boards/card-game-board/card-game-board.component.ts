@@ -58,7 +58,7 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
         this.store.subscribe( ( state: any ) => {
             this.appState   = state.app.main;
             
-            if ( state.app.main.cardGame ) {
+            if ( state.app.main.gamePlay ) {
                 this.gameStarted    = true;
             }
         });

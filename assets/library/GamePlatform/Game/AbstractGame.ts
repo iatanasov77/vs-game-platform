@@ -23,6 +23,9 @@ class AbstractGame
     
     boardSelector: string;
     
+    /** GamePlayer That Play with this Web Session */
+    player?: IGamePlayer;
+    
     constructor( id: string, publicRootPath: string, boardSelector: string )
     {
         if ( this.constructor == AbstractGame ) {

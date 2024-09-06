@@ -1,12 +1,10 @@
-import { Component, OnInit, Inject, ElementRef, isDevMode } from '@angular/core';
+import { Component, OnInit, ElementRef, isDevMode } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import Swal from 'sweetalert2'
 
-import GameSettings from '_@/GamePlatform/Game/GameSettings';
 import IPlayer from '_@/GamePlatform/Model/PlayerInterface';
-
 import { loginBySignature } from '../../+store/login.actions';
 import { selectAuth } from '../../+store/login.selectors';
 import { AuthState } from '../../+store/login.reducers';
@@ -20,7 +18,6 @@ import { getGame } from '../../+store/game.selectors';
 import { AppConstants } from '../../constants';
 const { context } = require( '../../context' );
 
-declare var $: any;
 declare global {
     interface Window {
         gamePlatformSettings: any;
@@ -38,21 +35,18 @@ export class GameBaseComponent implements OnInit
     isLoggedIn: boolean         = false;
     hasPlayer: boolean          = false;
     developementClass: string   = '';
-    
-    apiVerifySiganature?: string;
     currentPlayer: any;
     
     constructor(
-        private elementRef: ElementRef,
-        private authService: AuthService,
-        private gameService: GameService,
-        private store: Store
+        protected elementRef: ElementRef,
+        protected authService: AuthService,
+        protected gameService: GameService,
+        protected store: Store
     ) {
         if( isDevMode() ) {
             this.developementClass  = 'developement';
         }
         
-        this.apiVerifySiganature    = this.elementRef.nativeElement.getAttribute( 'apiVerifySiganature' );
         this.authenticate();
     }
     
@@ -79,24 +73,12 @@ export class GameBaseComponent implements OnInit
     
     authenticate(): void
     {
-        if ( this.apiVerifySiganature?.length ) {
-            this.store.dispatch( loginBySignature( { apiVerifySiganature: this.apiVerifySiganature } ) );
+        if ( window.gamePlatformSettings.apiVerifySiganature.length ) {
+            this.store.dispatch( loginBySignature( { apiVerifySiganature: window.gamePlatformSettings.apiVerifySiganature } ) );
             this.store.dispatch( loadGameBySlug( { slug: 'bridge-belote' } ) );
             return;
         }
         
         this.authService.removeAuth();
-    }
-    
-    gameSettings(): GameSettings
-    {
-        let gameSettings: GameSettings = {
-            id: 'bridge-belote',
-            publicRootPath: context.themeBuildPath,
-            boardSelector: '#card-table',
-            timeoutBetweenPlayers: window.gamePlatformSettings.timeoutBetweenPlayers,
-        };
-        
-        return gameSettings;
     }
 }

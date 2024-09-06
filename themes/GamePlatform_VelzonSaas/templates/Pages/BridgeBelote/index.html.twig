@@ -8,9 +8,7 @@
         data-locale="{{ app.request.locale }}"
         data-mercureEventSource="{{ mercure( '/game-play' ) | escape( 'html_attr' ) }}"
     >
-        <app-bridge-belote
-            apiVerifySiganature="{{ apiVerifySiganature }}"
-        ></app-bridge-belote>
+        <app-bridge-belote></app-bridge-belote>
     </div>
 {% endblock %}
 

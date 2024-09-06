@@ -1,16 +1,26 @@
 import { Injectable } from '@angular/core';
 
 const { context } = require( '../context' );
+import GameSettings from '_@/GamePlatform/Game/GameSettings';
+import BeloteCardGame from '_@/GamePlatform/Game/BeloteCardGame';
 import ICardGameProvider from '../interfaces/card-game-provider';
 import Announce from '_@/GamePlatform/CardGameAnnounce/Announce';
 import CardGamePlayerModel from '_@/GamePlatform/Model/CardGamePlayerModel';
 import CardGameAnnounceSymbolModel from '_@/GamePlatform/Model/CardGameAnnounceSymbolModel';
+
+declare global {
+    interface Window {
+        gamePlatformSettings: any;
+    }
+}
 
 @Injectable({
     providedIn: 'root'
 })
 export class BridgeBeloteProvider implements ICardGameProvider
 {
+    game?: BeloteCardGame;
+    
     Players: Array<CardGamePlayerModel>  = [
         {
             id: 'left',
@@ -94,6 +104,27 @@ export class BridgeBeloteProvider implements ICardGameProvider
             value: '<span class="announce-button">pass</span>'
         }
     ];
+    
+    gameSettings(): GameSettings
+    {
+        let gameSettings: GameSettings = {
+            id: 'bridge-belote',
+            publicRootPath: context.themeBuildPath,
+            boardSelector: '#card-table',
+            timeoutBetweenPlayers: window.gamePlatformSettings.timeoutBetweenPlayers,
+        };
+        
+        return gameSettings;
+    }
+    
+    getGame()
+    {
+        if ( ! this.game ) {
+            this.game   = new BeloteCardGame( this.gameSettings() );
+        }
+        
+        return this.game;
+    }
     
     getPlayers(): Array<CardGamePlayerModel>
     {

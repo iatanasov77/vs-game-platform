@@ -27,9 +27,9 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
     @Input() isLoggedIn: boolean        = false;
     @Input() hasPlayer: boolean         = false;
     @Input() developementClass: string  = '';
-    
-    @Input() game?: any;
     @Input() gameProvider?: any;
+    @Input() game?: any;
+    
 
     appState?: GameState;
     gameStarted: boolean                = false;

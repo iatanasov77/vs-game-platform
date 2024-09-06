@@ -1,10 +1,10 @@
-<?php namespace App\Controller\Chess;
+<?php namespace App\Controller\Games;
 
 use App\Controller\Application\GameController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class DefaultController extends GameController
+class ChessController extends GameController
 {
     public function index( Request $request ): Response
     {

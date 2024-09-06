@@ -1,6 +1,5 @@
 import { Component, Inject, OnInit, OnDestroy, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
@@ -8,8 +7,8 @@ import { of } from 'rxjs';
 import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
 import {
     selectGameRoomSuccess
-} from '../../../../+store/game.actions';
-import { GameState } from '../../../../+store/game.reducers';
+} from '../../../+store/game.actions';
+import { GameState } from '../../../+store/game.reducers';
 
 import templateString from './card-game-board.component.html'
 import styleString from './card-game-board.component.scss'
@@ -42,7 +41,6 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
     
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,
-        @Inject( NgbModal ) private ngbModal: NgbModal,
         @Inject( Store ) private store: Store,
         @Inject( Actions ) private actions$: Actions
     ) {

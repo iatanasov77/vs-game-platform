@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 
 import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
 import Announce from '_@/GamePlatform/CardGameAnnounce/Announce';
-import { playerAnnounce } from '../../../../../+store/game.actions';
+import { playerAnnounce } from '../../../../+store/game.actions';
 
 import templateString from './card-game-announce.component.html'
 declare var $: any;

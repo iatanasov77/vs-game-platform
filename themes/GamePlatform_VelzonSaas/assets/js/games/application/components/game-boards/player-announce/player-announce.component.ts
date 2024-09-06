@@ -3,7 +3,7 @@ import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import CardGamePlayer from '_@/GamePlatform/Game/CardGamePlayer';
 import Announce from '_@/GamePlatform/CardGameAnnounce/Announce';
 import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
-import { BridgeBeloteProvider } from '../../../../providers/bridge-belote-provider';
+import { BridgeBeloteProvider } from '../../../providers/bridge-belote-provider';
 
 import templateString from './player-announce.component.html'
 import styleString from './player-announce.component.scss'

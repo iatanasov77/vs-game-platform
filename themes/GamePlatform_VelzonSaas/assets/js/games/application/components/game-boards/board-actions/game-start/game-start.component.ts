@@ -12,10 +12,10 @@ import {
     startGame,
     startGameSuccess,
     loadGameRooms
-} from '../../../../../+store/game.actions';
-import { GameState } from '../../../../../+store/game.reducers';
+} from '../../../../+store/game.actions';
+import { GameState } from '../../../../+store/game.reducers';
 
-import { GameRequirementsDialogComponent } from '../../../dialogs/game-requirements-dialog/game-requirements-dialog.component';
+import { GameRequirementsDialogComponent } from '../../../shared/dialogs/game-requirements-dialog/game-requirements-dialog.component';
 
 import templateString from './game-start.component.html'
 declare var $: any;

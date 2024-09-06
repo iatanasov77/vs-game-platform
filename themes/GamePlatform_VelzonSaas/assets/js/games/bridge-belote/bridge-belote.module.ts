@@ -26,6 +26,7 @@ import { IAppState, getReducers } from '../application/+store/state';
 import { AppRoutingModule } from './app-routing.module';
 
 import { BridgeBeloteComponent } from './bridge-belote.component';
+import { GameBoardsModule } from '../application/components/game-boards/game-boards.module';
 import { SharedModule } from '../application/components/shared/shared.module';
 
 export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppState>>( 'Game Reducers' );
@@ -46,6 +47,7 @@ export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppSta
                 deps: [HttpClient]
             }
         }),
+        GameBoardsModule,
         SharedModule,
         
         //AppRoutingModule,

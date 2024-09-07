@@ -6,32 +6,32 @@ import { GameService } from '../application/services/game.service'
 import { GameBaseComponent } from '../application/components/game-base/game-base.component';
 
 import { BridgeBeloteProvider } from '../application/providers/bridge-belote-provider';
-import BeloteCardGame from '_@/GamePlatform/Game/BeloteCardGame';
+//import BeloteCardGame from '_@/GamePlatform/Game/BeloteCardGame';
 
-import cssGameString from './bridge-belote.component.scss'
-import templateString from './bridge-belote.component.html'
+import cssGameString from './chess.component.scss'
+import templateString from './chess.component.html'
 
+/**
+ * Chess Board Manual: https://www.npmjs.com/package/ngx-chess-board/v/2.2.3?activeTab=readme
+ */
 @Component({
-    selector: 'app-bridge-belote',
+    selector: 'app-chess',
     
     template: templateString || 'Template Not Loaded !!!',
     styles: [
         cssGameString || 'Game CSS Not Loaded !!!',
     ]
 })
-export class BridgeBeloteComponent extends GameBaseComponent implements OnInit
+export class ChessComponent extends GameBaseComponent implements OnInit
 {
-    game: BeloteCardGame;
+    //game: BeloteCardGame;
     
     constructor(
         @Inject( AuthService ) authService: AuthService,
         @Inject( GameService ) gameService: GameService,
         @Inject( Store ) store: Store,
-        @Inject( BridgeBeloteProvider ) private providerBridgeBelote: BridgeBeloteProvider
     ) {
         super( authService, gameService, store );
-        
-        this.game   = this.providerBridgeBelote.getGame();
     }
     
     override ngOnInit()

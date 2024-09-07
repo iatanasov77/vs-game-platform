@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, isDevMode } from '@angular/core';
+import { Component, OnInit, isDevMode } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
@@ -14,9 +14,6 @@ import { GameService } from '../../services/game.service'
 
 import { loadGameBySlug } from '../../+store/game.actions';
 import { getGame } from '../../+store/game.selectors';
-
-import { AppConstants } from '../../constants';
-const { context } = require( '../../context' );
 
 declare global {
     interface Window {
@@ -38,7 +35,6 @@ export class GameBaseComponent implements OnInit
     currentPlayer: any;
     
     constructor(
-        protected elementRef: ElementRef,
         protected authService: AuthService,
         protected gameService: GameService,
         protected store: Store

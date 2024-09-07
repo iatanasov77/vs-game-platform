@@ -4,8 +4,11 @@
 {% block pageTitle %}{{ 'game_platform.template.games.chess' | trans( {},'GamePlatform' ) }}{% endblock %}
 
 {% block content %}
-    <div class="container text-center" id="GameContainer" data-locale="{{ app.request.locale }}">
-        <app-chess apiVerifySiganature="{{ apiVerifySiganature }}"></app-chess>
+    <div class="container text-center" id="GameContainer"
+        data-locale="{{ app.request.locale }}"
+        data-mercureEventSource="{{ mercure( '/game-play' ) | escape( 'html_attr' ) }}"
+    >
+        <app-chess></app-chess>
     </div>
 {% endblock %}
 
@@ -16,5 +19,12 @@
 {% endblock %}
 
 {% block javascripts %}
+    {{ parent() }}
+    
+    <script type="text/javascript">
+        const gamePlatformSettings  = {{ ( gameSettings | json_encode | raw ) }};
+        window.gamePlatformSettings = gamePlatformSettings;
+    </script>
+    
     {{ encore_entry_script_tags( 'js/chess', null, 'GameplatformVelzonsaasTheme' ) }}
 {% endblock %}

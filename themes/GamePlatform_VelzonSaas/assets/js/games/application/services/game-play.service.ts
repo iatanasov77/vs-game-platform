@@ -2,8 +2,9 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { Observable, map, of } from 'rxjs';
 import { AuthService } from './auth.service';
+import { AppConstants } from "../constants";
 
-import IGamePlay from '_@/GamePlatform/Model/GamePlayModel';
+import IGamePlay from '_@/GamePlatform/Model/GamePlayInterface';
 import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
 import IGame from '_@/GamePlatform/Model/GameInterface';
 
@@ -34,7 +35,9 @@ export class GamePlayService
         
         const headers = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
         
-        return this.httpClient.post<IGamePlay>( 'start-game', {game_room: game.room.id}, {headers} );
+        return this.httpClient.post<IGamePlay>( 'start-game', {game_room: game.room.id}, {headers} ).pipe(
+            map( ( response: any ) => this.mapGamePlay( response ) )
+        );;
     }
     
     playerAnnounce(): Observable<ICardGameAnnounce>
@@ -53,6 +56,22 @@ export class GamePlayService
         
         const headers = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
         
-        return this.httpClient.post<IGamePlay>( 'finish-game', {game_room: gamePlay.room.id}, {headers} );
+        return this.httpClient.post<IGamePlay>( 'finish-game', {game_room: gamePlay.room.id}, {headers} ).pipe(
+            map( ( response: any ) => this.mapGamePlay( response ) )
+        );;
+    }
+    
+    private mapGamePlay( response: any )
+    {
+        if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
+            let gamePlay: IGamePlay = {
+                id: response.data.id,
+                room: response.data.room,
+            };
+            
+            return gamePlay;
+        }
+        
+        return response.message;
     }
 }

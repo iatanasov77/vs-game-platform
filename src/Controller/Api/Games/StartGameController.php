@@ -57,7 +57,12 @@ class StartGameController extends AbstractController
             'status'    => Status::STATUS_OK,
             'data'      => [
                 'id'        => $gamePlay->getId(),
-                'room'      => $room,
+                'room'      => [
+                    'id'        => $room->getId(),
+                    'slug'      => $room->getSlug(),
+                    'name'      => $room->getName(),
+                    'isPlaying' => $room->isPlaying(),
+                ],
             ],
         ]);
     }

@@ -34,7 +34,7 @@ import { GameService } from "../services/game.service";
 import { GamePlayService } from "../services/game-play.service";
 import { EventSourceService } from "../services/event-source.service";
 
-import IGamePlay from '_@/GamePlatform/Model/GamePlayModel';
+import IGamePlay from '_@/GamePlatform/Model/GamePlayInterface';
 import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
 
 import IGame from '_@/GamePlatform/Model/GameInterface';

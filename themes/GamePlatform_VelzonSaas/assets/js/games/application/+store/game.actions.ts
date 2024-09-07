@@ -1,7 +1,7 @@
 import { createAction, props } from "@ngrx/store";
 
 import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
-import IGamePlay from '_@/GamePlatform/Model/GamePlayModel';
+import IGamePlay from '_@/GamePlatform/Model/GamePlayInterface';
 import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
 
 import IGame from '_@/GamePlatform/Model/GameInterface';

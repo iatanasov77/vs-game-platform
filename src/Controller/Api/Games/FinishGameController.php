@@ -48,7 +48,12 @@ class FinishGameController extends AbstractController
             'status'    => Status::STATUS_OK,
             'data'      => [
                 'id'        => $gamePlay->getId(),
-                'room'      => $gamePlay->getGameRoom(),
+                'room'      => [
+                    'id'        => $gamePlay->getGameRoom()->getId(),
+                    'slug'      => $gamePlay->getGameRoom()->getSlug(),
+                    'name'      => $gamePlay->getGameRoom()->getName(),
+                    'isPlaying' => $gamePlay->getGameRoom()->isPlaying(),
+                ],
             ],
         ]);
     }

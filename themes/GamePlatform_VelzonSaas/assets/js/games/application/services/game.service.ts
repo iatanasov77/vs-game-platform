@@ -2,12 +2,11 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { BehaviorSubject, Observable, tap, map, of } from 'rxjs';
 import { AuthService } from './auth.service';
+import { AppConstants } from "../constants";
 
 import IGame from '_@/GamePlatform/Model/GameInterface';
 import IPlayer from '_@/GamePlatform/Model/PlayerInterface';
 import IGameRoom from '_@/GamePlatform/Model/GameRoomInterface';
-
-import { AppConstants } from "../constants";
 
 @Injectable({
     providedIn: 'root'

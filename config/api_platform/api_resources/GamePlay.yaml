@@ -12,9 +12,9 @@ resources:
                 deserialize: false,
                 
                 normalizationContext:
-                    groups: ['game-play:read']
+                    groups: ['game-play:read', 'game-room:read']
                 denormalizationContext:
-                    groups: ['game-play:create']
+                    groups: ['game-play:create', 'game-room:update']
             
             finish_game:
                 class: ApiPlatform\Metadata\Put
@@ -27,6 +27,6 @@ resources:
                 deserialize: false,
                 
                 normalizationContext:
-                    groups: ['game-play:read']
+                    groups: ['game-play:read', 'game-room:read']
                 denormalizationContext:
-                    groups: ['game-play:update']
+                    groups: ['game-play:update', 'game-room:update']

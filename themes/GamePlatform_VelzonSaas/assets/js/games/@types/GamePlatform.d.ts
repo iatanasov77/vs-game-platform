@@ -21,6 +21,16 @@ declare module '_@/GamePlatform/Model/GameInterface' {
     export = IGame;
 }
 
+declare module '_@/GamePlatform/Model/GamePlayInterface' {
+    import IGameRoom from '_@/GamePlatform/Model/GameRoomInterface';
+    
+    interface IGamePlay {
+        id: any;
+        room: null | IGameRoom;
+    }
+    export = IGamePlay;
+}
+
 declare module '_@/GamePlatform/Model/PlayerInterface' {
     import IGameRoom from '_@/GamePlatform/Model/GameRoomInterface';
     

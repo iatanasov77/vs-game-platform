@@ -3,6 +3,15 @@ services:
         autowire: true
         autoconfigure: true
 
+    App\Controller\Games\SvaraController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@vs_application.context.application'
+            - '@twig'
+            - '@vsapp.repository.games'
+            - '@http_client'
+    
     App\Controller\Games\BridgeBeloteController:
         tags: ['controller.service_arguments']
         autowire: true

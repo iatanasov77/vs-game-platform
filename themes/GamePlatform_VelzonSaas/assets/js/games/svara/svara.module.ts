@@ -22,16 +22,15 @@ import { CustomSerializer } from '../application/+store/router';
 import { GameEffects } from '../application/+store/game.effects';
 import { IAppState, getReducers } from '../application/+store/state';
 
-import { ChessComponent } from './chess.component';
+import { SvaraComponent } from './svara.component';
 import { SharedModule } from '../application/components/shared/shared.module';
 import { GameBoardsModule } from '../application/components/game-boards/game-boards.module';
-import { NgxChessBoardModule } from 'ngx-chess-board';
 
 export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppState>>( 'Game Reducers' );
 
 @NgModule({
     declarations: [
-        ChessComponent,
+        SvaraComponent,
     ],
     imports: [
         BrowserModule,
@@ -47,7 +46,6 @@ export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppSta
         }),
         SharedModule,
         GameBoardsModule,
-        NgxChessBoardModule.forRoot(),
         
         StoreModule.forRoot([
             loginReducer,
@@ -61,7 +59,7 @@ export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppSta
             GameEffects,
         ]),
     ],
-    bootstrap: [ChessComponent],
+    bootstrap: [SvaraComponent],
     providers: [
         //{ provide: Window, useValue: window },
         { provide: APP_BASE_HREF, useValue: window.location.pathname },
@@ -71,4 +69,4 @@ export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppSta
         {provide: HTTP_INTERCEPTORS, useClass: BaseUrlInterceptor, multi: true},
     ]
 })
-export class ChessModule { }
+export class SvaraModule { }

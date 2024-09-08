@@ -10,7 +10,7 @@ class BackgammonController extends GameController
     {
         $gameSlug   = 'backgammon';
         $game       = $this->gamesRepository->findOneBy( ['slug' => $gameSlug] );
-        $signature  = $this->getUser() ? $this->getUser()->getApiVerifySiganature() : null;
+        $signature  = $this->getUser() ? $this->getUser()->getApiVerifySiganature() : '';
         
         $gamePlatformSettings   = $this->applicationContext->getApplication()->getGamePlatformApplication()->getSettings();
         $gameSettings           = [

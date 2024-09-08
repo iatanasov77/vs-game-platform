@@ -13,6 +13,10 @@ app_ajax_create_player:
 ###################################################################################
 # Games
 ###################################################################################
+svara:
+    path: /games/svara
+    controller: App\Controller\Games\SvaraController::index
+
 bridge_belote:
     path: /games/bridge-belote
     controller: App\Controller\Games\BridgeBeloteController::index

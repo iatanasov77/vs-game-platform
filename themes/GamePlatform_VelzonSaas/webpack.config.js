@@ -82,6 +82,7 @@ Encore
     .addEntry( 'js/games', './themes/GamePlatform_VelzonSaas/assets/js/pages/games.js' )
     
     // Games
+    .addEntry( 'js/svara', './themes/GamePlatform_VelzonSaas/assets/js/games/svara/index.js' )
     .addEntry( 'js/bridge-belote', './themes/GamePlatform_VelzonSaas/assets/js/games/bridge-belote/index.js' )
     .addEntry( 'js/contract-bridge', './themes/GamePlatform_VelzonSaas/assets/js/games/contract-bridge/index.js' )
     .addEntry( 'js/chess', './themes/GamePlatform_VelzonSaas/assets/js/games/chess/index.js' )

@@ -5,7 +5,7 @@
 
 {% block content %}
     <div class="container text-center" id="GameContainer" data-locale="{{ app.request.locale }}">
-        <app-contract-bridge apiVerifySiganature="{{ apiVerifySiganature }}"></app-contract-bridge>
+        <app-contract-bridge></app-contract-bridge>
     </div>
 {% endblock %}
 
@@ -16,5 +16,12 @@
 {% endblock %}
 
 {% block javascripts %}
+    {{ parent() }}
+    
+    <script type="text/javascript">
+        const gamePlatformSettings  = {{ ( gameSettings | json_encode | raw ) }};
+        window.gamePlatformSettings = gamePlatformSettings;
+    </script>
+    
     {{ encore_entry_script_tags( 'js/contract-bridge', null, 'GameplatformVelzonsaasTheme' ) }}
 {% endblock %}

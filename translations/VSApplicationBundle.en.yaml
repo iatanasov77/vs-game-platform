@@ -40,6 +40,7 @@ vs_application:
             register: Register
             
         games:
+            svara: Svara
             bridge_belote: Bridge Belote
             contract_bridge: Contract Bridge
             chess: Chess

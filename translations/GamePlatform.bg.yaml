@@ -40,6 +40,7 @@ game_platform:
             logout: Изход
             
         games:
+            svara: Svara
             bridge_belote: Bridge Belote
             contract_bridge: Contract Bridge
             chess: Chess

@@ -82,6 +82,12 @@ vs_application:
                 route: app_games
                 attributes:
                     iconClass: "bx bxs-dashboard"
+            games_svara:
+                name: vs_application.menu.games.svara
+                route: svara
+                display: false
+                attributes:
+                    iconClass: "bx bxs-dashboard"
             games_bridge_belote:
                 name: vs_application.menu.games.bridge_belote
                 route: bridge_belote

@@ -8,7 +8,7 @@ import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { CustomTranslateLoader } from '../application/providers/i18n-provider';
 
 import { HttpClient, HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { BaseUrlInterceptor } from '../application/services/bse-url-interceptor';
+import { BaseUrlInterceptor } from '../application/services/base-url-interceptor';
 
 import { StoreModule, provideStore, ActionReducerMap } from '@ngrx/store';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';

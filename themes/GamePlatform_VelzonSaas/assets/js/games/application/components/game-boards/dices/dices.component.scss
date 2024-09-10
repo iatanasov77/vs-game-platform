@@ -1,0 +1,56 @@
+.dices {
+    display: inline-block;
+    max-width: 100px;
+    
+    div {
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        
+        @media screen and (max-height: 445px) {
+            width: 20px;
+            height: 20px;
+        }
+        
+        position: relative;
+        border-radius: 8px;
+        margin: 5px;
+    }
+}
+
+i::before {
+    position: absolute;
+    font-size: 40px;
+    
+    @media screen and (max-height: 445px) {
+        font-size: 30px;
+    }
+    
+    top: -3px;
+    left: -2px;
+}
+
+
+.black {
+    background-color: #aaa;
+    
+    i::before {
+        color: #000;
+    }
+}
+
+.white {
+    background-color: #000;
+    
+    i::before {
+        color: #aaa;
+    }
+}
+
+.diceUsed {
+    background-color: #555;
+    
+    i::before {
+        color: #777;
+    }
+}

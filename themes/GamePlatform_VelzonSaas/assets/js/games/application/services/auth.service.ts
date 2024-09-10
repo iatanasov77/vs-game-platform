@@ -6,6 +6,11 @@ import { AppConstants } from "../constants";
 import { IAuth } from '../interfaces/auth';
 import { ISignedUrlResponse } from '../interfaces/signed-url-response';
 
+import { StorageService, LOCAL_STORAGE } from 'ngx-webstorage-service';
+import { AppState } from '../state/app-state';
+import { Keys } from '../utils/keys';
+import UserDto from '_@/GamePlatform/Model/BoardGame/userDto';
+
 /**
  * Manual: https://blog.jscrambler.com/working-with-angular-local-storage/
  *===========================================================================
@@ -23,6 +28,7 @@ export class AuthService
     
     constructor(
         @Inject( HttpClient ) private httpClient: HttpClient,
+        @Inject( LOCAL_STORAGE ) private storage: StorageService,
     ) {
         let auth        = this.getAuth();
         this.loggedIn   = auth && auth.apiToken ? true : false;
@@ -84,6 +90,12 @@ export class AuthService
         // Need to Logout From Api Server
     
         this.removeAuth();
+    }
+    
+    repair(): void
+    {
+        const user = this.storage.get( Keys.loginKey ) as UserDto;
+        AppState.Singleton.user.setValue( user );
     }
     
     register( formData: any )

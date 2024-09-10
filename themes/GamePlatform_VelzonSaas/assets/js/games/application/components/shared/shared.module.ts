@@ -5,11 +5,13 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { LoaderComponent } from './loader/loader.component';
+import { MessagesComponent } from './messages/messages.component';
 import { GameRequirementsDialogComponent } from './dialogs/game-requirements-dialog/game-requirements-dialog.component';
 
 @NgModule({
     declarations: [
         LoaderComponent,
+        MessagesComponent,
         GameRequirementsDialogComponent
     ],
     imports: [
@@ -20,6 +22,7 @@ import { GameRequirementsDialogComponent } from './dialogs/game-requirements-dia
     ],
     exports: [
         LoaderComponent,
+        MessagesComponent,
         GameRequirementsDialogComponent
     ]
 })

@@ -11,6 +11,11 @@ import { EventSourcePolyfill } from "event-source-polyfill";
  *============================
  * https://medium.com/@andrewkoliaka/implementing-server-sent-events-in-angular-a5e40617cb78
  * https://web.dev/articles/eventsource-basics
+ *
+ *
+ * There is Angular SSE Client
+ *=============================
+ * ngx-sse-client: https://www.npmjs.com/package/ngx-sse-client
  */
 @Injectable({
     providedIn: 'root'

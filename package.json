@@ -76,7 +76,9 @@
         "@types/event-source-polyfill": "^1.0",
 
         "sweetalert2": "^11.12",
-        "ngx-chess-board": "2.2.3"
+        "ngx-chess-board": "2.2.3",
+        "ngx-cookie-service": "^17.1.0",
+        "ngx-webstorage-service": "^5.0.0"
     },
     "devDependencies": {
         "@angular-devkit/build-angular": "^17.3.9",

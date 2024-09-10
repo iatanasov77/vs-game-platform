@@ -1,0 +1,168 @@
+@mixin button {
+    background: none;
+    border: none;
+    padding: 10px;
+    color: #aaa;
+    // font-family: sans-serif;
+    font-size: 20px;
+    padding: 8px 16px;
+    @include hovershadow();
+    
+    &:hover {
+        color: #ccc;
+    }
+    
+    &:focus {
+        outline: 0 !important;
+    }
+    
+    &:active {
+        color: #777;
+    }
+}
+
+@mixin hovershadow {
+    &:hover,
+    &:focus {
+        -webkit-box-shadow: 0px 0px 6px 1px rgba(256, 256, 256, 0.3);
+        -moz-box-shadow: 0px 0px 6px 1px rgba(256, 256, 256, 0.3);
+        box-shadow: 0px 0px 6px 1px rgba(256, 256, 256, 0.3);
+    }
+}
+
+@mixin glass {
+    position: relative;
+    background-image: linear-gradient(rgb(0, 0, 0), rgb(26, 26, 26));
+    text-decoration: none;
+    border-radius: 10px;
+    
+    &:after {
+        content: '';
+        position: absolute;
+        border-radius: 10px;
+        top: 2px;
+        left: 2px;
+        width: calc(100% - 4px);
+        height: 50%;
+        background: linear-gradient(rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.05));
+    }
+}
+
+.default-button {
+    @include button();
+    @include glass();
+    background-image: linear-gradient(rgb(31, 71, 38), rgb(53, 121, 66));
+    color: #fff;
+}
+
+.secondary-button {
+    @include button();
+    @include glass();
+    
+    background-image: linear-gradient(#5d3910, #a16520);
+    color: #d3c9be;
+}
+
+.black-button {
+    @include button();
+    @include glass();
+    background-image: linear-gradient(#000000, #252525);
+}
+
+.flat-button {
+    @include button();
+}
+
+span, p, div, label {
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+
+.red {
+    color: red;
+}
+
+.yellow {
+    color: yellow;
+}
+
+.open-button {
+    color: #ddd;
+    font-size: 20px;
+    border: none;
+    position: absolute;
+    top: 20px;
+    z-index: 1;
+}
+
+.overlay {
+    /* Height & width depends on how you want to reveal the overlay (see JS below) */
+    //   height: 100%;
+    width: 0;
+    height: 100%;
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    background-color: rgb(0, 0, 0);
+    /* Black fallback color */
+    background-color: rgba(0, 0, 0, 0.85);
+    overflow-x: hidden;
+    /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
+}
+
+.show {
+    width: 50%;
+    animation: pull-down;
+    animation-duration: 0.5s;
+}
+
+.hide {
+    animation: pull-up;
+    animation-duration: 0.5s;
+}
+
+@keyframes pull-down {
+    from {
+        width: 0;
+    }
+    
+    to {
+        width: 50%;
+    }
+}
+
+@keyframes pull-up {
+    from {
+        width: 50%;
+    }
+    
+    to {
+        width: 0;
+    }
+}
+
+/* Position the content inside the overlay */
+.overlay-content {
+    position: relative;
+    /* 25% from the top */
+    width: 100%;
+    /* 100% width */
+    text-align: center;
+    /* Centered text/links */
+    margin-top: 50px;
+    
+    button {
+        color: #bbb;
+        margin-bottom: 16px;
+    }
+}
+
+/* Position the close button (top right corner) */
+.overlay .closeButton {
+    position: absolute;
+    top: 20px;
+    right: 45px;
+    font-size: 40px;
+    color: #ddd;
+}

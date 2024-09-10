@@ -1,4 +1,4 @@
-import { Component, OnInit, isDevMode } from '@angular/core';
+import { Component, OnInit, OnDestroy, isDevMode } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
@@ -27,7 +27,7 @@ declare global {
     template: ``,
     styles: []
 })
-export class GameBaseComponent implements OnInit
+export class GameBaseComponent implements OnInit, OnDestroy
 {
     isLoggedIn: boolean         = false;
     hasPlayer: boolean          = false;
@@ -65,6 +65,11 @@ export class GameBaseComponent implements OnInit
             //alert( hasPlayer );
             this.hasPlayer = hasPlayer;
         });
+    }
+    
+    ngOnDestroy(): void
+    {
+
     }
     
     authenticate(): void

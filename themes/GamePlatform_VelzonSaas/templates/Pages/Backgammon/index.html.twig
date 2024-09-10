@@ -4,7 +4,10 @@
 {% block pageTitle %}{{ 'game_platform.template.games.backgammon' | trans( {},'GamePlatform' ) }}{% endblock %}
 
 {% block content %}
-    <div class="container text-center" id="GameContainer" data-locale="{{ app.request.locale }}">
+    <div class="container text-center" id="GameContainer"
+        data-locale="{{ app.request.locale }}"
+        data-mercureEventSource="{{ mercure( '/game-play' ) | escape( 'html_attr' ) }}"
+    >
         <app-backgammon></app-backgammon>
     </div>
 {% endblock %}

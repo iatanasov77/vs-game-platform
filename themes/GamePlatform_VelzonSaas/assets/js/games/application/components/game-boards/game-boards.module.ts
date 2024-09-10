@@ -13,6 +13,10 @@ import { CardGameBoardComponent } from './card-game-board/card-game-board.compon
 import { GameStartComponent } from './board-actions/game-start/game-start.component';
 import { CardGameAnnounceComponent } from './board-actions/card-game-announce/card-game-announce.component';
 
+import { BackgammonBoardComponent } from './backgammon-board/backgammon-board.component';
+import { DicesComponent } from './dices/dices.component';
+import { BoardMenuComponent } from './board-actions/board-menu/board-menu.component';
+
 @NgModule({
     declarations: [
         PlayerAnnounceComponent,
@@ -21,7 +25,10 @@ import { CardGameAnnounceComponent } from './board-actions/card-game-announce/ca
         GameStatisticsComponent,
         CardGameBoardComponent,
         GameStartComponent,
-        CardGameAnnounceComponent
+        CardGameAnnounceComponent,
+        BackgammonBoardComponent,
+        DicesComponent,
+        BoardMenuComponent
     ],
     imports: [
         CommonModule,
@@ -37,7 +44,10 @@ import { CardGameAnnounceComponent } from './board-actions/card-game-announce/ca
         GameStatisticsComponent,
         CardGameBoardComponent,
         GameStartComponent,
-        CardGameAnnounceComponent
+        CardGameAnnounceComponent,
+        BackgammonBoardComponent,
+        DicesComponent,
+        BoardMenuComponent
     ]
 })
 export class GameBoardsModule { }

@@ -37,7 +37,7 @@ export class GamePlayService
         
         return this.httpClient.post<IGamePlay>( 'start-game', {game_room: game.room.id}, {headers} ).pipe(
             map( ( response: any ) => this.mapGamePlay( response ) )
-        );;
+        );
     }
     
     playerAnnounce(): Observable<ICardGameAnnounce>
@@ -58,7 +58,7 @@ export class GamePlayService
         
         return this.httpClient.post<IGamePlay>( 'finish-game', {game_room: gamePlay.room.id}, {headers} ).pipe(
             map( ( response: any ) => this.mapGamePlay( response ) )
-        );;
+        );
     }
     
     private mapGamePlay( response: any )

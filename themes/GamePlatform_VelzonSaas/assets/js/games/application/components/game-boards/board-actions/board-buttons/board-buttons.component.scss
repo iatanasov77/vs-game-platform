@@ -1,0 +1,10 @@
+@import '../../../../../../backgamon_styles/styles.scss';
+
+button {
+    margin: 4px;
+    
+    @media screen and (max-height: 445px) {
+        font-size: 12px !important;
+        padding: 6px 12px 6px 12px !important;
+    }
+}

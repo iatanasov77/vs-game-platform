@@ -1,3 +1,13 @@
+declare module '_@/GamePlatform/Model/BoardGame/errorReportDto' {
+    interface ErrorReportDto
+    {
+        error: string;
+        reproduce: string;
+    }
+    
+    export = ErrorReportDto;
+}
+
 declare module '_@/GamePlatform/Model/BoardGame/toplist' {
     import ToplistResult from '_@/GamePlatform/Model/BoardGame/toplistResult';
     

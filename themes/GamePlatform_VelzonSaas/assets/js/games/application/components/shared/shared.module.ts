@@ -6,12 +6,16 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { LoaderComponent } from './loader/loader.component';
 import { MessagesComponent } from './messages/messages.component';
+import { BusyComponent } from './busy/busy.component';
+import { ErrorHandlerComponent } from './error-handler/error-handler.component';
 import { GameRequirementsDialogComponent } from './dialogs/game-requirements-dialog/game-requirements-dialog.component';
 
 @NgModule({
     declarations: [
         LoaderComponent,
         MessagesComponent,
+        BusyComponent,
+        ErrorHandlerComponent,
         GameRequirementsDialogComponent
     ],
     imports: [
@@ -23,6 +27,8 @@ import { GameRequirementsDialogComponent } from './dialogs/game-requirements-dia
     exports: [
         LoaderComponent,
         MessagesComponent,
+        BusyComponent,
+        ErrorHandlerComponent,
         GameRequirementsDialogComponent
     ]
 })

@@ -1,0 +1,15 @@
+<button (click)="sendMoves()" *ngIf="sendVisible" class="default-button">
+  Done
+</button>
+<button (click)="undoMove()" *ngIf="undoVisible" class="secondary-button">
+  Undo
+</button>
+<button *ngIf="rollButtonVisible" (click)="rollButtonClick()" class="default-button">
+  Roll
+</button>
+<button (click)="newGame()" *ngIf="newVisible" class="default-button">
+  New
+</button>
+<button (click)="exitGame()" *ngIf="exitVisible" class="secondary-button">
+  Exit
+</button>

@@ -68,7 +68,7 @@ export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppSta
         { provide: FEATURE_REDUCER_TOKEN, useFactory: getReducers },
         
         provideHttpClient( withInterceptorsFromDi() ),
-        {provide: HTTP_INTERCEPTORS, useClass: BaseUrlInterceptor, multi: true},
+        { provide: HTTP_INTERCEPTORS, useClass: BaseUrlInterceptor, multi: true },
     ]
 })
 export class BridgeBeloteModule { }

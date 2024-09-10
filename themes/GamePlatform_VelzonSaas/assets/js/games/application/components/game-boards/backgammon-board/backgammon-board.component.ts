@@ -105,7 +105,7 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
         this.requestDraw();
     }
     
-    ngOnChanges(changes: SimpleChanges): void
+    ngOnChanges( changes: SimpleChanges ): void
     {
         if ( changes['width'] || changes['height'] || changes['flipped'] ) {
             this.recalculateGeometry();

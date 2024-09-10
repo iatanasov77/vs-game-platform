@@ -1,4 +1,4 @@
-import { NgModule, InjectionToken } from '@angular/core';
+import { NgModule, InjectionToken, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { APP_BASE_HREF, Location } from '@angular/common';
@@ -23,6 +23,7 @@ import { CustomSerializer } from '../application/+store/router';
 import { GameEffects } from '../application/+store/game.effects';
 import { IAppState, getReducers } from '../application/+store/state';
 
+import { GlobalErrorService } from '../application/services/global-error-service';
 import { BackgammonComponent } from './backgammon.component';
 import { SharedModule } from '../application/components/shared/shared.module';
 import { GameBoardsModule } from '../application/components/game-boards/game-boards.module';
@@ -68,7 +69,8 @@ export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppSta
         { provide: FEATURE_REDUCER_TOKEN, useFactory: getReducers },
         
         provideHttpClient( withInterceptorsFromDi() ),
-        {provide: HTTP_INTERCEPTORS, useClass: BaseUrlInterceptor, multi: true},
+        { provide: HTTP_INTERCEPTORS, useClass: BaseUrlInterceptor, multi: true },
+        { provide: ErrorHandler, useClass: GlobalErrorService },
     ]
 })
 export class BackgammonModule { }

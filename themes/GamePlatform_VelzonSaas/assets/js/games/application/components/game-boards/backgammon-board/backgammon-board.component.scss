@@ -1,9 +1,9 @@
 .game-board {
-  display: inline-block;
-  touch-action: none;
-  transition: transform .8s ease-in-out;
+    display: inline-block;
+    touch-action: none;
+    transition: transform .8s ease-in-out;
 }
 
 .flipped {
-  transform: rotate(180deg);
+    transform: rotate(180deg);
 }

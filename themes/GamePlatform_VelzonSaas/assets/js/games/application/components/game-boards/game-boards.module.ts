@@ -13,9 +13,11 @@ import { CardGameBoardComponent } from './card-game-board/card-game-board.compon
 import { GameStartComponent } from './board-actions/game-start/game-start.component';
 import { CardGameAnnounceComponent } from './board-actions/card-game-announce/card-game-announce.component';
 
+import { BackgammonContainerComponent } from './backgammon-container/backgammon-container.component';
 import { BackgammonBoardComponent } from './backgammon-board/backgammon-board.component';
 import { DicesComponent } from './dices/dices.component';
 import { BoardMenuComponent } from './board-actions/board-menu/board-menu.component';
+import { BoardButtonsComponent } from './board-actions/board-buttons/board-buttons.component';
 
 @NgModule({
     declarations: [
@@ -26,9 +28,11 @@ import { BoardMenuComponent } from './board-actions/board-menu/board-menu.compon
         CardGameBoardComponent,
         GameStartComponent,
         CardGameAnnounceComponent,
+        BackgammonContainerComponent,
         BackgammonBoardComponent,
         DicesComponent,
-        BoardMenuComponent
+        BoardMenuComponent,
+        BoardButtonsComponent
     ],
     imports: [
         CommonModule,
@@ -45,9 +49,11 @@ import { BoardMenuComponent } from './board-actions/board-menu/board-menu.compon
         CardGameBoardComponent,
         GameStartComponent,
         CardGameAnnounceComponent,
+        BackgammonContainerComponent,
         BackgammonBoardComponent,
         DicesComponent,
-        BoardMenuComponent
+        BoardMenuComponent,
+        BoardButtonsComponent
     ]
 })
 export class GameBoardsModule { }

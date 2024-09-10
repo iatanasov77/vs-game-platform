@@ -1,0 +1,44 @@
+.game-container {
+    animation: fadein 2s;
+    position: relative;
+    max-width: 1024px;
+}
+
+@keyframes fadein {
+    from {
+        opacity: 0;
+    }
+    
+    to {
+        opacity: 1;
+    }
+}
+
+.game-board {
+    display: inline-block;
+    padding-top: 20px;
+}
+
+.messages {
+    position: absolute;
+    display: inline-block;
+}
+
+.board-buttons {
+    display: inline-block;
+    position: absolute;
+}
+
+.dices {
+    display: inline-block;
+    position: absolute;
+}
+
+.game-id {
+    font-size: 10px;
+    position: absolute;
+    bottom: 3px;
+    text-align: center;
+    width: 100%;
+    color: #777;
+}

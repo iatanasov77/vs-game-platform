@@ -6,22 +6,29 @@ app_games:
     path: /games
     controller: App\Controller\GamePlatform\GamesController::index
 
-bridge_belote:
-    path: /games/bridge-belote
-    controller: App\Controller\BridgeBelote\DefaultController::index
-    
-contract_bridge:
-    path: /games/contract-bridge
-    controller: App\Controller\ContractBridge\DefaultController::index
-
-chess:
-    path: /games/chess
-    controller: App\Controller\Chess\DefaultController::index
-   
-backgammon:
-    path: /games/backgammon
-    controller: App\Controller\Backgammon\DefaultController::index
-    
 app_ajax_create_player:
     path: /ajax/create-player-for-user/{userId}
     controller: App\Controller\GamePlatform\AjaxController::createPlayerForUser
+
+###################################################################################
+# Games
+###################################################################################
+svara:
+    path: /games/svara
+    controller: App\Controller\Games\SvaraController::index
+
+bridge_belote:
+    path: /games/bridge-belote
+    controller: App\Controller\Games\BridgeBeloteController::index
+    
+contract_bridge:
+    path: /games/contract-bridge
+    controller: App\Controller\Games\ContractBridgeController::index
+
+chess:
+    path: /games/chess
+    controller: App\Controller\Games\ChessController::index
+   
+backgammon:
+    path: /games/backgammon
+    controller: App\Controller\Games\BackgammonController::index

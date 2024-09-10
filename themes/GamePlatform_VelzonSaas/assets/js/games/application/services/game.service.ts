@@ -1,17 +1,13 @@
 import { Injectable, Inject } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { BehaviorSubject, Observable, tap, map, of } from 'rxjs';
-import { Restangular } from 'ngx-restangular';
 import { AuthService } from './auth.service';
+import { AppConstants } from "../constants";
 
 import IGame from '_@/GamePlatform/Model/GameInterface';
 import IPlayer from '_@/GamePlatform/Model/PlayerInterface';
 import IGameRoom from '_@/GamePlatform/Model/GameRoomInterface';
 
-import { AppConstants } from "../constants";
-
-/**
- * Restangular Manual: https://github.com/2muchcoffeecom/ngx-restangular
- */
 @Injectable({
     providedIn: 'root'
 })
@@ -20,7 +16,7 @@ export class GameService
     hasPlayer$: BehaviorSubject<boolean>;
     
     constructor(
-        @Inject( Restangular ) private restangular: Restangular,
+        @Inject( HttpClient ) private httpClient: HttpClient,
         @Inject( AuthService ) private authService: AuthService
     ) {
         this.hasPlayer$ = new BehaviorSubject<boolean>( false );
@@ -33,37 +29,33 @@ export class GameService
     
     loadGame( id: number ): Observable<IGame>
     {
-        return this.restangular.one( 'games/' + id ).get();
+        return this.httpClient.get<IGame>( 'games/' + id );
     }
     
     loadGameBySlug( slug: string ): Observable<IGame>
     {
-        return this.restangular.one( 'games-ext/' + slug ).customGET( 
-            undefined,
-            undefined,
-            { "Authorization": 'Bearer ' + this.authService.getApiToken() }
-        ).pipe(
+        const headers = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
+        
+        return this.httpClient.get<IGame>( 'games-ext/' + slug, {headers} ).pipe(
             map( ( response: any ) => this.mapGame( response ) )
         );
     }
     
     loadGameRooms(): Observable<IGameRoom[]>
     {
-        return this.restangular.all( 'rooms' ).customGET( '' );
+        return this.httpClient.get<IGameRoom[]>( 'rooms' );
     }
     
     loadPlayers(): Observable<IPlayer[]>
     {
-        return this.restangular.all( 'players' ).customGET( '' );
+        return this.httpClient.get<IPlayer[]>( 'players' );
     }
     
     loadPlayerByUser( userId: number ): Observable<IPlayer>
     {
-        return this.restangular.one( 'players-ext/' + userId ).customGET(
-            undefined,
-            undefined,
-            { "Authorization": 'Bearer ' + this.authService.getApiToken() }
-        ).pipe(
+        const headers = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
+        
+        return this.httpClient.get<IPlayer | string>( 'players-ext/' + userId, {headers} ).pipe(
             map( ( response: any ) => {
                 //console.log( response );
                 if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
@@ -83,13 +75,13 @@ export class GameService
                     localStorage.removeItem( 'player' );
                     this.hasPlayer$.next( false );
                     
-                    return new Observable;
+                    return response.message;
                 }
             })
         );
     }
     
-    private mapGame( response: any ): IGame | string
+    private mapGame( response: any )
     {
         if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
             let game: IGame = {

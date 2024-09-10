@@ -12,7 +12,7 @@ import {
     playerAnnounceSuccess
 } from "./game.actions";
 
-import IGamePlay from '_@/GamePlatform/Model/GamePlayModel';
+import IGamePlay from '_@/GamePlatform/Model/GamePlayInterface';
 import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
 
 import IGame from '_@/GamePlatform/Model/GameInterface';

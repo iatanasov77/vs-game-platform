@@ -1,0 +1,12 @@
+<div class="dices">
+    <div
+        *ngFor="let dice of dices"
+        [ngClass]="{
+            diceUsed: dice.used,
+            black: color === PlayerColor.black,
+            white: color === PlayerColor.white
+        }"
+    >
+        <i [ngClass]="faClass[dice.value - 1]"></i>
+    </div>
+</div>

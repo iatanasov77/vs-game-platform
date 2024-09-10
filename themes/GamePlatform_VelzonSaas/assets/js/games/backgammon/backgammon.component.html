@@ -1,0 +1,11 @@
+<!--
+<router-outlet></router-outlet>
+-->
+<app-busy [busy]="busy$ | async"></app-busy>
+<app-error-handler [errors]="errors$ | async" (save)="saveErrorReport($event)"></app-error-handler>
+
+<app-backgammon-container
+    [isLoggedIn]="isLoggedIn"
+    [hasPlayer]="hasPlayer"
+    [developementClass]="developementClass"
+></app-backgammon-container>

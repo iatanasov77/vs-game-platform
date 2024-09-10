@@ -693,7 +693,7 @@ vs_application:
                 name: vs_application.menu.game_platform_settings
                 uri: "javascript:;"
                 attributes:
-                    iconClass: ri-cloud-line
+                    iconClass: ri-settings-5-line
                     breadcrumb_route: vsapp_game_platform_settings_index
                 childs:
                     list_applications:
@@ -726,7 +726,7 @@ vs_application:
                 name: vs_application.menu.list_games
                 uri: "javascript:;"
                 attributes:
-                    iconClass: icon_genius
+                    iconClass: ri-game-line
                     breadcrumb_route: vsapp_games_index
                 childs:
                     list:
@@ -761,7 +761,7 @@ vs_application:
                 name: vs_application.menu.list_game_rooms
                 uri: "javascript:;"
                 attributes:
-                    iconClass: icon_genius
+                    iconClass: ri-account-circle-line
                     breadcrumb_route: vsapp_game_rooms_index
                 childs:
                     list_rooms:

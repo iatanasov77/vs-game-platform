@@ -5,11 +5,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
-import { HttpClient } from '@angular/common/http';
 import { CustomTranslateLoader } from '../application/providers/i18n-provider';
 
-import { RestangularModule } from 'ngx-restangular';
-import { RestangularConfigFactory } from '../application/restangular.config';
+import { HttpClient, HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { BaseUrlInterceptor } from '../application/services/base-url-interceptor';
 
 import { StoreModule, provideStore, ActionReducerMap } from '@ngrx/store';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
@@ -27,6 +26,7 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { BridgeBeloteComponent } from './bridge-belote.component';
 import { SharedModule } from '../application/components/shared/shared.module';
+import { GameBoardsModule } from '../application/components/game-boards/game-boards.module';
 
 export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppState>>( 'Game Reducers' );
 
@@ -47,10 +47,7 @@ export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppSta
             }
         }),
         SharedModule,
-        
-        //AppRoutingModule,
-        //StoreRouterConnectingModule.forRoot( { serializer: CustomSerializer } ),
-        RestangularModule.forRoot( RestangularConfigFactory ),
+        GameBoardsModule,
         
         StoreModule.forRoot([
             loginReducer,
@@ -69,6 +66,9 @@ export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppSta
         //{ provide: Window, useValue: window },
         { provide: APP_BASE_HREF, useValue: window.location.pathname },
         { provide: FEATURE_REDUCER_TOKEN, useFactory: getReducers },
+        
+        provideHttpClient( withInterceptorsFromDi() ),
+        { provide: HTTP_INTERCEPTORS, useClass: BaseUrlInterceptor, multi: true },
     ]
 })
 export class BridgeBeloteModule { }

@@ -3,9 +3,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { APP_BASE_HREF, Location } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { RestangularModule } from 'ngx-restangular';
-import { RestangularConfigFactory } from '../application/restangular.config';
-
 import { StoreModule } from '@ngrx/store';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { EffectsModule } from '@ngrx/effects';
@@ -28,7 +25,7 @@ import { ContractBridgeComponent } from './contract-bridge.component';
         MatTooltipModule,
         
         AppRoutingModule,
-        RestangularModule.forRoot( RestangularConfigFactory ),
+        //RestangularModule.forRoot( RestangularConfigFactory ),
         //StoreModule.forRoot( gameReducers ),
         //EffectsModule.forRoot( [Effects] ),
         //StoreRouterConnectingModule.forRoot( { serializer: CustomSerializer } ),

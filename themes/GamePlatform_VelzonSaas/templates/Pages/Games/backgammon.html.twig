@@ -1,0 +1,30 @@
+{% extends "base.html.twig" %}
+
+{% block title %}{{ parent() }} :: {{ 'game_platform.template.games.backgammon' | trans( {},'GamePlatform' ) }}{% endblock %}
+{% block pageTitle %}{{ 'game_platform.template.games.backgammon' | trans( {},'GamePlatform' ) }}{% endblock %}
+
+{% block content %}
+    <div class="container text-center" id="GameContainer"
+        data-locale="{{ app.request.locale }}"
+        data-mercureEventSource="{{ mercure( '/game-play' ) | escape( 'html_attr' ) }}"
+    >
+        <app-backgammon></app-backgammon>
+    </div>
+{% endblock %}
+
+{% block head_styles %}
+    {{ parent() }}
+
+    {{ encore_entry_link_tags( 'js/backgammon', null, 'GameplatformVelzonsaasTheme' ) }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    
+    <script type="text/javascript">
+        const gamePlatformSettings  = {{ ( gameSettings | json_encode | raw ) }};
+        window.gamePlatformSettings = gamePlatformSettings;
+    </script>
+    
+    {{ encore_entry_script_tags( 'js/backgammon', null, 'GameplatformVelzonsaasTheme' ) }}
+{% endblock %}

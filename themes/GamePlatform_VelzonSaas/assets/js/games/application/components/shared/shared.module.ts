@@ -5,34 +5,18 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { LoaderComponent } from './loader/loader.component';
-
-// Dialogs
+import { MessagesComponent } from './messages/messages.component';
+import { BusyComponent } from './busy/busy.component';
+import { ErrorHandlerComponent } from './error-handler/error-handler.component';
 import { GameRequirementsDialogComponent } from './dialogs/game-requirements-dialog/game-requirements-dialog.component';
-
-// Game Boards
-import { PlayerAnnounceComponent } from './game-boards/player-announce/player-announce.component';
-import { GameRoomsComponent } from './game-boards/game-rooms/game-rooms.component';
-import { GamePlayersComponent } from './game-boards/game-players/game-players.component';
-import { GameStatisticsComponent } from './game-boards/game-statistics/game-statistics.component';
-import { CardGameBoardComponent } from './game-boards/card-game-board/card-game-board.component';
-import { GameStartComponent } from './game-boards/board-actions/game-start/game-start.component';
-import { CardGameAnnounceComponent } from './game-boards/board-actions/card-game-announce/card-game-announce.component';
 
 @NgModule({
     declarations: [
         LoaderComponent,
-        
-        // Dialogs
-        GameRequirementsDialogComponent,
-        
-        // Game Boards
-        PlayerAnnounceComponent,
-        GameRoomsComponent,
-        GamePlayersComponent,
-        GameStatisticsComponent,
-        CardGameBoardComponent,
-        GameStartComponent,
-        CardGameAnnounceComponent
+        MessagesComponent,
+        BusyComponent,
+        ErrorHandlerComponent,
+        GameRequirementsDialogComponent
     ],
     imports: [
         CommonModule,
@@ -42,18 +26,10 @@ import { CardGameAnnounceComponent } from './game-boards/board-actions/card-game
     ],
     exports: [
         LoaderComponent,
-        
-        // Dialogs
-        GameRequirementsDialogComponent,
-        
-        // Game Boards
-        PlayerAnnounceComponent,
-        GameRoomsComponent,
-        GamePlayersComponent,
-        GameStatisticsComponent,
-        CardGameBoardComponent,
-        GameStartComponent,
-        CardGameAnnounceComponent
+        MessagesComponent,
+        BusyComponent,
+        ErrorHandlerComponent,
+        GameRequirementsDialogComponent
     ]
 })
 export class SharedModule { }

@@ -1,6 +1,5 @@
 import { Component, Inject, Input, Output, EventEmitter } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from '../../../../services/auth.service'
 
 import templateString from './game-requirements-dialog.component.html'
@@ -20,9 +19,7 @@ export class GameRequirementsDialogComponent
     
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,
-        @Inject( NgbModal ) private ngbModal: NgbModal,
-        @Inject( AuthService ) private authService: AuthService,
-        public activeModal: NgbActiveModal
+        @Inject( AuthService ) private authService: AuthService
     ) { }
     
     dismissModal(): void

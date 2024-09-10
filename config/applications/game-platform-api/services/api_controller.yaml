@@ -70,3 +70,10 @@ services:
             - '@doctrine'
             - '@vsapp.repository.game_sessions'
             - '@mercure.hub.default'
+    
+    App\Controller\Api\MercureController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@doctrine'
+            - '@mercure.hub.default'

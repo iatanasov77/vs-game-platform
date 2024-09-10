@@ -1,6 +1,5 @@
 import { Injectable, Inject, NgZone } from '@angular/core';
 import { Observable, Subscriber } from 'rxjs';
-import { Restangular } from 'ngx-restangular';
 
 const EventSource: any = window["EventSource"];
 import { EventSourcePolyfill } from "event-source-polyfill";
@@ -12,6 +11,11 @@ import { EventSourcePolyfill } from "event-source-polyfill";
  *============================
  * https://medium.com/@andrewkoliaka/implementing-server-sent-events-in-angular-a5e40617cb78
  * https://web.dev/articles/eventsource-basics
+ *
+ *
+ * There is Angular SSE Client
+ *=============================
+ * ngx-sse-client: https://www.npmjs.com/package/ngx-sse-client
  */
 @Injectable({
     providedIn: 'root'
@@ -28,8 +32,7 @@ export class EventSourceService
      * and we need to notify Angular about changes related to SSE events
      */
     constructor(
-        @Inject( NgZone ) private zone: NgZone,
-        @Inject( Restangular ) private restangular: Restangular
+        @Inject( NgZone ) private zone: NgZone
     ) {
         this.eventSource    = null;
     }

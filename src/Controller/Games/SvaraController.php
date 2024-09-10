@@ -19,7 +19,7 @@ class SvaraController extends GameController
         ];
         
         return new Response(
-            $this->templatingEngine->render( $this->getTemplate( $gameSlug , 'Pages/Svara/index.html.twig' ), [
+            $this->templatingEngine->render( $this->getTemplate( $gameSlug , 'Pages/Games/svara.html.twig' ), [
                 'game'          => $game,
                 'gameSettings'  => $gameSettings,
             ])

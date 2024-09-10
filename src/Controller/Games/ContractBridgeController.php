@@ -19,7 +19,7 @@ class ContractBridgeController extends GameController
         ];
         
         return new Response(
-            $this->templatingEngine->render( $this->getTemplate( $gameSlug , 'Pages/ContractBridge/index.html.twig' ), [
+            $this->templatingEngine->render( $this->getTemplate( $gameSlug , 'Pages/Games/contract-bridge.html.twig' ), [
                 'game'          => $game,
                 'gameSettings'  => $gameSettings,
             ])

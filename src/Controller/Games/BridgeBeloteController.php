@@ -19,7 +19,7 @@ class BridgeBeloteController extends GameController
         ];
         
         return new Response(
-            $this->templatingEngine->render( $this->getTemplate( $gameSlug , 'Pages/BridgeBelote/index.html.twig' ), [
+            $this->templatingEngine->render( $this->getTemplate( $gameSlug , 'Pages/Games/bridge-belote.html.twig' ), [
                 'game'          => $game,
                 'gameSettings'  => $gameSettings,
             ])

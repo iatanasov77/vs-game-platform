@@ -19,7 +19,7 @@ class ChessController extends GameController
         ];
         
         return new Response(
-            $this->templatingEngine->render( $this->getTemplate( $gameSlug , 'Pages/Chess/index.html.twig' ), [
+            $this->templatingEngine->render( $this->getTemplate( $gameSlug , 'Pages/Games/chess.html.twig' ), [
                 'game'          => $game,
                 'gameSettings'  => $gameSettings,
             ])

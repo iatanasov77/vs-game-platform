@@ -19,7 +19,7 @@ class BackgammonController extends GameController
         ];
         
         return new Response(
-            $this->templatingEngine->render( $this->getTemplate( $gameSlug , 'Pages/Backgammon/index.html.twig' ), [
+            $this->templatingEngine->render( $this->getTemplate( $gameSlug , 'Pages/Games/backgammon.html.twig' ), [
                 'game'          => $game,
                 'gameSettings'  => $gameSettings,
             ])

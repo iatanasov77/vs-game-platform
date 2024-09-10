@@ -1,3 +1,21 @@
+0.9.5	|	Release date: **10.09.2024**
+============================================
+* New Features and Improvements:
+  - Separate GameBoards Components in Another Module.
+  - Create a Base Angular Component to Extend from All Games.
+  - Refactoring of Games Controllers.
+  - Upgrade to Angular 17.
+  - Replace Restangular with Http Client.
+  - Create a Chess Board for Chess Game.
+  - Fix GamePlay Mapping on StartGame Angular Service.
+  - Update Frontent Packages.
+  - Set AdminPanel Menu Icons on Custom Resources.
+  - Create Game 'Svara'.
+  - Create a Backgammon Board.
+  - Refactoring All Games Templates.
+  - Create a Container Component for Backgammon Game.
+
+
 0.9.4	|	Release date: **05.09.2024**
 ============================================
 * New Features and Improvements:

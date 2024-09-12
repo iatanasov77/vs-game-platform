@@ -96,9 +96,8 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             this.authService.repair();
         }
         
-//         const gameId = this.router.parseUrl( this.router.url ).queryParams['gameId'];
-//         const gameId = 'backgammon';
-//         this.socketsService.connect( gameId );
+        const gameId = 'backgammon';
+        this.socketsService.connect( gameId );
     }
     
     ngOnInit(): void
@@ -294,7 +293,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     newGame(): void
     {
         this.newVisible = false;
-//         this.socketsService.connect( '' );
+        this.socketsService.connect( '' );
     }
     
     exitGame(): void

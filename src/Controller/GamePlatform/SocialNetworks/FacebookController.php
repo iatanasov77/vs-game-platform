@@ -1,4 +1,4 @@
-<?php namespace App\Controller\GamePlatform;
+<?php namespace App\Controller\GamePlatform\SocialNetworks;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

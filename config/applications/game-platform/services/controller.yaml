@@ -190,3 +190,14 @@ services:
             - '@doctrine'
             - '@vs_users.repository.users'
             - '@vsapp.factory.game_players'
+    
+    App\Controller\GamePlatform\FacebookController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@doctrine'
+            - '@vs_users.repository.users'
+            - '@vs_users.manager.user'
+            - '@vs_users.security.login_form_authenticator'
+            - '@security.user_authenticator'
+            - '@knpu.oauth2.registry'

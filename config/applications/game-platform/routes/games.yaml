@@ -11,6 +11,17 @@ app_ajax_create_player:
     controller: App\Controller\GamePlatform\AjaxController::createPlayerForUser
 
 ###################################################################################
+# Social Media Login
+###################################################################################
+connect_facebook_start:
+    path: /connect/facebook
+    controller: App\Controller\GamePlatform\FacebookController::connectAction
+
+connect_facebook_check:
+    path: /connect/facebook/check
+    controller: App\Controller\GamePlatform\FacebookController::connectCheckAction
+
+###################################################################################
 # Games
 ###################################################################################
 svara:

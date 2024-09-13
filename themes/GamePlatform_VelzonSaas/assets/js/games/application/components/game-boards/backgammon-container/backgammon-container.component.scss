@@ -1,8 +1,10 @@
+/*
 .game-container {
     animation: fadein 2s;
     position: relative;
     max-width: 1024px;
 }
+*/
 
 @keyframes fadein {
     from {
@@ -17,16 +19,6 @@
 .game-board {
     display: inline-block;
     padding-top: 20px;
-}
-
-.messages {
-    position: absolute;
-    display: inline-block;
-}
-
-.board-buttons {
-    display: inline-block;
-    position: absolute;
 }
 
 .dices {

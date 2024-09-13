@@ -1,13 +1,23 @@
 import {
+    Component,
+    Inject,
     EventEmitter,
     HostListener,
+    OnInit,
+    AfterViewInit,
     OnChanges,
-    Output,
     SimpleChanges,
-    ViewChild
+    Input,
+    Output,
+    ViewChild,
+    ElementRef
 } from '@angular/core';
-import { AfterViewInit, Component, ElementRef, Input } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { Actions, ofType } from '@ngrx/effects';
+import { Subscription, of } from 'rxjs';
+
+import { selectGameRoomSuccess } from '../../../+store/game.actions';
+//import { GameState } from '../../../+store/game.reducers';
 
 // App State
 import { AppState } from '../../../state/app-state';
@@ -33,16 +43,31 @@ import templateString from './backgammon-board.component.html';
         cssGameString || 'Game CSS Not Loaded !!!',
     ]
 })
-export class BackgammonBoardComponent implements AfterViewInit, OnChanges
+export class BackgammonBoardComponent implements OnInit, AfterViewInit, OnChanges
 {
     @ViewChild( 'canvas' ) public canvas: ElementRef | undefined;
+    @ViewChild( 'boardButtons' ) boardButtons: ElementRef | undefined;
+    
+    @Input() isLoggedIn: boolean        = false;
+    @Input() hasPlayer: boolean         = false;
+    //@Input() game?: any;
+    isRoomSelected: boolean             = false;
+    gamePlayers: any;
+    appState?: GameState;
+    gameStarted: boolean                = false;
     
     @Input() public width = 600;
     @Input() public height = 400;
     @Input() game: GameDto | null = null;
     @Input() myColor: PlayerColor | null = PlayerColor.black;
-    @Input() dicesVisible: boolean | null = false;
     @Input() flipped = false;
+    
+    @Input() dicesVisible: boolean | null = false;
+    @Input() rollButtonVisible = false;
+    @Input() sendVisible = false;
+    @Input() undoVisible = false;
+    @Input() newVisible = false;
+    @Input() exitVisible = true;
     
     @Output() addMove = new EventEmitter<MoveDto>();
     @Output() moveAnimFinished = new EventEmitter<void>();
@@ -67,7 +92,10 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
     blacksName = '';
     theme: IThemes = new DarkTheme();
     
-    constructor() {
+    constructor(
+        @Inject( Store ) private store: Store,
+        @Inject( Actions ) private actions$: Actions
+    ) {
         for ( let r = 0; r < 26; r++ ) {
             this.checkerAreas.push( new CheckerArea( 0, 0, 0, 0, 0 ) );
         }
@@ -91,6 +119,24 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
                     }
                 );
             }
+        });
+    }
+    
+    ngOnInit(): void
+    {
+        this.store.subscribe( ( state: any ) => {
+            this.appState   = state.app.main;
+            
+            if ( state.app.main.gamePlay ) {
+                this.gameStarted    = true;
+            }
+        });
+        
+        this.actions$.pipe( ofType( selectGameRoomSuccess ) ).subscribe( () => {
+            //this.game.setRoom( this?.appState?.game?.room );
+            
+            //this.gamePlayers    = of( this.game.getPlayers() );
+            this.isRoomSelected = true;
         });
     }
     

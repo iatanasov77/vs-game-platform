@@ -1,11 +1,11 @@
-<div class="game-container">
+<div class="game-container-inner">
     <div class="row">
-        <div class="col-1">
+        <div class="col-2">
             <game-statistics></game-statistics>
         </div>
         
-        <div class="col-8">
-            <div class="messages" #messages>
+        <div class="col-8" id="GameBoardContainer">
+            <div class="messages mb-1" #messages>
                 <app-messages
                     [initial]="width"
                     [shown]="messageCenter"
@@ -24,12 +24,21 @@
             
             <app-backgammon-board
                 class="game-board"
+                
+                [isLoggedIn]="isLoggedIn"
+                [hasPlayer]="hasPlayer"
+                
                 [width]="width"
                 [height]="height"
                 [game]="gameDto$ | async"
                 [myColor]="playerColor$ | async"
-                [dicesVisible]="dicesVisible"
                 [flipped]="flipped"
+                [dicesVisible]="dicesVisible"
+                [rollButtonVisible]="rollButtonVisible"
+                [sendVisible]="dicesVisible"
+                [undoVisible]="undoVisible"
+                [newVisible]="newVisible"
+                [exitVisible]="exitVisible"
                 (addMove)="doMove($event)"
                 (moveAnimFinished)="moveAnimFinished()"
             ></app-backgammon-board>
@@ -40,24 +49,9 @@
                     [color]="diceColor"
                 ></app-dices>
             </div>
-            
-            <div class="board-buttons" #boardButtons>
-              <app-board-buttons
-                [undoVisible]="undoVisible"
-                [sendVisible]="sendVisible"
-                [rollButtonVisible]="rollButtonVisible"
-                [newVisible]="newVisible"
-                [exitVisible]="exitVisible"
-                (onUndoMove)="undoMove()"
-                (onSendMoves)="sendMoves()"
-                (onRoll)="rollButtonClick()"
-                (onNew)="newGame()"
-                (onExit)="exitGame()"
-              ></app-board-buttons>
-            </div>
         </div>
         
-        <div class="col-3">
+        <div class="col-2">
             <game-players></game-players>
             <div class="mt-4">
                 <game-rooms></game-rooms>

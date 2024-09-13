@@ -41,9 +41,7 @@ export class GameStartComponent implements OnInit, OnChanges
         
         @Inject( Store ) private store: Store,
         @Inject( Actions ) private actions$: Actions
-    ) {
-        
-    }
+    ) { }
     
     ngOnInit(): void
     {

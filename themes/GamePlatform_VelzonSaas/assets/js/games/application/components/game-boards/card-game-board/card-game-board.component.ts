@@ -30,7 +30,6 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
     @Input() gameProvider?: any;
     @Input() game?: any;
     
-
     appState?: GameState;
     gameStarted: boolean                = false;
     gameAnnounceIcon: any;

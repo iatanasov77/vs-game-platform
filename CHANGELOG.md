@@ -1,3 +1,15 @@
+0.9.6	|	Release date: **14.09.2024**
+============================================
+* New Features:
+  - Connect Angular socket service to WebSocket Server.
+  - Add a WebSocket Backend Client.
+  - Add Facebook Login.
+  - Add Google Login.
+  - Styling Game Boards and Backgammon Board Buttons.
+  - Create a Select Game Room Dialog.
+  - Refactoring of Backgammon Game Container.
+
+
 0.9.5	|	Release date: **10.09.2024**
 ============================================
 * New Features and Improvements:

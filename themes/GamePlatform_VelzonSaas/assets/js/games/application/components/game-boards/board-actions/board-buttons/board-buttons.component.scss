@@ -1,5 +1,16 @@
 @import '../../../../../../backgamon_styles/styles.scss';
 
+.show {
+    width: 100% !important;
+    animation: pull-down;
+    animation-duration: 0.5s;
+}
+/*
+.modal-backdrop.show {
+    opacity: 0 !important;
+}
+*/
+
 button {
     margin: 4px;
     

@@ -8,7 +8,7 @@ import { LoaderComponent } from './loader/loader.component';
 import { MessagesComponent } from './messages/messages.component';
 import { BusyComponent } from './busy/busy.component';
 import { ErrorHandlerComponent } from './error-handler/error-handler.component';
-import { GameRequirementsDialogComponent } from './dialogs/game-requirements-dialog/game-requirements-dialog.component';
+import { RequirementsDialogComponent } from './requirements-dialog/requirements-dialog.component';
 
 @NgModule({
     declarations: [
@@ -16,7 +16,7 @@ import { GameRequirementsDialogComponent } from './dialogs/game-requirements-dia
         MessagesComponent,
         BusyComponent,
         ErrorHandlerComponent,
-        GameRequirementsDialogComponent
+        RequirementsDialogComponent
     ],
     imports: [
         CommonModule,
@@ -29,7 +29,7 @@ import { GameRequirementsDialogComponent } from './dialogs/game-requirements-dia
         MessagesComponent,
         BusyComponent,
         ErrorHandlerComponent,
-        GameRequirementsDialogComponent
+        RequirementsDialogComponent
     ]
 })
 export class SharedModule { }

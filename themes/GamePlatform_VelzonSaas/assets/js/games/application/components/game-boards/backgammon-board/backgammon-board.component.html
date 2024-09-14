@@ -12,24 +12,4 @@
             (touchmove)="onTouchMove($event)"
         ></canvas>
     </div>
-    
-    <div class="board-buttons" #boardButtons>
-      <app-board-buttons
-        [isLoggedIn]="isLoggedIn"
-        [hasPlayer]="hasPlayer"
-        [isRoomSelected]="isRoomSelected"
-        [game]="game"
-      
-        [undoVisible]="undoVisible"
-        [sendVisible]="sendVisible"
-        [rollButtonVisible]="rollButtonVisible"
-        [newVisible]="newVisible"
-        [exitVisible]="exitVisible"
-        (onUndoMove)="undoMove()"
-        (onSendMoves)="sendMoves()"
-        (onRoll)="rollButtonClick()"
-        (onNew)="newGame()"
-        (onExit)="exitGame()"
-      ></app-board-buttons>
-    </div>
 </div>

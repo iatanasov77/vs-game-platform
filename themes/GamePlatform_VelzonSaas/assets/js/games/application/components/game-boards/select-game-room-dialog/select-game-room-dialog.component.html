@@ -1,0 +1,36 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{ 'dialogs.select_game_room' | translate }}</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="dismissModal()"></button>
+</div>
+
+<div class="modal-body">
+    <form #selectGameRoomForm="ngForm" (ngSubmit)="handleSubmit(selectGameRoomForm)">
+        <div class="form-group">
+            <label  class="form-label">{{ 'forms.select_game_room.room_label' | translate }}</label>
+            <select class="form-select" name="selectedRoom"
+                ngModel required
+            >
+                <option [ngValue]="null" [disabled]="true" >{{ 'forms.select_game_room.room_placeholder' | translate }}</option>
+                <option *ngFor="let room of rooms" [ngValue]="room.id">
+                    {{ room.name }}
+                </option>
+            </select>
+        </div>
+        <div class="row">&nbsp;</div>
+        
+        <button type="submit" class="btn btn-primary">
+            {{ 'forms.select_game_room.submit' | translate }}
+        </button>
+    </form>
+</div>
+
+<div class="modal-footer">
+    <div class="row">
+        <div class="col-10">&nbsp;</div>
+        <div class="col-2">
+            <button type="button" class="btn btn-outline-dark float-end" (click)="dismissModal()">
+                {{ 'dialogs.close' | translate }}
+            </button>
+        </div>
+    </div>
+</div>

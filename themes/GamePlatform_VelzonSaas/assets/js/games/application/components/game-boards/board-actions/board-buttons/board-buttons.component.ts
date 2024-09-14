@@ -15,8 +15,8 @@ import {
 } from '../../../../+store/game.actions';
 import { GameState } from '../../../../+store/game.reducers';
 
-import { GameRequirementsDialogComponent } from '../../../shared/dialogs/game-requirements-dialog/game-requirements-dialog.component';
-
+import { RequirementsDialogComponent } from '../../../shared/requirements-dialog/requirements-dialog.component';
+import { SelectGameRoomDialogComponent } from '../../select-game-room-dialog/select-game-room-dialog.component';
 
 import cssString from './board-buttons.component.scss';
 import templateString from './board-buttons.component.html';
@@ -102,20 +102,14 @@ export class BoardButtonsComponent implements OnInit, OnChanges
         
         if ( this.appState && this.appState.game ) {
             if ( ! this.appState.game.room ) {
-                // Try With This Room Only For Now
-                let gameRoom    = this?.appState?.rooms?.find( ( item: any ) => item?.slug === 'test-bridge-belote-room' );
-                //console.log( gameRoom );
-                
-                if ( gameRoom ) {
-                    this.store.dispatch( selectGameRoom( { game: this.appState.game, room:  gameRoom } ) );
-                }
+                this.openSelectGameRoomDialog();
             }
         }
     }
     
     openRequirementsDialog(): void
     {
-        const modalRef = this.ngbModal.open( GameRequirementsDialogComponent );
+        const modalRef = this.ngbModal.open( RequirementsDialogComponent );
         
         modalRef.componentInstance.isLoggedIn   = this.isLoggedIn;
         modalRef.componentInstance.hasPlayer    = this.hasPlayer;
@@ -124,6 +118,19 @@ export class BoardButtonsComponent implements OnInit, OnChanges
             // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
             modalRef.dismiss();
         });
+    }
+    
+    openSelectGameRoomDialog(): void
+    {
+        if ( this.appState && this.appState.game && this.appState.rooms ) {
+            const modalRef = this.ngbModal.open( SelectGameRoomDialogComponent );
+            
+            modalRef.componentInstance.game     = this.appState.game;
+            modalRef.componentInstance.rooms    = this.appState.rooms;
+            modalRef.componentInstance.closeModal.subscribe( () => {
+                modalRef.dismiss();
+            });
+        }
     }
     
     undoMove(): void

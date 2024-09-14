@@ -1,8 +1,8 @@
 import { Component, Inject, Input, Output, EventEmitter } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { AuthService } from '../../../../services/auth.service'
+import { AuthService } from '../../../services/auth.service'
 
-import templateString from './game-requirements-dialog.component.html'
+import templateString from './requirements-dialog.component.html'
 
 declare var $: any;
 
@@ -11,7 +11,7 @@ declare var $: any;
     template:  templateString || 'Template Not Loaded !!!',
     styleUrls: []
 })
-export class GameRequirementsDialogComponent
+export class RequirementsDialogComponent
 {
     @Input() isLoggedIn: boolean    = false;
     @Input() hasPlayer: boolean     = false;

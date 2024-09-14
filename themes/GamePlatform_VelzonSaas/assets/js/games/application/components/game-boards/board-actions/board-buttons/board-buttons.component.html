@@ -6,20 +6,24 @@
     </ng-container>
     
     <ng-container *ngIf="isRoomSelected">
+    
         <button (click)="sendMoves()" *ngIf="sendVisible" class="default-button">
-            Done
+            {{ 'game_board.done' | translate }}
         </button>
         <button (click)="undoMove()" *ngIf="undoVisible" class="secondary-button">
-            Undo
+            {{ 'game_board.undo' | translate }}
         </button>
         <button *ngIf="rollButtonVisible" (click)="rollButtonClick()" class="default-button">
-            Roll
+            {{ 'game_board.roll' | translate }}
         </button>
+        
+        <!-- MAY BE ONLY New Game and Exit Game Buttons Must to be Here -->
         <button (click)="newGame()" *ngIf="newVisible" class="default-button">
-            New
+            {{ 'game_board.new_game' | translate }}
         </button>
         <button (click)="exitGame()" *ngIf="exitVisible" class="secondary-button">
-            Exit
+            {{ 'game_board.exit_game' | translate }}
         </button>
+        
     </ng-container>
 </div>

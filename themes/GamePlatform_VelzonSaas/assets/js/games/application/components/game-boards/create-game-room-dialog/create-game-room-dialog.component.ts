@@ -4,18 +4,19 @@ import { TranslateService } from '@ngx-translate/core';
 import { Store } from '@ngrx/store';
 import { selectGameRoom } from '../../../+store/game.actions';
 import IGameRoom from '_@/GamePlatform/Model/GameRoomInterface';
+import IPlayer from '_@/GamePlatform/Model/PlayerInterface';
 
-import templateString from './select-game-room-dialog.component.html';
+import templateString from './create-game-room-dialog.component.html';
 
 @Component({
-    selector: 'select-game-room-dialog',
+    selector: 'create-game-room-dialog',
     template:  templateString || 'Template Not Loaded !!!',
     styleUrls: []
 })
-export class SelectGameRoomDialogComponent
+export class CreateGameRoomDialogComponent
 {
     @Input() game: any;
-    @Input() rooms: null | IGameRoom[]  = null;
+    @Input() players: null | IPlayer[]  = null;
     @Output() closeModal: EventEmitter<any> = new EventEmitter();
     
     constructor(
@@ -31,11 +32,11 @@ export class SelectGameRoomDialogComponent
     handleSubmit( form: NgForm ): void
     {
         let postData    = form.value;
-        let gameRoom    = this?.rooms?.find( ( item: any ) => item?.id === postData.selectedRoom );
+        let player      = this?.players?.find( ( item: any ) => item?.id === postData.selectedRoom );
         
-        if ( this.game && gameRoom ) {
-            this.store.dispatch( selectGameRoom( { game: this.game, room:  gameRoom } ) );
-        }
+//         if ( this.game && gameRoom ) {
+//             this.store.dispatch( selectGameRoom( { game: this.game, room:  gameRoom } ) );
+//         }
         
         this.closeModal.emit();
     }

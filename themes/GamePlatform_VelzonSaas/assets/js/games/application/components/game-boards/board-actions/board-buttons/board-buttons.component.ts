@@ -22,6 +22,7 @@ export class BoardButtonsComponent implements OnChanges
     @Input() exitVisible = true;
     
     @Output() onSelectGameRoom = new EventEmitter<void>();
+    @Output() onCreateGameRoom = new EventEmitter<void>();
     @Output() onUndoMove = new EventEmitter<void>();
     @Output() onSendMoves = new EventEmitter<void>();
     @Output() onRoll = new EventEmitter<void>();
@@ -73,5 +74,10 @@ export class BoardButtonsComponent implements OnChanges
     selectGameRoom(): void
     {
         this.onSelectGameRoom.emit();
+    }
+    
+    createGameRoom(): void
+    {
+        this.onCreateGameRoom.emit();
     }
 }

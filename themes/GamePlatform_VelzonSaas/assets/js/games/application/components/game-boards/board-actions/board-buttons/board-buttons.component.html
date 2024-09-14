@@ -3,10 +3,12 @@
         <button (click)="selectGameRoom()" class="default-button">
             {{ 'game_board.select_room' | translate }}
         </button>
+        <button (click)="createGameRoom()" class="default-button">
+            {{ 'game_board.create_room' | translate }}
+        </button>
     </ng-container>
     
     <ng-container *ngIf="isRoomSelected">
-    
         <button (click)="sendMoves()" *ngIf="sendVisible" class="default-button">
             {{ 'game_board.done' | translate }}
         </button>
@@ -24,6 +26,5 @@
         <button (click)="exitGame()" *ngIf="exitVisible" class="secondary-button">
             {{ 'game_board.exit_game' | translate }}
         </button>
-        
     </ng-container>
 </div>

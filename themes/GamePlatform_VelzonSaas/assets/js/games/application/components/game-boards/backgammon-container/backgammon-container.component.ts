@@ -24,6 +24,7 @@ import { GameState as MyGameState } from '../../../+store/game.reducers';
 
 import { RequirementsDialogComponent } from '../../shared/requirements-dialog/requirements-dialog.component';
 import { SelectGameRoomDialogComponent } from '../select-game-room-dialog/select-game-room-dialog.component';
+import { CreateGameRoomDialogComponent } from '../create-game-room-dialog/create-game-room-dialog.component';
 
 // Services
 import { AuthService } from '../../../services/auth.service'
@@ -345,19 +346,6 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         }
     }
     
-    openRequirementsDialog(): void
-    {
-        const modalRef = this.ngbModal.open( RequirementsDialogComponent );
-        
-        modalRef.componentInstance.isLoggedIn   = this.isLoggedIn;
-        modalRef.componentInstance.hasPlayer    = this.hasPlayer;
-        
-        modalRef.componentInstance.closeModal.subscribe( () => {
-            // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
-            modalRef.dismiss();
-        });
-    }
-    
     openSelectGameRoomDialog(): void
     {
         if ( this.appState && this.appState.game && this.appState.rooms ) {
@@ -369,5 +357,45 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
                 modalRef.dismiss();
             });
         }
+    }
+    
+    createGameRoom(): void
+    {
+        if ( ! this.isLoggedIn || ! this.hasPlayer ) {
+            this.openRequirementsDialog();
+            return;
+        }
+        
+        if ( this.appState && this.appState.game ) {
+            if ( ! this.appState.game.room ) {
+                this.openCreateGameRoomDialog();
+            }
+        }
+    }
+    
+    openCreateGameRoomDialog(): void
+    {
+        if ( this.appState && this.appState.game && this.appState.players ) {
+            const modalRef = this.ngbModal.open( CreateGameRoomDialogComponent );
+            
+            modalRef.componentInstance.game     = this.appState.game;
+            modalRef.componentInstance.players  = this.appState.players;
+            modalRef.componentInstance.closeModal.subscribe( () => {
+                modalRef.dismiss();
+            });
+        }
+    }
+    
+    openRequirementsDialog(): void
+    {
+        const modalRef = this.ngbModal.open( RequirementsDialogComponent );
+        
+        modalRef.componentInstance.isLoggedIn   = this.isLoggedIn;
+        modalRef.componentInstance.hasPlayer    = this.hasPlayer;
+        
+        modalRef.componentInstance.closeModal.subscribe( () => {
+            // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
+            modalRef.dismiss();
+        });
     }
 }

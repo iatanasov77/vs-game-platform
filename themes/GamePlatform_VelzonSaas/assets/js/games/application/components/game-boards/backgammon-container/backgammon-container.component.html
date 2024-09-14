@@ -1,67 +1,68 @@
-<div class="game-container">
-    <div class="row">
-        <div class="col-1">
-            <game-statistics></game-statistics>
-        </div>
+<div id="GameBoardContainer">
+    <div class="messages" #messages>
+        <app-messages
+            [initial]="width"
+            [shown]="messageCenter"
+            [message]="message$ | async"
+            [timeLeft]="timeLeft$ | async"
+        ></app-messages>
+    </div>
+    
+    <!-- Not Needed
+    <app-board-menu
+      class="app-menu"
+      (flip)="this.flipped = !this.flipped"
+      (resign)="resignGame()"
+    ></app-board-menu>
+    -->
+    
+    <app-backgammon-board
+        class="game-board"
         
-        <div class="col-8">
-            <div class="messages" #messages>
-                <app-messages
-                    [initial]="width"
-                    [shown]="messageCenter"
-                    [message]="message$ | async"
-                    [timeLeft]="timeLeft$ | async"
-                ></app-messages>
-            </div>
-            
-            <app-board-menu
-              class="app-menu"
-              (flip)="this.flipped = !this.flipped"
-              (resign)="resignGame()"
-            ></app-board-menu>
-            
-            <app-backgammon-board
-                class="game-board"
-                [width]="width"
-                [height]="height"
-                [game]="gameDto$ | async"
-                [myColor]="playerColor$ | async"
-                [dicesVisible]="dicesVisible"
-                [flipped]="flipped"
-                (addMove)="doMove($event)"
-                (moveAnimFinished)="moveAnimFinished()"
-            ></app-backgammon-board>
-            <div class="dices" #dices>
-                <app-dices
-                    *ngIf="dicesVisible"
-                    [dices]="dices$ | async"
-                    [color]="diceColor"
-                ></app-dices>
-            </div>
-            
-            <!--  -->
-            <div class="board-buttons" #boardButtons>
-              <app-board-buttons
-                [undoVisible]="undoVisible"
-                [sendVisible]="sendVisible"
-                [rollButtonVisible]="rollButtonVisible"
-                [newVisible]="newVisible"
-                [exitVisible]="exitVisible"
-                (onUndoMove)="undoMove()"
-                (onSendMoves)="sendMoves()"
-                (onRoll)="rollButtonClick()"
-                (onNew)="newGame()"
-                (onExit)="exitGame()"
-              ></app-board-buttons>
-            </div>
-        </div>
+        [isLoggedIn]="isLoggedIn"
+        [hasPlayer]="hasPlayer"
         
-        <div class="col-3">
-            <game-players></game-players>
-            <div class="mt-4">
-                <game-rooms></game-rooms>
-            </div>
-        </div>
+        [width]="width"
+        [height]="height"
+        [game]="gameDto$ | async"
+        [myColor]="playerColor$ | async"
+        [flipped]="flipped"
+        [dicesVisible]="dicesVisible"
+        [rollButtonVisible]="rollButtonVisible"
+        [sendVisible]="dicesVisible"
+        [undoVisible]="undoVisible"
+        [newVisible]="newVisible"
+        [exitVisible]="exitVisible"
+        (addMove)="doMove($event)"
+        (moveAnimFinished)="moveAnimFinished()"
+    ></app-backgammon-board>
+    
+    <div class="dices" #dices>
+        <app-dices
+            *ngIf="dicesVisible"
+            [dices]="dices$ | async"
+            [color]="diceColor"
+        ></app-dices>
+    </div>
+    
+    <div class="board-buttons" #boardButtons>
+        <app-board-buttons
+            [isLoggedIn]="isLoggedIn"
+            [hasPlayer]="hasPlayer"
+            [isRoomSelected]="isRoomSelected"
+            [game]="game"
+            
+            [undoVisible]="undoVisible"
+            [sendVisible]="sendVisible"
+            [rollButtonVisible]="rollButtonVisible"
+            [newVisible]="newVisible"
+            [exitVisible]="exitVisible"
+            (onUndoMove)="undoMove()"
+            (onSendMoves)="sendMoves()"
+            (onRoll)="rollButtonClick()"
+            (onNew)="newGame()"
+            (onExit)="exitGame()"
+        ></app-board-buttons>
     </div>
     
     <div class="game-id">{{ (gameDto$ | async)?.id | uppercase }}</div>   

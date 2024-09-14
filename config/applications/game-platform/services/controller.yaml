@@ -190,3 +190,32 @@ services:
             - '@doctrine'
             - '@vs_users.repository.users'
             - '@vsapp.factory.game_players'
+    
+    App\Controller\GamePlatform\SocialNetworks\FacebookController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@doctrine'
+            - '@vs_users.repository.users'
+            - '@vs_users.manager.user'
+            - '@vs_users.security.login_form_authenticator'
+            - '@security.user_authenticator'
+            - '@knpu.oauth2.registry'
+            
+    App\Controller\GamePlatform\SocialNetworks\GoogleController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@doctrine'
+            - '@vs_users.repository.users'
+            - '@vs_users.manager.user'
+            - '@vs_users.security.login_form_authenticator'
+            - '@security.user_authenticator'
+            - '@knpu.oauth2.registry'
+    
+    App\Controller\GamePlatform\SocialNetworks\QrCodeController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@security.token_storage'
+            - '@scheb_two_factor.security.google_authenticator'

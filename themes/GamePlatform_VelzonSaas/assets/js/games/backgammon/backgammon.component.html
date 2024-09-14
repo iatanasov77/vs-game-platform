@@ -4,8 +4,22 @@
 <app-busy [busy]="busy$ | async"></app-busy>
 <app-error-handler [errors]="errors$ | async" (save)="saveErrorReport($event)"></app-error-handler>
 
-<app-backgammon-container
-    [isLoggedIn]="isLoggedIn"
-    [hasPlayer]="hasPlayer"
-    [developementClass]="developementClass"
-></app-backgammon-container>
+<div class="row">
+    <div class="col-2">
+        <game-statistics></game-statistics>
+    </div>
+    
+    <div class="col-8">
+        <app-backgammon-container
+            [isLoggedIn]="isLoggedIn"
+            [hasPlayer]="hasPlayer"
+        ></app-backgammon-container>
+    </div>
+    
+    <div class="col-2">
+        <game-players></game-players>
+        <div class="mt-4">
+            <game-rooms></game-rooms>
+        </div>
+    </div>
+</div>

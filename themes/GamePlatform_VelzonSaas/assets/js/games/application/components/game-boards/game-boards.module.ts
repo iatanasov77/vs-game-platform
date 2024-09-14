@@ -19,6 +19,9 @@ import { DicesComponent } from './dices/dices.component';
 import { BoardMenuComponent } from './board-actions/board-menu/board-menu.component';
 import { BoardButtonsComponent } from './board-actions/board-buttons/board-buttons.component';
 
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { SelectGameRoomDialogComponent } from './select-game-room-dialog/select-game-room-dialog.component';
+
 @NgModule({
     declarations: [
         PlayerAnnounceComponent,
@@ -32,7 +35,8 @@ import { BoardButtonsComponent } from './board-actions/board-buttons/board-butto
         BackgammonBoardComponent,
         DicesComponent,
         BoardMenuComponent,
-        BoardButtonsComponent
+        BoardButtonsComponent,
+        SelectGameRoomDialogComponent
     ],
     imports: [
         CommonModule,
@@ -40,6 +44,8 @@ import { BoardButtonsComponent } from './board-actions/board-buttons/board-butto
         NgbModule,
         TranslateModule.forChild(),
         SharedModule,
+        FormsModule,
+        ReactiveFormsModule,
     ],
     exports: [
         PlayerAnnounceComponent,
@@ -53,7 +59,8 @@ import { BoardButtonsComponent } from './board-actions/board-buttons/board-butto
         BackgammonBoardComponent,
         DicesComponent,
         BoardMenuComponent,
-        BoardButtonsComponent
+        BoardButtonsComponent,
+        SelectGameRoomDialogComponent
     ]
 })
 export class GameBoardsModule { }

@@ -48,11 +48,9 @@ return [
     Payum\Bundle\PayumBundle\PayumBundle::class => ['all' => true],
     Vankosoft\UsersSubscriptionsBundle\VSUsersSubscriptionsBundle::class => ['all' => true],
     Vankosoft\PaymentBundle\VSPaymentBundle::class => ['all' => true],
-
     Vankosoft\CatalogBundle\VSCatalogBundle::class => ['all' => true],
 	
     Symfony\Bundle\MercureBundle\MercureBundle::class => ['all' => true],
-// 	Vankosoft\ApiBundle\VSApiBundle::class => ['all' => true],
-//     Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle::class => ['all' => true],
-//     Gesdinet\JWTRefreshTokenBundle\GesdinetJWTRefreshTokenBundle::class => ['all' => true],
+    KnpU\OAuth2ClientBundle\KnpUOAuth2ClientBundle::class => ['all' => true],
+    Scheb\TwoFactorBundle\SchebTwoFactorBundle::class => ['all' => true],
 ];

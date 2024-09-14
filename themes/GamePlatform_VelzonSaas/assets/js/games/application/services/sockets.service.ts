@@ -1,8 +1,6 @@
 import { Injectable, Inject, OnDestroy } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { CookieService } from 'ngx-cookie-service';
 import { StatusMessageService } from './status-message.service';
-import { AuthService } from './auth.service';
 
 // Board Interfaces
 import CheckerDto from '_@/GamePlatform/Model/BoardGame/connectionDto';
@@ -29,8 +27,7 @@ import { AppState } from '../state/app-state';
 import { Keys } from '../utils/keys';
 import { MessageLevel, StatusMessage } from '../utils/status-message';
 
-// import { environment } from './environment';
-// import { Router, UrlSerializer } from '@angular/router';
+const { context } = require( '../context' );
 
 /**
  * Use API Server to Push Messages to Mercure
@@ -40,10 +37,9 @@ import { MessageLevel, StatusMessage } from '../utils/status-message';
 })
 export class SocketsService implements OnDestroy
 {
-    /*  
     socket: WebSocket | undefined;
     url = '';
-    */
+    
     
     userMoves: MoveDto[] = [];
     gameHistory: GameDto[] = [];
@@ -53,19 +49,13 @@ export class SocketsService implements OnDestroy
     timerStarted = false;
   
     constructor(
-        @Inject( HttpClient ) private httpClient: HttpClient,
-        @Inject( AuthService ) private authService: AuthService,
-        
-//         @Inject( Router ) private router: Router,
-//         @Inject( UrlSerializer ) private serializer: UrlSerializer,
-        
         @Inject( CookieService ) private cookieService: CookieService,
         @Inject( StatusMessageService ) private statusMessageService: StatusMessageService,
     ) { }
     
     ngOnDestroy(): void
     {
-//         this.socket?.close();
+        this.socket?.close();
     }
     
     /*
@@ -91,6 +81,23 @@ export class SocketsService implements OnDestroy
         this.socket.onclose = this.onClose.bind( this );
     }
     */
+    
+    connect( gameId: string ): void
+    {
+        if ( this.socket ) {
+            this.socket.close();
+        }
+        
+        this.url = context.socketServiceUrl;
+        const user = AppState.Singleton.user.getValue();
+        const userId = user ? user.id : '';
+        
+        this.socket = new WebSocket( this.url );
+        this.socket.onmessage = this.onMessage.bind( this );
+        this.socket.onerror = this.onError.bind( this );
+        this.socket.onopen = this.onOpen.bind( this );
+        this.socket.onclose = this.onClose.bind( this );
+    }
     
     onOpen( event: Event ): void
     {
@@ -352,12 +359,9 @@ export class SocketsService implements OnDestroy
     
     sendMessage( message: string ): void
     {
-//         if ( this.socket && this.socket.readyState === this.socket.OPEN ) {
-//             this.socket.send( message );
-//         }
-        
-        const headers = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
-        this.httpClient.post<ActionDto>( 'game-message', {game_message: message}, {headers} );
+        if ( this.socket && this.socket.readyState === this.socket.OPEN ) {
+            this.socket.send( message );
+        }
     }
     
     shiftMoveAnimationsQueue(): void

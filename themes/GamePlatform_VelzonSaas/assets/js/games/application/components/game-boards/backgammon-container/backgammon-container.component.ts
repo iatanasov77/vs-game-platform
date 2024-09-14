@@ -34,6 +34,8 @@ import GameState from '_@/GamePlatform/Model/BoardGame/gameState';
 import cssGameString from './backgammon-container.component.scss';
 import templateString from './backgammon-container.component.html';
 
+declare var $: any;
+
 /**
  * Forked From: https://www.codeproject.com/Articles/5297405/Online-Backgammon
  * Play Original Game: https://backgammon.azurewebsites.net/
@@ -50,10 +52,8 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
 {
     @Input() isLoggedIn: boolean        = false;
     @Input() hasPlayer: boolean         = false;
-    @Input() developementClass: string  = '';
     
     @ViewChild( 'dices' ) dices: ElementRef | undefined;
-    @ViewChild( 'boardButtons' ) boardButtons: ElementRef | undefined;
     @ViewChild( 'messages' ) messages: ElementRef | undefined;
     
     gameDto$: Observable<GameDto>;
@@ -96,9 +96,8 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             this.authService.repair();
         }
         
-//         const gameId = this.router.parseUrl( this.router.url ).queryParams['gameId'];
-//         const gameId = 'backgammon';
-//         this.socketsService.connect( gameId );
+        const gameId = 'backgammon';
+        this.socketsService.connect( gameId );
     }
     
     ngOnInit(): void
@@ -118,9 +117,6 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             const changedProp = changes[propName];
             
             switch ( propName ) {
-                case 'developementClass':
-                    this.developementClass = changedProp.currentValue;
-                    break;
                 case 'isLoggedIn':
                     this.isLoggedIn = changedProp.currentValue;
                     break;
@@ -186,11 +182,8 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     @HostListener( 'window:resize', ['$event'] )
     onResize(): void
     {
-//         alert( window.innerWidth );
-//         const _innerWidth   = window.innerWidth;
-
-        /** @TODO Find Div Width on Current Device to Made it Responsive */
-        const _innerWidth   = 700;
+        const _innerWidth   = $( '#GameBoardContainer' ).width() * 0.8;
+        //alert( _innerWidth );
         
         this.width = Math.min( _innerWidth, 1024 );
         const span = this.messages?.nativeElement as Element;
@@ -199,13 +192,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         
         this.height = Math.min( window.innerHeight - 40, this.width * 0.6 );
         
-        const buttons = this.boardButtons?.nativeElement as HTMLElement;
         const btnsOffset = 5; //Cheating. Could not get the height.
-        if ( buttons ) {
-            buttons.style.top = `${this.height / 2 - btnsOffset}px`;
-            buttons.style.right = `${this.width * 0.11}px`;
-        }
-        
         const dices = this.dices?.nativeElement as HTMLElement;
         if ( dices ) {
             // Puts the dices on right side if its my turn.
@@ -294,7 +281,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     newGame(): void
     {
         this.newVisible = false;
-//         this.socketsService.connect( '' );
+        this.socketsService.connect( '' );
     }
     
     exitGame(): void

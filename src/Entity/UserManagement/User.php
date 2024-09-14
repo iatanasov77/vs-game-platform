@@ -13,6 +13,7 @@ use Vankosoft\CatalogBundle\Model\Interfaces\UserSubscriptionAwareInterface;
 use Vankosoft\CatalogBundle\Model\Traits\UserSubscriptionAwareEntity;
 use Vankosoft\UsersBundle\Model\Interfaces\ApiUserInterface;
 use Vankosoft\UsersBundle\Model\Traits\ApiUserEntity;
+use Scheb\TwoFactorBundle\Model\Google\TwoFactorInterface;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -27,7 +28,8 @@ class User extends BaseUser implements
     UserPaymentAwareInterface,
     CustomerInterface,
     UserSubscriptionAwareInterface,
-    ApiUserInterface
+    ApiUserInterface,
+    TwoFactorInterface
 {
     use SubscribedUserEntity;
     use UserPaymentAwareEntity;
@@ -46,6 +48,10 @@ class User extends BaseUser implements
     /** @var \Datetime */
     #[ORM\Column(name: "last_active_at", type: "datetime", nullable: true)]
     private $lastActiveAt;
+    
+    /** @var string */
+    #[ORM\Column(name: "google_authenticator_secret", type: "string", nullable: true)]
+    private $googleAuthenticatorSecret;
     
     public function __construct()
     {
@@ -97,5 +103,25 @@ class User extends BaseUser implements
     public function setLastActiveAt( $lastActiveAt )
     {
         $this->lastActiveAt = $lastActiveAt;
+    }
+    
+    public function isGoogleAuthenticatorEnabled(): bool
+    {
+        return null !== $this->googleAuthenticatorSecret;
+    }
+    
+    public function getGoogleAuthenticatorUsername(): string
+    {
+        return $this->username;
+    }
+    
+    public function getGoogleAuthenticatorSecret(): ?string
+    {
+        return $this->googleAuthenticatorSecret;
+    }
+    
+    public function setGoogleAuthenticatorSecret( ?string $googleAuthenticatorSecret ): void
+    {
+        $this->googleAuthenticatorSecret = $googleAuthenticatorSecret;
     }
 }

@@ -1,9 +1,9 @@
-controllers:
-  resource:
-      path: ../../../../src/Controller/
-      namespace: App\Controller
-  type: attribute
-
-kernel:
-  resource: App\GamePlatformKernel
-  type: attribute
+# controllers:
+#   resource:
+#       path: ../../../../src/Controller/
+#       namespace: App\Controller
+#   type: attribute
+# 
+# kernel:
+#   resource: App\GamePlatformKernel
+#   type: attribute

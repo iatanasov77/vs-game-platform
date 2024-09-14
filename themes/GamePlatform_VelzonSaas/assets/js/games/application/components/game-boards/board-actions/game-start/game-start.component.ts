@@ -15,7 +15,7 @@ import {
 } from '../../../../+store/game.actions';
 import { GameState } from '../../../../+store/game.reducers';
 
-import { GameRequirementsDialogComponent } from '../../../shared/dialogs/game-requirements-dialog/game-requirements-dialog.component';
+import { RequirementsDialogComponent } from '../../../shared/requirements-dialog/requirements-dialog.component';
 
 import templateString from './game-start.component.html'
 declare var $: any;
@@ -41,9 +41,7 @@ export class GameStartComponent implements OnInit, OnChanges
         
         @Inject( Store ) private store: Store,
         @Inject( Actions ) private actions$: Actions
-    ) {
-        
-    }
+    ) { }
     
     ngOnInit(): void
     {
@@ -116,7 +114,7 @@ export class GameStartComponent implements OnInit, OnChanges
     
     openRequirementsDialog(): void
     {
-        const modalRef = this.ngbModal.open( GameRequirementsDialogComponent );
+        const modalRef = this.ngbModal.open( RequirementsDialogComponent );
         
         modalRef.componentInstance.isLoggedIn   = this.isLoggedIn;
         modalRef.componentInstance.hasPlayer    = this.hasPlayer;

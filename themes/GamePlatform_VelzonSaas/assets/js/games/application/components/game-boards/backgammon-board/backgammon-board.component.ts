@@ -430,6 +430,8 @@ export class BackgammonBoardComponent implements OnInit, AfterViewInit, OnChange
     
     drawCheckers( cx: CanvasRenderingContext2D | null ): void
     {
+        //alert( this.game );
+        
         if ( ! cx ) {
             return;
         }

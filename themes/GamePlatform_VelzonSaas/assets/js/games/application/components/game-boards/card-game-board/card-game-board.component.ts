@@ -5,9 +5,7 @@ import { Actions, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
 
 import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
-import {
-    selectGameRoomSuccess
-} from '../../../+store/game.actions';
+import { selectGameRoomSuccess } from '../../../+store/game.actions';
 import { GameState } from '../../../+store/game.reducers';
 
 import templateString from './card-game-board.component.html'

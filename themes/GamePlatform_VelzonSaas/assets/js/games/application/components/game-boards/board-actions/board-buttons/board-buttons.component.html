@@ -1,6 +1,6 @@
 <div class="p-1 float-start">
     <ng-container *ngIf="! isRoomSelected">
-        <button (click)="onSelectGameRoom( $event )" class="default-button" id="btnStartGame">
+        <button (click)="selectGameRoom()" class="default-button">
             {{ 'game_board.select_room' | translate }}
         </button>
     </ng-container>

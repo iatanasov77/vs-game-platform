@@ -45,13 +45,6 @@ services:
             - '@vs_application.repository.locale'
         tags:
             - form.type
-    vsapp.form.game_rooms:
-        public: true
-        class: App\Form\GameRoomForm
-        arguments:
-            - '%vsapp.model.game_rooms.class%'
-        tags:
-            - form.type
     vsapp.form.game_players:
         public: true
         class: App\Form\GamePlayerForm

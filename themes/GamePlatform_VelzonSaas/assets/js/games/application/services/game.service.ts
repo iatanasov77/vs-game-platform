@@ -43,7 +43,7 @@ export class GameService
     
     loadGameRooms(): Observable<IGameRoom[]>
     {
-        return this.httpClient.get<IGameRoom[]>( 'rooms' );
+        return this.httpClient.get<IGameRoom[]>( 'game-sessions' );
     }
     
     loadPlayers(): Observable<IPlayer[]>

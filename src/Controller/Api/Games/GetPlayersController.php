@@ -24,7 +24,7 @@ class GetPlayersController extends AbstractController
                 'id'    => $player->getId(),
                 'type'  => $player->getType(),
                 'name'  => $player->getName(),
-                'rooms' => $player->getRooms(),
+                'rooms' => [], // $player->getRooms(),
                 
                 'connected' => (
                     $player->getUser() &&

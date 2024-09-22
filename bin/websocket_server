@@ -1,0 +1,23 @@
+#!/usr/bin/env php
+<?php
+/**
+ * MANUAL: http://socketo.me/docs/hello-world
+ */
+error_reporting( E_ERROR | E_WARNING | E_PARSE );
+require_once dirname( __DIR__ ) . '/vendor/autoload.php';
+
+use Ratchet\Server\IoServer;
+use Ratchet\Http\HttpServer;
+use Ratchet\WebSocket\WsServer;
+use App\Component\Websocket\MessageHandler;
+
+$server = IoServer::factory(
+    new HttpServer(
+        new WsServer(
+            new MessageHandler()
+        )
+    ),
+    $argv[1]
+);
+
+$server->run();

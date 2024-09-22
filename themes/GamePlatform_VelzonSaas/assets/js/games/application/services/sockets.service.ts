@@ -27,7 +27,11 @@ import { AppState } from '../state/app-state';
 import { Keys } from '../utils/keys';
 import { MessageLevel, StatusMessage } from '../utils/status-message';
 
-const { context } = require( '../context' );
+declare global {
+    interface Window {
+        gamePlatformSettings: any;
+    }
+}
 
 /**
  * Use API Server to Push Messages to Mercure
@@ -88,9 +92,10 @@ export class SocketsService implements OnDestroy
             this.socket.close();
         }
         
-        this.url = context.socketServiceUrl;
+        this.url = window.gamePlatformSettings.socketServiceUrl;
         const user = AppState.Singleton.user.getValue();
         const userId = user ? user.id : '';
+        //alert( userId );
         
         this.socket = new WebSocket( this.url );
         this.socket.onmessage = this.onMessage.bind( this );
@@ -359,6 +364,7 @@ export class SocketsService implements OnDestroy
     
     sendMessage( message: string ): void
     {
+        alert( message );
         if ( this.socket && this.socket.readyState === this.socket.OPEN ) {
             this.socket.send( message );
         }

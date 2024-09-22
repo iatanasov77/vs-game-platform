@@ -38,7 +38,6 @@ export class StateObject<T>
     {
         this._value = undefined;
 //         this._replaySubject.next( undefined );
-        this._replaySubject.unsubscribe();
     }
     
     private static deepFreeze( obj: any ): any

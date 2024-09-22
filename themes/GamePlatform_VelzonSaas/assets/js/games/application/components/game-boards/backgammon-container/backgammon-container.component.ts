@@ -88,8 +88,8 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     sendVisible = false;
     undoVisible = false;
     dicesVisible = false;
-    newVisible = false;
-    exitVisible = true;
+    newVisible = true;
+    exitVisible = false;
     
     appState?: MyGameState;
     gameStarted: boolean                = false;

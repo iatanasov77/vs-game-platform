@@ -11,7 +11,6 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 use App\Entity\GamePlayer;
 use App\Entity\UserManagement\User;
-use App\Entity\GameRoom;
 
 class GamePlayerForm extends AbstractForm
 {
@@ -27,11 +26,6 @@ class GamePlayerForm extends AbstractForm
         $entity = $builder->getData();
         
         $builder
-            ->add( 'playerRooms', HiddenType::class, [
-                'mapped'    => false,
-                'data'      => \json_encode( $entity->getRooms()->getKeys() )
-            ])
-        
             ->add( 'user', EntityType::class, [
                 'label'                 => 'game_platform.form.game_player.user',
                 'placeholder'           => 'game_platform.form.game_player.user_placeholder',
@@ -40,17 +34,6 @@ class GamePlayerForm extends AbstractForm
                 'mapped'                => true,
                 'class'                 => User::class,
                 'choice_label'          => 'username',
-            ])
-            
-            ->add( 'rooms', EntityType::class, [
-                'label'                 => 'game_platform.form.game_player.rooms',
-                'placeholder'           => 'game_platform.form.game_player.rooms_placeholder',
-                'translation_domain'    => 'GamePlatform',
-                'required'              => false,
-                'mapped'                => true,
-                'multiple'              => true,
-                'class'                 => GameRoom::class,
-                'choice_label'          => 'name',
             ])
             
             ->add( 'type', ChoiceType::class, [

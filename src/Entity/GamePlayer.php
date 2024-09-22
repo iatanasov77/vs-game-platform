@@ -1,6 +1,7 @@
 <?php namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\DBAL\Types\Types;
 use Sylius\Component\Resource\Model\ResourceInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -12,6 +13,8 @@ class GamePlayer implements ResourceInterface
 {
     const TYPE_COMPUTER = 'computer';
     const TYPE_USER = 'user';
+    const COLOR_BLACK = 'black';
+    const COLOR_WHITE = 'white';
     
     /** @var int */
     #[ORM\Id, ORM\Column(type: "integer"), ORM\GeneratedValue(strategy: "IDENTITY")]
@@ -22,20 +25,33 @@ class GamePlayer implements ResourceInterface
     #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id", nullable: true)]
     private $user;
     
-    #[ORM\ManyToMany(targetEntity: GameRoom::class, mappedBy: "players", indexBy: "id")]
-    private $rooms;
-    
     /** @var string */
     #[ORM\Column(type: "string", columnDefinition: "ENUM('computer', 'user')")]
     private $type;
     
-    /** @var string */
-    #[ORM\Column(type: "string", length: 255)]
-    private $name;
+    /** @var Collection | TempPlayer[] */
+    #[ORM\OneToMany(targetEntity: TempPlayer::class, mappedBy: "player", indexBy: "id")]
+    private $gamePlayers;
+    
+    /** @var int */
+    #[ORM\Column(type: "integer", nullable: true)]
+    private $elo;
+    
+    /** @var int */
+    #[ORM\Column(name: "game_count", type: "integer", nullable: true)]
+    private $gameCount;
+    
+    /** @var int */
+    #[ORM\Column(type: "integer", nullable: true)]
+    private $gold;
+    
+    /** @var \DateTimeInterface */
+    #[ORM\Column(name: "last_free_gold", type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private $lastFreeGold;
     
     public function __construct()
     {
-        $this->rooms    = new ArrayCollection();
+        $this->gamePlayers  = new ArrayCollection();
     }
     
     public function getId(): ?int
@@ -55,18 +71,6 @@ class GamePlayer implements ResourceInterface
         return $this;
     }
     
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-    
-    public function setName( string $name ): self
-    {
-        $this->name = $name;
-        
-        return $this;
-    }
-    
     public function getUser(): ?User
     {
         return $this->user;
@@ -80,28 +84,81 @@ class GamePlayer implements ResourceInterface
     }
     
     /**
-     * @return Collection|GameRoom[]
+     * @return Collection|TempPlayer[]
      */
-    public function getRooms(): Collection
+    public function getGamePlayers(): Collection
     {
-        return $this->rooms;
+        return $this->gamePlayers;
     }
     
-    public function addRoom( GameRoom $room ): self
+    public function addGamePlayer( TempPlayer $gamePlayer ): self
     {
-        if ( ! $this->rooms->contains( $room ) ) {
-            $this->rooms[] = $room;
+        if ( ! $this->gamePlayers->contains( $gamePlayer ) ) {
+            $this->gamePlayers[] = $gamePlayer;
         }
         
         return $this;
     }
     
-    public function removeRoom( GameRoom $room ): self
+    public function removeGamePlayer( TempPlayer $gamePlayer ): self
     {
-        if ( $this->rooms->contains( $room ) ) {
-            $this->rooms->removeElement( $room );
+        if ( $this->gamePlayers->contains( $gamePlayer ) ) {
+            $this->gamePlayers->removeElement( $gamePlayer );
         }
         
         return $this;
+    }
+    
+    public function getElo(): ?int
+    {
+        return $this->elo;
+    }
+    
+    public function setElo( int $elo ): self
+    {
+        $this->elo = $elo;
+        
+        return $this;
+    }
+    
+    public function getGameCount(): ?int
+    {
+        return $this->gameCount;
+    }
+    
+    public function setGameCount( int $gameCount ): self
+    {
+        $this->gameCount = $gameCount;
+        
+        return $this;
+    }
+    
+    public function getGold(): ?int
+    {
+        return $this->gold;
+    }
+    
+    public function setGold( int $gold ): self
+    {
+        $this->gold = $gold;
+        
+        return $this;
+    }
+    
+    public function getLastFreeGold(): ?\DateTimeInterface
+    {
+        return $this->lastFreeGold;
+    }
+    
+    public function setLastFreeGold(\DateTimeInterface $lastFreeGold): self
+    {
+        $this->lastFreeGold = $lastFreeGold;
+        
+        return $this;
+    }
+    
+    public function getName(): ?string
+    {
+        return $this->user ? $this->user->getUsername() : 'Undefined';
     }
 }

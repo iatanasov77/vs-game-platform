@@ -9,4 +9,7 @@ vs_api_get_verify_signature:
 vs_api_mercure_game_message:
     path: /api/game-message
     controller: App\Controller\Api\MercureController::index
-    
+
+vs_api_account_signin:
+    path: /api/account/signin
+    controller: App\Controller\Api\AccountController::signinAction

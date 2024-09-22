@@ -2,6 +2,7 @@ imports:
     - { resource: services/api_controller.yaml }
     - { resource: services/doctrine_extensions.yaml }
     - { resource: services/uploader.yaml }
+    - { resource: services/games.yaml }
     
 parameters:
     locale: 'en_US'

@@ -1,6 +1,13 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
+import { Actions, ofType } from '@ngrx/effects';
+import { loginBySignatureSuccess } from '../application/+store/login.actions';
+import { selectGameRoomSuccess } from '../application/+store/game.actions';
+
+import { IAuth } from '../application/interfaces/auth';
+import { Busy } from '../application/state/busy';
+import UserDto from '_@/GamePlatform/Model/BoardGame/userDto';
 
 import { AuthService } from '../application/services/auth.service'
 import { GameService } from '../application/services/game.service'
@@ -34,6 +41,7 @@ export class BackgammonComponent extends GameBaseComponent implements OnInit
         @Inject( AuthService ) authService: AuthService,
         @Inject( GameService ) gameService: GameService,
         @Inject( Store ) store: Store,
+        @Inject( Actions ) private actions$: Actions,
         
         @Inject( ErrorReportService ) private errorReportService: ErrorReportService
     ) {
@@ -46,6 +54,30 @@ export class BackgammonComponent extends GameBaseComponent implements OnInit
     override ngOnInit()
     {
         super.ngOnInit();
+        
+//         this.actions$.pipe( ofType( loginBySignatureSuccess ) ).subscribe( ( auth: IAuth ) => {
+//             console.log( auth );
+//         });
+        
+        this.actions$.pipe( ofType( selectGameRoomSuccess ) ).subscribe( () => {
+            let  auth    = this.authService.getAuth();
+            //console.log( auth );
+            
+            if ( auth ) {
+                const userDto = {
+                    id: String( auth.id ),
+                    name: auth.username,
+                    email: auth.email,
+                    socialProviderId: String( auth.id ),
+                    socialProvider: '',
+                    photoUrl: '',
+                    createdNew: false
+                } as UserDto;
+                
+                Busy.show();
+                this.authService.signIn( userDto, auth.apiToken );
+            }
+        });
     }
     
     saveErrorReport( errorDto: ErrorReportDto ): void

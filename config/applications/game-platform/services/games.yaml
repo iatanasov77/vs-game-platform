@@ -1,8 +1,55 @@
+parameters:
+    app_websocket_url: '%env(WEBSOCKET_URL)%'
+    app_game_for_gold: '%env(bool:GAME_FOR_GOLD)%'
+
 services:
     _defaults:
         autowire: true
         autoconfigure: true
 
+    App\EventListener\GameRequestListener:
+        arguments:
+            - '@app_websocket_client'
+            - '@app_game_service'
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+            
+    App\EventListener\GameEndedListener:
+        arguments:
+            - '@doctrine'
+            - '@vsapp.repository.game_sessions'
+        tags:
+           -  { name: kernel.event_listener, event: app.game_ended, method: onGameEnded }
+            
+    app_websocket_client:
+        class: App\Component\Websocket\WebsocketClient
+        arguments:
+            - '%app_websocket_url%'
+            
+    app_game_service:
+        class: App\Component\GameService
+        arguments:
+            - '@logger'
+            - '@vs_users.repository.users'
+            - '@app_game_manager'
+            
+    app_game_manager:
+        class: App\Component\Manager\GameManager
+        arguments:
+            - '@logger'
+            - '@event_dispatcher'
+            - '@doctrine'
+            - '@vsapp.repository.games'
+            - '@vsapp.repository.game_sessions'
+            - '@vsapp.factory.game_sessions'
+            - '@vsapp.repository.game_players'
+            - '@vsapp.repository.temp_players'
+            - '@vsapp.factory.temp_players'
+            - '%app_game_for_gold%'
+    
+    ##############################################################
+    # Game Controllers
+    ##############################################################
     App\Controller\Games\SvaraController:
         tags: ['controller.service_arguments']
         autowire: true

@@ -1,6 +1,8 @@
 <?php namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Sylius\Component\Resource\Model\ResourceInterface;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Sylius\Component\Resource\Model\ToggleableTrait;
@@ -21,10 +23,21 @@ class GamePlay implements ResourceInterface
     #[ORM\Id, ORM\Column(type: "integer"), ORM\GeneratedValue(strategy: "IDENTITY")]
     private $id;
     
-    /** @var GameRoom */
-    #[ORM\ManyToOne(targetEntity: GameRoom::class, inversedBy: "playSessions")]
-    #[ORM\JoinColumn(name: "game_room_id", referencedColumnName: "id", nullable: false)]
-    private $gameRoom;
+    /** @var string */
+    #[ORM\Column(type: "string", length: 40, nullable: true)]
+    private $guid;
+    
+    /** @var Game */
+    #[ORM\ManyToOne(targetEntity: Game::class, inversedBy: "gameSessions")]
+    private $game;
+    
+    /** @var Collection | TempPlayer[] */
+    #[ORM\OneToMany(targetEntity: TempPlayer::class, mappedBy: "player", indexBy: "id")]
+    private $gamePlayers;
+    
+    /** @var string */
+    #[ORM\Column(type: "string", length: 40, nullable: true)]
+    private $winner;
     
     /** @var array */
     #[ORM\Column(type: "json", nullable: true)]
@@ -34,19 +47,62 @@ class GamePlay implements ResourceInterface
     #[ORM\Column(name: "active", type: "boolean", options: ["default" => 0])]
     protected $enabled = true;
     
+    public function __construct()
+    {
+        $this->gamePlayers  = new ArrayCollection();
+    }
+    
     public function getId(): ?int
     {
         return $this->id;
     }
     
-    public function getGameRoom(): ?GameRoom
+    public function getGuid(): ?string
     {
-        return $this->gameRoom;
+        return $this->guid;
     }
     
-    public function setGameRoom( GameRoom $gameRoom ): self
+    public function setGuid( string $guid ): self
     {
-        $this->gameRoom = $gameRoom;
+        $this->guid = $guid;
+        
+        return $this;
+    }
+    
+    /**
+     * @return Collection|TempPlayer[]
+     */
+    public function getGamePlayers(): Collection
+    {
+        return $this->gamePlayers;
+    }
+    
+    public function addGamePlayer( TempPlayer $gamePlayer ): self
+    {
+        if ( ! $this->gamePlayers->contains( $gamePlayer ) ) {
+            $this->gamePlayers[] = $gamePlayer;
+        }
+        
+        return $this;
+    }
+    
+    public function removeGamePlayer( TempPlayer $gamePlayer ): self
+    {
+        if ( $this->gamePlayers->contains( $gamePlayer ) ) {
+            $this->gamePlayers->removeElement( $gamePlayer );
+        }
+        
+        return $this;
+    }
+    
+    public function getWinner(): ?string
+    {
+        return $this->winner;
+    }
+    
+    public function setWinner( string $winner ): self
+    {
+        $this->winner = $winner;
         
         return $this;
     }

@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http'
+import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { BehaviorSubject, Observable, tap, map } from 'rxjs';
 import { AppConstants } from "../constants";
 
@@ -59,26 +59,27 @@ export class AuthService
         var url = 'login-by-signature/' + apiVerifySiganature;
         
         return this.httpClient.get<ISignedUrlResponse>( url ).pipe(
-                    tap( ( response: any ) => {
-                        if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
-                            let auth: IAuth = {
-                                id: response.data.user.id,
-                                
-                                email: response.data.user.email,
-                                username: response.data.user.username,
-                                
-                                fullName: response.data.user.firstName + ' ' + response.data.user.lastName,
-                                
-                                apiToken: response.data.tokenString,
-                                tokenCreated: response.data.token.iat,
-                                tokenExpired: response.data.token.exp,
-                                
-                                apiRefreshToken: response.data.refreshToken,
-                            };
-                            
-                            this.createAuth( auth );
-                        }
-                    }));
+            tap( ( response: any ) => {
+                if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
+                    let auth: IAuth = {
+                        id: response.data.user.id,
+                        
+                        email: response.data.user.email,
+                        username: response.data.user.username,
+                        
+                        fullName: response.data.user.firstName + ' ' + response.data.user.lastName,
+                        
+                        apiToken: response.data.tokenString,
+                        tokenCreated: response.data.token.iat,
+                        tokenExpired: response.data.token.exp,
+                        
+                        apiRefreshToken: response.data.refreshToken,
+                    };
+                    
+                    this.createAuth( auth );
+                }
+            })
+        );
     }
     
     public checkTokenExpired( auth: IAuth ): boolean
@@ -135,11 +136,10 @@ export class AuthService
     
     signIn( userDto: UserDto, idToken: string ): void
     {
-        const options = {
-            headers: { Authorization: idToken }
-        };
+        const headers = ( new HttpHeaders() ).set( "Authorization", "Bearer " + idToken );
+        
         // Gets or creates the user in backgammon database.
-        this.httpClient.post<UserDto>( 'signin', userDto, options ).pipe(
+        this.httpClient.post<UserDto>( 'account/signin', userDto, {headers} ).pipe(
             map( ( data: any ) => { return data; } )
         ).subscribe( ( userDto: UserDto ) => {
             this.storage.set( Keys.loginKey, userDto );

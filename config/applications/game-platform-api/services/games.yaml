@@ -1,0 +1,22 @@
+parameters:
+    app_websocket_url: '%env(WEBSOCKET_URL)%'
+    app_game_for_gold: '%env(bool:GAME_FOR_GOLD)%'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+    
+    app_game_manager:
+        class: App\Component\Manager\GameManager
+        arguments:
+            - '@logger'
+            - '@event_dispatcher'
+            - '@doctrine'
+            - '@vsapp.repository.games'
+            - '@vsapp.repository.game_sessions'
+            - '@vsapp.factory.game_sessions'
+            - '@vsapp.repository.game_players'
+            - '@vsapp.repository.temp_players'
+            - '@vsapp.factory.temp_players'
+            - '%app_game_for_gold%'

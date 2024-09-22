@@ -37,23 +37,16 @@ class FinishGameController extends AbstractController
         $em         = $this->doctrine->getManager();
         
         $gamePlay->setActive( false );
-        $gamePlay->getGameRoom()->setIsPlaying( false );
         
         $em->persist( $gamePlay );
         $em->flush();
         
-        $this->publishGamePlay( $gamePlay );
+        //$this->publishGamePlay( $gamePlay );
         
         return new JsonResponse([
             'status'    => Status::STATUS_OK,
             'data'      => [
                 'id'        => $gamePlay->getId(),
-                'room'      => [
-                    'id'        => $gamePlay->getGameRoom()->getId(),
-                    'slug'      => $gamePlay->getGameRoom()->getSlug(),
-                    'name'      => $gamePlay->getGameRoom()->getName(),
-                    'isPlaying' => $gamePlay->getGameRoom()->isPlaying(),
-                ],
             ],
         ]);
     }

@@ -13,3 +13,11 @@ vs_api_test_mercure_index:
 vs_api_test_mercure_publish:
     path: /test-mercure/publish
     controller: App\Controller\Application\TestMercureController::publish
+    
+vs_api_test_websocket_index:
+    path: /test-websocket
+    controller: App\Controller\Application\TestWebSocketController::index
+
+vs_api_test_websocket_publish:
+    path: /test-websocket/publish
+    controller: App\Controller\Application\TestWebSocketController::publish

@@ -5,20 +5,20 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpFoundation\Request;
 use App\Component\GamePlatform;
 use App\Component\GameService;
-use App\Component\Websocket\WebsocketClient;
+use App\Component\Websocket\WebsocketClientFactory;
 
 final class GameRequestListener
 {
-    /** @var WebsocketClient */
-    private $wsClient;
+    /** @var WebsocketClientFactory */
+    private $wsClientFactory;
     
     /** @var GameService */
     private $gameService;
     
-    public function __construct( WebsocketClient $wsClient, GameService $gameService )
+    public function __construct( WebsocketClientFactory $wsClientFactory, GameService $gameService )
     {
-        $this->wsClient     = $wsClient;
-        $this->gameService  = $gameService;
+        $this->wsClientFactory  = $wsClientFactory;
+        $this->gameService      = $gameService;
     }
     
     public function onKernelRequest( RequestEvent $event ): void
@@ -45,6 +45,6 @@ final class GameRequestListener
         $playAi     = $request->query->get( 'playAi', true );
         $forGold    = $request->query->get( 'forGold', true );
         
-        $this->gameService->Connect( $this->wsClient, $gameCode, $userId, $gameId, $playAi, $forGold, $gameCookie );
+        $this->gameService->Connect( $this->wsClientFactory->createNew(), $gameCode, $userId, $gameId, $playAi, $forGold, $gameCookie );
     }
 }

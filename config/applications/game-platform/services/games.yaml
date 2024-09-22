@@ -9,7 +9,7 @@ services:
 
     App\EventListener\GameRequestListener:
         arguments:
-            - '@app_websocket_client'
+            - '@app_websocket_client_factory'
             - '@app_game_service'
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
@@ -21,8 +21,8 @@ services:
         tags:
            -  { name: kernel.event_listener, event: app.game_ended, method: onGameEnded }
             
-    app_websocket_client:
-        class: App\Component\Websocket\WebsocketClient
+    app_websocket_client_factory:
+        class: App\Component\Websocket\WebsocketClientFactory
         arguments:
             - '%app_websocket_url%'
             

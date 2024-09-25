@@ -45,6 +45,6 @@ final class GameRequestListener
         $playAi     = $request->query->get( 'playAi', true );
         $forGold    = $request->query->get( 'forGold', true );
         
-        $this->gameService->Connect( $this->wsClientFactory->createNew(), $gameCode, $userId, $gameId, $playAi, $forGold, $gameCookie );
+        $this->gameService->Connect( $this->wsClientFactory->createServerClient(), $gameCode, $userId, $gameId, $playAi, $forGold, $gameCookie );
     }
 }

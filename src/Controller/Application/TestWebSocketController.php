@@ -56,11 +56,7 @@ class TestWebSocketController extends AbstractController
         $testObject->user       = $data['user'];
         $testObject->message    = $data['message'];
         
-        $context = new \ZMQContext();
-        $socket = $context->getSocket( \ZMQ::SOCKET_PUSH, 'my pusher' );
-        $socket->connect( $this->getParameter( 'app_zmqsocket_url' ) );
-        
-        $socket->send( \json_encode( $testObject ) );
+        $this->wsClientFactory->createPublisherrClient()->send( $testObject );
         
         return new JsonResponse([
             'status'    => Status::STATUS_OK,

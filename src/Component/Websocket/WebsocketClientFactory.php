@@ -3,15 +3,28 @@
 final class WebsocketClientFactory
 {
     /** @var string */
-    private $websocketUrl;
+    private $websocketServerUrl;
     
-    public function __construct( string $websocketUrl )
+    /** @var string */
+    private $websocketPublisherUrl;
+    
+    /** @var string */
+    private $zmqServerUrl;
+    
+    public function __construct( string $websocketServerUrl, string $websocketPublisherUrl, string $zmqServerUrl )
     {
-        $this->websocketUrl = $websocketUrl;
+        $this->websocketServerUrl       = $websocketServerUrl;
+        $this->websocketPublisherUrl    = $websocketPublisherUrl;
+        $this->zmqServerUrl             = $zmqServerUrl;
     }
     
-    public function createNew()
+    public function createServerClient()
     {
-        return new WebsocketClient( $this->websocketUrl );
+        return new WebsocketServerClient( $this->websocketServerUrl );
+    }
+    
+    public function createPublisherrClient()
+    {
+        return new WebsocketPublisherClient( $this->zmqServerUrl );
     }
 }

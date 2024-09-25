@@ -75,12 +75,13 @@ final class GameService
         
         $isGuest = ! $dbUser; // $dbUser->getId() == Guid::Empty();
         // filter out games having a logged in player
-        if ( $isGuest )
+        if ( $isGuest ) {
             $managers = $managers->filter(
                 function( $entry ) {
                     return $entry->Game->BlackPlayer->Id != Guid::Empty() || $entry->Game->WhitePlayer->Id != Guid::Empty();
                 }
             )->toArray();
+        }
         
         $manager = \array_shift( $managers );
         if ( $manager == null || $playAi ) {

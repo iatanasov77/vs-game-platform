@@ -27,6 +27,8 @@ services:
         class: App\Component\Websocket\WebsocketClientFactory
         arguments:
             - '%app_websocket_server_url%'
+            - '%app_websocket_publisher_url%'
+            - '%app_zmqsocket_url%'
             
     app_game_service:
         class: App\Component\GameService

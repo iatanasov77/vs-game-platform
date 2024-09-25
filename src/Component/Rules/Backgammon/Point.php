@@ -3,7 +3,7 @@
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-use App\Component\Type\RulesPlayerColor;
+use App\Component\Type\PlayerColor;
 
 /// <summary>
 /// Represents one of 24 a triangles where a checker can be placed.
@@ -21,7 +21,7 @@ class Point
     /** @var int */
     public $BlackNumber;
 
-    public function IsOpen( RulesPlayerColor $myColor ): bool
+    public function IsOpen( PlayerColor $myColor ): bool
     {
         //Opponent has less than two checkers on the point.
         //My own home is always open.
@@ -32,9 +32,9 @@ class Point
         )->count() < 2 || $this->GetNumber( $myColor ) == 25;
     }
 
-    public function GetNumber( RulesPlayerColor $player ): int
+    public function GetNumber( PlayerColor $player ): int
     {
-        return $player == RulesPlayerColor::Black ? $this->BlackNumber : $this->WhiteNumber;
+        return $player == PlayerColor::Black ? $this->BlackNumber : $this->WhiteNumber;
     }
 
     public function __toString(): string
@@ -43,7 +43,7 @@ class Point
         return "{$this->Checkers->count()} {$color} WN = {$this->WhiteNumber}, BN = {$this->BlackNumber}, ";
     }
 
-    public function IsHome( RulesPlayerColor $player ): bool
+    public function IsHome( PlayerColor $player ): bool
     {
         return $this->GetNumber( $player ) == 25;
     }

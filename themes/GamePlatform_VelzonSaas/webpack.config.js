@@ -66,6 +66,11 @@ Encore
         {from: './themes/GamePlatform_VelzonSaas/assets/vendor/Velzon_v4.2.0/images/flags', to: 'images/flags/[path][name].[ext]'},
         {from: './themes/GamePlatform_VelzonSaas/assets/vendor/Velzon_v4.2.0/images/users', to: 'images/users/[path][name].[ext]'},
     ])
+    
+    // Static JS Scripts
+    .copyFiles([
+        {from: './themes/GamePlatform_VelzonSaas/assets/vendor/cboden', to: 'cboden/[path][name].[ext]'},
+     ])
 
     // Global Assets
     .addStyleEntry( 'css/app', './themes/GamePlatform_VelzonSaas/assets/css/app.scss' )
@@ -87,6 +92,9 @@ Encore
     .addEntry( 'js/contract-bridge', './themes/GamePlatform_VelzonSaas/assets/js/games/contract-bridge/index.js' )
     .addEntry( 'js/chess', './themes/GamePlatform_VelzonSaas/assets/js/games/chess/index.js' )
     .addEntry( 'js/backgammon', './themes/GamePlatform_VelzonSaas/assets/js/games/backgammon/index.js' )
+    
+    // Test
+    .addEntry( 'js/test-websocket', './themes/GamePlatform_VelzonSaas/assets/js/pages/test-websocket.js' )
 ;
 
 Encore.configureDefinePlugin( ( options ) => {

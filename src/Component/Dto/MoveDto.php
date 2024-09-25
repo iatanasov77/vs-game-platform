@@ -1,6 +1,7 @@
 ﻿<?php namespace App\Component\Dto;
 
 use Doctrine\Common\Collections\Collection;
+use App\Component\Type\PlayerColor;
 
 class MoveDto
 {

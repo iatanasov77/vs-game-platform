@@ -1,6 +1,7 @@
 ﻿<?php namespace App\Component\Dto;
 
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
+use App\Component\Type\PlayerColor;
 use App\Component\Rules\Backgammon\Game;
 use App\Component\Rules\Backgammon\Player;
 use App\Component\Rules\Backgammon\Point;

@@ -11,11 +11,6 @@ use App\Entity\UserManagement\User;
 #[ORM\Table(name: "VSGP_GamePlayers")]
 class GamePlayer implements ResourceInterface
 {
-    const TYPE_COMPUTER = 'computer';
-    const TYPE_USER = 'user';
-    const COLOR_BLACK = 'black';
-    const COLOR_WHITE = 'white';
-    
     /** @var int */
     #[ORM\Id, ORM\Column(type: "integer"), ORM\GeneratedValue(strategy: "IDENTITY")]
     private $id;

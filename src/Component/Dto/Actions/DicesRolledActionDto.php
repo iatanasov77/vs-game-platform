@@ -1,7 +1,7 @@
 ﻿<?php namespace App\Component\Dto\Actions;
 
 use Doctrine\Common\Collections\Collection;
-use App\Component\Dto\PlayerColor;
+use App\Component\Type\PlayerColor;
 
 class DicesRolledActionDto extends ActionDto
 {

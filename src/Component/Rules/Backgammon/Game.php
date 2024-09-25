@@ -5,7 +5,7 @@ use Doctrine\Common\Collections\Collection;
 
 use App\Component\System\Guid;
 use App\Component\Type\GameState;
-use App\Component\Type\RulesPlayerColor;
+use App\Component\Type\PlayerColor;
 
 use App\Entity\GamePlayer;
 
@@ -23,7 +23,7 @@ class Game
     /** @var GamePlayer */
     public $WhitePlayer;
     
-    /** @var RulesPlayerColor */
+    /** @var PlayerColor */
     public $CurrentPlayer;
     
     /** @var Collection | Point[] */
@@ -53,7 +53,7 @@ class Game
     /** @var bool */
     public $IsGoldGame;
     
-    /** @var RulesPlayerColor */
+    /** @var PlayerColor */
     public $LastDoubler = null;
     
     /** @var int */
@@ -76,11 +76,11 @@ class Game
         $game->ValidMoves   = new ArrayCollection();
         
         $game->BlackPlayer = new Player();
-        $game->BlackPlayer->PlayerColor = RulesPlayerColor::Black;
+        $game->BlackPlayer->PlayerColor = PlayerColor::Black;
         $game->BlackPlayer->Name = "Guest";
         
         $game->WhitePlayer = new Player();
-        $game->BlackPlayer->PlayerColor = RulesPlayerColor::White;
+        $game->BlackPlayer->PlayerColor = PlayerColor::White;
         $game->BlackPlayer->Name = "Guest";
         
         $game->Created = new \DateTime( 'now' );
@@ -100,8 +100,8 @@ class Game
         }
         
         $game->Bars = new ArrayCollection();
-        $game->Bars[(int)RulesPlayerColor::Black] = $game->Points->first();
-        $game->Bars[(int)RulesPlayerColor::White] = $game->Points->last();
+        $game->Bars[(int)PlayerColor::Black] = $game->Points->first();
+        $game->Bars[(int)PlayerColor::White] = $game->Points->last();
 
         $game->SetStartPosition();
         $game->GoldMultiplier = 1;
@@ -116,7 +116,7 @@ class Game
         foreach ( $game->Points as $point ) {
             $blackCheckers  = $point->Checkers->filter(
                 function( $entry ) {
-                    return $entry->Color == RulesPlayerColor::Black;
+                    return $entry->Color == PlayerColor::Black;
                 }
             );
             foreach ( $blackCheckers as $ckr ) {
@@ -125,7 +125,7 @@ class Game
             
             $whiteCheckers  = $point->Checkers->filter(
                 function( $entry ) {
-                    return $entry->Color == RulesPlayerColor::White;
+                    return $entry->Color == PlayerColor::White;
                 }
             );
             foreach ( $whiteCheckers as $ckr ) {
@@ -134,9 +134,9 @@ class Game
         }
     }
 
-    private function OtherPlayer(): RulesPlayerColor
+    private function OtherPlayer(): PlayerColor
     {
-        return $this->CurrentPlayer == RulesPlayerColor::Black ? RulesPlayerColor::White : RulesPlayerColor::Black;
+        return $this->CurrentPlayer == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
     }
 
     private function SetStartPosition(): void
@@ -145,17 +145,17 @@ class Game
             $point->Checkers->clear();
         }
 
-        $this->AddCheckers( 2, RulesPlayerColor::Black, 1 );
-        $this->AddCheckers( 2, RulesPlayerColor::White, 1 );
+        $this->AddCheckers( 2, PlayerColor::Black, 1 );
+        $this->AddCheckers( 2, PlayerColor::White, 1 );
 
-        $this->AddCheckers( 5, RulesPlayerColor::Black, 12 );
-        $this->AddCheckers( 5, RulesPlayerColor::White, 12 );
+        $this->AddCheckers( 5, PlayerColor::Black, 12 );
+        $this->AddCheckers( 5, PlayerColor::White, 12 );
 
-        $this->AddCheckers( 3, RulesPlayerColor::Black, 17 );
-        $this->AddCheckers( 3, RulesPlayerColor::White, 17 );
+        $this->AddCheckers( 3, PlayerColor::Black, 17 );
+        $this->AddCheckers( 3, PlayerColor::White, 17 );
 
-        $this->AddCheckers( 5, RulesPlayerColor::Black, 19 );
-        $this->AddCheckers( 5, RulesPlayerColor::White, 19 );
+        $this->AddCheckers( 5, PlayerColor::Black, 19 );
+        $this->AddCheckers( 5, PlayerColor::White, 19 );
 
         //OneMoveToVictory();
 
@@ -168,72 +168,72 @@ class Game
 
     private function AtHomeAndOtherAtBar(): void
     {
-        $this->AddCheckers( 3, RulesPlayerColor::Black, 21 );
-        $this->AddCheckers( 2, RulesPlayerColor::Black, 22 );
-        $this->AddCheckers( 5, RulesPlayerColor::Black, 23 );
-        $this->AddCheckers( 3, RulesPlayerColor::Black, 24 );
-        $this->AddCheckers( 2, RulesPlayerColor::Black, 25 );
+        $this->AddCheckers( 3, PlayerColor::Black, 21 );
+        $this->AddCheckers( 2, PlayerColor::Black, 22 );
+        $this->AddCheckers( 5, PlayerColor::Black, 23 );
+        $this->AddCheckers( 3, PlayerColor::Black, 24 );
+        $this->AddCheckers( 2, PlayerColor::Black, 25 );
 
-        $this->AddCheckers( 2, RulesPlayerColor::White, 19 );
-        $this->AddCheckers( 2, RulesPlayerColor::White, 20 );
-        $this->AddCheckers( 3, RulesPlayerColor::White, 21 );
-        $this->AddCheckers( 2, RulesPlayerColor::White, 22 );
-        $this->AddCheckers( 2, RulesPlayerColor::White, 23 );
-        $this->AddCheckers( 1, RulesPlayerColor::White, 24 );
-        $this->AddCheckers( 2, RulesPlayerColor::White, 0 );
+        $this->AddCheckers( 2, PlayerColor::White, 19 );
+        $this->AddCheckers( 2, PlayerColor::White, 20 );
+        $this->AddCheckers( 3, PlayerColor::White, 21 );
+        $this->AddCheckers( 2, PlayerColor::White, 22 );
+        $this->AddCheckers( 2, PlayerColor::White, 23 );
+        $this->AddCheckers( 1, PlayerColor::White, 24 );
+        $this->AddCheckers( 2, PlayerColor::White, 0 );
 
     }
 
     private function OneMoveToVictory(): void
     {
         //Only one move to victory
-        $this->AddCheckers( 14, RulesPlayerColor::Black, 25 );
-        $this->AddCheckers( 14, RulesPlayerColor::White, 25 );
+        $this->AddCheckers( 14, PlayerColor::Black, 25 );
+        $this->AddCheckers( 14, PlayerColor::White, 25 );
 
-        $this->AddCheckers( 1, RulesPlayerColor::Black, 24 );
-        $this->AddCheckers( 1, RulesPlayerColor::White, 24 );
+        $this->AddCheckers( 1, PlayerColor::Black, 24 );
+        $this->AddCheckers( 1, PlayerColor::White, 24 );
     }
 
     private function DebugBlocked(): void
     {
-        $this->AddCheckers( 3, RulesPlayerColor::Black, 20 );
-        $this->AddCheckers( 3, RulesPlayerColor::White, 20 );
+        $this->AddCheckers( 3, PlayerColor::Black, 20 );
+        $this->AddCheckers( 3, PlayerColor::White, 20 );
 
-        $this->AddCheckers( 3, RulesPlayerColor::Black, 21 );
-        $this->AddCheckers( 3, RulesPlayerColor::White, 21 );
+        $this->AddCheckers( 3, PlayerColor::Black, 21 );
+        $this->AddCheckers( 3, PlayerColor::White, 21 );
 
-        $this->AddCheckers( 3, RulesPlayerColor::Black, 22 );
-        $this->AddCheckers( 3, RulesPlayerColor::White, 22 );
+        $this->AddCheckers( 3, PlayerColor::Black, 22 );
+        $this->AddCheckers( 3, PlayerColor::White, 22 );
 
-        $this->AddCheckers( 3, RulesPlayerColor::Black, 23 );
-        $this->AddCheckers( 3, RulesPlayerColor::White, 23 );
+        $this->AddCheckers( 3, PlayerColor::Black, 23 );
+        $this->AddCheckers( 3, PlayerColor::White, 23 );
 
-        $this->AddCheckers( 2, RulesPlayerColor::Black, 24 );
-        $this->AddCheckers( 2, RulesPlayerColor::White, 24 );
+        $this->AddCheckers( 2, PlayerColor::Black, 24 );
+        $this->AddCheckers( 2, PlayerColor::White, 24 );
 
-        $this->AddCheckers( 1, RulesPlayerColor::Black, 0 );
-        $this->AddCheckers( 1, RulesPlayerColor::White, 0 );
+        $this->AddCheckers( 1, PlayerColor::Black, 0 );
+        $this->AddCheckers( 1, PlayerColor::White, 0 );
     }
 
     private function DebugBearingOff(): void
     {
-        $this->AddCheckers( 3, RulesPlayerColor::Black, 20 );
-        $this->AddCheckers( 3, RulesPlayerColor::White, 20 );
+        $this->AddCheckers( 3, PlayerColor::Black, 20 );
+        $this->AddCheckers( 3, PlayerColor::White, 20 );
 
-        $this->AddCheckers( 3, RulesPlayerColor::Black, 21 );
-        $this->AddCheckers( 3, RulesPlayerColor::White, 21 );
+        $this->AddCheckers( 3, PlayerColor::Black, 21 );
+        $this->AddCheckers( 3, PlayerColor::White, 21 );
 
-        $this->AddCheckers( 3, RulesPlayerColor::Black, 22 );
-        $this->AddCheckers( 3, RulesPlayerColor::White, 22 );
+        $this->AddCheckers( 3, PlayerColor::Black, 22 );
+        $this->AddCheckers( 3, PlayerColor::White, 22 );
 
-        $this->AddCheckers( 3, RulesPlayerColor::Black, 23 );
-        $this->AddCheckers( 3, RulesPlayerColor::White, 23 );
+        $this->AddCheckers( 3, PlayerColor::Black, 23 );
+        $this->AddCheckers( 3, PlayerColor::White, 23 );
 
-        $this->AddCheckers( 2, RulesPlayerColor::Black, 24 );
-        $this->AddCheckers( 2, RulesPlayerColor::White, 24 );
+        $this->AddCheckers( 2, PlayerColor::Black, 24 );
+        $this->AddCheckers( 2, PlayerColor::White, 24 );
 
-        $this->AddCheckers( 1, RulesPlayerColor::Black, 19 );
-        $this->AddCheckers( 1, RulesPlayerColor::White, 19 );
+        $this->AddCheckers( 1, PlayerColor::Black, 19 );
+        $this->AddCheckers( 1, PlayerColor::White, 19 );
     }
 
     public function ClearCheckers(): void
@@ -242,7 +242,7 @@ class Game
             $point->Checkers->clear();
     }
 
-    public function IsBearingOff( RulesPlayerColor $color ): bool
+    public function IsBearingOff( PlayerColor $color ): bool
     {
         // Points that have checkers with the color asked all have higher number than 18
         return $this->Points->filter(
@@ -260,7 +260,7 @@ class Game
         );
     }
 
-    public function AddCheckers( int $count, RulesPlayerColor $color, int $point ): void
+    public function AddCheckers( int $count, PlayerColor $color, int $point ): void
     {
         $checker        = new Checker();
         $checker->Color = $color;
@@ -284,9 +284,9 @@ class Game
     {
         if ( $this->PlayState == GameState::FirstThrow ) {
             if ( $this->Roll[0]->Value > $this->Roll[1]->Value ) {
-                $this->CurrentPlayer = RulesPlayerColor::Black;
+                $this->CurrentPlayer = PlayerColor::Black;
             } else if ( $this->Roll[0]->Value < $this->Roll[1]->Value ) {
-                $this->CurrentPlayer = RulesPlayerColor::White;
+                $this->CurrentPlayer = PlayerColor::White;
             }
 
             if ( $this->Roll[0]->Value != $this->Roll[1]->Value ) {
@@ -450,7 +450,7 @@ class Game
         
         $move->From->Checkers->removeElement( $checker );
         $move->To->Checkers[]   = $checker;
-        if ( $move->Color == RulesPlayerColor::Black ) {
+        if ( $move->Color == PlayerColor::Black ) {
             $this->BlackPlayer->PointsLeft -= ( $move->To->BlackNumber - $move->From->BlackNumber);
         } else {
             $this->WhitePlayer->PointsLeft -= ( $move->To->WhiteNumber - $move->From->WhiteNumber );
@@ -472,7 +472,7 @@ class Game
             )->first();
             
             $bar->Checkers[]    = $hit;
-            if ( $move->Color == RulesPlayerColor::Black )
+            if ( $move->Color == PlayerColor::Black )
                 $this->WhitePlayer->PointsLeft += ( 25 - $move->To->WhiteNumber );
             else
                 $this->BlackPlayer->PointsLeft += ( 25 - $move->To->BlackNumber );
@@ -490,7 +490,7 @@ class Game
         )->first();
         $move->To->Checkers->removeElement( $checker );
         $move->From->Checkers[] = $checker;
-        if ( $move->Color == RulesPlayerColor::Black )
+        if ( $move->Color == PlayerColor::Black )
             $this->BlackPlayer->PointsLeft += ( $move->To->BlackNumber - $move->From->BlackNumber );
         else
             $this->WhitePlayer->PointsLeft += ( $move->To->WhiteNumber - $move->From->WhiteNumber );
@@ -502,7 +502,7 @@ class Game
                 }
             )->first();
             $bar->Checkers->removeElement( $hitChecker );
-            if ( $move->Color == RulesPlayerColor::Black )
+            if ( $move->Color == PlayerColor::Black )
                 $this->WhitePlayer->PointsLeft -= ( 25 - $move->To->WhiteNumber );
             else
                 $this->BlackPlayer->PointsLeft -= ( 25 - $move->To->BlackNumber );

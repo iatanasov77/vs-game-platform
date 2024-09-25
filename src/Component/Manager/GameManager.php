@@ -21,8 +21,8 @@ use App\Component\Websocket\WebsocketClient;
 use App\Component\Websocket\WebSocketState;
 
 // Types
-use App\Component\Dto\PlayerColor;
-use App\Component\Dto\GameState;
+use App\Component\Type\PlayerColor;
+use App\Component\Type\GameState;
 
 // Actions
 use App\Component\Dto\toplist\NewScoreDto;
@@ -303,7 +303,7 @@ final class GameManager
         $black = $this->tempPlayersFactory->createNew();
         $black->setGuid( Guid::NewGuid() );
         $black->setPlayer( $blackUser );
-        $black->setColor( GamePlayer::COLOR_BLACK );
+        $black->setColor( PlayerColor::Black->value );
         $blackUser->addGamePlayer( $black );
         
         $whiteUser = $this->playersRepository->find( $this->Game->WhitePlayer->Id );
@@ -317,7 +317,7 @@ final class GameManager
         $white = $this->tempPlayersFactory->createNew();
         $white->setGuid( Guid::NewGuid() );
         $white->setPlayer( $whiteUser );
-        $white->setColor( GamePlayer::COLOR_WHITE );
+        $white->setColor( PlayerColor::White->value );
         $whiteUser->addGamePlayer( $white );
         
         $gameBase   = $this->gameRepository->findOneBy(['code' => $this->GameCode]);

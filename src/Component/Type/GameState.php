@@ -1,10 +1,13 @@
 <?php namespace App\Component\Type;
 
-enum GameState
+/**
+ * Manual: https://www.php.net/manual/en/language.enumerations.backed.php
+ */
+enum GameState: string
 {
-    case OpponentConnectWaiting;
-    case FirstThrow;
-    case Playing;
-    case Ended;
+    case OpponentConnectWaiting = 'opponentConnectWaiting';
+    case FirstThrow             = 'firstThrow';
+    case Playing                = 'playing';
+    case Ended                  = 'ended';
 }
     

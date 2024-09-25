@@ -1,13 +1,13 @@
 <?php namespace App\Component\Websocket;
 
-use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
+use Ratchet\Wamp\WampServerInterface;
 
 /**
  * Manual:  https://stackoverflow.com/questions/64292868/how-to-send-a-message-to-specific-websocket-clients-with-symfony-ratchet
  *          https://stackoverflow.com/questions/30953610/how-to-send-messages-to-particular-users-ratchet-php-websocket
  */
-class MessageHandler implements MessageComponentInterface
+class MessageHandler implements WampServerInterface
 {
     /** @var \SplObjectStorage */
     protected $clients;
@@ -18,6 +18,27 @@ class MessageHandler implements MessageComponentInterface
     /** @var string */
     protected $logFile;
     
+    
+    
+    
+    
+    
+    
+    /**
+     * A lookup of all the topics clients have subscribed to
+     */
+    protected $subscribedTopics = array();
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     public function __construct()
     {
         //$this->clients  = new \SplObjectStorage;
@@ -26,6 +47,64 @@ class MessageHandler implements MessageComponentInterface
         $this->logFile  = '/var/log/websocket/game-patform.log';
     }
     
+    
+    
+    
+    
+    
+    
+    
+    public function onSubscribe( ConnectionInterface $conn, $topic )
+    {
+        $this->subscribedTopics[$topic->getId()] = $topic;
+    }
+    
+    /**
+     * @param string JSON'ified string we'll receive from ZeroMQ
+     */
+    public function onBlogEntry( $entry )
+    {
+        $entryData = \json_decode( $entry, true );
+        
+        // If the lookup topic object isn't set there is no one to publish to
+        if ( ! \array_key_exists( $entryData['test'], $this->subscribedTopics ) ) {
+            return;
+        }
+        
+        $topic = $this->subscribedTopics[$entryData['test']];
+        
+        // re-send the data to all the clients subscribed to that category
+        $topic->broadcast( $entryData );
+    }
+    
+    public function onUnSubscribe(ConnectionInterface $conn, $topic) {
+    }
+    public function onOpen(ConnectionInterface $conn) {
+    }
+    public function onClose(ConnectionInterface $conn) {
+    }
+    public function onCall(ConnectionInterface $conn, $id, $topic, array $params) {
+        // In this application if clients send data it's because the user hacked around in console
+        $conn->callError($id, $topic, 'You are not allowed to make calls')->close();
+    }
+    public function onPublish(ConnectionInterface $conn, $topic, $event, array $exclude, array $eligible) {
+        // In this application if clients send data it's because the user hacked around in console
+        $conn->close();
+    }
+    public function onError(ConnectionInterface $conn, \Exception $e) {
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /*
     public function onOpen( ConnectionInterface $conn )
     {
         // Store the new connection to send messages to later
@@ -87,6 +166,11 @@ class MessageHandler implements MessageComponentInterface
         $this->log( "An error has occurred: {$e->getMessage()}\n" );
         $conn->close();
     }
+    */
+    
+    
+    
+    
     
     private function log( $logData ): void
     {

@@ -3,7 +3,7 @@
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-use App\Component\Type\RulesPlayerColor;
+use App\Component\Type\PlayerColor;
 
 class Move
 {
@@ -13,7 +13,7 @@ class Move
     /** @var Point */
     public $To;
     
-    /** @var RulesPlayerColor */
+    /** @var PlayerColor */
     public $Color;
 
     /** @var Collection | Move[] */

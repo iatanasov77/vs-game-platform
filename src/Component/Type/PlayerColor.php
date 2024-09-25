@@ -1,8 +1,12 @@
 <?php namespace App\Component\Type;
 
-enum PlayerColor
+/**
+ * Manual: https://www.php.net/manual/en/language.enumerations.backed.php
+ */
+enum PlayerColor: string
 {
-    case Black;
-    case White;
+    case Black      = 'black';
+    case White      = 'white';
+    case Neither    = 'neither';
 }
     

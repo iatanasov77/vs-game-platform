@@ -2,7 +2,7 @@
 
 use Doctrine\Common\Collections\Collection;
 use App\Component\Dto\GameDto;
-use App\Component\Dto\PlayerColor;
+use App\Component\Type\PlayerColor;
 
 class GameRestoreActionDto extends ActionDto
 {

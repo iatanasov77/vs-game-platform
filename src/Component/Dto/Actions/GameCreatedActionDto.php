@@ -1,7 +1,7 @@
 ﻿<?php namespace App\Component\Dto\Actions;
 
 use App\Component\Dto\GameDto;
-use App\Component\Dto\PlayerColor;
+use App\Component\Type\PlayerColor;
 
 class GameCreatedActionDto extends ActionDto
 {

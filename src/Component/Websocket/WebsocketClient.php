@@ -1,6 +1,9 @@
 <?php namespace App\Component\Websocket;
 
-use Amp\Loop;
+use function Amp\async;
+
+//use Amp\Loop;
+use Revolt\EventLoop as Loop;
 use Amp\Websocket\Client;
 
 /**
@@ -24,40 +27,14 @@ final class WebsocketClient
         $this->State        = WebSocketState::None;
     }
     
-    public function receive(): object
-    {
-        Loop::run(
-            function () {
-                $connection = yield Client\connect( $this->websocketUrl );
-                
-                while ( $message = yield $connection->receive() ) {
-                    $payload = yield $message->buffer();
-                    
-                    $r = $fn( $payload );
-                    if ( $r == false ) {
-                        $connection->close();
-                        break;
-                    }
-                }
-            }
-        );
-        
-        
-    }
-    
     public function send( object $msg ): void
     {
-        global $x;
-        $x = $msg;
+        $client = new \WebSocket\Client( $this->websocketUrl );
         
-        Loop::run(
-            function() {
-                global $x;
-                $connection = yield Client\connect( $this->websocketUrl );
-                yield $connection->send( \json_encode( $x ) );
-                yield $connection->close();
-                Loop::stop();
-            }
-        );
+        $client->text( \json_encode( $msg ) );
+        //$client->text( "Hello WebSocket.org!" );
+        //echo $client->receive();
+        
+        $client->close();
     }
 }

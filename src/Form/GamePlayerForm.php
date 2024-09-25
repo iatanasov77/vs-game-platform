@@ -9,14 +9,15 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
+use App\Component\Type\PlayerType;
 use App\Entity\GamePlayer;
 use App\Entity\UserManagement\User;
 
 class GamePlayerForm extends AbstractForm
 {
     private $gameTypes  = [
-        GamePlayer::TYPE_COMPUTER   => 'Computer',
-        GamePlayer::TYPE_USER       => 'User',
+        PlayerType::Computer->value => 'Computer',
+        PlayerType::User->value     => 'User',
     ];
     
     public function buildForm( FormBuilderInterface $builder, array $options ): void

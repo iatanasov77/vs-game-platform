@@ -1,6 +1,6 @@
 ﻿<?php namespace App\Component\Rules\Backgammon;
 
-use App\Component\Type\RulesPlayerColor;
+use App\Component\Type\PlayerColor;
 use App\Component\System\Guid;
 
 class Player
@@ -8,7 +8,7 @@ class Player
     /** @var string */
     public $Name;
     
-    /** @var RulesPlayerColor */
+    /** @var PlayerColor */
     public $PlayerColor;
     
     /** @var int */

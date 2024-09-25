@@ -52,7 +52,7 @@ class AuthController extends AbstractController
         $lastUsername = $authenticationUtils->getLastUsername();
         
         $tplVars = [
-            'shoppingCart'  => $this->getShoppingCart( $request ),
+            //'shoppingCart'  => $this->getShoppingCart( $request ),
             'last_username' => $lastUsername,
             'error'         => $error,
         ];

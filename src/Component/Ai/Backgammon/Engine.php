@@ -3,7 +3,7 @@
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-use App\Component\Type\RulesPlayerColor;
+use App\Component\Type\PlayerColor;
 use App\Component\Rules\Backgammon\Game;
 use App\Component\Rules\Backgammon\Move;
 
@@ -66,7 +66,7 @@ class Engine
         if ( $bestMoveSequence == null )
             return new ArrayCollection();
         
-        if ( $myColor == RulesPlayerColor::Black ) {
+        if ( $myColor == PlayerColor::Black ) {
             $bestMoveSequence   = $bestMoveSequence->filter(
                 function( $entry ) {
                     return $entry != null;
@@ -140,15 +140,15 @@ class Engine
         }
     }
 
-    private static function EvaluatePoints( RulesPlayerColor $myColor, Game $game ): float
+    private static function EvaluatePoints( PlayerColor $myColor, Game $game ): float
     {
-        if ( $myColor == RulesPlayerColor::White ) // Higher score for white when few checkers and black has many checkers left
+        if ( $myColor == PlayerColor::White ) // Higher score for white when few checkers and black has many checkers left
             return $game->BlackPlayer->PointsLeft - $game->WhitePlayer->PointsLeft;
         else
             return $game->WhitePlayer->PointsLeft - $game->BlackPlayer->PointsLeft;
     }
 
-    private function EvaluateCheckers( RulesPlayerColor $myColor, Game $game ): float
+    private function EvaluateCheckers( PlayerColor $myColor, Game $game ): float
     {
         $score = 0;
         $inBlock = false;
@@ -159,7 +159,7 @@ class Engine
         $cbf = $this->Configuration->ConnectedBlocksFactor;
         $bps = $this->Configuration->BlockedPointScore;
 
-        $other = $myColor == RulesPlayerColor::Black ? RulesPlayerColor::White : RulesPlayerColor::Black;
+        $other = $myColor == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
         // Oponents checker closest to their bar. Relative to my point numbers.
         $opponentColorNumber = $game->Points->filter(
             function( $entry ) use ( $other ) {
@@ -169,7 +169,7 @@ class Engine
                     }
                 );
             }
-        )->pluck( $myColor == RulesPlayerColor::Black ? 'BlackNumber' : 'WhiteNumber' );
+        )->pluck( $myColor == PlayerColor::Black ? 'BlackNumber' : 'WhiteNumber' );
         $opponentMax = \max( $opponentColorNumber );
         
         
@@ -181,7 +181,7 @@ class Engine
                     }
                 );
             }
-        )->pluck( $myColor == RulesPlayerColor::Black ? 'BlackNumber' : 'WhiteNumber' );
+        )->pluck( $myColor == PlayerColor::Black ? 'BlackNumber' : 'WhiteNumber' );
         $myMin = \min( $myColorNumber );
 
         $allPassed = true;
@@ -190,7 +190,7 @@ class Engine
             for ( $i = 1; $i < 25; $i++ ) {
                 // It is important to reverse looping for white.
                 $point = $game->Points[i];
-                if ( $myColor == RulesPlayerColor::White )
+                if ( $myColor == PlayerColor::White )
                     $point = $game->Points[25 - i];
 
                 $pointNo = $point->GetNumber( $myColor );
@@ -234,11 +234,11 @@ class Engine
     }
 
     //Get the average score for current player rolling all possible combinations
-    private function ProbabilityScore( RulesPlayerColor $myColor, Game $game ): float
+    private function ProbabilityScore( PlayerColor $myColor, Game $game ): float
     {
         $allDiceRoll = self::AllRolls();
         $scores = [];
-        $oponent = $myColor == RulesPlayerColor::Black ? RulesPlayerColor::White : RulesPlayerColor::Black;
+        $oponent = $myColor == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
         foreach ( $allDiceRoll as $roll ) {
             $game->FakeRoll( $roll['dice1'], $roll['dice2'] );
             $bestScore = - PHP_FLOAT_MAX;
@@ -427,7 +427,7 @@ class Engine
         }
     }
 
-    private function Evaluate( RulesPlayerColor $color, Game $game ): float
+    private function Evaluate( PlayerColor $color, Game $game ): float
     {
         $score = self::EvaluatePoints( $color, $game ) + self::EvaluateCheckers( $color, $game );
         return $score;
@@ -439,10 +439,10 @@ class Engine
             return true;
 
         $myScore = $this->Evaluate( $this->EngineGame->CurrentPlayer, $this->EngineGame );
-        $oponent = $this->EngineGame->CurrentPlayer == RulesPlayerColor::Black ? RulesPlayerColor::White : RulesPlayerColor::Black;
+        $oponent = $this->EngineGame->CurrentPlayer == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
         $otherScore = $this->Evaluate( $oponent, $this->EngineGame );
 
-        $oppPips = $this->EngineGame->CurrentPlayer == RulesPlayerColor::White ?
+        $oppPips = $this->EngineGame->CurrentPlayer == PlayerColor::White ?
             $this->EngineGame->BlackPlayer->PointsLeft :
             $this->EngineGame->WhitePlayer->PointsLeft;
 

@@ -23,7 +23,7 @@ function publishMessage( form, dto )
 
 $( function()
 {
-    const url           = window.clientSettings.socketServiceUrl;
+    const url           = window.clientSettings.socketPublisherUrl;
     const currentUser   = window.currentUser;
     //alert( url );
     

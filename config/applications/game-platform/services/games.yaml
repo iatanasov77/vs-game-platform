@@ -1,5 +1,7 @@
 parameters:
-    app_websocket_url: '%env(WEBSOCKET_URL)%'
+    app_zmqsocket_url: '%env(ZMQSOCKET_URL)%'
+    app_websocket_publisher_url: '%env(WEBSOCKET_PUBLISHER_URL)%'
+    app_websocket_server_url: '%env(WEBSOCKET_SERVER_URL)%'
     app_game_for_gold: '%env(bool:GAME_FOR_GOLD)%'
 
 services:
@@ -24,7 +26,7 @@ services:
     app_websocket_client_factory:
         class: App\Component\Websocket\WebsocketClientFactory
         arguments:
-            - '%app_websocket_url%'
+            - '%app_websocket_server_url%'
             
     app_game_service:
         class: App\Component\GameService

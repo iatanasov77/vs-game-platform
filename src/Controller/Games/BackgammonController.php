@@ -14,7 +14,8 @@ class BackgammonController extends GameController
         
         $gamePlatformSettings   = $this->applicationContext->getApplication()->getGamePlatformApplication()->getSettings();
         $gameSettings           = [
-            'socketServiceUrl'      => $this->getParameter( 'app_websocket_url' ),
+            'socketPublisherUrl'    => $this->getParameter( 'app_websocket_publisher_url' ),
+            'socketServerUrl'       => $this->getParameter( 'app_websocket_server_url' ),
             'apiVerifySiganature'   => $signature,
             'timeoutBetweenPlayers' => $gamePlatformSettings->getTimeoutBetweenPlayers(),
         ];

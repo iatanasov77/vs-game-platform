@@ -22,7 +22,8 @@ class TestWebSocketController extends AbstractController
         $signature  = $this->getUser() ? $this->getUser()->getApiVerifySiganature() : '';
         
         $clientSettings           = [
-            'socketServiceUrl'      => $this->getParameter( 'app_websocket_url' ),
+            'socketPublisherUrl'    => $this->getParameter( 'app_websocket_publisher_url' ),
+            'socketServerUrl'       => $this->getParameter( 'app_websocket_server_url' ),
             'apiVerifySiganature'   => $signature,
         ];
         
@@ -36,18 +37,13 @@ class TestWebSocketController extends AbstractController
         $signature  = $this->getUser() ? $this->getUser()->getApiVerifySiganature() : '';
         
         $clientSettings           = [
-            'socketServiceUrl'      => $this->getParameter( 'app_websocket_url' ),
+            'socketPublisherUrl'    => $this->getParameter( 'app_websocket_publisher_url' ),
+            'socketServerUrl'       => $this->getParameter( 'app_websocket_server_url' ),
             'apiVerifySiganature'   => $signature,
         ];
         
-        $client1    = $this->wsClientFactory->createNew();
-        $client2    = $this->wsClientFactory->createNew();
-        
         return $this->render( 'Pages/WebSocketTest/client_2.html.twig', [
             'clientSettings'    => $clientSettings,
-            
-            'client1'   => $client1,
-            'client2'   => $client2,
         ]);
     }
     
@@ -56,13 +52,13 @@ class TestWebSocketController extends AbstractController
         $data       = \json_decode( $request->getContent(), true );
         $testObject = new \stdClass();
         
-        $testObject->test       = 'chat';
+        $testObject->topic       = 'chat';
         $testObject->user       = $data['user'];
         $testObject->message    = $data['message'];
         
         $context = new \ZMQContext();
         $socket = $context->getSocket( \ZMQ::SOCKET_PUSH, 'my pusher' );
-        $socket->connect( "tcp://localhost:5555" );
+        $socket->connect( $this->getParameter( 'app_zmqsocket_url' ) );
         
         $socket->send( \json_encode( $testObject ) );
         

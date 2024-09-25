@@ -1,0 +1,40 @@
+#!/usr/bin/env php
+<?php
+/**
+ * MANUAL: http://socketo.me/docs/hello-world
+ */
+error_reporting( E_ERROR | E_WARNING | E_PARSE );
+require_once dirname( __DIR__ ) . '/vendor/autoload.php';
+
+use React\EventLoop\Factory;
+use React\ZMQ\Context;
+use React\Socket\Server;
+use Ratchet\Server\IoServer;
+use Ratchet\Http\HttpServer;
+use Ratchet\WebSocket\WsServer;
+use Ratchet\Wamp\WampServer;
+use App\Component\Websocket\WebsocketMessagePublisher;
+
+$loop       = Factory::create();
+$publisher  = new WebsocketMessagePublisher();
+
+// Listen for the web server to make a ZeroMQ push after an ajax request
+$context    = new Context( $loop );
+$pull       = $context->getSocket( \ZMQ::SOCKET_PULL );
+$pull->bind( 'tcp://127.0.0.1:' . $argv[1] ); // Binding to 127.0.0.1 means the only client that can connect is itself
+$pull->on( 'message', [$publisher, 'onMessageEntry'] );
+
+// Set up our WebSocket server for clients wanting real-time updates
+$webSock    = new Server( '0.0.0.0:' . $argv[2], $loop ); // Binding to 0.0.0.0 means remotes can connect
+$webServer  = new IoServer(
+    new HttpServer(
+        new WsServer(
+            new WampServer(
+                $publisher
+            )
+        )
+    ),
+    $webSock
+);
+
+$loop->run();

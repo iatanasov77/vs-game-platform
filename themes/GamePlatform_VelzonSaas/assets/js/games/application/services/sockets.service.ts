@@ -92,7 +92,7 @@ export class SocketsService implements OnDestroy
             this.socket.close();
         }
         
-        this.url = window.gamePlatformSettings.socketServiceUrl;
+        this.url = window.gamePlatformSettings.socketServerUrl;
         const user = AppState.Singleton.user.getValue();
         const userId = user ? user.id : '';
         //alert( userId );

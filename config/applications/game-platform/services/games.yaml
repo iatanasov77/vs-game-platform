@@ -12,7 +12,7 @@ services:
     App\EventListener\GameRequestListener:
         arguments:
             - '@app_websocket_client_factory'
-            - '@app_game_service'
+            - '@app_zmq_game_service'
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
             
@@ -30,15 +30,38 @@ services:
             - '%app_websocket_publisher_url%'
             - '%app_zmqsocket_url%'
             
-    app_game_service:
-        class: App\Component\GameService
+#     app_game_service:
+#         class: App\Component\GameService
+#         arguments:
+#             - '@logger'
+#             - '@vs_users.repository.users'
+#             - '@vs_users.security_bridge'
+#             - '@app_game_manager'
+    
+    app_zmq_game_service:
+        class: App\Component\ZmqGameService
         arguments:
             - '@logger'
             - '@vs_users.repository.users'
-            - '@app_game_manager'
+            - '@vs_users.security_bridge'
+            - '@app_zmq_game_manager'
             
-    app_game_manager:
-        class: App\Component\Manager\GameManager
+#     app_game_manager:
+#         class: App\Component\Manager\GameManager
+#         arguments:
+#             - '@logger'
+#             - '@event_dispatcher'
+#             - '@doctrine'
+#             - '@vsapp.repository.games'
+#             - '@vsapp.repository.game_sessions'
+#             - '@vsapp.factory.game_sessions'
+#             - '@vsapp.repository.game_players'
+#             - '@vsapp.repository.temp_players'
+#             - '@vsapp.factory.temp_players'
+#             - '%app_game_for_gold%'
+            
+    app_zmq_game_manager:
+        class: App\Component\Manager\ZmqGameManager
         arguments:
             - '@logger'
             - '@event_dispatcher'

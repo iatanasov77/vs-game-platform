@@ -23,7 +23,7 @@ final class WebsocketClientFactory
         return new WebsocketServerClient( $this->websocketServerUrl );
     }
     
-    public function createPublisherrClient()
+    public function createPublisherClient()
     {
         return new WebsocketPublisherClient( $this->zmqServerUrl );
     }

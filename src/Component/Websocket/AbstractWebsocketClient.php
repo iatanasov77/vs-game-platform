@@ -7,7 +7,7 @@
  * Manual:  https://stackoverflow.com/questions/64292868/how-to-send-a-message-to-specific-websocket-clients-with-symfony-ratchet
  *          https://stackoverflow.com/questions/60780643/get-websocket-pings-from-an-open-stream-connection-using-amp-websocket
  */
-abstract class AbstractWebsocketClient
+abstract class AbstractWebsocketClient implements WebsocketClientInterface
 {
     /** @var string */
     protected $websocketUrl;
@@ -20,6 +20,4 @@ abstract class AbstractWebsocketClient
         $this->websocketUrl = $websocketUrl;
         $this->State        = WebSocketState::None;
     }
-    
-    abstract public function send( object $msg ): void;
 }

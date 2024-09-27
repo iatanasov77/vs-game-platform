@@ -65,6 +65,12 @@ services:
             - '@doctrine'
             - '@mercure.hub.default'
     
+    App\Controller\Api\ZmqPublishController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@app_websocket_client_factory'
+    
     App\Controller\Api\AccountController:
         tags: ['controller.service_arguments']
         autowire: true

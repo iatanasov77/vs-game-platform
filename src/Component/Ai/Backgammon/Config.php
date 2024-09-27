@@ -1,37 +1,37 @@
-﻿<?php namespace App\Component\Ai\Backgammon;
+<?php namespace App\Component\Ai\Backgammon;
 
-final class Config
+class Config
 {
     /// <summary>
     /// Blots are hitables checkers. Below this threshold does not reduce score.
     /// </summary>
     /** @var int */
     public $BlotsThreshold;
-
+    
     /// <summary>
     /// The point divided by this factor reduces score for blots.
     /// </summary>
     /** @var float */
     public $BlotsFactor;
-
+    
     /// <summary>
     /// The point divided by this factor reduces score for blots. When opponent has passes this point with all checker.
     /// </summary>
     /** @var float */
     public $BlotsFactorPassed;
-
+    
     /// <summary>
     /// Score received for one point blocked.
     /// </summary>
     /** @var float */
     public $BlockedPointScore;
-
+    
     /// <summary>
     /// Score from number of consecutive blocks raised to this value.
     /// </summary>
     /** @var float */
     public $ConnectedBlocksFactor;
-
+    
     /// <summary>
     /// When all checkers have passed each other, the leading side gets a score bonus
     /// this factor multiplied by the lead.
@@ -41,12 +41,12 @@ final class Config
     
     /** @var bool */
     public $ProbablityScore = false;
-
-    public function __toString(): string
-    {
-        return "BF: {$this->BlotsFactor}  BFP: {$this->BlotsFactorPassed}  BT: {$this->BlotsThreshold}  CB: {$this->ConnectedBlocksFactor}  BP: {$this->BlockedPointScore}  RB: {$this->RunOrBlockFactor}";
-    }
-
+    
+    //     public function __toString(): string
+    //     {
+    //         return "BF: {$this->BlotsFactor}  BFP: {$this->BlotsFactorPassed}  BT: {$this->BlotsThreshold}  CB: {$this->ConnectedBlocksFactor}  BP: {$this->BlockedPointScore}  RB: {$this->RunOrBlockFactor}";
+    //     }
+        
     public static function Untrained(): Config
     {
         $config = new Config();
@@ -60,7 +60,7 @@ final class Config
         
         return $config;
     }
-
+    
     public static function Trained(): Config
     {
         $config = new Config();
@@ -74,7 +74,7 @@ final class Config
         
         return $config;
     }
-
+    
     public static function NoDoubles41Epochs(): Config
     {
         $config = new Config();
@@ -87,7 +87,7 @@ final class Config
         
         return $config;
     }
-
+    
     public static function NoDoubles20Epochs(): Config
     {
         $config = new Config();
@@ -100,7 +100,7 @@ final class Config
         
         return $config;
     }
-
+    
     public static function NoDoubles8Epochs(): Config
     {
         $config = new Config();

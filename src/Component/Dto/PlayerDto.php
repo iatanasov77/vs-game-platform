@@ -1,4 +1,4 @@
-﻿<?php namespace App\Component\Dto;
+<?php namespace App\Component\Dto;
 
 use App\Component\Type\PlayerColor;
 

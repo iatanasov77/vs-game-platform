@@ -1,4 +1,4 @@
-﻿<?php namespace App\Component\Rules\Backgammon;
+<?php namespace App\Component\Rules\Backgammon;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,14 +13,19 @@ use App\Component\Type\PlayerColor;
 class Point
 {
     /** @var Collection | Checker[] */
-    public $Checkers = new ArrayCollection();
+    public $Checkers;
     
     /** @var int */
     public $WhiteNumber;
     
     /** @var int */
     public $BlackNumber;
-
+    
+    public function __construct()
+    {
+        $this->Checkers = new ArrayCollection();
+    }
+    
     public function IsOpen( PlayerColor $myColor ): bool
     {
         //Opponent has less than two checkers on the point.
@@ -29,23 +34,23 @@ class Point
             function( $entry ) use ( $myColor ) {
                 return $entry->Color != $myColor;
             }
-        )->count() < 2 || $this->GetNumber( $myColor ) == 25;
+            )->count() < 2 || $this->GetNumber( $myColor ) == 25;
     }
-
+    
     public function GetNumber( PlayerColor $player ): int
     {
         return $player == PlayerColor::Black ? $this->BlackNumber : $this->WhiteNumber;
     }
-
-    public function __toString(): string
-    {
-        $color = $this->Checkers->count() ? $this->Checkers->First()->Color : "";
-        return "{$this->Checkers->count()} {$color} WN = {$this->WhiteNumber}, BN = {$this->BlackNumber}, ";
-    }
-
+    
+    //     public function __toString(): string
+    //     {
+    //         $color = $this->Checkers->count() ? $this->Checkers->First()->Color : "";
+    //         return "{$this->Checkers->count()} {$color} WN = {$this->WhiteNumber}, BN = {$this->BlackNumber}, ";
+    //     }
+    
     public function IsHome( PlayerColor $player ): bool
     {
         return $this->GetNumber( $player ) == 25;
     }
-
+    
 }

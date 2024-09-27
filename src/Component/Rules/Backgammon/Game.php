@@ -1,4 +1,4 @@
-﻿<?php namespace App\Component\Rules\Backgammon;
+<?php namespace App\Component\Rules\Backgammon;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -6,7 +6,6 @@ use Doctrine\Common\Collections\Collection;
 use App\Component\System\Guid;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerColor;
-
 use App\Entity\GamePlayer;
 
 /**
@@ -58,14 +57,14 @@ class Game
     
     /** @var int */
     public $Stake;
-
-    /** @var int */
-    public const ClientCountDown = 40;
     
     /** @var int */
-    public const TotalThinkTime = 48;
-
-    public static function Create( bool $forGold ): Game
+    const ClientCountDown = 40;
+    
+    /** @var int */
+    const TotalThinkTime = 48;
+    
+    public static function Create( bool $forGold )
     {
         //die( 'EHO' );
         $game = new Game();
@@ -84,7 +83,7 @@ class Game
         $game->BlackPlayer->Name = "Guest";
         
         $game->Created = new \DateTime( 'now' );
-        $game->$game->PlayState = GameState::OpponentConnectWaiting;
+        $game->PlayState = GameState::OpponentConnectWaiting;
         $game->GoldMultiplier = 1;
         $game->IsGoldGame = $forGold;
         $game->LastDoubler = null;
@@ -100,9 +99,9 @@ class Game
         }
         
         $game->Bars = new ArrayCollection();
-        $game->Bars[(int)PlayerColor::Black] = $game->Points->first();
-        $game->Bars[(int)PlayerColor::White] = $game->Points->last();
-
+        $game->Bars[PlayerColor::Black->value] = $game->Points->first();
+        $game->Bars[PlayerColor::White->value] = $game->Points->last();
+        
         $game->SetStartPosition();
         $game->GoldMultiplier = 1;
         
@@ -110,7 +109,7 @@ class Game
         
         return $game;
     }
-
+    
     private static function CalcPointsLeft( Game &$game ): void
     {
         foreach ( $game->Points as $point ) {
@@ -118,7 +117,7 @@ class Game
                 function( $entry ) {
                     return $entry->Color == PlayerColor::Black;
                 }
-            );
+                );
             foreach ( $blackCheckers as $ckr ) {
                 $game->BlackPlayer->PointsLeft += 25 - $point->BlackNumber;
             }
@@ -127,45 +126,45 @@ class Game
                 function( $entry ) {
                     return $entry->Color == PlayerColor::White;
                 }
-            );
+                );
             foreach ( $whiteCheckers as $ckr ) {
                 $game->WhitePlayer->PointsLeft += 25 - $point->WhiteNumber;
             }
         }
     }
-
+    
     private function OtherPlayer(): PlayerColor
     {
         return $this->CurrentPlayer == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
     }
-
+    
     private function SetStartPosition(): void
     {
         foreach ( $this->Points as $point ) {
             $point->Checkers->clear();
         }
-
+        
         $this->AddCheckers( 2, PlayerColor::Black, 1 );
         $this->AddCheckers( 2, PlayerColor::White, 1 );
-
+        
         $this->AddCheckers( 5, PlayerColor::Black, 12 );
         $this->AddCheckers( 5, PlayerColor::White, 12 );
-
+        
         $this->AddCheckers( 3, PlayerColor::Black, 17 );
         $this->AddCheckers( 3, PlayerColor::White, 17 );
-
+        
         $this->AddCheckers( 5, PlayerColor::Black, 19 );
         $this->AddCheckers( 5, PlayerColor::White, 19 );
-
+        
         //OneMoveToVictory();
-
+        
         //DebugBlocked();
-
+        
         // DebugBearingOff();
-
+        
         // AtHomeAndOtherAtBar();
     }
-
+    
     private function AtHomeAndOtherAtBar(): void
     {
         $this->AddCheckers( 3, PlayerColor::Black, 21 );
@@ -173,7 +172,7 @@ class Game
         $this->AddCheckers( 5, PlayerColor::Black, 23 );
         $this->AddCheckers( 3, PlayerColor::Black, 24 );
         $this->AddCheckers( 2, PlayerColor::Black, 25 );
-
+        
         $this->AddCheckers( 2, PlayerColor::White, 19 );
         $this->AddCheckers( 2, PlayerColor::White, 20 );
         $this->AddCheckers( 3, PlayerColor::White, 21 );
@@ -181,71 +180,72 @@ class Game
         $this->AddCheckers( 2, PlayerColor::White, 23 );
         $this->AddCheckers( 1, PlayerColor::White, 24 );
         $this->AddCheckers( 2, PlayerColor::White, 0 );
-
+        
     }
-
+    
     private function OneMoveToVictory(): void
     {
         //Only one move to victory
         $this->AddCheckers( 14, PlayerColor::Black, 25 );
         $this->AddCheckers( 14, PlayerColor::White, 25 );
-
+        
         $this->AddCheckers( 1, PlayerColor::Black, 24 );
         $this->AddCheckers( 1, PlayerColor::White, 24 );
     }
-
+    
     private function DebugBlocked(): void
     {
         $this->AddCheckers( 3, PlayerColor::Black, 20 );
         $this->AddCheckers( 3, PlayerColor::White, 20 );
-
+        
         $this->AddCheckers( 3, PlayerColor::Black, 21 );
         $this->AddCheckers( 3, PlayerColor::White, 21 );
-
+        
         $this->AddCheckers( 3, PlayerColor::Black, 22 );
         $this->AddCheckers( 3, PlayerColor::White, 22 );
-
+        
         $this->AddCheckers( 3, PlayerColor::Black, 23 );
         $this->AddCheckers( 3, PlayerColor::White, 23 );
-
+        
         $this->AddCheckers( 2, PlayerColor::Black, 24 );
         $this->AddCheckers( 2, PlayerColor::White, 24 );
-
+        
         $this->AddCheckers( 1, PlayerColor::Black, 0 );
         $this->AddCheckers( 1, PlayerColor::White, 0 );
     }
-
+    
     private function DebugBearingOff(): void
     {
         $this->AddCheckers( 3, PlayerColor::Black, 20 );
         $this->AddCheckers( 3, PlayerColor::White, 20 );
-
+        
         $this->AddCheckers( 3, PlayerColor::Black, 21 );
         $this->AddCheckers( 3, PlayerColor::White, 21 );
-
+        
         $this->AddCheckers( 3, PlayerColor::Black, 22 );
         $this->AddCheckers( 3, PlayerColor::White, 22 );
-
+        
         $this->AddCheckers( 3, PlayerColor::Black, 23 );
         $this->AddCheckers( 3, PlayerColor::White, 23 );
-
+        
         $this->AddCheckers( 2, PlayerColor::Black, 24 );
         $this->AddCheckers( 2, PlayerColor::White, 24 );
-
+        
         $this->AddCheckers( 1, PlayerColor::Black, 19 );
         $this->AddCheckers( 1, PlayerColor::White, 19 );
     }
-
+    
     public function ClearCheckers(): void
     {
-        foreach ( $this->Points as $point )
+        foreach ( $this->Points as $point ) {
             $point->Checkers->clear();
+        }
     }
-
+    
     public function IsBearingOff( PlayerColor $color ): bool
     {
         // Points that have checkers with the color asked all have higher number than 18
-        return $this->Points->filter(
+        $colorCheckers  = $this->Points->filter(
             function( $entry ) use ( $color ) {
                 return $entry->Checkers->filter(
                     function( $entry ) use ( $color ) {
@@ -253,13 +253,15 @@ class Game
                     }
                 );
             }
-        )->forAll(
+        )->filter(
             function( $entry ) use ( $color ) {
                 return $entry->GetNumber( $color ) >= 19;
             }
         );
+        
+        return ! $colorCheckers->isEmpty();
     }
-
+    
     public function AddCheckers( int $count, PlayerColor $color, int $point ): void
     {
         $checker        = new Checker();
@@ -273,13 +275,13 @@ class Game
             )->first()->Checkers[]  = $checker;
         }
     }
-
+    
     public function FakeRoll( int $v1, int $v2 ): void
     {
         $this->Roll = new ArrayCollection( Dice::GetDices( $v1, $v2 )->toArray() );
         $this->SetFirstRollWinner();
     }
-
+    
     public function SetFirstRollWinner(): void
     {
         if ( $this->PlayState == GameState::FirstThrow ) {
@@ -288,25 +290,25 @@ class Game
             } else if ( $this->Roll[0]->Value < $this->Roll[1]->Value ) {
                 $this->CurrentPlayer = PlayerColor::White;
             }
-
+            
             if ( $this->Roll[0]->Value != $this->Roll[1]->Value ) {
                 $this->PlayState = GameState::Playing;
             }
         }
     }
-
+    
     public function RollDice(): void
     {
         $this->Roll = new ArrayCollection( Dice::Roll()->toArray() );
         $this->SetFirstRollWinner();
-
-        $this->ClearMoves( $this->ValidMoves );
-        $this->_GenerateMoves( $this->ValidMoves );
+        
+//         $this->ClearMoves( $this->ValidMoves );
+//         $this->_GenerateMoves( $this->ValidMoves );
     }
-
-    private function ClearMoves( array $moves ): void
+    
+    private function ClearMoves( Collection &$moves ): void
     {
-        // This will probably make it a lot easier for GC, and might even prevent memory leaks.
+        // This will probably make it a lot easier for GC, and might even prevent memory leaks
         foreach ( $moves as $move ) {
             if ( $move->NextMoves != null && ! empty( $move->NextMoves ) ) {
                 $this->ClearMoves( $move->NextMoves );
@@ -315,37 +317,47 @@ class Game
         }
         $moves->clear();
     }
-
+    
     public function GenerateMoves(): array
     {
-        $moves = [];
+        $moves = new ArrayCollection();
         $this->_GenerateMoves( $moves );
-
-        // Making sure both dice are played.
+        
+        // Making sure both dice are played
         if ( $moves->NextMoves->count() ) {
-            // $moves = moves.Where(m => m.NextMoves.Any()).ToList();
-        } else if ( ! $moves.count() ) {
-            // All moves have zero next move in this block.
+            $moves = $moves->filter(
+                function( $entry ) {
+                    return $entry->NextMoves->count() > 0;
+                }
+                )->toArray();
+        } else if ( $moves->count() ) {
+            // All moves have zero next move in this block
             // Only one dice can be use and it must be the one with highest value
             
-            // $first = $moves.OrderByDescending(m => m.To.GetNumber(CurrentPlayer) - m.From.GetNumber(CurrentPlayer)).First();
+            $currentPlayer  = $this->CurrentPlayer;
+            $moves = $moves->filter(
+                function( $entry ) use ( $currentPlayer ) {
+                    return $entry->To->GetNumber( $currentPlayer ) - $entry->From->GetNumber( $currentPlayer );
+                }
+                );
+            $first = $moves->getMovesOrderByDescending( $moves )->first();
             $moves->clear();
             $moves[]    = $first;
         }
         
         return $moves;
     }
-
+    
     public function GetHome( PlayerColor $color ): Point
     {
         return $this->Points->filter(
-            function( $entry ) use ( $currentPlayer ) {
+            function( $entry ) use ( $color ) {
                 return $entry->GetNumber( $color ) == 25;
             }
-        )->first();
+            )->first();
     }
-
-    private function _GenerateMoves( Collection $moves ): void
+    
+    private function _GenerateMoves( Collection &$moves ): void
     {
         $currentPlayer  = $this->CurrentPlayer;
         $bar = $this->Points->filter(
@@ -358,17 +370,19 @@ class Game
                 return $entry->Color == $currentPlayer;
             }
         );
-
+        
         foreach ( $this->getRollOrderByDescending() as $dice ) {
-            if ( $dice->Used )
+            if ( $dice->Used ) {
                 continue;
+            }
             $dice->Used = true;
-
+            
             $points = $barHasCheckers ? $bar : $this->getPointsOrdered( $currentPlayer );
             foreach ( $points as $fromPoint ) {
                 $fromPointNo = $fromPoint->GetNumber( $currentPlayer );
-                if ( $fromPointNo == 25 )
+                if ( $fromPointNo == 25 ) {
                     continue;
+                }
                 
                 $shouldPointTo  = $dice->Value + $fromPointNo;
                 $toPoint = $this->Points->filter(
@@ -376,22 +390,23 @@ class Game
                         return $entry->GetNumber( $currentPlayer ) == $shouldPointTo;
                     }
                 )->first();
-
+                    
                 // no creation of bearing off moves here. See next block.
                 $canMove = $moves->exists(
                     function( $entry ) use ( $fromPoint, $toPoint ) {
                         return $entry->From == $fromPoint && $entry->To == $toPoint;
                     }
                 );
+                
                 if (
                     $toPoint != null &&
-                    $toPoint.IsOpen( $currentPlayer ) &&
-                    ! $canMove && 
+                    $toPoint->IsOpen( $currentPlayer ) &&
+                    ! $canMove &&
                     ! $toPoint->IsHome( $currentPlayer )
                 ) {
                     $move = new Move();
                     $move->Color = $currentPlayer;
-                    $move->From = fromPoint;
+                    $move->From = $fromPoint;
                     $move->To = $toPoint;
                     
                     $moves[]    = $move;
@@ -399,22 +414,23 @@ class Game
                     $this->_GenerateMoves( $move->NextMoves );
                     $this->UndoMove( $move, $hit );
                 }
-
+                    
                 if ( $this->IsBearingOff( $currentPlayer ) ) {
-                    // The furthest away checker can be moved beyond home.
+                    // The furthest away checker can be moved beyond home
                     $minPoint = $this->calcMinPoint( $currentPlayer );
                     $toPointNo = $fromPointNo == $minPoint ? \min( 25, $fromPointNo + $dice->Value ) : $fromPointNo + $dice->Value;
-                    $toPoint = $this->Points->exists(
+                    $toPoint = $this->Points->filter(
                         function( $entry ) use ( $currentPlayer, $toPointNo ) {
                             return $entry->GetNumber( $currentPlayer ) == $toPointNo;
                         }
-                    );
+                    )->first();
                     
-                    $canMove = $moves->exists(
+                    $canMove = ! $moves->filter(
                         function( $entry ) use ( $fromPoint, $toPoint ) {
                             return $entry->From == $fromPoint && $entry->To == $toPoint;
                         }
-                    );
+                    )->isEmpty();
+                    
                     if (
                         $toPoint != null &&
                         $toPoint->IsOpen( $currentPlayer ) &&
@@ -431,13 +447,12 @@ class Game
                         $this->UndoMove( $move, $hit );
                     }
                 }
-
             }
             
             $dice->Used = false;
         }
     }
-
+    
     public function MakeMove( Move $move ): Checker
     {
         $checker = $move->From->Checkers->filter(
@@ -445,8 +460,10 @@ class Game
                 return $entry->Color == $move->Color;
             }
         )->first();
-        if ( $checker == null )
-            throw new \RuntimeException( "There should be a checker on this point. Something is very wrong." );
+        
+        if ( $checker == null ) {
+            throw new \RuntimeException( "There should be a checker on this point. Something is very wrong" );
+        }
         
         $move->From->Checkers->removeElement( $checker );
         $move->To->Checkers[]   = $checker;
@@ -455,9 +472,9 @@ class Game
         } else {
             $this->WhitePlayer->PointsLeft -= ( $move->To->WhiteNumber - $move->From->WhiteNumber );
         }
-
-        // Feels wrong that now that own home is same point as opponent bar.
-        // Todo: Try to change it some day.
+            
+        // Feels wrong that now that own home is same point as opponent bar
+        // Todo: Try to change it some day
         $hit = $move->To->IsHome( $move->Color ) ? null : $move->To->Checkers->filter(
             function( $entry ) use ( $checker ) {
                 return $entry->Color == $checker->Color;
@@ -470,17 +487,18 @@ class Game
                     return $entry->GetNumber( $this->OtherPlayer() ) == 0;
                 }
             )->first();
-            
+                
             $bar->Checkers[]    = $hit;
-            if ( $move->Color == PlayerColor::Black )
+            if ( $move->Color == PlayerColor::Black ) {
                 $this->WhitePlayer->PointsLeft += ( 25 - $move->To->WhiteNumber );
-            else
+            } else {
                 $this->BlackPlayer->PointsLeft += ( 25 - $move->To->BlackNumber );
+            }
         }
         
         return $hit;
     }
-
+    
     public function UndoMove( Move $move, Checker $hitChecker ): void
     {
         $checker = $move->To->Checkers->filter(
@@ -488,12 +506,15 @@ class Game
                 return $entry->Color == $move->Color;
             }
         )->first();
+        
         $move->To->Checkers->removeElement( $checker );
         $move->From->Checkers[] = $checker;
-        if ( $move->Color == PlayerColor::Black )
+        if ( $move->Color == PlayerColor::Black ) {
             $this->BlackPlayer->PointsLeft += ( $move->To->BlackNumber - $move->From->BlackNumber );
-        else
+        } else {
             $this->WhitePlayer->PointsLeft += ( $move->To->WhiteNumber - $move->From->WhiteNumber );
+        }
+            
         if ( $hitChecker != null ) {
             $move->To->Checkers[]   = $hitChecker;
             $bar = $this->Points->filter(
@@ -502,28 +523,39 @@ class Game
                 }
             )->first();
             $bar->Checkers->removeElement( $hitChecker );
-            if ( $move->Color == PlayerColor::Black )
+            if ( $move->Color == PlayerColor::Black ) {
                 $this->WhitePlayer->PointsLeft -= ( 25 - $move->To->WhiteNumber );
-            else
+            } else {
                 $this->BlackPlayer->PointsLeft -= ( 25 - $move->To->BlackNumber );
+            }
         }
     }
     
     public function getRollOrderByDescending(): Collection
     {
         $dicesIterator  = $this->Roll->getIterator();
-        $dicesIterator->uasort( function ( $a, $b ) use ( $sortOrder ) {
+        $dicesIterator->uasort( function ( $a, $b ) {
             return $a->Value > $b->Value;
         });
             
         return new ArrayCollection( \iterator_to_array( $dicesIterator ) );
     }
     
+    public function getMovesOrderByDescending( Collection $moves ): Collection
+    {
+        $movesIterator  = $moves->getIterator();
+        $movesIterator->uasort( function ( $a, $b ) {
+            return $a->Value > $b->Value;
+        });
+            
+        return new ArrayCollection( \iterator_to_array( $movesIterator ) );
+    }
+    
     public function getPointsOrdered( $currentPlayer ): Collection
     {
         $points = $this->Points->filter(
             function( $entry ) use ( $currentPlayer ) {
-                return $entry->Checkers->exists(
+                return $entry->Checkers->filter(
                     function( $entry ) use ( $currentPlayer ) {
                         return $entry->Color == $currentPlayer;
                     }
@@ -535,15 +567,15 @@ class Game
         $pointsIterator->uasort( function ( $a, $b ) use ( $currentPlayer ) {
             return $a->GetNumber( $currentPlayer ) < $b->GetNumber( $currentPlayer );
         });
-        
+            
         return new ArrayCollection( \iterator_to_array( $pointsIterator ) );
     }
     
     public function calcMinPoint( $currentPlayer )
     {
         $points = $this->Points->filter(
-            function( $entry ) use ( $currentPlayer, $shouldPointTo ) {
-                return $entry->Checkers->exists(
+            function( $entry ) use ( $currentPlayer ) {
+                return $entry->Checkers->filter(
                     function( $entry ) use ( $currentPlayer ) {
                         return $entry->Color == $currentPlayer;
                     }
@@ -555,7 +587,7 @@ class Game
         $pointsIterator->uasort( function ( $a, $b ) use ( $currentPlayer ) {
             return $a->GetNumber( $currentPlayer ) < $b->GetNumber( $currentPlayer );
         });
-        
+            
         return ( new ArrayCollection( \iterator_to_array( $pointsIterator ) ) )->first()->GetNumber( $currentPlayer );
     }
     

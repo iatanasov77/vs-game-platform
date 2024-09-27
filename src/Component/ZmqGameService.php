@@ -11,46 +11,21 @@ use App\Component\Ai\Backgammon\Engine as AiEngine;
 use App\Component\Manager\GameManager;
 use App\Component\System\Guid;
 use App\Component\Dto\GameCookieDto;
+use App\Component\Dto\ConnectionDto;
 use App\Component\Dto\Actions\ConnectionInfoActionDto;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerColor;
 use App\Component\Websocket\WebsocketClientInterface;
 use App\Component\Websocket\WebSocketState;
 
-class GameService
+class ZmqGameService extends GameService
 {
-    /** @var LoggerInterface */
-    protected $logger;
-    
-    /** @var RepositoryInterface */
-    protected $usersRepository;
-    
-    /** @var SecurityBridge */
-    protected SecurityBridge $securityBridge;
-    
-    /** @var GameManager */
-    protected $gameManager;
-    
-    /** @var Collection | GameManager[] */
-    protected $AllGames;
-    
-    public function __construct(
-        LoggerInterface $logger,
-        RepositoryInterface $usersRepository,
-        SecurityBridge $securityBridge,
-        GameManager $gameManager
-    ) {
-        $this->logger           = $logger;
-        $this->usersRepository  = $usersRepository;
-        $this->securityBridge   = $securityBridge;
-        $this->gameManager      = $gameManager;
-        
-        $this->AllGames         = new ArrayCollection();
-    }
-    
     public function Connect( WebsocketClientInterface $webSocket, $gameCode, $userId, $gameId, $playAi, $forGold, ?string $gameCookie ): void
     {
         $dbUser = $this->GetDbUser( $userId );
+        if ( ! $dbUser ) {
+            return;
+        }
         
         if ( $this->TryReConnect( $webSocket, $gameCookie, $dbUser ) ) {
             // Game disconnected here
@@ -58,8 +33,7 @@ class GameService
         }
         
         if ( ! empty ( $gameId ) ) {
-            async( \Closure::fromCallable( [$this, 'ConnectInvite'] ), [$webSocket, $dbUser, $gameId] )->await();
-            
+            $this->ConnectInvite( $webSocket, $dbUser, $gameId );
             // Game disconnected here.
             return;
         }
@@ -87,6 +61,8 @@ class GameService
                     return $entry->Game->BlackPlayer->Id != Guid::Empty() || $entry->Game->WhitePlayer->Id != Guid::Empty();
                 }
             )->toArray();
+        } else {
+            $managers = $managers->toArray();
         }
         
         $manager = \array_shift( $managers );
@@ -98,15 +74,16 @@ class GameService
             $manager->SearchingOpponent = ! $playAi;
             $manager->GameCode          = $gameCode;
             
-            /*
             $this->AllGames[]   = $manager;
-            $this->logger->info( "Added a new game and waiting for opponent. Game id {$manager->Game->Id}" );
             
             // entering socket loop
-            async( \Closure::fromCallable( [$manager, 'ConnectAndListen'] ), [$webSocket, PlayerColor::Black, $dbUser, $playAi] )->await();
-            async( \Closure::fromCallable( [$this, 'SendConnectionLost'] ), [PlayerColor::White, $manager] )->await();
+            $manager->ConnectAndListen( $webSocket, PlayerColor::Black, $dbUser, $playAi );
+            $this->SendConnectionLost( PlayerColor::White, $manager );
+            
+            if ( $manager->Game ) {
+                $this->logger->info( "Added a new game and waiting for opponent. Game id {$manager->Game->Id}" );
+            }
             //This is the end of the connection
-            */
         } else {
             $manager->SearchingOpponent = false;
             $manager->GameCode          = $gameCode;
@@ -115,34 +92,13 @@ class GameService
             $color = $manager->Client1 == null ? PlayerColor::Black : PlayerColor::White;
             
             // entering socket loop
-            async( \Closure::fromCallable( [$manager, 'ConnectAndListen'] ), [$webSocket, $color, $dbUser, false] )->await();
-            $this->logger->info( "{$color} player disconnected.");
-            async( \Closure::fromCallable( [$this, 'SendConnectionLost'] ), [PlayerColor::Black, $manager] )->await();
+            $manager->ConnectAndListen( $webSocket, $color, $dbUser, false );
+            $this->logger->info( "{$color} player disconnected." );
+            $this->SendConnectionLost( PlayerColor::Black, $manager );
             //This is the end of the connection
         }
         
         $this->RemoveDissconnected( $manager );
-    }
-    
-    protected static function GameAlreadyStarted( Collection $managers, $userId ): bool
-    {
-        foreach ( $managers as $m ) {
-            // Guest vs guest must be allowed. When guest games are enabled.
-            if (
-                $m->Game->BlackPlayer->Id == $userId ||
-                $m->Game>WhitePlayer->Id == $userId &&
-                $userId != Guid::Empty
-            ) {
-                return true;
-            }
-        }
-        
-        return false;
-    }
-    
-    protected function GetDbUser( $userId ): ?UserInterface
-    {
-        return $userId ? $this->usersRepository->find( $userId ) : $this->securityBridge->getUser();
     }
     
     protected function TryReConnect( WebsocketClientInterface $webSocket, ?string $gameCookie, ?UserInterface $dbUser ): bool
@@ -182,79 +138,21 @@ class GameService
         return false;
     }
     
-    protected function RemoveDissconnected( GameManager $manager ): void
-    {
-        if (
-            ( $manager->Client1 == null || $manager->Client1->State != WebSocketState::Open ) &&
-            ( $manager->Client2 == null || $manager->Client2->State != WebSocketState::Open )
-        ) {
-            $this->AllGames->removeElement( $manager );
-            //$this->logger->info( "Removing game {$manager->Game->Id} which is not used." );
-        }
-    }
-    
-    protected static function ConnectInvite( WebsocketClientInterface $webSocket, UserInterface $dbUser, string $gameInviteId ): void
-    {
-        $manager = $this->AllGames->filter(
-            function( $entry ) use ( $cookie ) {
-                return $entry->Game->Id == $gameInviteId && ( $entry->Client1 == null || $entry->Client2 == null );
-            }
-        )->first();
-        
-        if ( $manager == null ) {
-            //async( \Closure::fromCallable( [$webSocket, 'close'] ), [WebSocketCloseStatus.InvalidPayloadData, "Invite link has expired", CancellationToken.None] )->await();
-            
-            return;
-        }
-        
-        $color = PlayerColor::Black;
-        if ( $manager->Client1 != null )
-            $color = PlayerColor::White;
-            
-        async( \Closure::fromCallable( [$manager, 'ConnectAndListen'] ), [$webSocket, $color, $dbUser, false] )->await();
-        
-        self::RemoveDissconnected( $manager );
-        async( \Closure::fromCallable( [$this, 'SendConnectionLost'] ), [PlayerColor::White, $manager] )->await();
-    }
     
     protected static function SendConnectionLost( PlayerColor $color, GameManager $manager )
     {
         $socket = $manager->Client1;
-        if ( $color == PlayerColor::White )
+        if ( $color == PlayerColor::White ) {
             $socket = $manager->Client2;
-        
+        }
+            
         if ( $socket != null && $socket->State == WebSocketState::Open ) {
             $action     = new ConnectionInfoActionDto();
             $connection = new ConnectionDto();
             $connection->connected = false;
             $action->connection = $connection;
             
-            async( \Closure::fromCallable( [$manager, 'Send'] ), [$socket, $action] )->await();
+            $manager->Send( $socket, $action );
         }
-    }
-    
-    protected static function MyColor( GameManager $manager, UserInterface $dbUser, PlayerColor $color ): bool
-    {
-        //prevents someone with same game id, get someone elses side in the game.
-        $player = $manager->Game->BlackPlayer;
-        if ( $color == PlayerColor::White )
-            $player = $manager->Game->WhitePlayer;
-            
-        return $dbUser != null && $dbUser->getId() == $player->Id;
-    }
-    
-    protected static function Game_Ended( object $sender ): void
-    {
-        $this->AllGames->removeElement( $sender );
-    }
-    
-    protected function orderAllGames(): Collection
-    {
-        $gamesIterator  = $this->AllGames->getIterator();
-        $gamesIterator->uasort( function ( $a, $b ) {
-            return $a->Created > $b->Created;
-        });
-            
-        return new ArrayCollection( \iterator_to_array( $gamesIterator ) );
     }
 }

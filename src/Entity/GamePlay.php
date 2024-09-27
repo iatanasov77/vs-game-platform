@@ -69,6 +69,18 @@ class GamePlay implements ResourceInterface
         return $this;
     }
     
+    public function getGame(): Game
+    {
+        return $this->game;
+    }
+    
+    public function setGame( Game $game ): self
+    {
+        $this->game = $game;
+        
+        return $this;
+    }
+    
     /**
      * @return Collection|TempPlayer[]
      */

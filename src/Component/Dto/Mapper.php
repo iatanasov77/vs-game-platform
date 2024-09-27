@@ -1,4 +1,4 @@
-﻿<?php namespace App\Component\Dto;
+<?php namespace App\Component\Dto;
 
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use App\Component\Type\PlayerColor;
@@ -9,31 +9,36 @@ use App\Component\Rules\Backgammon\Checker;
 use App\Component\Rules\Backgammon\Dice;
 use App\Component\Rules\Backgammon\Move;
 
-final class Mapper
+class Mapper
 {
     public static function GameToDto( Game $game ): GameDto
     {
         $gameDto = new GameDto();
-        $gameDto->id = $game->Id->ToString();
+        $gameDto->id = $game->Id;
         $gameDto->blackPlayer = self::PlayerToDto( $game->BlackPlayer );
         $gameDto->whitePlayer = self::PlayerToDto( $game->WhitePlayer );
         $gameDto->currentPlayer = $game->CurrentPlayer;
         $gameDto->playState = $game->PlayState;
+        
         $gameDto->points = $game->Points->map(
             function( $entry ) {
                 return self::PointToDto( $entry );
             }
-        )->toArray();
+        ); // ->toArray()
+        
         $gameDto->validMoves = $game->ValidMoves->map(
             function( $entry ) {
                 return self::MoveToDto( $entry );
             }
-        )->toArray();
-        $gameDto->thinkTime = Game.ClientCountDown - (DateTime.Now - game.ThinkStart).TotalSeconds;
-            
+        ); // ->toArray()
+        
+        $gameDto->thinkTime = Game::ClientCountDown - (
+            ( new \DateTime( 'now' ) )->getTimestamp() - $game->ThinkStart->getTimestamp()
+        );
+        
         return $gameDto;
     }
-
+    
     public static function PlayerToDto( Player $player ): PlayerDto
     {
         $playerDto = new PlayerDto();
@@ -45,7 +50,7 @@ final class Mapper
         
         return $playerDto;
     }
-
+    
     public static function PointToDto( Point $point ): PointDto
     {
         $pointDto = new PointDto();
@@ -55,28 +60,28 @@ final class Mapper
             function( $entry ) {
                 return self::CheckerToDto( $entry );
             }
-        )->toArray();
-            
+        ); // ->toArray();
+        
         return $pointDto;
     }
-
+    
     public static function CheckerToDto( Checker $checker ): CheckerDto
     {
         $checkerDto = new CheckerDto();
         $checkerDto->color = $checker->Color;
-            
+        
         return $checkerDto;
     }
-
+    
     public static function DiceToDto( Dice $dice ): DiceDto
     {
         $diceDto = new DiceDto();
         $diceDto->used = $dice->Used;
         $diceDto->value = $dice->Value;
-            
+        
         return $diceDto;
     }
-
+    
     public static function MoveToDto( Move $move ): MoveDto
     {
         $moveDto = new MoveDto();
@@ -89,10 +94,10 @@ final class Mapper
                 return self::MoveToDto( $entry );
             }
         )->toArray();
-            
+        
         return $moveDto;
     }
-
+    
     public static function MoveToMove( MoveDto $dto, Game $game ): Move
     {
         $color = $dto->color;
@@ -109,20 +114,20 @@ final class Mapper
                 return $entry->GetNumber( $color ) == $dto->to;
             }
         )->first();
-            
+        
         return $move;
     }
-
+    
     public static function UserToDto( UserInterface $dbUser ): UserDto
     {
         $userDto    = new UserDto();
         $userDto->email = $dbUser->Email;
         $userDto->name = $dbUser->Name;
-        $userDto->id = $dbUser->Id->ToString();
+        $userDto->id = $dbUser->Id;
         $userDto->photoUrl = $dbUser->PhotoUrl;
         $userDto->socialProvider = $dbUser->SocialProvider;
         //$userDto->socialProviderId = $dbUser->ProviderId; // Feels more secure not to send this to the client.
-            
+        
         return $userDto;
     }
 }

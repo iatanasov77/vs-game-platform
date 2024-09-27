@@ -63,8 +63,9 @@ class Engine
         });
         */
         
-        if ( $bestMoveSequence == null )
+        if ( $bestMoveSequence == null ) {
             return new ArrayCollection();
+        }
         
         if ( $myColor == PlayerColor::Black ) {
             $bestMoveSequence   = $bestMoveSequence->filter(
@@ -99,11 +100,11 @@ class Engine
     {
         $moves = new ArrayCollection();
         for ( $i = 0; $i < $sequence->count; $i++ ) {
-            if ( $sequence[i] != null ) {
+            if ( $sequence[$i] != null ) {
                 $move   = new Move();
-                $move->From = $game->Points[$sequence[i]->From->BlackNumber];
-                $move->To = $game->Points[$sequence[i]->To->BlackNumber];
-                $move->Color = $sequence[i]->Color;
+                $move->From = $game->Points[$sequence[$i]->From->BlackNumber];
+                $move->To = $game->Points[$sequence[$i]->To->BlackNumber];
+                $move->Color = $sequence[$i]->Color;
                     
                 $moves[] = $move;
             }
@@ -131,21 +132,23 @@ class Engine
         $game->SwitchPlayer();
 
         for ( $i = $sequence->count() - 1; $i >= 0; $i-- ) {
-            if ( $sequence[i] != null ) {
+            if ( $sequence[$i] != null ) {
                 $lastHit    = $hits->last();
                 $hits->removeElement( $lastHit );
                 
-                $game->UndoMove( $sequence[i], $lastHit );
+                $game->UndoMove( $sequence[$i], $lastHit );
             }
         }
     }
 
     private static function EvaluatePoints( PlayerColor $myColor, Game $game ): float
     {
-        if ( $myColor == PlayerColor::White ) // Higher score for white when few checkers and black has many checkers left
+        if ( $myColor == PlayerColor::White ) {
+            // Higher score for white when few checkers and black has many checkers left
             return $game->BlackPlayer->PointsLeft - $game->WhitePlayer->PointsLeft;
-        else
+        } else {
             return $game->WhitePlayer->PointsLeft - $game->BlackPlayer->PointsLeft;
+        }
     }
 
     private function EvaluateCheckers( PlayerColor $myColor, Game $game ): float
@@ -172,7 +175,6 @@ class Engine
         )->pluck( $myColor == PlayerColor::Black ? 'BlackNumber' : 'WhiteNumber' );
         $opponentMax = \max( $opponentColorNumber );
         
-        
         $myColorNumber = $game->Points->filter(
             function( $entry ) use ( $myColor ) {
                 return $entry->Checkers->exists(
@@ -188,21 +190,23 @@ class Engine
 
         if ( $myMin < $opponentMax ) {
             for ( $i = 1; $i < 25; $i++ ) {
-                // It is important to reverse looping for white.
-                $point = $game->Points[i];
-                if ( $myColor == PlayerColor::White )
-                    $point = $game->Points[25 - i];
+                // It is important to reverse looping for white
+                $point = $game->Points[$i];
+                if ( $myColor == PlayerColor::White ) {
+                    $point = $game->Points[25 - $i];
+                }
 
                 $pointNo = $point->GetNumber( $myColor );
 
-                // If all opponents checkers has passed this point, blots are not as bad.
+                // If all opponents checkers has passed this point, blots are not as bad
                 $allPassed = $pointNo > $opponentMax;
 
                 if ( $point->Block( $myColor ) ) {
-                    if ( $inBlock )
+                    if ( $inBlock ) {
                         $blockCount++;
-                    else
-                        $blockCount = 1; // Start of blocks.
+                    } else {
+                        $blockCount = 1; // Start of blocks
+                    }
                     $inBlock = true;
                 } else { // not a blocked point
                     if ( $inBlock ) {
@@ -210,18 +214,21 @@ class Engine
                         $blockCount = 0;
                     }
                     $inBlock = false;
-                    if ( $point->Blot( $myColor ) && $point->GetNumber( $myColor ) > $bt )
+                    if ( $point->Blot( $myColor ) && $point->GetNumber( $myColor ) > $bt ) {
                         $score -= $point->GetNumber( $myColor ) / ( $allPassed ? $bfp : $bf );
+                    }
                 }
             } // end of loop
 
-            if ( $inBlock ) // the last point.
+            if ( $inBlock ) {
+                // the last point
                 $score += \pow( $blockCount * $bps, $cbf );
-
-            if ( $allPassed )
+            }
+            if ( $allPassed ) {
                 $score += self::EvaluatePoints( $myColor, $game ) * $this->Configuration->RunOrBlockFactor;
+            }
         } else {
-            // When both players has passed each other it is just better to move to home board and then bear off.
+            // When both players has passed each other it is just better to move to home board and then bear off
             $score += $game->GetHome( $myColor )->Checkers->count() * 100;
             $score += $game->Points->filter(
                 function( $entry ) use ( $myColor ) {
@@ -247,19 +254,22 @@ class Engine
                 $hits = self::DoSequence( $s, $game );
                 $score = self::EvaluatePoints( $myColor, $game ) + self::EvaluateCheckers( $myColor, $game );
                 $score -= self::EvaluateCheckers( $oponent, $game );
-                if ( $score > $bestScore )
+                if ( $score > $bestScore ) {
                     $bestScore = $score;
+                }
                 self::UndoSequence( $s, $hits, $game );
             }
             $m = $roll['dice1'] == $roll['dice2'] ? 1 : 2; // dice roll with not same value on dices are twice as probable. 2 / 36, vs 1 / 36
-            if ( ! $seqs->isEmpty() )
-                $scores[]   = $bestScore * m;
-            // Get best score of each roll, and make an average.
+            if ( ! $seqs->isEmpty() ) {
+                $scores[]   = $bestScore * $m;
+            }
+            // Get best score of each roll, and make an average
             // some rolls are more probable, multiply them
             // some rolls will be blocked or partially blocked
         }
-        if ( ! \count( $scores ) )
+        if ( ! \count( $scores ) ) {
             return -100000; // If player cant move, shes blocked. Thats bad.
+        }
         
         return \array_sum( $scores ) / \count( $scores );
     }
@@ -273,13 +283,14 @@ class Engine
         for ( $d1 = 1; $d1 < 7; $d1++ ) {
             for ( $d2 = 1; $d2 < 7; $d2++ ) {
                 
-                if ( ! \array_key_exists( $d1 . '_' .$d2, $list ) && ! \array_key_exists( $d2 . '_' .$d1, $list ) )
-                    $list[$d1 . '_' .$d2] = [$d1, $d2];
+                if ( ! \array_key_exists( $d1 . '_' . $d2, $list ) && ! \array_key_exists( $d2 . '_' . $d1, $list ) ) {
+                    $list[$d1 . '_' . $d2] = [$d1, $d2];
+                }
             }
         }
         self::$_allRolls = \array_values( $list );
         
-        return self::_allRolls;
+        return self::$_allRolls;
     }
 
     public static function GenerateMovesSequence( Game $game ): array
@@ -292,9 +303,9 @@ class Engine
         // Special case. Sometimes the first dice is blocked, but can be moved after next dice
         if ( \count( $sequences ) == 1 && $sequences[0] == null )
         {
-            $temp = $game.Roll[0];
-            $game.Roll[0] = $game.Roll[1];
-            $game.Roll[1] = $temp;
+            $temp = $game->Roll[0];
+            $game->Roll[0] = $game->Roll[1];
+            $game->Roll[1] = $temp;
             self::_GenerateMovesSequence( $sequences, $moves, 0, $game );
         }
 
@@ -331,13 +342,13 @@ class Engine
             }
         )->toArray();
             
-        // There seems to be a big advantage to evaluate points from lowest number.
-        // If not reversing here, black will win 60 to 40 with same config.
-        if ( $game->CurrentPlayer == Player.Color.White )
+        // There seems to be a big advantage to evaluate points from lowest number
+        // If not reversing here, black will win 60 to 40 with same config
+        if ( $game->CurrentPlayer == PlayerColor::White )
             $points = \array_reverse( $points );
 
         foreach ( $points as $fromPoint ) {
-            $fromPointNo = $fromPoint.GetNumber( $game->CurrentPlayer );
+            $fromPointNo = $fromPoint->GetNumber( $game->CurrentPlayer );
             if ( $fromPointNo == 25 )
                 continue;
             
@@ -365,7 +376,7 @@ class Engine
                     $newMoves = new ArrayCollection( $moves->getValues() );
                     $newMoves[$diceIndex] = $move;
                     
-                    // For last checker identical sequences are omitted.
+                    // For last checker identical sequences are omitted
                     if ( $diceIndex < $game->Roll->count() - 1 ) { // || ! $sequences->ContainsEntryWithAll( $newMoves ) 
                         $moves = $newMoves;
                         $sequences[]    = $moves;
@@ -376,10 +387,10 @@ class Engine
                     // Do the created move and recurse to next dice
                     $hit = $game->MakeMove( $move );
                     self::_GenerateMovesSequence( $sequences, $moves, $diceIndex + 1, $game );
-                    $game.UndoMove( $move, $hit );
+                    $game->UndoMove( $move, $hit );
                 }
             } else if ( $game->IsBearingOff( $game->CurrentPlayer ) ) {
-                // The furthest away checker can be moved beyond home.
+                // The furthest away checker can be moved beyond home
                 $currentPlayerPoints = $game->Points->filter(
                     function( $entry ) use ( $game ) {
                         return $entry->Checkers->filter(
@@ -410,7 +421,7 @@ class Engine
                     } else {
                         $newMoves = new ArrayCollection( $moves->toArray() );
                         $newMoves[$diceIndex] = $move;
-                        // For last checker identical sequences are omitted.
+                        // For last checker identical sequences are omitted
                         if ( $diceIndex < $game->Roll->count() - 1 ) { // || ! $sequences->ContainsEntryWithAll( $newMoves ) 
                             $moves = $newMoves;
                             $sequences[]    = $moves;
@@ -448,7 +459,7 @@ class Engine
 
         $k = ( $myScore - $otherScore ) / $oppPips;
 
-        return $k > -0.25; // Just my best guess.
+        return $k > -0.25; // Just my best guess
     }
     
     private static function orderPlayerPoints( Collection $playerPoints, $game ): Collection

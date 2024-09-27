@@ -1,11 +1,5 @@
 <?php namespace App\Component\Websocket;
 
-use function Amp\async;
-
-//use Amp\Loop;
-use Revolt\EventLoop as Loop;
-use Amp\Websocket\Client;
-
 /**
  * WebsocketClient Based on AMPHP
  * ==============================

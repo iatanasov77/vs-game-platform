@@ -44,7 +44,6 @@ export class SocketsService implements OnDestroy
     socket: WebSocket | undefined;
     url = '';
     
-    
     userMoves: MoveDto[] = [];
     gameHistory: GameDto[] = [];
     dicesHistory: DiceDto[][] = [];

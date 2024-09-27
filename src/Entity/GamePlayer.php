@@ -11,6 +11,8 @@ use App\Entity\UserManagement\User;
 #[ORM\Table(name: "VSGP_GamePlayers")]
 class GamePlayer implements ResourceInterface
 {
+    const AiUser = "5";
+    
     /** @var int */
     #[ORM\Id, ORM\Column(type: "integer"), ORM\GeneratedValue(strategy: "IDENTITY")]
     private $id;
@@ -25,7 +27,7 @@ class GamePlayer implements ResourceInterface
     private $type;
     
     /** @var Collection | TempPlayer[] */
-    #[ORM\OneToMany(targetEntity: TempPlayer::class, mappedBy: "player", indexBy: "id")]
+    #[ORM\OneToMany(targetEntity: TempPlayer::class, mappedBy: "player", indexBy: "id", cascade: ["persist"])]
     private $gamePlayers;
     
     /** @var int */
@@ -154,6 +156,6 @@ class GamePlayer implements ResourceInterface
     
     public function getName(): ?string
     {
-        return $this->user ? $this->user->getUsername() : 'Undefined';
+        return $this->user ? $this->user->getUsername() : 'AI';
     }
 }

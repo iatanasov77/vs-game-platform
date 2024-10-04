@@ -18,10 +18,10 @@ class ZmqPublishController extends AbstractController
     
     public function publish( Request $request ): JsonResponse
     {
-        $data       = \json_decode( $request->getContent() );
+        $wampAction = \json_decode( $request->getContent() );
         
         try {
-            $this->wsClientFactory->createPublisherClient()->send( $data );
+            $this->wsClientFactory->createZmqClient()->send( $wampAction );
         } catch ( \Exception $e ) {
             return new JsonResponse([
                 'status'    => Status::STATUS_ERROR,
@@ -31,6 +31,7 @@ class ZmqPublishController extends AbstractController
         
         return new JsonResponse([
             'status'    => Status::STATUS_OK,
+            'topic'     => $wampAction->topic,
         ]);
     }
 }

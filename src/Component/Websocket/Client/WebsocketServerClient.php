@@ -1,4 +1,4 @@
-<?php namespace App\Component\Websocket;
+<?php namespace App\Component\Websocket\Client;
 
 /**
  * WebsocketClient Based on AMPHP

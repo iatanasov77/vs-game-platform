@@ -1,4 +1,4 @@
-<?php namespace App\Component\Websocket;
+<?php namespace App\Component\Websocket\Client;
 
 /**
  * WebsocketClient Based on AMPHP
@@ -7,7 +7,7 @@
  * Manual:  https://stackoverflow.com/questions/64292868/how-to-send-a-message-to-specific-websocket-clients-with-symfony-ratchet
  *          https://stackoverflow.com/questions/60780643/get-websocket-pings-from-an-open-stream-connection-using-amp-websocket
  */
-final class WebsocketPublisherClient extends AbstractWebsocketClient
+final class WebsocketZmqClient extends AbstractWebsocketClient
 {
     public function send( object $msg ): void
     {

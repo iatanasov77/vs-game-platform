@@ -1,5 +1,9 @@
 <?php namespace App\Component\Websocket;
 
+use App\Component\Websocket\Client\WebsocketServerClient;
+use App\Component\Websocket\Client\WebsocketZmqClient;
+use App\Component\Websocket\Client\WebsocketThruwayClient;
+
 final class WebsocketClientFactory
 {
     /** @var string */
@@ -23,8 +27,13 @@ final class WebsocketClientFactory
         return new WebsocketServerClient( $this->websocketServerUrl );
     }
     
-    public function createPublisherClient()
+    public function createZmqClient()
     {
-        return new WebsocketPublisherClient( $this->zmqServerUrl );
+        return new WebsocketZmqClient( $this->zmqServerUrl );
+    }
+    
+    public function createThruwayClient()
+    {
+        return new WebsocketThruwayClient( $this->websocketPublisherUrl );
     }
 }

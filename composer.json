@@ -32,9 +32,10 @@
         "doctrine/orm": "^2.15",
         
         "amphp/websocket-client": "^2.0",
-        "textalk/websocket": "^1.6",
-        
         "cboden/ratchet": "^0.4",
+        
+        "voryx/thruway": "^0.6",
+        "thruway/pawl-transport": "^0.5",
         "react/zmq": "0.2.*|0.3.*",
         
         "knpuniversity/oauth2-client-bundle": "^2.18",

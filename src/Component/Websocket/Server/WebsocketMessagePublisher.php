@@ -1,4 +1,4 @@
-<?php namespace App\Component\Websocket;
+<?php namespace App\Component\Websocket\Server;
 
 use Ratchet\ConnectionInterface;
 use Ratchet\Wamp\WampServerInterface;

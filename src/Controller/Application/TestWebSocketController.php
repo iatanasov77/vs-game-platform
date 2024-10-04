@@ -56,7 +56,8 @@ class TestWebSocketController extends AbstractController
         $testObject->user       = $data['user'];
         $testObject->message    = $data['message'];
         
-        $this->wsClientFactory->createPublisherClient()->send( $testObject );
+        $this->wsClientFactory->createZmqClient()->send( $testObject );
+        //$this->wsClientFactory->createThruwayClient()->send( $testObject );
         
         return new JsonResponse([
             'status'    => Status::STATUS_OK,

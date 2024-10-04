@@ -28,7 +28,8 @@ import { CreateGameRoomDialogComponent } from '../create-game-room-dialog/create
 
 // Services
 import { AuthService } from '../../../services/auth.service'
-import { SocketsService } from '../../../services/sockets.service'
+//import { SocketsService } from '../../../services/sockets.service'
+import { ZmqService } from '../../../services/zmq.service'
 import { StatusMessageService } from '../../../services/status-message.service';
 
 // App State
@@ -102,7 +103,8 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         @Inject( NgbModal ) private ngbModal: NgbModal,
         
         @Inject( AuthService ) private authService: AuthService,
-        @Inject( SocketsService ) private socketsService: SocketsService,
+        //@Inject( SocketsService ) private socketsService: SocketsService,
+        @Inject( ZmqService ) private zmqService: ZmqService,
         @Inject( StatusMessageService ) private statusMessageService: StatusMessageService,
     ) {
         this.gameDto$ = AppState.Singleton.game.observe();
@@ -119,7 +121,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         }
         
         const gameId = 'backgammon';
-        this.socketsService.connect( gameId );
+        this.zmqService.connect( gameId );
     }
     
     ngOnInit(): void
@@ -170,20 +172,25 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     
     sendMoves(): void
     {
-        this.socketsService.sendMoves();
+//         this.socketsService.sendMoves();
+        this.zmqService.sendMoves();
         this.rollButtonClicked = false;
     }
     
     doMove( move: MoveDto ): void
     {
-        this.socketsService.doMove( move );
-        this.socketsService.sendMove( move );
+//         this.socketsService.doMove( move );
+//         this.socketsService.sendMove( move );
+        this.zmqService.doMove( move );
+        this.zmqService.sendMove( move );
     }
     
     undoMove(): void
     {
-        this.socketsService.undoMove();
-        this.socketsService.sendUndo();
+//         this.socketsService.undoMove();
+//         this.socketsService.sendUndo();
+        this.zmqService.undoMove();
+        this.zmqService.sendUndo();
     }
     
     myTurn(): boolean
@@ -217,7 +224,8 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     
     moveAnimFinished(): void
     {
-        this.socketsService.shiftMoveAnimationsQueue();
+//         this.socketsService.shiftMoveAnimationsQueue();
+        this.zmqService.shiftMoveAnimationsQueue();
     }
     
     @HostListener( 'window:resize', ['$event'] )
@@ -316,18 +324,21 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     
     resignGame(): void
     {
-        this.socketsService.resignGame();
+//         this.socketsService.resignGame();
+        this.zmqService.resignGame();
     }
     
     newGame(): void
     {
         this.newVisible = false;
-        this.socketsService.connect( '' );
+//         this.socketsService.connect( '' );
+        this.zmqService.connect( '' );
     }
     
     exitGame(): void
     {
-        this.socketsService.exitGame();
+//         this.socketsService.exitGame();
+        this.zmqService.exitGame();
         Busy.hide();
         //this.router.navigateByUrl( '/lobby' );
     }

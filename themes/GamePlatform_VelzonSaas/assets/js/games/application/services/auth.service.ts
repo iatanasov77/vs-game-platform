@@ -126,14 +126,6 @@ export class AuthService
         this.loggedIn$.next( this.loggedIn );
     }
     
-    
-    
-    
-    
-    
-    
-    
-    
     signIn( userDto: UserDto, idToken: string ): void
     {
         const headers = ( new HttpHeaders() ).set( "Authorization", "Bearer " + idToken );

@@ -40,15 +40,16 @@ class ZmqGameManager extends GameManager
             return;
         }
         
+        $socketObject = new \stdClass();
+        $socketObject->topic    = 'game';
+        $socketObject->data     = $obj;
+        
         $json = \json_encode( $obj );
         $this->logger->info( "Sending to client {$json}" );
         
-        try
-        {
-            $socket->send( $obj );
-        }
-        catch ( \Exception $exc )
-        {
+        try {
+            $socket->send( $socketObject );
+        } catch ( \Exception $exc ) {
             $this->logger->error( "Failed to send socket data. Exception: {$exc->getMessage()}" );
         }
     }

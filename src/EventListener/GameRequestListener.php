@@ -64,6 +64,6 @@ final class GameRequestListener
         $playAi     = $request->query->get( 'playAi', true );
         $forGold    = $request->query->get( 'forGold', true );
         
-        $this->gameZmqService->Connect( $this->wsClientFactory->createPublisherClient(), $gameCode, $userId, $gameId, $playAi, $forGold, $gameCookie );
+        $this->gameZmqService->Connect( $this->wsClientFactory->createZmqClient(), $gameCode, $userId, $gameId, $playAi, $forGold, $gameCookie );
     }
 }

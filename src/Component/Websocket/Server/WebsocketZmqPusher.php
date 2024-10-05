@@ -4,6 +4,10 @@ use Thruway\Peer\Client;
 use React\ZMQ\Context;
 use React\EventLoop\LoopInterface;
 
+/**
+ * MANUAL:  http://socketo.me/docs/hello-world
+ *          https://github.com/voryx/Thruway/issues/96
+ */
 final class WebsocketZmqPusher extends Client
 {
     /** @var string */

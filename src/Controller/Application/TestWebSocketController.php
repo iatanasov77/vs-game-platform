@@ -6,6 +6,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Vankosoft\ApplicationBundle\Component\Status;
 use App\Component\Websocket\WebsocketClientFactory;
+use App\Component\Dto\chat\ChatMessageDto;
 
 class TestWebSocketController extends AbstractController
 {
@@ -52,9 +53,14 @@ class TestWebSocketController extends AbstractController
         $data       = \json_decode( $request->getContent(), true );
         $testObject = new \stdClass();
         
-        $testObject->topic       = 'chat';
-        $testObject->user       = $data['user'];
-        $testObject->message    = $data['message'];
+        $dataObject = new ChatMessageDto();
+        $dataObject->type           = 'test';
+        $dataObject->fromUser       = $data['user'];
+        $dataObject->message        = $data['message'];
+        $dataObject->utcDateTime    = strval( ( new \DateTime( 'now' ) )->getTimestamp() );
+        
+        $testObject->topic  = 'chat';
+        $testObject->data   = $dataObject;
         
         $this->wsClientFactory->createZmqClient()->send( $testObject );
         //$this->wsClientFactory->createThruwayClient()->send( $testObject );

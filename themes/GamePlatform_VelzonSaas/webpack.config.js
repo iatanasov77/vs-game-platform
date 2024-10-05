@@ -66,11 +66,6 @@ Encore
         {from: './themes/GamePlatform_VelzonSaas/assets/vendor/Velzon_v4.2.0/images/flags', to: 'images/flags/[path][name].[ext]'},
         {from: './themes/GamePlatform_VelzonSaas/assets/vendor/Velzon_v4.2.0/images/users', to: 'images/users/[path][name].[ext]'},
     ])
-    
-    // Static JS Scripts
-    .copyFiles([
-        {from: './themes/GamePlatform_VelzonSaas/assets/vendor/cboden', to: 'cboden/[path][name].[ext]'},
-     ])
 
     // Global Assets
     .addStyleEntry( 'css/app', './themes/GamePlatform_VelzonSaas/assets/css/app.scss' )

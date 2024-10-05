@@ -27,12 +27,13 @@ class ShowGameBySlugController extends AbstractController
             'title' => $game->getTitle(),
             'rooms' => [],
         ];
+        /*
         foreach ( $game->getRooms() as $room ) {
             $gameData['rooms'][]    = [
                 'name'  => $room->getName(),
             ];
         }
-        
+        */
         return new JsonResponse([
             'status'    => Status::STATUS_OK,
             'data'      => $gameData,

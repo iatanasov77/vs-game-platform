@@ -1,6 +1,15 @@
 resources:
     App\Entity\GamePlay:
         operations:
+            game_sessions_get:
+                class: ApiPlatform\Metadata\GetCollection
+                method: GET
+                uriTemplate: /game-sessions
+                controller: App\Controller\Api\Games\GetGamePlayController
+                normalizationContext:
+                    groups: ['game-play:read']
+                forceEager: false
+            
             start_game:
                 class: ApiPlatform\Metadata\Post
                 method: POST
@@ -12,9 +21,9 @@ resources:
                 deserialize: false,
                 
                 normalizationContext:
-                    groups: ['game-play:read', 'game-room:read']
+                    groups: ['game-play:read']
                 denormalizationContext:
-                    groups: ['game-play:create', 'game-room:update']
+                    groups: ['game-play:create']
             
             finish_game:
                 class: ApiPlatform\Metadata\Put
@@ -27,6 +36,6 @@ resources:
                 deserialize: false,
                 
                 normalizationContext:
-                    groups: ['game-play:read', 'game-room:read']
+                    groups: ['game-play:read']
                 denormalizationContext:
-                    groups: ['game-play:update', 'game-room:update']
+                    groups: ['game-play:update']

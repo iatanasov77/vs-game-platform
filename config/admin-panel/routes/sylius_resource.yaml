@@ -30,14 +30,6 @@ vsapp_game_categories:
         templates: "Pages/GameCategories"
     type: sylius.resource
     
-vsapp_game_rooms:
-    resource: |
-        alias: vsapp.game_rooms
-        except: ['show']
-        path: /game-rooms
-        templates: "Pages/GameRooms"
-    type: sylius.resource
-    
 vsapp_game_players:
     resource: |
         alias: vsapp.game_players

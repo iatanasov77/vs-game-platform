@@ -33,10 +33,10 @@ class ProfileController extends BaseProfileController
         FactoryInterface $avatarImageFactory,
         FileUploaderInterface $imageUploader,
         VankosoftAgent $vankosoftAgent,
-        Payment $vsPayment,
-        RepositoryInterface $pricingPlanRepository,
-        RepositoryInterface $pricingPlanCategoryRepository,
-        RepositoryInterface $pricingPlanSubscriptionRepository
+//         Payment $vsPayment,
+//         RepositoryInterface $pricingPlanRepository,
+//         RepositoryInterface $pricingPlanCategoryRepository,
+//         RepositoryInterface $pricingPlanSubscriptionRepository
     ) {
         parent::__construct(
             $doctrine,
@@ -47,10 +47,10 @@ class ProfileController extends BaseProfileController
             $vankosoftAgent
         );
         
-		$this->vsPayment                        	= $vsPayment;
-        $this->pricingPlanRepository                = $pricingPlanRepository;
-        $this->pricingPlanCategoryRepository        = $pricingPlanCategoryRepository;
-        $this->pricingPlanSubscriptionRepository    = $pricingPlanSubscriptionRepository;
+// 		$this->vsPayment                        	= $vsPayment;
+//         $this->pricingPlanRepository                = $pricingPlanRepository;
+//         $this->pricingPlanCategoryRepository        = $pricingPlanCategoryRepository;
+//         $this->pricingPlanSubscriptionRepository    = $pricingPlanSubscriptionRepository;
     }
     
     public function indexAction( Request $request ) : Response

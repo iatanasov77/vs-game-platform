@@ -66,6 +66,7 @@ services:
             - '../../src/Widgets/'
             - '../../src/EventListener/'
             - '../../src/Command/'
+            - '../../src/Component/'
             - '../../src/AdminPanelKernel.php'
         autowire: true
     

@@ -19,9 +19,6 @@
     <app-backgammon-board
         class="game-board"
         
-        [isLoggedIn]="isLoggedIn"
-        [hasPlayer]="hasPlayer"
-        
         [width]="width"
         [height]="height"
         [game]="gameDto$ | async"
@@ -47,10 +44,7 @@
     
     <div class="board-buttons" #boardButtons>
         <app-board-buttons
-            [isLoggedIn]="isLoggedIn"
-            [hasPlayer]="hasPlayer"
             [isRoomSelected]="isRoomSelected"
-            [game]="game"
             
             [undoVisible]="undoVisible"
             [sendVisible]="sendVisible"
@@ -62,6 +56,9 @@
             (onRoll)="rollButtonClick()"
             (onNew)="newGame()"
             (onExit)="exitGame()"
+            
+            (onSelectGameRoom)="selectGameRoom()"
+            (onCreateGameRoom)="createGameRoom()"
         ></app-board-buttons>
     </div>
     

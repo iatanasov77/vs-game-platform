@@ -56,6 +56,8 @@ services:
             - '../../../src/EventListener/'
             - '../../../src/Command/'
             - '../../../src/GamePlatformKernel.php'
+            
+            - '../../../src/Component/'
         autowire: true
 
     # add more service definitions when explicit configuration is needed

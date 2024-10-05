@@ -58,13 +58,13 @@ class Game implements ResourceInterface
     #[ORM\Column(name: "game_url", type: "string", length: 255, nullable: true)]
     private $gameUrl;
     
-    /** @var Collection | GameRoom[] */
-    #[ORM\OneToMany(targetEntity: GameRoom::class, mappedBy: "game", cascade: ["persist", "remove"], orphanRemoval: true)]
-    private $rooms;
+    /** @var Collection | GamePlay[] */
+    #[ORM\OneToMany(targetEntity: GamePlay::class, mappedBy: "game", cascade: ["persist", "remove"], orphanRemoval: true)]
+    private $gameSessions;
     
     public function __construct()
     {
-        $this->rooms    = new ArrayCollection();
+        $this->gameSessions    = new ArrayCollection();
     }
     
     public function getId(): ?int
@@ -146,26 +146,26 @@ class Game implements ResourceInterface
     }
     
     /**
-     * @return Collection|GameRoom[]
+     * @return Collection|GamePlay[]
      */
-    public function getRooms(): Collection
+    public function getGameSessions(): Collection
     {
-        return $this->rooms;
+        return $this->gameSessions;
     }
     
-    public function addRoom( GameRoom $room ): self
+    public function addGameSession( GamePlay $gameSession ): self
     {
-        if ( ! $this->rooms->contains( $room ) ) {
-            $this->rooms[] = $room;
+        if ( ! $this->gameSessions->contains( $gameSession ) ) {
+            $this->gameSessions[] = $gameSession;
         }
         
         return $this;
     }
     
-    public function removeRoom( GameRoom $room ): self
+    public function removeGameSession( GamePlay $gameSession ): self
     {
-        if ( $this->rooms->contains( $room ) ) {
-            $this->rooms->removeElement( $room );
+        if ( $this->gameSessions->contains( $gameSession ) ) {
+            $this->gameSessions->removeElement( $gameSession );
         }
         
         return $this;

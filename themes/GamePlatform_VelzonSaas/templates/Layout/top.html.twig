@@ -63,6 +63,7 @@
             <div class="d-flex align-items-center">
 
                 {% if app_environment == 'dev' %}
+                    
                     <div class="dropdown ms-1 topbar-head-dropdown header-item">
                         <button type="button" class="btn btn-secondary" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span>{{ 'game_platform.template.menu.test_mercure' | trans( {},'GamePlatform' ) }}</span>
@@ -79,6 +80,25 @@
                                 <span class="align-middle">Publish Update</span>
                             </a>
                         </div>
+                    </div>
+                    
+                    {% if extension_loaded( 'zmq' ) %}
+                        <div class="dropdown ms-1 topbar-head-dropdown header-item">
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span>Test WebSocket</span>
+                            </button>
+                            
+                            <div class="dropdown-menu dropdown-menu-end">
+                                <a class="dropdown-item notify-item py-2" href="{{ path( 'vs_api_test_websocket_client_1' ) }}">
+                                    <span class="align-middle">Client 1</span>
+                                </a>
+                                <a class="dropdown-item notify-item py-2" href="{{ path( 'vs_api_test_websocket_client_2' ) }}">
+                                    <span class="align-middle">Client 2</span>
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                    
                 {% endif %}
 
                 <div class="ms-1 header-item">

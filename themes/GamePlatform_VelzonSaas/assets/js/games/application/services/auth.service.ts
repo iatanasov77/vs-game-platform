@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http'
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http'
+import { BehaviorSubject, Observable, tap, map } from 'rxjs';
 import { AppConstants } from "../constants";
 
 import { IAuth } from '../interfaces/auth';
@@ -8,6 +8,7 @@ import { ISignedUrlResponse } from '../interfaces/signed-url-response';
 
 import { StorageService, LOCAL_STORAGE } from 'ngx-webstorage-service';
 import { AppState } from '../state/app-state';
+import { Busy } from '../state/busy';
 import { Keys } from '../utils/keys';
 import UserDto from '_@/GamePlatform/Model/BoardGame/userDto';
 
@@ -53,54 +54,32 @@ export class AuthService
         return auth ? auth.apiToken : '';
     }
     
-    login( credentials: any )
-    {
-        return this.httpClient.post( 'login_check', credentials );
-    }
-    
     loginBySignature( apiVerifySiganature: string ): Observable<IAuth>
     {
         var url = 'login-by-signature/' + apiVerifySiganature;
         
         return this.httpClient.get<ISignedUrlResponse>( url ).pipe(
-                    tap( ( response: any ) => {
-                        if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
-                            let auth: IAuth = {
-                                id: response.data.user.id,
-                                
-                                email: response.data.user.email,
-                                username: response.data.user.username,
-                                
-                                fullName: response.data.user.firstName + ' ' + response.data.user.lastName,
-                                
-                                apiToken: response.data.tokenString,
-                                tokenCreated: response.data.token.iat,
-                                tokenExpired: response.data.token.exp,
-                                
-                                apiRefreshToken: response.data.refreshToken,
-                            };
-                            
-                            this.createAuth( auth );
-                        }
-                    }));
-    }
-    
-    logout()
-    {
-        // Need to Logout From Api Server
-    
-        this.removeAuth();
-    }
-    
-    repair(): void
-    {
-        const user = this.storage.get( Keys.loginKey ) as UserDto;
-        AppState.Singleton.user.setValue( user );
-    }
-    
-    register( formData: any )
-    {
-        return this.httpClient.post( 'users/register', formData );
+            tap( ( response: any ) => {
+                if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
+                    let auth: IAuth = {
+                        id: response.data.user.id,
+                        
+                        email: response.data.user.email,
+                        username: response.data.user.username,
+                        
+                        fullName: response.data.user.firstName + ' ' + response.data.user.lastName,
+                        
+                        apiToken: response.data.tokenString,
+                        tokenCreated: response.data.token.iat,
+                        tokenExpired: response.data.token.exp,
+                        
+                        apiRefreshToken: response.data.refreshToken,
+                    };
+                    
+                    this.createAuth( auth );
+                }
+            })
+        );
     }
     
     public checkTokenExpired( auth: IAuth ): boolean
@@ -145,5 +124,31 @@ export class AuthService
         }
         
         this.loggedIn$.next( this.loggedIn );
+    }
+    
+    signIn( userDto: UserDto, idToken: string ): void
+    {
+        const headers = ( new HttpHeaders() ).set( "Authorization", "Bearer " + idToken );
+        
+        // Gets or creates the user in backgammon database.
+        this.httpClient.post<UserDto>( 'account/signin', userDto, {headers} ).pipe(
+            map( ( data: any ) => { return data; } )
+        ).subscribe( ( userDto: UserDto ) => {
+            this.storage.set( Keys.loginKey, userDto );
+            AppState.Singleton.user.setValue( userDto );
+            Busy.hide();
+        });
+    }
+    
+    signOut(): void
+    {
+        AppState.Singleton.user.clearValue();
+        this.storage.remove( Keys.loginKey );
+    }
+    
+    repair(): void
+    {
+        const user = this.storage.get( Keys.loginKey ) as UserDto;
+        AppState.Singleton.user.setValue( user );
     }
 }

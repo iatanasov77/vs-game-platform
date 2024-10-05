@@ -39,13 +39,13 @@ class RegistrationForm extends UserFormType
         string $applicationClass,
         AuthorizationCheckerInterface $auth,
         array $requiredFields,
-        string $pricingPlanClass,
-        RepositoryInterface $pricingPlanRepository
+//         string $pricingPlanClass,
+//         RepositoryInterface $pricingPlanRepository
     ) {
         parent::__construct( $dataClass, $localesRepository, $requestStack, $applicationClass, $auth, $requiredFields );
         
-        $this->pricingPlanClass         = $pricingPlanClass;
-        $this->pricingPlanRepository    = $pricingPlanRepository;
+//         $this->pricingPlanClass         = $pricingPlanClass;
+//         $this->pricingPlanRepository    = $pricingPlanRepository;
     }
     
     public function buildForm( FormBuilderInterface $builder, array $options ): void

@@ -28,13 +28,6 @@ sylius_resource:
                 repository: Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository
                 controller: App\Controller\AdminPanel\GamePlatformSettingsController
                 form:       App\Form\GamePlatformSettingsForm
-        vsapp.game_rooms:
-            driver: doctrine/orm
-            classes:
-                model: App\Entity\GameRoom
-                repository: Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository
-                controller: App\Controller\AdminPanel\GameRoomController
-                form: App\Form\GameRoomForm
         vsapp.game_players:
             driver: doctrine/orm
             classes:
@@ -51,4 +44,9 @@ sylius_resource:
             driver: doctrine/orm
             classes:
                 model: App\Entity\MercureConnection
+                repository: Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository
+        vsapp.temp_players:
+            driver: doctrine/orm
+            classes:
+                model: App\Entity\TempPlayer
                 repository: Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository

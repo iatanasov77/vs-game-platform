@@ -14,7 +14,7 @@ services:
             - '%vs_application.model.application.class%'
             - '@security.helper'
             - '%vs_users.registration_form_required_fields%'
-            - '%vs_catalog.model.pricing_plan.class%'
-            - '@vs_catalog.repository.pricing_plan'
+#             - '%vs_catalog.model.pricing_plan.class%'
+#             - '@vs_catalog.repository.pricing_plan'
 
     

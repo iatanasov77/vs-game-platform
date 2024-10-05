@@ -21,3 +21,22 @@
     border-style: solid !important;
     border-color: black !important;
 }
+
+/* https://stackoverflow.com/a/21175120/12693473 */
+.game-rooms-container table {
+    width: 100%;
+}
+
+tbody, tr { display: block; }
+
+.game-rooms-container table tr:after {
+    content: ' ';
+    display: block;
+    visibility: hidden;
+    clear: both;
+}
+
+.game-rooms-container table tbody {
+    height: 200px;
+    overflow-y: auto;
+}

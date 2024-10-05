@@ -27,42 +27,30 @@ class StartGameController extends AbstractController
     
     public function __construct(
         ManagerRegistry $doctrine,
-        RepositoryInterface $roomsRepository,
         FactoryInterface $gamePlayFactory,
         HubInterface $hub
     ) {
         $this->doctrine         = $doctrine;
-        $this->roomsRepository  = $roomsRepository;
         $this->gamePlayFactory  = $gamePlayFactory;
         $this->hub              = $hub;
     }
     
     public function __invoke( Request $request ): JsonResponse
     {
-        $room       = $this->roomsRepository->find( $request->request->get( 'game_room' ) );
         $gamePlay   = $this->gamePlayFactory->createNew();
         $em         = $this->doctrine->getManager();
         
         $gamePlay->setActive( true );
         
-        $room->setIsPlaying( true );
-        $gamePlay->setGameRoom( $room );
-        
         $em->persist( $gamePlay );
         $em->flush();
         
-        $this->publishGamePlay( $gamePlay );
+        //$this->publishGamePlay( $gamePlay );
         
         return new JsonResponse([
             'status'    => Status::STATUS_OK,
             'data'      => [
                 'id'        => $gamePlay->getId(),
-                'room'      => [
-                    'id'        => $room->getId(),
-                    'slug'      => $room->getSlug(),
-                    'name'      => $room->getName(),
-                    'isPlaying' => $room->isPlaying(),
-                ],
             ],
         ]);
     }

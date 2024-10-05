@@ -11,12 +11,25 @@ import {
     ViewChild,
     HostListener
 } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Observable, Subscription, of } from 'rxjs';
 import { Store } from '@ngrx/store';
+import { Actions, ofType } from '@ngrx/effects';
+import {
+    selectGameRoomSuccess,
+    startGameSuccess,
+    loadGameRooms
+} from '../../../+store/game.actions';
+import { GameState as MyGameState } from '../../../+store/game.reducers';
+
+import { RequirementsDialogComponent } from '../../shared/requirements-dialog/requirements-dialog.component';
+import { SelectGameRoomDialogComponent } from '../select-game-room-dialog/select-game-room-dialog.component';
+import { CreateGameRoomDialogComponent } from '../create-game-room-dialog/create-game-room-dialog.component';
 
 // Services
 import { AuthService } from '../../../services/auth.service'
-import { SocketsService } from '../../../services/sockets.service'
+//import { SocketsService } from '../../../services/sockets.service'
+import { ZmqService } from '../../../services/zmq.service'
 import { StatusMessageService } from '../../../services/status-message.service';
 
 // App State
@@ -52,6 +65,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
 {
     @Input() isLoggedIn: boolean        = false;
     @Input() hasPlayer: boolean         = false;
+    @Input() game: any;
     
     @ViewChild( 'dices' ) dices: ElementRef | undefined;
     @ViewChild( 'messages' ) messages: ElementRef | undefined;
@@ -75,12 +89,22 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     sendVisible = false;
     undoVisible = false;
     dicesVisible = false;
-    newVisible = false;
-    exitVisible = true;
+    newVisible = true;
+    exitVisible = false;
+    
+    appState?: MyGameState;
+    gameStarted: boolean                = false;
+    isRoomSelected: boolean             = false;
+    gamePlayers: any;
     
     constructor(
+        @Inject( Store ) private store: Store,
+        @Inject( Actions ) private actions$: Actions,
+        @Inject( NgbModal ) private ngbModal: NgbModal,
+        
         @Inject( AuthService ) private authService: AuthService,
-        @Inject( SocketsService ) private socketsService: SocketsService,
+        //@Inject( SocketsService ) private socketsService: SocketsService,
+        @Inject( ZmqService ) private zmqService: ZmqService,
         @Inject( StatusMessageService ) private statusMessageService: StatusMessageService,
     ) {
         this.gameDto$ = AppState.Singleton.game.observe();
@@ -97,12 +121,28 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         }
         
         const gameId = 'backgammon';
-        this.socketsService.connect( gameId );
+        this.zmqService.connect( gameId );
     }
     
     ngOnInit(): void
     {
+        this.store.subscribe( ( state: any ) => {
+            console.log( state.app.main );
+            this.appState   = state.app.main;
+            
+            if ( state.app.main.gamePlay ) {
+                this.gameStarted    = true;
+            }
+        });
         
+        this.actions$.pipe( ofType( selectGameRoomSuccess ) ).subscribe( () => {
+            this.isRoomSelected = true;
+        });
+        
+        this.actions$.pipe( ofType( startGameSuccess ) ).subscribe( () => {
+            this.store.dispatch( loadGameRooms() );
+            this.game.startGame();
+        });
     }
     
     ngOnDestroy(): void
@@ -123,26 +163,34 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
                 case 'hasPlayer':
                     this.hasPlayer = changedProp.currentValue;
                     break;
+                case 'game':
+                    this.game = changedProp.currentValue;
+                    break;
             }
         }
     }
     
     sendMoves(): void
     {
-        this.socketsService.sendMoves();
+//         this.socketsService.sendMoves();
+        this.zmqService.sendMoves();
         this.rollButtonClicked = false;
     }
     
     doMove( move: MoveDto ): void
     {
-        this.socketsService.doMove( move );
-        this.socketsService.sendMove( move );
+//         this.socketsService.doMove( move );
+//         this.socketsService.sendMove( move );
+        this.zmqService.doMove( move );
+        this.zmqService.sendMove( move );
     }
     
     undoMove(): void
     {
-        this.socketsService.undoMove();
-        this.socketsService.sendUndo();
+//         this.socketsService.undoMove();
+//         this.socketsService.sendUndo();
+        this.zmqService.undoMove();
+        this.zmqService.sendUndo();
     }
     
     myTurn(): boolean
@@ -176,7 +224,8 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     
     moveAnimFinished(): void
     {
-        this.socketsService.shiftMoveAnimationsQueue();
+//         this.socketsService.shiftMoveAnimationsQueue();
+        this.zmqService.shiftMoveAnimationsQueue();
     }
     
     @HostListener( 'window:resize', ['$event'] )
@@ -275,19 +324,89 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     
     resignGame(): void
     {
-        this.socketsService.resignGame();
+//         this.socketsService.resignGame();
+        this.zmqService.resignGame();
     }
     
     newGame(): void
     {
         this.newVisible = false;
-        this.socketsService.connect( '' );
+//         this.socketsService.connect( '' );
+        this.zmqService.connect( '' );
     }
     
     exitGame(): void
     {
-        this.socketsService.exitGame();
+//         this.socketsService.exitGame();
+        this.zmqService.exitGame();
         Busy.hide();
         //this.router.navigateByUrl( '/lobby' );
+    }
+    
+    selectGameRoom(): void
+    {
+        if ( ! this.isLoggedIn || ! this.hasPlayer ) {
+            this.openRequirementsDialog();
+            return;
+        }
+        
+        if ( this.appState && this.appState.game ) {
+            if ( ! this.appState.game.room ) {
+                this.openSelectGameRoomDialog();
+            }
+        }
+    }
+    
+    openSelectGameRoomDialog(): void
+    {
+        if ( this.appState && this.appState.game && this.appState.rooms ) {
+            const modalRef = this.ngbModal.open( SelectGameRoomDialogComponent );
+            
+            modalRef.componentInstance.game     = this.appState.game;
+            modalRef.componentInstance.rooms    = this.appState.rooms;
+            modalRef.componentInstance.closeModal.subscribe( () => {
+                modalRef.dismiss();
+            });
+        }
+    }
+    
+    createGameRoom(): void
+    {
+        if ( ! this.isLoggedIn || ! this.hasPlayer ) {
+            this.openRequirementsDialog();
+            return;
+        }
+        
+        if ( this.appState && this.appState.game ) {
+            if ( ! this.appState.game.room ) {
+                this.openCreateGameRoomDialog();
+            }
+        }
+    }
+    
+    openCreateGameRoomDialog(): void
+    {
+        if ( this.appState && this.appState.game && this.appState.players ) {
+            const modalRef = this.ngbModal.open( CreateGameRoomDialogComponent );
+            
+            modalRef.componentInstance.game     = this.appState.game;
+            modalRef.componentInstance.players  = this.appState.players;
+            modalRef.componentInstance.closeModal.subscribe( () => {
+                modalRef.dismiss();
+            });
+        }
+    }
+    
+    openRequirementsDialog(): void
+    {
+        const modalRef = this.ngbModal.open( RequirementsDialogComponent );
+        
+        modalRef.componentInstance.isLoggedIn   = this.isLoggedIn;
+        modalRef.componentInstance.hasPlayer    = this.hasPlayer;
+        
+        modalRef.componentInstance.closeModal.subscribe( () => {
+            // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
+            modalRef.dismiss();
+        });
     }
 }

@@ -28,8 +28,8 @@ final class ActivityListener
             $user->setLastActiveAt( new \DateTime() );
             
             $em = $this->doctrine->getManager();
-            $em->persist( $user );
-            $em->flush();
+//             $em->persist( $user );
+//             $em->flush();
         }
     }
 }

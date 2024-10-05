@@ -7,12 +7,5 @@ import { EasyuiCombobox } from 'jquery-easyui-extensions/EasyuiCombobox.js';
 
 $( function()
 {
-    let selectedRooms  = JSON.parse( $( '#game_player_form_playerRooms').val() );
-    EasyuiCombobox( $( '#game_player_form_rooms' ), {
-        required: false,
-        multiple: true,
-        checkboxId: "rooms",
-        values: selectedRooms
-    });
-    VsRemoveDuplicates();
+    
 });

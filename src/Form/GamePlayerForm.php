@@ -9,15 +9,15 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
+use App\Component\Type\PlayerType;
 use App\Entity\GamePlayer;
 use App\Entity\UserManagement\User;
-use App\Entity\GameRoom;
 
 class GamePlayerForm extends AbstractForm
 {
     private $gameTypes  = [
-        GamePlayer::TYPE_COMPUTER   => 'Computer',
-        GamePlayer::TYPE_USER       => 'User',
+        PlayerType::Computer->value => 'Computer',
+        PlayerType::User->value     => 'User',
     ];
     
     public function buildForm( FormBuilderInterface $builder, array $options ): void
@@ -27,11 +27,6 @@ class GamePlayerForm extends AbstractForm
         $entity = $builder->getData();
         
         $builder
-            ->add( 'playerRooms', HiddenType::class, [
-                'mapped'    => false,
-                'data'      => \json_encode( $entity->getRooms()->getKeys() )
-            ])
-        
             ->add( 'user', EntityType::class, [
                 'label'                 => 'game_platform.form.game_player.user',
                 'placeholder'           => 'game_platform.form.game_player.user_placeholder',
@@ -40,17 +35,6 @@ class GamePlayerForm extends AbstractForm
                 'mapped'                => true,
                 'class'                 => User::class,
                 'choice_label'          => 'username',
-            ])
-            
-            ->add( 'rooms', EntityType::class, [
-                'label'                 => 'game_platform.form.game_player.rooms',
-                'placeholder'           => 'game_platform.form.game_player.rooms_placeholder',
-                'translation_domain'    => 'GamePlatform',
-                'required'              => false,
-                'mapped'                => true,
-                'multiple'              => true,
-                'class'                 => GameRoom::class,
-                'choice_label'          => 'name',
             ])
             
             ->add( 'type', ChoiceType::class, [

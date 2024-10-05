@@ -14,7 +14,7 @@ Encore
     
     .addAliases({
         '@': path.resolve( __dirname, '../../vendor/vankosoft/application/src/Vankosoft/ApplicationBundle/Resources/themes/default/assets' ),
-        '@@': path.resolve( __dirname, '../../vendor/vankosoft/payment-bundle/lib/Resources/assets' ),
+        //'@@': path.resolve( __dirname, '../../vendor/vankosoft/payment-bundle/lib/Resources/assets' ),
         '_@': path.resolve( __dirname, '../../assets/library' ),
     })
     
@@ -76,8 +76,8 @@ Encore
     // Pages Assets
     .addEntry( 'js/authentication', './themes/GamePlatform_VelzonSaas/assets/js/pages/authentication.js' )
     .addEntry( 'js/edit-profile', './themes/GamePlatform_VelzonSaas/assets/js/pages/edit-profile.js' )
-    .addEntry( 'js/profile', './themes/GamePlatform_VelzonSaas/assets/js/pages/profile.js' )
-    .addEntry( 'js/pricing-plans', './themes/GamePlatform_VelzonSaas/assets/js/pages/pricing-plans.js' )
+    //.addEntry( 'js/profile', './themes/GamePlatform_VelzonSaas/assets/js/pages/profile.js' )
+    //.addEntry( 'js/pricing-plans', './themes/GamePlatform_VelzonSaas/assets/js/pages/pricing-plans.js' )
     .addEntry( 'js/home', './themes/GamePlatform_VelzonSaas/assets/js/pages/home.js' )
     .addEntry( 'js/games', './themes/GamePlatform_VelzonSaas/assets/js/pages/games.js' )
     
@@ -87,6 +87,9 @@ Encore
     .addEntry( 'js/contract-bridge', './themes/GamePlatform_VelzonSaas/assets/js/games/contract-bridge/index.js' )
     .addEntry( 'js/chess', './themes/GamePlatform_VelzonSaas/assets/js/games/chess/index.js' )
     .addEntry( 'js/backgammon', './themes/GamePlatform_VelzonSaas/assets/js/games/backgammon/index.js' )
+    
+    // Test
+    .addEntry( 'js/test-websocket', './themes/GamePlatform_VelzonSaas/assets/js/pages/test-websocket.js' )
 ;
 
 Encore.configureDefinePlugin( ( options ) => {

@@ -25,7 +25,6 @@ export class SelectGameRoomDialogComponent
     
     dismissModal(): void
     {
-    
         this.closeModal.emit();
     }
     

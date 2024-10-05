@@ -16,20 +16,6 @@
         {{ form_widget(form.user, {'attr': {'class': 'form-select'}}) }}
     </div>
     
-    {{ form_widget( form.playerRooms ) }}
-    <div class="form-group">
-        {{ form_label(form.rooms, null, {
-            'label_attr': {'class': 'form-label'}
-            }) 
-        }}
-        
-        {{ form_widget(form.rooms, {
-            'attr': {
-                'class': 'form-select',
-            }
-        }) }}
-    </div>
-    
     <div class="form-group">
         {{ form_label(form.type, null, {
             'label_attr': {'class': 'form-label'}

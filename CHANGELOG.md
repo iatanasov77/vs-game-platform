@@ -1,3 +1,18 @@
+0.9.7	|	Release date: **05.10.2024**
+============================================
+* New Features, Fixes and Omprovements:
+  - Improve BoardButtonsComponent .
+  - Create an Angular Component 'CreateGameRoomDialogComponent'.
+  - Porting Backgammon Backend from C# Code.
+  - Optimize Doctrine Migrations.
+  - Create Test WebSocket.
+  - Separate Websocket and ZMQ Socket Services.
+  - Improve WebsocketClientFactory .
+  - Fix Backgamon Backend Code.
+  - Migrate to Wamp V2.
+  - Improve Test Websocket.
+
+
 0.9.6	|	Release date: **14.09.2024**
 ============================================
 * New Features:

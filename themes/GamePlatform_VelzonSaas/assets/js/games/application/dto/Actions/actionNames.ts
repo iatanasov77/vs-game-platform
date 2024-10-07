@@ -8,7 +8,12 @@
     connectionInfo,
     gameRestore,
     resign,
-    exitGame
+    exitGame,
+    requestedDoubling,
+    acceptedDoubling,
+    rolled,
+    requestHint,
+    hintMoves
 }
 
 export default ActionNames;

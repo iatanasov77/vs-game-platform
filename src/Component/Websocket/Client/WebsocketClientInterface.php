@@ -3,4 +3,6 @@
 interface WebsocketClientInterface
 {
     public function send( object $msg ): void;
+    public function receive(): string;
+    public function subscribe( string $realm, string $topic, \Closure $callback ): void;
 }

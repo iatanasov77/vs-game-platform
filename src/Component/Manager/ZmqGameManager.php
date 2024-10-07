@@ -14,7 +14,7 @@ use App\Component\System\Guid;
 use App\Component\Rules\Backgammon\Game;
 use App\Component\Ai\Backgammon\Engine as AiEngine;
 use App\Component\Dto\Mapper;
-use App\Component\Websocket\WebsocketClientInterface;
+use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Websocket\WebSocketState;
 
 // Types
@@ -94,7 +94,7 @@ class ZmqGameManager extends GameManager
                 }
             }
                 
-            //async( \Closure::fromCallable( [$this, 'ListenOn'] ), [$webSocket] )->await();
+            $this->ListenOn( $webSocket );
         } else {
             if ( $playAi ) {
                 throw new \Exception( "Ai always plays as white. This is not expected" );
@@ -114,7 +114,7 @@ class ZmqGameManager extends GameManager
             $this->CreateDbGame();
             $this->StartGame();
             
-            //async( \Closure::fromCallable( [$this, 'ListenOn'] ), [$webSocket] )->await();
+            $this->ListenOn( $webSocket );
         }
     }
 }

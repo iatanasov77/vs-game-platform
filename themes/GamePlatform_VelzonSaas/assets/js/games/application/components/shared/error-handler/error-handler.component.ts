@@ -3,15 +3,14 @@ import {
     Inject,
     EventEmitter,
     Input,
-    AfterViewInit,
     OnChanges,
     Output,
     SimpleChanges
 } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 
 // App State
-import { AppState } from '../../../state/app-state';
+import { AppStateService } from '../../../state/app-state.service';
 import { ErrorState } from '../../../state/ErrorState';
 import ErrorReportDto from '_@/GamePlatform/Model/BoardGame/errorReportDto';
 
@@ -20,25 +19,24 @@ import templateString from './error-handler.component.html';
 
 @Component({
     selector: 'app-error-handler',
-    
     template: templateString || 'Template Not Loaded !!!',
     styles: [
         cssString || 'Game CSS Not Loaded !!!',
     ]
-    
-    // changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ErrorHandlerComponent implements AfterViewInit, OnChanges
+export class ErrorHandlerComponent implements OnChanges
 {
     textVisible = false;
     @Input() errors: ErrorState | null = new ErrorState( '' );
     @Output() save = new EventEmitter<ErrorReportDto>();
-    formGroup: FormGroup;
+    formGroup: UntypedFormGroup;
     
-    constructor( @Inject( FormBuilder ) private fb: FormBuilder )
-    {
+    constructor(
+        @Inject( UntypedFormBuilder ) private fb: UntypedFormBuilder,
+        @Inject( AppStateService ) private appState: AppStateService
+    ) {
         this.showErrors.bind( this );
-        this.formGroup = fb.group({
+        this.formGroup = this.fb.group({
             errors: ['']
         });
     }
@@ -48,13 +46,6 @@ export class ErrorHandlerComponent implements AfterViewInit, OnChanges
     {
         // console.log( changes );
         this.setTextAreaValue();
-    }
-    
-    ngAfterViewInit(): void
-    {
-        // setInterval(() => {
-        //   throw new Error( 'interval' );
-        // }, 3000);
     }
     
     showErrors(): void
@@ -82,6 +73,6 @@ export class ErrorHandlerComponent implements AfterViewInit, OnChanges
     clearErrors(): void
     {
         this.textVisible = false;
-        AppState.Singleton.errors.clearValue();
+        this.appState.errors.clearValue();
     }
 }

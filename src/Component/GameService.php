@@ -14,7 +14,7 @@ use App\Component\Dto\GameCookieDto;
 use App\Component\Dto\Actions\ConnectionInfoActionDto;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerColor;
-use App\Component\Websocket\WebsocketClientInterface;
+use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Websocket\WebSocketState;
 
 class GameService
@@ -58,7 +58,7 @@ class GameService
         }
         
         if ( ! empty ( $gameId ) ) {
-            async( \Closure::fromCallable( [$this, 'ConnectInvite'] ), [$webSocket, $dbUser, $gameId] )->await();
+            // async( \Closure::fromCallable( [$this, 'ConnectInvite'] ), [$webSocket, $dbUser, $gameId] )->await();
             
             // Game disconnected here.
             return;
@@ -98,15 +98,15 @@ class GameService
             $manager->SearchingOpponent = ! $playAi;
             $manager->GameCode          = $gameCode;
             
-            /*
+            /*  */
             $this->AllGames[]   = $manager;
             $this->logger->info( "Added a new game and waiting for opponent. Game id {$manager->Game->Id}" );
             
             // entering socket loop
-            async( \Closure::fromCallable( [$manager, 'ConnectAndListen'] ), [$webSocket, PlayerColor::Black, $dbUser, $playAi] )->await();
-            async( \Closure::fromCallable( [$this, 'SendConnectionLost'] ), [PlayerColor::White, $manager] )->await();
+            $manager->ConnectAndListen( $webSocket, PlayerColor::Black, $dbUser, $playAi );
+            $this->SendConnectionLost( PlayerColor::White, $manager );
             //This is the end of the connection
-            */
+            
         } else {
             $manager->SearchingOpponent = false;
             $manager->GameCode          = $gameCode;

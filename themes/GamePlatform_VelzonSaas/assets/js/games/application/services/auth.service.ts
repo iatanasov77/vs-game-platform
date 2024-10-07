@@ -7,7 +7,7 @@ import { IAuth } from '../interfaces/auth';
 import { ISignedUrlResponse } from '../interfaces/signed-url-response';
 
 import { StorageService, LOCAL_STORAGE } from 'ngx-webstorage-service';
-import { AppState } from '../state/app-state';
+import { AppStateService } from '../state/app-state.service';
 import { Busy } from '../state/busy';
 import { Keys } from '../utils/keys';
 import UserDto from '_@/GamePlatform/Model/BoardGame/userDto';
@@ -30,6 +30,7 @@ export class AuthService
     constructor(
         @Inject( HttpClient ) private httpClient: HttpClient,
         @Inject( LOCAL_STORAGE ) private storage: StorageService,
+        @Inject( AppStateService ) private appState: AppStateService,
     ) {
         let auth        = this.getAuth();
         this.loggedIn   = auth && auth.apiToken ? true : false;
@@ -135,20 +136,20 @@ export class AuthService
             map( ( data: any ) => { return data; } )
         ).subscribe( ( userDto: UserDto ) => {
             this.storage.set( Keys.loginKey, userDto );
-            AppState.Singleton.user.setValue( userDto );
-            Busy.hide();
+            this.appState.user.setValue( userDto );
+            this.appState.hideBusy();
         });
     }
     
     signOut(): void
     {
-        AppState.Singleton.user.clearValue();
+        this.appState.user.clearValue();
         this.storage.remove( Keys.loginKey );
     }
     
     repair(): void
     {
         const user = this.storage.get( Keys.loginKey ) as UserDto;
-        AppState.Singleton.user.setValue( user );
+        this.appState.user.setValue( user );
     }
 }

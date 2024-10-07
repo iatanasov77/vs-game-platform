@@ -12,4 +12,9 @@ enum ActionNames
     case gameRestore;
     case resign;
     case exitGame;
+    case requestedDoubling;
+    case acceptedDoubling;
+    case rolled;
+    case requestHint;
+    case hintMoves;
 }

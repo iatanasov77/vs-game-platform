@@ -2,6 +2,8 @@ import { Injectable, Inject } from '@angular/core';
 
 import { CookieService } from 'ngx-cookie-service';
 import { StatusMessageService } from './status-message.service';
+import { SoundService } from './sound.service';
+import { AppStateService } from '../state/app-state.service';
 import { GameService } from './game.service';
 
 // Board Interfaces
@@ -14,18 +16,19 @@ import GameCookieDto from '_@/GamePlatform/Model/BoardGame/gameCookieDto';
 import GameState from '_@/GamePlatform/Model/BoardGame/gameState';
 
 // Action Interfaces
-import ActionDto from '../interfaces/Actions/actionDto';
-import ActionNames from '../interfaces/Actions/actionNames';
-import DicesRolledActionDto from '../interfaces/Actions/dicesRolledActionDto';
-import GameCreatedActionDto from '../interfaces/Actions/gameCreatedActionDto';
-import GameEndedActionDto from '../interfaces/Actions/gameEndedActionDto';
-import MovesMadeActionDto from '../interfaces/Actions/movesMadeActionDto';
-import OpponentMoveActionDto from '../interfaces/Actions/opponentMoveActionDto';
-import UndoActionDto from '../interfaces/Actions/undoActionDto';
-import ConnectionInfoActionDto from '../interfaces/Actions/connectionInfoActionDto';
-import GameRestoreActionDto from '../interfaces/Actions/gameRestoreActionDto';
+import ActionDto from '../dto/Actions/actionDto';
+import DoublingActionDto from '../dto/Actions/doublingActionDto';
+import HintMovesActionDto from '../dto/Actions/hintMovesActionDto';
+import ActionNames from '../dto/Actions/actionNames';
+import DicesRolledActionDto from '../dto/Actions/dicesRolledActionDto';
+import GameCreatedActionDto from '../dto/Actions/gameCreatedActionDto';
+import GameEndedActionDto from '../dto/Actions/gameEndedActionDto';
+import MovesMadeActionDto from '../dto/Actions/movesMadeActionDto';
+import OpponentMoveActionDto from '../dto/Actions/opponentMoveActionDto';
+import UndoActionDto from '../dto/Actions/undoActionDto';
+import ConnectionInfoActionDto from '../dto/Actions/connectionInfoActionDto';
+import GameRestoreActionDto from '../dto/Actions/gameRestoreActionDto';
 
-import { AppState } from '../state/app-state';
 import { Keys } from '../utils/keys';
 import { MessageLevel, StatusMessage } from '../utils/status-message';
 
@@ -33,8 +36,7 @@ const autobahn = require( 'autobahn-browser' );
 
 declare global {
     interface Window {
-        ab: any
-        gamePlatformSettings: any;
+        gamePlatformSettings: any
     }
 }
 
@@ -55,17 +57,20 @@ export class ZmqService
     connectTime = new Date();
     
     timerStarted = false;
+    timerId: any;
   
     constructor(
         @Inject( CookieService ) private cookieService: CookieService,
         @Inject( StatusMessageService ) private statusMessageService: StatusMessageService,
+        @Inject( SoundService ) private sound: SoundService,
+        @Inject( AppStateService ) private appState: AppStateService,
         @Inject( GameService ) private gameService: GameService,
     ) { }
     
-    connect( gameId: string ): void
+    connect( gameId: string, playAi: boolean, forGold: boolean ): void
     {
         this.url = window.gamePlatformSettings.socketPublisherUrl;
-        const user = AppState.Singleton.user.getValue();
+        const user = this.appState.user.getValue();
         const userId = user ? user.id : '';
         //alert( userId );
         
@@ -82,71 +87,74 @@ export class ZmqService
             realm: 'realm1'
         });
 
-        connection.onopen = function ( session: any ) {
-        
-           // 1) subscribe to a topic
-           function onevent( args: any ) {
-              console.log( "Event:", args[0] );
-           }
-           session.subscribe( 'game', onevent );
-        
-           // 2) publish an event
-           session.publish( 'game', ['Hello, world!'] );
-           
-        };
-        
+        connection.onopen = this.onOpen.bind( this );
         connection.open();
     }
     
-    onOpen( event: Event ): void
+    onOpen( session: any ): void
     {
-        this.socket.subscribe( 'game', this.onMessage.bind( this ) );
-        return;
-                
-                
-        console.log( 'Open', { event } );
         const now = new Date();
         const ping = now.getTime() - this.connectTime.getTime();
+        
         this.statusMessageService.setWaitingForConnect();
-        AppState.Singleton.myConnection.setValue( { connected: true, pingMs: ping } );
-        AppState.Singleton.game.clearValue();
-        AppState.Singleton.dices.clearValue();
+        this.appState.myConnection.setValue({ connected: true, pingMs: ping });
+        
+        this.appState.game.clearValue();
+        this.appState.dices.clearValue();
+        
+        session.subscribe( 'game', this.onMessage.bind( this ) );
     }
     
-    onClose( event: CloseEvent ): void
+    onError( event: Event ): void
     {
-        console.log( 'Close', { event } );
-        const cnn = AppState.Singleton.myConnection.getValue();
-        AppState.Singleton.myConnection.setValue( { ...cnn, connected: false } );
-        this.statusMessageService.setMyConnectionLost( event.reason );
+        console.error( 'Error', { event } );
+        const cnn = this.appState.myConnection.getValue();
+        this.appState.myConnection.setValue({ ...cnn, connected: false });
+        this.statusMessageService.setMyConnectionLost( '' );
+    }
+    
+    onClose(): void
+    {
+        // console.log( 'Close', { event } );
+        const cnn = this.appState.myConnection.getValue();
+        this.appState.myConnection.setValue({ ...cnn, connected: false });
+        // this.statusMessageService.setMyConnectionLost( event.reason );
     }
     
     // Messages received from server.
-    onMessage( topic: any, message: any ): void
+    onMessage( args: any ): void
     {
+        let message = args[0];
+        console.log( 'Args', args );
+        console.log( 'Message', message );
         alert( 'Message: ' + message );
         
-        const action = JSON.parse( message.data ) as ActionDto;
-        // console.log(message.data);
-        const game = AppState.Singleton.game.getValue();
+        if ( ! message || typeof message !== 'object'  ) {
+            return;
+        }
+        
+        const action = JSON.parse( message.action ) as ActionDto;
+        const game = this.appState.game.getValue();
+        console.log( 'Action', action );
+        
         switch ( action.actionName ) {
             case ActionNames.gameCreated: {
                 const dto = JSON.parse( message.data ) as GameCreatedActionDto;
-                AppState.Singleton.myColor.setValue( dto.myColor );
-                AppState.Singleton.game.setValue( dto.game );
+                this.appState.myColor.setValue( dto.myColor );
+                this.appState.game.setValue( dto.game );
                 
                 const cookie: GameCookieDto = { id: dto.game.id, color: dto.myColor };
                 this.cookieService.deleteAll( Keys.gameIdKey );
                 // console.log('Settings cookie', cookie);
                 this.cookieService.set( Keys.gameIdKey, JSON.stringify( cookie ), 2 );
                 this.statusMessageService.setTextMessage( dto.game );
-                AppState.Singleton.moveTimer.setValue( dto.game.thinkTime );
+                this.appState.moveTimer.setValue( dto.game.thinkTime );
                 this.startTimer();
                 break;
             }
             case ActionNames.dicesRolled: {
                 const dicesAction = JSON.parse( message.data ) as DicesRolledActionDto;
-                AppState.Singleton.dices.setValue( dicesAction.dices );
+                this.appState.dices.setValue( dicesAction.dices );
                 const cGame = {
                     ...game,
                     validMoves: dicesAction.validMoves,
@@ -154,9 +162,10 @@ export class ZmqService
                     playState: GameState.playing
                 };
                 // console.log(dicesAction.validMoves);
-                AppState.Singleton.game.setValue( cGame );
+                this.appState.game.setValue( cGame );
                 this.statusMessageService.setTextMessage( cGame );
-                AppState.Singleton.moveTimer.setValue( dicesAction.moveTimer );
+                this.appState.moveTimer.setValue( dicesAction.moveTimer );
+                this.appState.opponentDone.setValue( true );
                 break;
             }
             case ActionNames.movesMade: {
@@ -166,12 +175,52 @@ export class ZmqService
             case ActionNames.gameEnded: {
                 const endedAction = JSON.parse( message.data ) as GameEndedActionDto;
                 // console.log( 'game ended', endedAction.game.winner );
-                AppState.Singleton.game.setValue( endedAction.game );
-                AppState.Singleton.moveTimer.setValue( 0 );
+                this.appState.game.setValue({
+                    ...endedAction.game,
+                    playState: GameState.ended
+                });
                 this.statusMessageService.setGameEnded(
                     endedAction.game,
                     endedAction.newScore
                 );
+                this.appState.moveTimer.setValue( 0 );
+                break;
+            }
+            case ActionNames.requestedDoubling: {
+                // Opponent has requested
+                const action = JSON.parse( message.data ) as DoublingActionDto;
+                this.appState.moveTimer.setValue( action.moveTimer );
+                
+                this.appState.game.setValue({
+                    ...game,
+                    playState: GameState.requestedDoubling,
+                    currentPlayer: this.appState.myColor.getValue()
+                });
+                this.statusMessageService.setDoublingRequested();
+                break;
+            }
+            case ActionNames.acceptedDoubling: {
+                const action = JSON.parse( message.data ) as DoublingActionDto;
+                this.appState.moveTimer.setValue( action.moveTimer );
+                // Opponent has accepted
+                this.appState.game.setValue({
+                    ...game,
+                    playState: GameState.playing,
+                    goldMultiplier: game.goldMultiplier * 2,
+                    lastDoubler: this.appState.myColor.getValue(),
+                    currentPlayer: this.appState.myColor.getValue(),
+                    stake: game.stake * 2,
+                    whitePlayer: {
+                        ...game.whitePlayer,
+                        gold: game.whitePlayer.gold - game.stake / 2
+                    },
+                    blackPlayer: {
+                        ...game.blackPlayer,
+                        gold: game.blackPlayer.gold - game.stake / 2
+                    }
+                });
+                this.sound.playCoin();
+                this.statusMessageService.setDoublingAccepted();
                 break;
             }
             case ActionNames.opponentMove: {
@@ -184,14 +233,19 @@ export class ZmqService
                 this.undoMove();
                 break;
             }
+            case ActionNames.rolled: {
+                // this is just to fire the changed event. The value is not important.
+                this.appState.rolled.setValue( true );
+                break;
+            }
             case ActionNames.connectionInfo: {
                 const action = JSON.parse( message.data ) as ConnectionInfoActionDto;
                 if ( ! action.connection.connected ) {
                     console.log( 'Opponent disconnected' );
                     this.statusMessageService.setOpponentConnectionLost();
                 }
-                const cnn = AppState.Singleton.opponentConnection.getValue();
-                AppState.Singleton.opponentConnection.setValue({
+                const cnn = this.appState.opponentConnection.getValue();
+                this.appState.opponentConnection.setValue({
                     ...cnn,
                     connected: action.connection.connected
                 });
@@ -199,12 +253,23 @@ export class ZmqService
             }
             case ActionNames.gameRestore: {
                 const dto = JSON.parse( message.data ) as GameRestoreActionDto;
-                AppState.Singleton.myColor.setValue( dto.color );
-                AppState.Singleton.game.setValue( dto.game );
-                AppState.Singleton.dices.setValue( dto.dices );
-                AppState.Singleton.moveTimer.setValue( dto.game.thinkTime );
+                this.appState.myColor.setValue( dto.color );
+                this.appState.game.setValue( dto.game );
+                this.appState.dices.setValue( dto.dices );
+                this.appState.moveTimer.setValue( dto.game.thinkTime );
                 this.statusMessageService.setTextMessage( dto.game );
                 this.startTimer();
+                break;
+            }
+            case ActionNames.hintMoves: {
+                const dto = JSON.parse( message.data ) as HintMovesActionDto;
+                
+                dto.moves.forEach( ( hint ) => {
+                    const clone = [...this.appState.moveAnimations.getValue()];
+                    // console.log('pushing next animation');
+                    clone.push( hint );
+                    this.appState.moveAnimations.setValue( clone );
+                });
                 break;
             }
             
@@ -230,32 +295,35 @@ export class ZmqService
         }
         
         this.timerStarted = true;
-        setInterval( () => {
-            let time = AppState.Singleton.moveTimer.getValue();
-            time--;
-            AppState.Singleton.moveTimer.setValue( time );
+        this.timerId = setInterval( () => {
+            let time = this.appState.moveTimer.getValue();
+            time -= 0.25;
+            this.appState.moveTimer.setValue( time );
+            
+            if ( time > 0 && time < 10 ) {
+                this.sound.playTick();
+            }
+      
             if ( time <= 0 ) {
-                const currentMes = AppState.Singleton.statusMessage.getValue();
+                const currentMes = this.appState.statusMessage.getValue();
                 if (
-                    AppState.Singleton.myTurn() &&
+                    this.appState.myTurn() &&
                     currentMes.level !== MessageLevel.warning
                 ) {
-                    const mes = StatusMessage.warning( 'Move now or lose!' );
-                    // A few more seconds are given on the server.
-                    AppState.Singleton.statusMessage.setValue( mes );
+                    this.statusMessageService.setMoveNow();
                 }
             }
-        }, 1000 );
+        }, 250 );
     }
     
     doOpponentMove( move: MoveDto ): void
     {
-        const game = AppState.Singleton.game.getValue();
+        const game = this.appState.game.getValue();
         const gameClone = JSON.parse( JSON.stringify( game ) ) as GameDto;
         const isWhite = move.color === PlayerColor.white;
         const from = isWhite ? 25 - move.from : move.from;
         const to = isWhite ? 25 - move.to : move.to;
-//         const checker = <CheckerDto>gameClone.points[from].checkers.pop();
+        //const checker = <CheckerDto>gameClone.points[from].checkers.pop();
         
         // hitting opponent checker
         const hit = gameClone.points[to].checkers.find(
@@ -267,15 +335,15 @@ export class ZmqService
             gameClone.points[barIdx].checkers.push( hit );
         }
         
-//         gameClone.points[to].checkers.push( checker );
+        //gameClone.points[to].checkers.push( checker );
         
-        AppState.Singleton.game.setValue( gameClone );
+        this.appState.game.setValue( gameClone );
     }
     
     doMove( move: MoveDto ): void
     {
         this.userMoves.push( { ...move, nextMoves: [] } ); // server does not need to know nextMoves.
-        const prevGame = AppState.Singleton.game.getValue();
+        const prevGame = this.appState.game.getValue();
         this.gameHistory.push( prevGame );
         
         const gameClone = JSON.parse( JSON.stringify( prevGame ) ) as GameDto;
@@ -315,9 +383,9 @@ export class ZmqService
         
         //push checker to new point
 //         gameClone.points[to].checkers.push( checker );
-        AppState.Singleton.game.setValue( gameClone );
+        this.appState.game.setValue( gameClone );
         
-        const dices = AppState.Singleton.dices.getValue();
+        const dices = this.appState.dices.getValue();
         this.dicesHistory.push( dices );
         
         const diceClone = JSON.parse( JSON.stringify( dices ) ) as DiceDto[];
@@ -335,12 +403,12 @@ export class ZmqService
         }
         const dice = diceClone[diceIdx];
         dice.used = true;
-        AppState.Singleton.dices.setValue( diceClone );
+        this.appState.dices.setValue( diceClone );
         if ( move.animate ) {
-            const clone = [...AppState.Singleton.moveAnimations.getValue()];
+            const clone = [...this.appState.moveAnimations.getValue()];
             // console.log('pushing next animation');
             clone.push( move );
-            AppState.Singleton.moveAnimations.setValue( clone );
+            this.appState.moveAnimations.setValue( clone );
         }
     }
     
@@ -354,28 +422,28 @@ export class ZmqService
             return;
         }
         const game = this.gameHistory.pop() as GameDto;
-        AppState.Singleton.game.setValue( game );
+        this.appState.game.setValue( game );
         
         const dices = this.dicesHistory.pop() as DiceDto[];
-        AppState.Singleton.dices.setValue( dices );
+        this.appState.dices.setValue( dices );
         
-        const clone = [...AppState.Singleton.moveAnimations.getValue()];
+        const clone = [...this.appState.moveAnimations.getValue()];
         // console.log('pushing next animation');
         clone.push( { ...move, from: move.to, to: move.from } );
-        AppState.Singleton.moveAnimations.setValue( clone );
+        this.appState.moveAnimations.setValue( clone );
     }
     
     shiftMoveAnimationsQueue(): void
     {
         // console.log( 'shifting animation queue' );
-        const clone = [...AppState.Singleton.moveAnimations.getValue()];
+        const clone = [...this.appState.moveAnimations.getValue()];
         clone.shift();
-        AppState.Singleton.moveAnimations.setValue( clone );
+        this.appState.moveAnimations.setValue( clone );
     }
       
     sendMoves(): void
     {
-        const myColor = AppState.Singleton.myColor.getValue();
+        const myColor = this.appState.myColor.getValue();
         // Opponent moves are also stored in userMoves but we cant send them back.
         const action: MovesMadeActionDto = {
             actionName: ActionNames.movesMade,
@@ -420,5 +488,14 @@ export class ZmqService
             actionName: ActionNames.exitGame
         };
         this.sendMessage( JSON.stringify( action ) );
+    }
+    
+    resetGame(): void
+    {
+        this.cookieService.deleteAll( Keys.gameIdKey );
+        this.userMoves = [];
+        this.gameHistory = [];
+        this.dicesHistory = [];
+        this.connectTime = new Date();
     }
 }

@@ -11,10 +11,11 @@ import {
     ViewChild,
     ElementRef
 } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
 // App State
-import { AppState } from '../../../state/app-state';
+import { AppStateService } from '../../../state/app-state.service';
 
 // Board Interfaces
 import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
@@ -46,6 +47,7 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
     @Input() public height = 400;
     @Input() game: GameDto | null = null;
     @Input() myColor: PlayerColor | null = PlayerColor.black;
+    @Input() rotated = false;
     @Input() flipped = false;
     
     @Input() dicesVisible: boolean | null = false;
@@ -56,6 +58,7 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
     @Input() exitVisible = true;
     
     @Output() addMove = new EventEmitter<MoveDto>();
+    @Output() addEditMove = new EventEmitter<MoveDto>();
     @Output() moveAnimFinished = new EventEmitter<void>();
     
     borderWidth = 0;
@@ -78,13 +81,15 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
     blacksName = '';
     theme: IThemes = new DarkTheme();
     
-    constructor()
-    {
+    constructor(
+        @Inject( TranslateService ) private translateService: TranslateService,
+        @Inject( AppStateService ) private appState: AppStateService
+    ) {
         for ( let r = 0; r < 26; r++ ) {
             this.checkerAreas.push( new CheckerArea( 0, 0, 0, 0, 0 ) );
         }
         
-        this.animationSubscription = AppState.Singleton.moveAnimations.observe().subscribe( ( moves: MoveDto[] ) => {
+        this.animationSubscription = this.appState.moveAnimations.observe().subscribe( ( moves: MoveDto[] ) => {
             if ( moves.length > 0 && this.animatedMove === undefined ) {
                 // console.log('starting animation ');
                 this.animatedMove = new MoveAnimation(

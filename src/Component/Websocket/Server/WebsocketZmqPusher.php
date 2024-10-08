@@ -22,6 +22,7 @@ final class WebsocketZmqPusher extends Client
     
     public function onSessionStart( $session, $transport )
     {
+        //die( 'EHO' );
         $context = new Context( $this->getLoop() );
         $pull    = $context->getSocket( \ZMQ::SOCKET_PULL );
         $pull->bind( $this->tcpUrl );

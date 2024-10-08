@@ -28,12 +28,12 @@ import { CreateGameRoomDialogComponent } from '../create-game-room-dialog/create
 
 // Services
 import { AuthService } from '../../../services/auth.service'
-//import { SocketsService } from '../../../services/sockets.service'
 import { ZmqService } from '../../../services/zmq.service'
 import { StatusMessageService } from '../../../services/status-message.service';
+import { SoundService } from '../../../services/sound.service'
 
 // App State
-import { AppState } from '../../../state/app-state';
+import { AppStateService } from '../../../state/app-state.service';
 import { StatusMessage } from '../../../utils/status-message';
 import { Busy } from '../../../state/busy';
 
@@ -80,22 +80,28 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     
     width = 450;
     height = 450;
+    started = false;
     rollButtonClicked = false;
     diceColor: PlayerColor | null = PlayerColor.neither;
     messageCenter = 0;
     flipped = false;
-    
+    playAiFlag = false;
+    forGodlFlag = false;
+    playAiQuestion = false;
+  
     rollButtonVisible = false;
     sendVisible = false;
     undoVisible = false;
     dicesVisible = false;
     newVisible = true;
     exitVisible = false;
+    dicesDto: DiceDto[] | undefined;
     
     appState?: MyGameState;
     gameStarted: boolean                = false;
     isRoomSelected: boolean             = false;
     gamePlayers: any;
+    startedHandle: any;
     
     constructor(
         @Inject( Store ) private store: Store,
@@ -103,25 +109,29 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         @Inject( NgbModal ) private ngbModal: NgbModal,
         
         @Inject( AuthService ) private authService: AuthService,
-        //@Inject( SocketsService ) private socketsService: SocketsService,
         @Inject( ZmqService ) private zmqService: ZmqService,
         @Inject( StatusMessageService ) private statusMessageService: StatusMessageService,
+        @Inject( AppStateService ) private appStateService: AppStateService,
+        @Inject( SoundService ) private sound: SoundService,
     ) {
-        this.gameDto$ = AppState.Singleton.game.observe();
-        this.dices$ = AppState.Singleton.dices.observe();
-        this.diceSubs = AppState.Singleton.dices.observe().subscribe( this.diceChanged.bind( this ) );
-        this.playerColor$ = AppState.Singleton.myColor.observe();
-        this.gameSubs = AppState.Singleton.game.observe().subscribe( this.gameChanged.bind( this ) );
-        this.message$ = AppState.Singleton.statusMessage.observe();
-        this.timeLeft$ = AppState.Singleton.moveTimer.observe();
+        this.gameDto$ = this.appStateService.game.observe();
+        this.dices$ = this.appStateService.dices.observe();
+        this.diceSubs = this.appStateService.dices.observe().subscribe( this.diceChanged.bind( this ) );
+        this.playerColor$ = this.appStateService.myColor.observe();
+        this.gameSubs = this.appStateService.game.observe().subscribe( this.gameChanged.bind( this ) );
+        this.message$ = this.appStateService.statusMessage.observe();
+        this.timeLeft$ = this.appStateService.moveTimer.observe();
         
         // if game page is refreshed, restore user from login cookie
-        if ( ! AppState.Singleton.user.getValue() ) {
+        if ( ! this.appStateService.user.getValue() ) {
             this.authService.repair();
         }
         
         const gameId = 'backgammon';
-        this.zmqService.connect( gameId );
+        const playAi = true;
+        const forGold = true;
+    
+        this.zmqService.connect( gameId, playAi, forGold );
     }
     
     ngOnInit(): void
@@ -170,6 +180,16 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         }
     }
     
+    private waitForOpponent()
+    {
+        this.sound.playPianoIntro();
+        this.startedHandle = setTimeout( () => {
+            if ( ! this.started ) {
+                this.playAiQuestion = true;
+            }
+        }, 11000 );
+    }
+    
     sendMoves(): void
     {
 //         this.socketsService.sendMoves();
@@ -195,7 +215,12 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     
     myTurn(): boolean
     {
-        return AppState.Singleton.myTurn();
+        return this.appStateService.myTurn();
+    }
+    
+    doublingRequested(): boolean
+    {
+        return this.appStateService.doublingRequested();
     }
     
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -214,12 +239,13 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     diceChanged( dto: DiceDto[] ): void
     {
+        this.dicesDto = dto;
         this.setRollButtonVisible();
-        this.setDicesVisible();
         this.setSendVisible();
         this.setUndoVisible();
         this.fireResize();
-        this.exitVisible = AppState.Singleton.game.getValue()?.playState !== GameState.playing;
+        const game = this.appStateService.game.getValue();
+        this.exitVisible = game?.playState !== GameState.playing && game?.playState !== GameState.requestedDoubling;
     }
     
     moveAnimFinished(): void
@@ -275,7 +301,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         this.setDicesVisible();
         this.setSendVisible();
         this.fireResize();
-        const gme = AppState.Singleton.game.getValue();
+        const gme = this.appStateService.game.getValue();
         if ( ! gme.validMoves || gme.validMoves.length === 0 ) {
             this.statusMessageService.setBlockedMessage();
         }
@@ -298,18 +324,18 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             return;
         }
         
-        const game = AppState.Singleton.game.getValue();
+        const game = this.appStateService.game.getValue();
         this.sendVisible = ! game || game.validMoves.length == 0;
     }
     
     setUndoVisible(): void
     {
-        if ( ! this.myTurn() ) {
+        if ( ! this.myTurn() || this.doublingRequested() ) {
             this.undoVisible = false;
             return;
         }
         
-        const dices = AppState.Singleton.dices.getValue();
+        const dices = this.appStateService.dices.getValue();
         this.undoVisible = dices && dices.filter( ( d ) => d.used ).length > 0;
     }
     
@@ -331,15 +357,19 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     newGame(): void
     {
         this.newVisible = false;
-//         this.socketsService.connect( '' );
-        this.zmqService.connect( '' );
+        this.started = false;
+        this.rollButtonClicked = false;
+        
+        this.zmqService.resetGame();
+        this.zmqService.connect( '', this.playAiFlag, this.forGodlFlag );
+        this.waitForOpponent();
     }
     
     exitGame(): void
     {
 //         this.socketsService.exitGame();
         this.zmqService.exitGame();
-        Busy.hide();
+        this.appStateService.hideBusy();
         //this.router.navigateByUrl( '/lobby' );
     }
     

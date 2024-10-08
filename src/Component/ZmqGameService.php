@@ -15,7 +15,7 @@ use App\Component\Dto\ConnectionDto;
 use App\Component\Dto\Actions\ConnectionInfoActionDto;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerColor;
-use App\Component\Websocket\WebsocketClientInterface;
+use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Websocket\WebSocketState;
 
 class ZmqGameService extends GameService

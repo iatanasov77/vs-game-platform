@@ -13,7 +13,7 @@ import { AuthService } from '../application/services/auth.service'
 import { GameService } from '../application/services/game.service'
 import { GameBaseComponent } from '../application/components/game-base/game-base.component';
 
-import { AppState } from '../application/state/app-state';
+import { AppStateService } from '../application/state/app-state.service';
 import { ErrorState } from '../application/state/ErrorState';
 import { ErrorReportService } from '../application/services/error-report.service';
 import ErrorReportDto from '_@/GamePlatform/Model/BoardGame/errorReportDto';
@@ -34,7 +34,7 @@ export class BackgammonComponent extends GameBaseComponent implements OnInit
     //game: BeloteCardGame;
     
     title   = 'Backgammon';
-    busy$   = AppState.Singleton.busy.observe();
+    busy$: Observable<Busy>;
     errors$: Observable<ErrorState>;
   
     constructor(
@@ -43,11 +43,13 @@ export class BackgammonComponent extends GameBaseComponent implements OnInit
         @Inject( Store ) store: Store,
         @Inject( Actions ) private actions$: Actions,
         
-        @Inject( ErrorReportService ) private errorReportService: ErrorReportService
+        @Inject( ErrorReportService ) private errorReportService: ErrorReportService,
+        @Inject( AppStateService ) private appState: AppStateService
     ) {
         super( authService, gameService, store );
         
-        this.errors$ = AppState.Singleton.errors.observe();
+        this.errors$ = this.appState.errors.observe();
+        this.busy$ = this.appState.busy.observe();
         this.authService.repair();
     }
     
@@ -74,7 +76,7 @@ export class BackgammonComponent extends GameBaseComponent implements OnInit
                     createdNew: false
                 } as UserDto;
                 
-                Busy.show();
+                this.appState.showBusy();
                 this.authService.signIn( userDto, auth.apiToken );
             }
         });

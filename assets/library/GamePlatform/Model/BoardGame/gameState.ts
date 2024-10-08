@@ -2,6 +2,7 @@
     opponentConnectWaiting,
     firstThrow,
     playing,
+    requestedDoubling,
     ended
 }
 

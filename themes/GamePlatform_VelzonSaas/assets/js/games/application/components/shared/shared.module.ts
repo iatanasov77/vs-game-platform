@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { LoaderComponent } from './loader/loader.component';
 import { MessagesComponent } from './messages/messages.component';
@@ -23,6 +24,7 @@ import { RequirementsDialogComponent } from './requirements-dialog/requirements-
         MatTooltipModule,
         NgbModule,
         TranslateModule.forChild(),
+        ReactiveFormsModule,
     ],
     exports: [
         LoaderComponent,

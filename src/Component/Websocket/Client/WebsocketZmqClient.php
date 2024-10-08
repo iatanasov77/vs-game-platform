@@ -1,5 +1,9 @@
 <?php namespace App\Component\Websocket\Client;
 
+use Thruway\ClientSession;
+use Thruway\Peer\Client;
+use Thruway\Transport\PawlTransportProvider;
+
 /**
  * WebsocketClient Based on AMPHP
  * ==============================
@@ -16,5 +20,38 @@ final class WebsocketZmqClient extends AbstractWebsocketClient
         $socket->connect( $this->websocketUrl );
         
         $socket->send( \json_encode( $msg ) );
+    }
+    
+    public function receive(): string
+    {
+        return '';
+    }
+    
+    public function subscribe( string $realm, string $topic, \Closure $callback ): void
+    {   
+//         $client = new Client( $realm );
+//         $client->addTransportProvider( new PawlTransportProvider( $this->websocketUrl ) );
+        
+//         $client->on('open', function ( ClientSession $session ) use ( $topic ) {
+            
+//             // 1) subscribe to a topic
+//             $onevent = function ($args) {
+//                 echo "Event {$args[0]}\n";
+//             };
+//             $session->subscribe( $topic, $onevent );
+            
+//             // 2) publish an event
+//             $session->publish( $topic, ['Hello, world from PHP!!!'], [], ["acknowledge" => true] )->then(
+//                 function () {
+//                     echo "Publish Acknowledged!\n";
+//                 },
+//                 function ( $error ) {
+//                     // publish failed
+//                     echo "Publish Error {$error}\n";
+//                 }
+//             );
+//         });
+        
+//         $client->start( false );
     }
 }

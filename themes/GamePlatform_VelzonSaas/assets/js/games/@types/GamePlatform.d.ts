@@ -37,9 +37,21 @@ declare module '_@/GamePlatform/Model/BoardGame/userDto' {
         name: string;
         email: string;
         photoUrl: string;
+        showPhoto: boolean;
         socialProvider: string;
         socialProviderId: string;
         createdNew: boolean;
+        isAdmin: boolean;
+        preferredLanguage: string;
+        theme: string;
+        emailNotification: boolean;
+        gold: number;
+        lastFreeGold: number;
+        elo: number;
+        passHash: number;
+        localLoginName: string;
+        acceptedLanguages: string[];
+        muteIntro: boolean;
     }
     
     export = UserDto;
@@ -72,6 +84,10 @@ declare module '_@/GamePlatform/Model/BoardGame/gameDto' {
         points: PointDto[];
         validMoves: MoveDto[];
         thinkTime: number;
+        goldMultiplier: number;
+        isGoldGame: boolean;
+        lastDoubler?: PlayerColor;
+        stake: number;
     }
     
     export = GameDto;
@@ -110,6 +126,9 @@ declare module '_@/GamePlatform/Model/BoardGame/playerDto' {
         name: string;
         playerColor: PlayerColor;
         pointsLeft: number;
+        photoUrl: string;
+        elo: number;
+        gold: number;
     }
     
     export = PlayerDto;
@@ -162,6 +181,7 @@ declare module '_@/GamePlatform/Model/BoardGame/gameState' {
         opponentConnectWaiting,
         firstThrow,
         playing,
+        requestedDoubling,
         ended
     }
     

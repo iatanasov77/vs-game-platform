@@ -1,0 +1,30 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+    
+    app_wamp_kernel:
+        class: App\Component\Wamp\WampKernel
+        arguments:
+            - '@service_container'
+            - '@serializer'
+            - '@voryx.thruway.resource.mapper'
+            - '@event_dispatcher'
+            - '@logger'
+    
+    app_thruway.command.worker:
+        class: App\Component\Wamp\ThruwayWorkerCommand
+        arguments:
+            - '@service_container'
+            - '@doctrine'
+            - '@validator'
+            - '@app_wamp_kernel'
+            - '@voryx.thruway.client.react_connector'
+        calls:
+            - [ setLogger, [ '@logger' ] ]
+        tags:
+            - 'console.command'
+    
+    React\Socket\ConnectorInterface:
+        alias: voryx.thruway.client.react_connector
+        public: true

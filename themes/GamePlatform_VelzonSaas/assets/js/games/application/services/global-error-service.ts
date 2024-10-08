@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ErrorHandler, Injectable, Inject, NgZone } from '@angular/core';
-import { AppState } from '../state/app-state';
+import { AppStateService } from '../state/app-state.service';
 import { ErrorState } from '../state/ErrorState';
 
 @Injectable({
@@ -9,7 +9,10 @@ import { ErrorState } from '../state/ErrorState';
 })
 export class GlobalErrorService implements ErrorHandler
 {
-    constructor( @Inject( NgZone ) private zone: NgZone ) {}
+    constructor(
+        @Inject( NgZone ) private zone: NgZone,
+        @Inject( AppStateService ) private appState: AppStateService,
+    ) {}
     
     handleError( error: any ): void
     {
@@ -17,7 +20,7 @@ export class GlobalErrorService implements ErrorHandler
             return;
         }
         console.error( error );
-        let current = AppState.Singleton.errors.getValue()?.message ?? '';
+        let current = this.appState.errors.getValue()?.message ?? '';
         let sError = error.stack ?? '';
         sError += error.message ?? error;
         
@@ -26,11 +29,19 @@ export class GlobalErrorService implements ErrorHandler
             return;
         }
         
+        if ( sError.indexOf( 'Not logged in' ) > -1 ) {
+            return;
+        }
+    
+        if ( sError.indexOf(' ExpressionChangedAfterItHasBeenCheckedError' ) > -1 ) {
+            return;
+        }
+        
         const date = new Date();
         const err = date + '\n' + sError + '\n\n';
         current += err;
         this.zone.run( () => {
-            AppState.Singleton.errors.setValue( new ErrorState( current ) );
+            this.appState.errors.setValue( new ErrorState( current ) );
         });
     }
 }

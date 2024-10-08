@@ -14,6 +14,10 @@ interface GameDto {
     points: PointDto[];
     validMoves: MoveDto[];
     thinkTime: number;
+    goldMultiplier: number;
+    isGoldGame: boolean;
+    lastDoubler?: PlayerColor;
+    stake: number;
 }
 
 export default GameDto;

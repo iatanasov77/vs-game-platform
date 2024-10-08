@@ -4,6 +4,8 @@ use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 
 /**
+ * See Logs: sudo tail -f /var/log/websocket/game-patform-server.log
+ * 
  * Manual:  https://stackoverflow.com/questions/64292868/how-to-send-a-message-to-specific-websocket-clients-with-symfony-ratchet
  *          https://stackoverflow.com/questions/30953610/how-to-send-messages-to-particular-users-ratchet-php-websocket
  */
@@ -11,6 +13,9 @@ class WebsocketMessageHandler implements MessageComponentInterface
 {
     /** @var \SplObjectStorage */
     protected $clients;
+    
+    /** @var int */
+    protected $connectionSequenceId = 0;
     
     /** @var array */
     protected $names;
@@ -20,16 +25,19 @@ class WebsocketMessageHandler implements MessageComponentInterface
     
     public function __construct()
     {
-        //$this->clients  = new \SplObjectStorage;
-        $this->clients  = [];
+        $this->clients  = new \SplObjectStorage;
+        //$this->clients  = [];
         $this->names    = [];
+        
         $this->logFile  = '/var/log/websocket/game-patform-server.log';
     }
     
     public function onOpen( ConnectionInterface $conn )
     {
+        $this->connectionSequenceId++;
+        
         // Store the new connection to send messages to later
-        $this->clients[$conn->resourceId] = $conn;
+        $this->clients->attach( $conn, $this->connectionSequenceId );
         
         $this->log( " \n" );
         $this->log( "New connection ({$conn->resourceId})" . date( 'Y/m/d h:i:sa' ) );
@@ -38,15 +46,17 @@ class WebsocketMessageHandler implements MessageComponentInterface
     
     public function onMessage( ConnectionInterface $from, $msg )
     {
-        $data = \json_decode( $msg );
+        /** @var int $sequenceId */
+        $sequenceId = $this->clients[$from];
+        $data       = \json_decode( $msg );
         
         // The following line is for debugging purposes only
         $this->log( "Incoming message: " . $msg . PHP_EOL );
         
-        if ( isset( $data->username ) ) {
+        if ( isset( $data->fromUser ) ) {
             // Register the name of the just connected user.
-            if ( $data->username != '' ) {
-                $this->names[$from->resourceId] = $data->username;
+            if ( $data->fromUser != '' ) {
+                $this->names[$from->resourceId] = $data->fromUser;
             }
         } else {
             if ( isset( $data->to ) ) {
@@ -71,6 +81,14 @@ class WebsocketMessageHandler implements MessageComponentInterface
                     }
                 }
             }
+        }
+        
+        foreach ( $this->clients as $client ) {
+//             if ( $from !== $client ) {
+//                 $client->send( $sequenceId . $_ . $msg );
+//             }
+            
+            $client->send( $msg );
         }
     }
     

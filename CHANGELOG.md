@@ -1,3 +1,12 @@
+0.10.0	|	Release date: **08.10.2024**
+============================================
+* New Features:
+  - Many Big Refactoring.
+  - Use Thruway Bundle to Create a Wamp Client Command.
+  - Create Separate Websocket Test Pages Fifferent From WAMP/ZMQ Test With Autobahn.
+  - Create Test Websocket Chat.
+
+
 0.9.7	|	Release date: **05.10.2024**
 ============================================
 * New Features, Fixes and Omprovements:

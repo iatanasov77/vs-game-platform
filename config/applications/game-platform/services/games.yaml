@@ -9,6 +9,15 @@ services:
         autowire: true
         autoconfigure: true
 
+    app_websocket_server_command:
+        class: App\Component\Websocket\WebsocketServerCommand
+        arguments:
+            - '@service_container'
+            - '@doctrine'
+            - '@validator'
+        tags:
+            - 'console.command'
+    
     App\EventListener\GameRequestListener:
         arguments:
             - '@app_websocket_client_factory'

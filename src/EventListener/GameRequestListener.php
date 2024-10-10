@@ -45,6 +45,17 @@ final class GameRequestListener
         }
     }
     
+    private function connectChatWithWebsocket( Request $request, $gameCode, $cookieKey )
+    {
+        $gameCookie = $request->cookies->get( $cookieKey );
+        $userId     = $request->query->get( 'userId' );
+        $gameId     = $request->query->get( 'gameId' );
+        $playAi     = $request->query->get( 'playAi', true );
+        $forGold    = $request->query->get( 'forGold', true );
+        
+        $this->gameWebsocketService->Connect( $this->wsClientFactory->createServerChatClient(), $gameCode, $userId, $gameId, $playAi, $forGold, $gameCookie );
+    }
+    
     private function connectGameWithWebsocket( Request $request, $gameCode, $cookieKey )
     {
         $gameCookie = $request->cookies->get( $cookieKey );
@@ -53,7 +64,7 @@ final class GameRequestListener
         $playAi     = $request->query->get( 'playAi', true );
         $forGold    = $request->query->get( 'forGold', true );
         
-        $this->gameWebsocketService->Connect( $this->wsClientFactory->createServerClient(), $gameCode, $userId, $gameId, $playAi, $forGold, $gameCookie );
+        $this->gameWebsocketService->Connect( $this->wsClientFactory->createServerGameClient(), $gameCode, $userId, $gameId, $playAi, $forGold, $gameCookie );
     }
     
     private function connectGameWithZmq( Request $request, $gameCode, $cookieKey )

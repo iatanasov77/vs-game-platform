@@ -7,7 +7,10 @@ use App\Component\Websocket\Client\WebsocketThruwayClient;
 final class WebsocketClientFactory
 {
     /** @var string */
-    private $websocketServerUrl;
+    private $websocketChatUrl;
+    
+    /** @var string */
+    private $websocketGameUrl;
     
     /** @var string */
     private $websocketPublisherUrl;
@@ -15,16 +18,26 @@ final class WebsocketClientFactory
     /** @var string */
     private $zmqServerUrl;
     
-    public function __construct( string $websocketServerUrl, string $websocketPublisherUrl, string $zmqServerUrl )
-    {
-        $this->websocketServerUrl       = $websocketServerUrl;
+    public function __construct(
+        string $websocketChatUrl,
+        string $websocketGameUrl,
+        string $websocketPublisherUrl,
+        string $zmqServerUrl
+    ) {
+        $this->websocketChatUrl         = $websocketChatUrl;
+        $this->websocketGameUrl         = $websocketGameUrl;
         $this->websocketPublisherUrl    = $websocketPublisherUrl;
         $this->zmqServerUrl             = $zmqServerUrl;
     }
     
-    public function createServerClient()
+    public function createServerChatClient()
     {
-        return new WebsocketServerClient( $this->websocketServerUrl );
+        return new WebsocketServerClient( $this->websocketChatUrl );
+    }
+    
+    public function createServerGameClient()
+    {
+        return new WebsocketServerClient( $this->websocketGameUrl );
     }
     
     public function createZmqClient()

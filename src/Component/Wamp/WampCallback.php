@@ -1,7 +1,7 @@
 <?php namespace App\Component\Wamp;
 
-use Voryx\ThruwayBundle\Annotation\Worker;
-use Voryx\ThruwayBundle\Annotation\Subscribe;
+use Vankosoft\ThruwayBundle\Annotation\Worker;
+use Vankosoft\ThruwayBundle\Annotation\Subscribe;
 
 /**
  * @Worker( "game-platform" )

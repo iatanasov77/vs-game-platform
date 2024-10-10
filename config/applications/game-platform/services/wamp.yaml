@@ -8,7 +8,7 @@ services:
         arguments:
             - '@service_container'
             - '@serializer'
-            - '@voryx.thruway.resource.mapper'
+            - '@vs_thruway.thruway.resource.mapper'
             - '@event_dispatcher'
             - '@logger'
     
@@ -19,12 +19,12 @@ services:
             - '@doctrine'
             - '@validator'
             - '@app_wamp_kernel'
-            - '@voryx.thruway.client.react_connector'
+            - '@vs_thruway.thruway.client.react_connector'
         calls:
             - [ setLogger, [ '@logger' ] ]
         tags:
             - 'console.command'
     
     React\Socket\ConnectorInterface:
-        alias: voryx.thruway.client.react_connector
+        alias: vs_thruway.thruway.client.react_connector
         public: true

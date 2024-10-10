@@ -34,7 +34,7 @@
         "amphp/websocket-client": "^2.0",
         "cboden/ratchet": "^0.4",
         
-        "vankosoft/thruway-bundle": "dev-develop",
+        "vankosoft/thruway-bundle": "^1.0",
         "react/zmq": "0.2.*|0.3.*",
         
         "knpuniversity/oauth2-client-bundle": "^2.18",

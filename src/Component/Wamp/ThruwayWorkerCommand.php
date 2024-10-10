@@ -2,9 +2,9 @@
 
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Voryx\ThruwayBundle\Command\ThruwayWorkerCommand as BaseThruwayWorkerCommand;
-use Voryx\ThruwayBundle\WampKernelInterface;
-use Voryx\ThruwayBundle\Annotation\Worker as WorkerAnnotation;
+use Vankosoft\ThruwayBundle\Command\ThruwayWorkerCommand as BaseThruwayWorkerCommand;
+use Vankosoft\ThruwayBundle\WampKernelInterface;
+use Vankosoft\ThruwayBundle\Annotation\Worker as WorkerAnnotation;
 use Thruway\Peer\ClientInterface;
 use Thruway\Transport\PawlTransportProvider;
 use Doctrine\Persistence\ManagerRegistry;

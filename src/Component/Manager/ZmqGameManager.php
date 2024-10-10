@@ -7,8 +7,6 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 
-//use Amp\DeferredCancellation;
-
 use App\EventListener\GameEndedEvent;
 use App\Component\System\Guid;
 use App\Component\Rules\Backgammon\Game;

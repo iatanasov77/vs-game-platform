@@ -28,22 +28,17 @@ class GameService
     /** @var SecurityBridge */
     protected SecurityBridge $securityBridge;
     
-    /** @var GameManager */
-    protected $gameManager;
-    
     /** @var Collection | GameManager[] */
     protected $AllGames;
     
     public function __construct(
         LoggerInterface $logger,
         RepositoryInterface $usersRepository,
-        SecurityBridge $securityBridge,
-        GameManager $gameManager
+        SecurityBridge $securityBridge
     ) {
         $this->logger           = $logger;
         $this->usersRepository  = $usersRepository;
         $this->securityBridge   = $securityBridge;
-        $this->gameManager      = $gameManager;
         
         $this->AllGames         = new ArrayCollection();
     }
@@ -114,11 +109,13 @@ class GameService
             $this->logger->info( "Found a game and added a second player. Game id {$manager->Game->Id}" );
             $color = $manager->Client1 == null ? PlayerColor::Black : PlayerColor::White;
             
+            /*
             // entering socket loop
             async( \Closure::fromCallable( [$manager, 'ConnectAndListen'] ), [$webSocket, $color, $dbUser, false] )->await();
             $this->logger->info( "{$color} player disconnected.");
             async( \Closure::fromCallable( [$this, 'SendConnectionLost'] ), [PlayerColor::Black, $manager] )->await();
             //This is the end of the connection
+            */
         }
         
         $this->RemoveDissconnected( $manager );
@@ -165,6 +162,7 @@ class GameService
                     $gameManager->Engine = new AiEngine( $this->gameManager->Game );
                     $this->logger->info( "Restoring game {$cookie->id} for {$color}" );
                     
+                    /*
                     // entering socket loop
                     async( \Closure::fromCallable( [$gameManager, 'Restore'] ), [$color, $webSocket] )->await();
                     
@@ -173,6 +171,7 @@ class GameService
                     
                     // socket loop exited
                     $this->RemoveDissconnected( $gameManager );
+                    */
                     
                     return true;
                 }
@@ -208,13 +207,16 @@ class GameService
         }
         
         $color = PlayerColor::Black;
-        if ( $manager->Client1 != null )
+        if ( $manager->Client1 != null ) {
             $color = PlayerColor::White;
-            
+        }
+        
+        /*
         async( \Closure::fromCallable( [$manager, 'ConnectAndListen'] ), [$webSocket, $color, $dbUser, false] )->await();
         
         self::RemoveDissconnected( $manager );
         async( \Closure::fromCallable( [$this, 'SendConnectionLost'] ), [PlayerColor::White, $manager] )->await();
+        */
     }
     
     protected static function SendConnectionLost( PlayerColor $color, GameManager $manager )
@@ -229,7 +231,7 @@ class GameService
             $connection->connected = false;
             $action->connection = $connection;
             
-            async( \Closure::fromCallable( [$manager, 'Send'] ), [$socket, $action] )->await();
+            //async( \Closure::fromCallable( [$manager, 'Send'] ), [$socket, $action] )->await();
         }
     }
     

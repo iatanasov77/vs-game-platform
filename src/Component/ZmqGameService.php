@@ -65,6 +65,7 @@ class ZmqGameService extends GameService
             $managers = $managers->toArray();
         }
         
+        /*
         $manager = \array_shift( $managers );
         if ( $manager == null || $playAi ) {
             //$manager = new GameManager( $this->logger, $forGold );
@@ -99,6 +100,7 @@ class ZmqGameService extends GameService
         }
         
         $this->RemoveDissconnected( $manager );
+        */
     }
     
     protected function TryReConnect( WebsocketClientInterface $webSocket, ?string $gameCookie, ?UserInterface $dbUser ): bool

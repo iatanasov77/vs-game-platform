@@ -9,8 +9,17 @@ services:
         autowire: true
         autoconfigure: true
 
-    app_websocket_server_command:
-        class: App\Component\Websocket\WebsocketServerCommand
+    app_websocket_chat_command:
+        class: App\Component\Websocket\WebsocketChatCommand
+        arguments:
+            - '@service_container'
+            - '@doctrine'
+            - '@validator'
+        tags:
+            - 'console.command'
+    
+    app_websocket_game_command:
+        class: App\Component\Websocket\WebsocketGameCommand
         arguments:
             - '@service_container'
             - '@doctrine'
@@ -39,13 +48,13 @@ services:
             - '%app_websocket_publisher_url%'
             - '%app_zmqsocket_url%'
             
-#     app_game_service:
-#         class: App\Component\GameService
-#         arguments:
-#             - '@logger'
-#             - '@vs_users.repository.users'
-#             - '@vs_users.security_bridge'
-#             - '@app_game_manager'
+    app_game_service:
+        class: App\Component\GameService
+        arguments:
+            - '@logger'
+            - '@vs_users.repository.users'
+            - '@vs_users.security_bridge'
+            - '@app_game_manager'
     
     app_zmq_game_service:
         class: App\Component\ZmqGameService
@@ -53,7 +62,6 @@ services:
             - '@logger'
             - '@vs_users.repository.users'
             - '@vs_users.security_bridge'
-            - '@app_zmq_game_manager'
             
 #     app_game_manager:
 #         class: App\Component\Manager\GameManager
@@ -68,20 +76,6 @@ services:
 #             - '@vsapp.repository.temp_players'
 #             - '@vsapp.factory.temp_players'
 #             - '%app_game_for_gold%'
-            
-    app_zmq_game_manager:
-        class: App\Component\Manager\ZmqGameManager
-        arguments:
-            - '@logger'
-            - '@event_dispatcher'
-            - '@doctrine'
-            - '@vsapp.repository.games'
-            - '@vsapp.repository.game_sessions'
-            - '@vsapp.factory.game_sessions'
-            - '@vsapp.repository.game_players'
-            - '@vsapp.repository.temp_players'
-            - '@vsapp.factory.temp_players'
-            - '%app_game_for_gold%'
     
     ##############################################################
     # Game Controllers

@@ -19,17 +19,17 @@ use App\Component\Websocket\Server\WebsocketMessageHandler;
 
 /**
  * See Logs:        sudo tail -f /var/log/websocket/game-patform-server.log
- * Start Service:   sudo service websocket_game_platform restart
+ * Start Service:   sudo service websocket_game_platform_chat restart
  *
  * Manual:  https://stackoverflow.com/questions/64292868/how-to-send-a-message-to-specific-websocket-clients-with-symfony-ratchet
  *          https://stackoverflow.com/questions/30953610/how-to-send-messages-to-particular-users-ratchet-php-websocket
  */
 #[AsCommand(
-    name: 'vgp:websocket:server',
-    description: 'Start WebSocket Server',
+    name: 'vgp:websocket:chat',
+    description: 'Start WebSocket Chat',
     hidden: false
 )]
-final class WebsocketServerCommand extends ContainerAwareCommand
+final class WebsocketChatCommand extends ContainerAwareCommand
 {
     public function __construct(
         ContainerInterface $container,
@@ -45,7 +45,7 @@ final class WebsocketServerCommand extends ContainerAwareCommand
     protected function configure(): void
     {
         $this
-            ->setHelp( 'The <info>%command.name%</info> starts the GamePlatform WebSocket Server.' )
+            ->setHelp( 'The <info>%command.name%</info> starts the GamePlatform WebSocket Chat Server.' )
             ->addArgument( 'port', InputArgument::REQUIRED, 'The port of the server you\'re starting' );
     }
     

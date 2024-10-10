@@ -7,8 +7,6 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 
-use Amp\DeferredCancellation;
-
 use App\EventListener\GameEndedEvent;
 use App\Component\System\Guid;
 use App\Component\Rules\Backgammon\Game;
@@ -380,7 +378,7 @@ class GameManager
                 $this->Game->WhitePlayer->FirstMoveMade = true;
             
             $this->DoMoves( $action );
-            async( \Closure::fromCallable( [$this, 'NewTurn'] ), [$socket] )->await();
+            //async( \Closure::fromCallable( [$this, 'NewTurn'] ), [$socket] )->await();
                     
         } else if ( $actionName == ActionNames::opponentMove ) {
             $action = \json_decode( $actionText );
@@ -413,7 +411,7 @@ class GameManager
                     $this->Send( $socket, $doublingAction );
                 } else {
                     yield delay( 2000 );
-                    async( \Closure::fromCallable( [$this, 'Resign'] ), [$this->Game->OtherPlayer()] )->await();
+                    //async( \Closure::fromCallable( [$this, 'Resign'] ), [$this->Game->OtherPlayer()] )->await();
                 }
             } else {
                 $this->Send( $otherSocket, $action );
@@ -441,7 +439,7 @@ class GameManager
             $winner = $this->Client1 == $otherSocket ? PlayerColor::Black : PlayerColor::White;
             $this->Resign( $winner );
         } else if ( $actionName == ActionNames::exitGame ) {
-            async( \Closure::fromCallable( [$this, 'CloseConnections'] ), [$socket] )->await();
+            //async( \Closure::fromCallable( [$this, 'CloseConnections'] ), [$socket] )->await();
         }
     }
     
@@ -551,10 +549,10 @@ class GameManager
         $gameEndedAction->game = $game;
         
         $gameEndedAction->newScore = $newScore ? $newScore[0] : null;
-        async( \Closure::fromCallable( [$this, 'Send'] ), [$this->Client1, $gameEndedAction] )->await();
+        //async( \Closure::fromCallable( [$this, 'Send'] ), [$this->Client1, $gameEndedAction] )->await();
         
         $gameEndedAction->newScore = $newScore ? $newScore[1] : null;
-        async( \Closure::fromCallable( [$this, 'Send'] ), [$this->Client2, $gameEndedAction] )->await();
+        //async( \Closure::fromCallable( [$this, 'Send'] ), [$this->Client2, $gameEndedAction] )->await();
     }
     
     protected function ReturnStakes(): void

@@ -23,54 +23,54 @@ export class SoundService implements OnDestroy
     constructor( @Inject( AppStateService ) private appState: AppStateService )
     {
         this.click = new Audio();
-        this.click.src = '../assets/sound/click.wav';
+        this.click.src = '/build/gameplatform-velzonsaas-theme/sound/click.wav';
         this.click.load();
         
         this.dice = new Audio();
-        this.dice.src = '../assets/sound/dice.wav';
+        this.dice.src = '/build/gameplatform-velzonsaas-theme/sound/dice.wav';
         this.dice.load();
         
         this.checker = new Audio();
-        this.checker.src = '../assets/sound/checker.wav';
+        this.checker.src = '/build/gameplatform-velzonsaas-theme/sound/checker.wav';
         this.checker.load();
         
         this.checkerWood = new Audio();
-        this.checkerWood.src = '../assets/sound/checker-wood.wav';
+        this.checkerWood.src = '/build/gameplatform-velzonsaas-theme/sound/checker-wood.wav';
         this.checkerWood.load();
         
         this.looser = new Audio();
-        this.looser.src = '../assets/sound/looser.wav';
+        this.looser.src = '/build/gameplatform-velzonsaas-theme/sound/looser.wav';
         this.looser.load();
         
         this.swish = new Audio();
-        this.swish.src = '../assets/sound/swish.wav';
+        this.swish.src = '/build/gameplatform-velzonsaas-theme/sound/swish.wav';
         this.swish.load();
         
         this.warning = new Audio();
-        this.warning.src = '../assets/sound/warning.wav';
+        this.warning.src = '/build/gameplatform-velzonsaas-theme/sound/warning.wav';
         this.warning.load();
         
         this.winner = new Audio();
-        this.winner.src = '../assets/sound/winner.wav';
+        this.winner.src = '/build/gameplatform-velzonsaas-theme/sound/winner.wav';
         this.winner.load();
         
         this.coin = new Audio();
-        this.coin.src = '../assets/sound/coin.wav';
+        this.coin.src = '/build/gameplatform-velzonsaas-theme/sound/coin.wav';
         this.coin.preload = 'auto';
         this.coin.load();
         
         this.blues = new Audio();
-        this.blues.src = '../assets/sound/blues.mp3';
+        this.blues.src = '/build/gameplatform-velzonsaas-theme/sound/blues.mp3';
         this.blues.preload = 'auto';
         this.blues.load();
         
         this.tick = new Audio();
-        this.tick.src = '../assets/sound/ticktock.mp3';
+        this.tick.src = '/build/gameplatform-velzonsaas-theme/sound/ticktock.mp3';
         this.tick.load();
         this.tick.volume = 0.25;
         
         this.pianointro = new Audio();
-        this.pianointro.src = '../assets/sound/pianointro.mp3';
+        this.pianointro.src = '/build/gameplatform-velzonsaas-theme/sound/pianointro.mp3';
         this.pianointro.load();
         this.pianointro.onended = () => {
             this.introPlaying = false;

@@ -65,19 +65,19 @@ services:
             - '@vs_users.repository.users'
             - '@vs_users.security_bridge'
             
-#     app_game_manager:
-#         class: App\Component\Manager\GameManager
-#         arguments:
-#             - '@logger'
-#             - '@event_dispatcher'
-#             - '@doctrine'
-#             - '@vsapp.repository.games'
-#             - '@vsapp.repository.game_sessions'
-#             - '@vsapp.factory.game_sessions'
-#             - '@vsapp.repository.game_players'
-#             - '@vsapp.repository.temp_players'
-#             - '@vsapp.factory.temp_players'
-#             - '%app_game_for_gold%'
+    app_game_manager_factory:
+        class: App\Component\Manager\GameManagerFactory
+        arguments:
+            - '@logger'
+            - '@event_dispatcher'
+            - '@doctrine'
+            - '@vsapp.repository.games'
+            - '@vsapp.repository.game_sessions'
+            - '@vsapp.factory.game_sessions'
+            - '@vsapp.repository.game_players'
+            - '@vsapp.repository.temp_players'
+            - '@vsapp.factory.temp_players'
+            - '%app_game_for_gold%'
     
     ##############################################################
     # Game Controllers

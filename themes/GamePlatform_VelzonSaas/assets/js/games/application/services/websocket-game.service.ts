@@ -32,23 +32,18 @@ import GameRestoreActionDto from '../dto/Actions/gameRestoreActionDto';
 import { Keys } from '../utils/keys';
 import { MessageLevel, StatusMessage } from '../utils/status-message';
 
-const autobahn = require( 'autobahn-browser' );
-
 declare global {
     interface Window {
         gamePlatformSettings: any
     }
 }
 
-/**
- * Use API Server to Push Messages to Mercure
- */
 @Injectable({
     providedIn: 'root'
 })
-export class ZmqService
+export class WebsocketGameService
 {
-    socket: any;
+    socket: WebSocket | undefined;
     url: string = '';
     
     userMoves: MoveDto[] = [];
@@ -69,29 +64,22 @@ export class ZmqService
     
     connect( gameId: string, playAi: boolean, forGold: boolean ): void
     {
-        this.url = window.gamePlatformSettings.socketPublisherUrl;
-        const user = this.appState.user.getValue();
-        const userId = user ? user.id : '';
-        //alert( userId );
+        if ( this.socket ) {
+            this.socket.close();
+        }
+        this.url        = window.gamePlatformSettings.socketGameUrl;
         
-        this.subscribeToTopic();
+        const user      = this.appState.user.getValue();
+        const userId    = user ? user.id : '';
+        
+        this.socket = new WebSocket( this.url );
+        this.socket.onmessage   = this.onMessage.bind( this );
+        this.socket.onerror     = this.onError.bind( this );
+        this.socket.onopen      = this.onOpen.bind( this );
+        this.socket.onclose     = this.onClose.bind( this );
     }
     
-    subscribeToTopic(): void
-    {
-        /**
-         * https://github.com/crossbario/autobahn-js
-         */
-        var connection = new autobahn.Connection({
-            url: this.url,
-            realm: 'realm1'
-        });
-
-        connection.onopen = this.onOpen.bind( this );
-        connection.open();
-    }
-    
-    onOpen( session: any ): void
+    onOpen(): void
     {
         const now = new Date();
         const ping = now.getTime() - this.connectTime.getTime();
@@ -101,8 +89,6 @@ export class ZmqService
         
         this.appState.game.clearValue();
         this.appState.dices.clearValue();
-        
-        session.subscribe( 'game', this.onMessage.bind( this ) );
     }
     
     onError( event: Event ): void
@@ -122,10 +108,8 @@ export class ZmqService
     }
     
     // Messages received from server.
-    onMessage( args: any ): void
+    onMessage( message: MessageEvent<string> ): void
     {
-        let message = args[0];
-        console.log( 'Args', args );
         console.log( 'Message', message );
         alert( 'Message: ' + message );
         
@@ -133,7 +117,7 @@ export class ZmqService
             return;
         }
         
-        const action = JSON.parse( message.action ) as ActionDto;
+        const action = JSON.parse( message.data ) as ActionDto;
         const game = this.appState.game.getValue();
         console.log( 'Action', action );
         
@@ -276,16 +260,6 @@ export class ZmqService
             default:
                 throw new Error( `Action not implemented ${action.actionName}` );
         }
-    }
-    
-    sendMessage( message: string ): void
-    {
-        alert( 'WAMP Message: ' + message );
-        this.gameService.sendMessage( message );
-        
-//         if ( this.socket && this.socket.readyState === this.socket.OPEN ) {
-//             this.socket.send( message );
-//         }
     }
     
     startTimer(): void
@@ -432,15 +406,14 @@ export class ZmqService
         clone.push( { ...move, from: move.to, to: move.from } );
         this.appState.moveAnimations.setValue( clone );
     }
-    
-    shiftMoveAnimationsQueue(): void
-    {
-        // console.log( 'shifting animation queue' );
-        const clone = [...this.appState.moveAnimations.getValue()];
-        clone.shift();
-        this.appState.moveAnimations.setValue( clone );
-    }
       
+    sendMessage( message: string ): void
+    {
+      if ( this.socket && this.socket.readyState === this.socket.OPEN ) {
+        this.socket.send( message );
+      }
+    }
+  
     sendMoves(): void
     {
         const myColor = this.appState.myColor.getValue();
@@ -454,6 +427,14 @@ export class ZmqService
         this.userMoves = [];
         this.dicesHistory = [];
         this.gameHistory = [];
+    }
+    
+    shiftMoveAnimationsQueue(): void
+    {
+        // console.log( 'shifting animation queue' );
+        const clone = [...this.appState.moveAnimations.getValue()];
+        clone.shift();
+        this.appState.moveAnimations.setValue( clone );
     }
     
     sendMove( move: MoveDto ): void

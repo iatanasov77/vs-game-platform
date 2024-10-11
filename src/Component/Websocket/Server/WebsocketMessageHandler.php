@@ -30,7 +30,7 @@ class WebsocketMessageHandler implements MessageComponentInterface
         //$this->clients  = [];
         $this->names    = [];
         
-        $this->logFile  = '/var/log/websocket/game-patform-server.log';
+        $this->logFile  = '/var/log/websocket/game-patform-chat.log';
     }
     
     public function onOpen( ConnectionInterface $conn )

@@ -6,6 +6,7 @@ import { AppConstants } from "../constants";
 import { IAuth } from '../interfaces/auth';
 import { ISignedUrlResponse } from '../interfaces/signed-url-response';
 
+import { StatusMessageService } from './status-message.service';
 import { StorageService, LOCAL_STORAGE } from 'ngx-webstorage-service';
 import { AppStateService } from '../state/app-state.service';
 import { Busy } from '../state/busy';
@@ -31,6 +32,7 @@ export class AuthService
         @Inject( HttpClient ) private httpClient: HttpClient,
         @Inject( LOCAL_STORAGE ) private storage: StorageService,
         @Inject( AppStateService ) private appState: AppStateService,
+        @Inject( StatusMessageService ) private statusMessageService: StatusMessageService,
     ) {
         let auth        = this.getAuth();
         this.loggedIn   = auth && auth.apiToken ? true : false;
@@ -78,6 +80,10 @@ export class AuthService
                     };
                     
                     this.createAuth( auth );
+                    
+                    // Add Backgamon User in Local Storage
+                    this.signIn( this.createUserDto( auth ), auth.apiToken );
+                    this.statusMessageService.setWaitingForConnect();
                 }
             })
         );
@@ -117,6 +123,10 @@ export class AuthService
     
     public removeAuth()
     {
+        // Remove Backgamon User from Local Storage
+        this.signOut();
+        this.statusMessageService.setNotLoggedIn();
+        
         localStorage.removeItem( this.authKey );
         
         this.loggedIn   = false;
@@ -125,6 +135,21 @@ export class AuthService
         }
         
         this.loggedIn$.next( this.loggedIn );
+    }
+    
+    public createUserDto( auth: IAuth ): UserDto
+    {
+        let userDto = {
+            id: String( auth.id ),
+            name: auth.username,
+            email: auth.email,
+            socialProviderId: String( auth.id ),
+            socialProvider: '',
+            photoUrl: '',
+            createdNew: false
+        } as UserDto;
+        
+        return userDto;
     }
     
     signIn( userDto: UserDto, idToken: string ): void

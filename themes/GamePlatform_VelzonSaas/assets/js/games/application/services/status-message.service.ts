@@ -103,4 +103,29 @@ export class StatusMessageService
         const msg = StatusMessage.info( text );
         this.appState.statusMessage.setValue( msg );
     }
+    
+    /**
+     * Vankata Statuses
+     */
+     
+    setNotLoggedIn(): void
+    {
+        const statusMessage = StatusMessage.info( 'You are NOT Logged in' );
+        this.appState.showBusyNoOverlay();
+        this.appState.statusMessage.setValue( statusMessage );
+    }
+    
+    setNotRoomSelected(): void
+    {
+        const statusMessage = StatusMessage.info( 'You must select a Room' );
+        this.appState.showBusyNoOverlay();
+        this.appState.statusMessage.setValue( statusMessage );
+    }
+    
+    setNotGameStarted(): void
+    {
+        const statusMessage = StatusMessage.info( 'Game is NOT Started' );
+        this.appState.showBusyNoOverlay();
+        this.appState.statusMessage.setValue( statusMessage );
+    }
 }

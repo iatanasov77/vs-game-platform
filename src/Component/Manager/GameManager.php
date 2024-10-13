@@ -5,7 +5,9 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
+
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
+use App\Entity\GamePlayer;
 
 use App\EventListener\GameEndedEvent;
 use App\Component\System\Guid;
@@ -21,19 +23,22 @@ use App\Component\Type\GameState;
 
 // Actions
 use App\Component\Dto\Actions\ActionNames;
+use App\Component\Dto\Actions\ActionDto;
 use App\Component\Dto\toplist\NewScoreDto;
 use App\Component\Dto\Actions\GameCreatedActionDto;
 use App\Component\Dto\Actions\DicesRolledActionDto;
 use App\Component\Dto\Actions\GameEndedActionDto;
 use App\Component\Dto\Actions\GameRestoreActionDto;
 use App\Component\Dto\Actions\DoublingActionDto;
-
-use App\Entity\GamePlayer;
+use App\Component\Dto\Actions\OpponentMoveActionDto;
 
 class GameManager
 {
     /** @const int */
     const firstBet = 50;
+    
+    /** @const string */
+    const AiUser = "ECC9A1FC-3E5C-45E6-BCE3-7C24DFE82C98";
     
     /** @var LoggerInterface */
     protected $logger;
@@ -111,8 +116,118 @@ class GameManager
         $this->tempPlayersRepository    = $tempPlayersRepository;
         $this->tempPlayersFactory       = $tempPlayersFactory;
         
-//         $this->Game     = Game::Create( $forGold );
-//         $this->Created  = new \DateTime( 'now' );
+        $this->Game     = Game::Create( $forGold );
+        $this->Created  = new \DateTime( 'now' );
+    }
+    
+    public function ConnectAndListen( WebsocketClientInterface $webSocket, PlayerColor $color, GamePlayer $dbUser, bool $playAi )
+    {
+        if ( $color == PlayerColor::Black ) {
+            $this->Client1 = $webSocket;
+            
+            $this->Game->BlackPlayer->Id = $dbUser != null ? $dbUser->getId() : Guid::Empty();
+            $this->Game->BlackPlayer->Name = $dbUser != null ? $dbUser->getName() : "Guest";
+            $this->Game->BlackPlayer->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $dbUser->getPhotoUrl() : "";
+            $this->Game->BlackPlayer->Elo = $dbUser != null ? $dbUser->getElo() : 0;
+            
+            if ( $this->Game->IsGoldGame ) {
+                $this->Game->BlackPlayer->Gold = $dbUser != null ? $dbUser->getGold() - self::firstBet : 0;
+                $this->Game->Stake = self::firstBet * 2;
+            }
+            
+            if ( $playAi ) {
+                $aiUser = $this->playersRepository->findOneBy( ['guid' => self::AiUser] );
+                
+                $this->Game->WhitePlayer->Id = $aiUser->getId();
+                $this->Game->WhitePlayer->Name = $aiUser->getName();
+                // TODO: AI image
+                $this->Game->WhitePlayer->Photo = $aiUser->getPhotoUrl();
+                $this->Game->WhitePlayer->Elo = $aiUser->getElo();
+                
+                if ( $this->Game->IsGoldGame ) {
+                    $this->Game->WhitePlayer->Gold = $aiUser->getGold();
+                }
+                
+                $this->Engine = new AiEngine( $this->Game );
+                
+                $this->CreateDbGame();
+                $this->StartGame();
+                
+                if ( $this->Game->CurrentPlayer == PlayerColor::White ) {
+                    $this->EnginMoves( $this->Client1 );
+                }
+            }
+            
+            $this->ListenOn( $webSocket );
+        } else {
+            if ( $playAi ) {
+                throw new \Exception( "Ai always plays as white. This is not expected" );
+            }
+            $this->Client2 = $webSocket;
+            
+            $this->Game->WhitePlayer->Id = $dbUser != null ? $dbUser->getId() : Guid::Empty();
+            $this->Game->WhitePlayer->Name = $dbUser != null ? $dbUser->getName() : "Guest";
+            $this->Game->WhitePlayer->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $dbUser->getPhotoUrl() : "";
+            $this->Game->WhitePlayer->Elo = $dbUser != null ? $dbUser->getElo() : 0;
+            
+            if ( $this->Game->IsGoldGame ) {
+                $this->Game->WhitePlayer->Gold = $dbUser != null ? $dbUser->getGold() - self::firstBet : 0;
+            }
+            
+            $this->CreateDbGame();
+            $this->StartGame();
+            
+            $this->ListenOn( $webSocket );
+        }
+    }
+    
+    public function Restore( PlayerColor $color, WebsocketClientInterface $socket ): void
+    {
+        $gameDto = Mapper::GameToDto( $this->Game );
+        $restoreAction = new GameRestoreActionDto();
+        $restoreAction->game = $gameDto;
+        $restoreAction->color = $color;
+        $restoreAction->dices = $this->Game->Roll->map(
+            function( $entry ) {
+                return Mapper::DiceToDto( $entry );
+            }
+        )->toArray();
+        
+        if ( $color == PlayerColor::Black ) {
+            $this->Client1 = $socket;
+            $otherSocket = $this->Client2;
+        } else {
+            $this->Client2 = $socket;
+            $otherSocket = $this->Client1;
+        }
+        
+        $this->Send( $socket, $restoreAction );
+        //Also send the state to the other client in case it has made moves.
+        if ( $otherSocket != null && $otherSocket->State == WebSocketState::Open ) {
+            $restoreAction->color = $color == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
+            $this->Send( $otherSocket, $restoreAction );
+        } else {
+            $this->logger->warning( "Failed to send restore to other client" );
+        }
+        
+        $this->ListenOn( $socket );
+    }
+    
+    public function Send( WebsocketClientInterface $socket, object $obj ): void
+    {
+        if ( $socket == null || $socket->State != WebSocketState::Open ) {
+            $this->logger->info( "Cannot send to socket, connection was lost." );
+            return;
+        }
+        
+        $json = \json_encode( $obj );
+        $this->logger->info( "Sending to client {$json}" );
+        
+        try {
+            $socket->send( $obj );
+        } catch ( \Exception $exc ) {
+            $this->logger->error( "Failed to send socket data. Exception: {$exc->getMessage()}" );
+        }
     }
     
     protected function StartGame(): void
@@ -215,41 +330,16 @@ class GameManager
         return false; // id.ToString().Equals( Player.AiUser, StringComparison.OrdinalIgnoreCase );
     }
     
-    public function Send( WebsocketClientInterface $socket, object $obj ): void
-    {
-        if ( $socket == null || $socket->State != WebSocketState::Open ) {
-            $this->logger->info( "Cannot send to socket, connection was lost." );
-            return;
-        }
-        
-        $json = \json_encode( $obj );
-        $this->logger->info( "Sending to client {$json}" );
-        
-        try
-        {
-            $socket->send( $obj );
-        }
-        catch ( \Exception $exc )
-        {
-            $this->logger->error( "Failed to send socket data. Exception: {$exc->getMessage()}" );
-        }
-    }
-    
-    public function ConnectAndListen( WebsocketClientInterface $webSocket, PlayerColor $color, UserInterface $dbUser, bool $playAi )
-    {
-        $webSocket->State   = WebSocketState::Open;
-    }
-    
     protected function CreateDbGame(): void
     {
         $blackUser = $this->playersRepository->find( $this->Game->BlackPlayer->Id );
         
         if ( $this->Game->IsGoldGame && $blackUser->getGold() < self::firstBet ) {
-            // throw new \Exception( "Black player dont have enough gold" ); // Should be guarder earlier
+           //throw new \Exception( "Black player dont have enough gold" ); // Should be guarder earlier
         }
             
         if ( $this->Game->IsGoldGame && ! $this->IsAi( $blackUser->getId() ) ) {
-            //$blackUser->Gold -= self::firstBet;
+            $blackUser->setGold( self::firstBet );
         }
                 
         $black = $this->tempPlayersFactory->createNew();
@@ -265,7 +355,7 @@ class GameManager
         }
         
         if ( $this->Game->IsGoldGame && ! $this->IsAi( $whiteUser->getId() ) ) {
-            //$whiteUser.Gold -= firstBet;
+            $whiteUser->setGold( self::firstBet );
         }
             
         $white = $this->tempPlayersFactory->createNew();
@@ -289,38 +379,6 @@ class GameManager
         $em = $this->doctrine->getManager();
         $em->persist( $game );
         $em->flush();
-    }
-    
-    protected function Restore( PlayerColor $color, WebsocketClientInterface $socket ): void
-    {
-        $gameDto = Mapper::GameToDto( $this->Game );
-        $restoreAction = new GameRestoreActionDto();
-        $restoreAction->game = $gameDto;
-        $restoreAction->color = $color;
-        $restoreAction->dices = $this->Game->Roll->map(
-            function( $entry ) {
-                return Mapper::DiceToDto( $entry );
-            }
-        )->toArray();
-        
-        if ( $color == PlayerColor::Black ) {
-            $this->Client1 = $socket;
-            $otherSocket = $this->Client2;
-        } else {
-            $this->Client2 = $socket;
-            $otherSocket = $this->Client1;
-        }
-        
-        $this->Send( $socket, $restoreAction );
-        //Also send the state to the other client in case it has made moves.
-        if ( $otherSocket != null && $otherSocket->State == WebSocketState::Open ) {
-            $restoreAction->color = $color == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
-            $this->Send( $otherSocket, $restoreAction );
-        } else {
-            $this->logger->warning( "Failed to send restore to other client" );
-        }
-        
-        $this->ListenOn( $socket );
     }
     
     protected function ListenOn( WebsocketClientInterface $socket ): void
@@ -365,7 +423,7 @@ class GameManager
         return $socket->receive();
     }
     
-    public function DoAction( ActionNames $actionName, string $actionText, WebsocketClientInterface $socket, WebsocketClientInterface $otherSocket )
+    protected function DoAction( ActionNames $actionName, string $actionText, WebsocketClientInterface $socket, WebsocketClientInterface $otherSocket )
     {
         $this->logger->info( "Doing action: {$actionName}" );
         
@@ -574,9 +632,79 @@ class GameManager
         $em->push();
     }
     
+    protected function CloseConnections( WebsocketClientInterface $socket )
+    {
+        if ( $socket != null ) {
+            $this->logger->info( "Closing client" );
+            //await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Game aborted by client", CancellationToken.None);
+            if ( $socket != null ) {
+                //socket.Dispose();
+            }
+        }
+    }
+    
     protected function Resign( PlayerColor $winner ): void
     {
         $this->EndGame( $winner );
         $this->logger->info( "{$winner} won Game {$this->Game->Id} by resignition.");
+    }
+    
+    protected function NewTurn( WebsocketClientInterface $socket )
+    {
+        $winner = $this->GetWinner();
+        $this->Game->SwitchPlayer();
+        if ( $winner.HasValue ) {
+            $this->EndGame( $winner->Value );
+        } else {
+            $this->SendNewRoll();
+            
+            if ( $this->AisTurn() ) {
+                $this->EnginMoves( $socket );
+            }
+        }
+    }
+    
+    protected function AisTurn(): bool
+    {
+        $plyr = $this->Game->CurrentPlayer == PlayerColor::Black ? $this->Game->BlackPlayer : $this->Game->WhitePlayer;
+        return $plyr->IsAi();
+    }
+    
+    protected function EnginMoves( WebsocketClientInterface $client )
+    {
+        \usleep( \rand( 700, 1200 ) );
+        $action = new ActionDto();
+        $action->actionName = ActionNames::rolled;
+        $this->Send( $client, $action );
+        
+        $moves = $this->Engine->GetBestMoves();
+        $noMoves = true;
+        for ( $i = 0; $i < $moves->count(); $i++ ) {
+            $move = $moves[$i];
+            if ( $move == null ) {
+                continue;
+            }
+            
+            \usleep( \rand( 700, 1200 ) );
+            $moveDto = Mapper::MoveToDto( $move );
+            $moveDto->animate = true;
+            $dto = new OpponentMoveActionDto();
+            $dto->move = $moveDto;
+            $this->Game->MakeMove( $move );
+            if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {
+                    $this->Game->BlackPlayer->FirstMoveMade = true;
+            } else {
+                $this->Game->WhitePlayer->FirstMoveMade = true;
+            }
+                
+            $noMoves = false;
+            $this->Send( $client, $dto );
+        }
+        
+        if ( $noMoves ) {
+            \usleep( 2500 ); // if turn is switch right away, ui will not have time to display dice.
+        }
+        
+        $this->NewTurn( $client );
     }
 }

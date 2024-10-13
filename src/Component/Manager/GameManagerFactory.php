@@ -1,5 +1,11 @@
 <?php namespace App\Component\Manager;
 
+use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Doctrine\Persistence\ManagerRegistry;
+use Sylius\Component\Resource\Repository\RepositoryInterface;
+use Sylius\Component\Resource\Factory\FactoryInterface;
+use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 
 final class GameManagerFactory
 {

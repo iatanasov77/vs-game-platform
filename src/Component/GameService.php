@@ -7,8 +7,9 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use Vankosoft\UsersBundle\Security\SecurityBridge;
 
-use App\Component\Ai\Backgammon\Engine as AiEngine;
 use App\Component\Manager\GameManager;
+use App\Component\Manager\GameManagerFactory;
+use App\Component\Ai\Backgammon\Engine as AiEngine;
 use App\Component\System\Guid;
 use App\Component\Dto\GameCookieDto;
 use App\Component\Dto\Actions\ConnectionInfoActionDto;
@@ -26,7 +27,10 @@ class GameService
     protected $usersRepository;
     
     /** @var SecurityBridge */
-    protected SecurityBridge $securityBridge;
+    protected $securityBridge;
+    
+    /** @var GameManagerFactory */
+    protected $managerFactory;
     
     /** @var Collection | GameManager[] */
     protected $AllGames;
@@ -34,11 +38,13 @@ class GameService
     public function __construct(
         LoggerInterface $logger,
         RepositoryInterface $usersRepository,
-        SecurityBridge $securityBridge
+        SecurityBridge $securityBridge,
+        GameManagerFactory $managerFactory
     ) {
         $this->logger           = $logger;
         $this->usersRepository  = $usersRepository;
         $this->securityBridge   = $securityBridge;
+        $this->managerFactory   = $managerFactory;
         
         $this->AllGames         = new ArrayCollection();
     }
@@ -46,6 +52,14 @@ class GameService
     public function Connect( WebsocketClientInterface $webSocket, $gameCode, $userId, $gameId, $playAi, $forGold, ?string $gameCookie ): void
     {
         $dbUser = $this->GetDbUser( $userId );
+        if ( ! $dbUser ) {
+            return;
+        }
+        
+        $gamePlayer = $dbUser->getPlayer();
+        if ( ! $gamePlayer ) {
+            return;
+        }
         
         if ( $this->TryReConnect( $webSocket, $gameCookie, $dbUser ) ) {
             // Game disconnected here
@@ -74,20 +88,20 @@ class GameService
             throw new \Exception( $warning );
         }
         
-        $isGuest = ! $dbUser; // $dbUser->getId() == Guid::Empty();
+        $isGuest = ! $gamePlayer; // $dbUser->getId() == Guid::Empty();
         // filter out games having a logged in player
         if ( $isGuest ) {
             $managers = $managers->filter(
                 function( $entry ) {
                     return $entry->Game->BlackPlayer->Id != Guid::Empty() || $entry->Game->WhitePlayer->Id != Guid::Empty();
                 }
-            )->toArray();
+            );
         }
         
-        $manager = \array_shift( $managers );
+        $manager = $managers->first();
         if ( $manager == null || $playAi ) {
-            //$manager = new GameManager( $this->logger, $forGold );
-            $manager = $this->gameManager;
+            $manager = $this->managerFactory->createGameManager();
+            $this->AllGames->set( $manager->Game->Id, $manager );
             
             //$manager.Ended += Game_Ended;
             $manager->SearchingOpponent = ! $playAi;
@@ -98,7 +112,7 @@ class GameService
             $this->logger->info( "Added a new game and waiting for opponent. Game id {$manager->Game->Id}" );
             
             // entering socket loop
-            $manager->ConnectAndListen( $webSocket, PlayerColor::Black, $dbUser, $playAi );
+            $manager->ConnectAndListen( $webSocket, PlayerColor::Black, $gamePlayer, $playAi );
             $this->SendConnectionLost( PlayerColor::White, $manager );
             //This is the end of the connection
             
@@ -159,7 +173,7 @@ class GameService
                 
                 if ( $gameManager != null && self::MyColor( $gameManager, $dbUser, $color ) )
                 {
-                    $gameManager->Engine = new AiEngine( $this->gameManager->Game );
+                    $gameManager->Engine = new AiEngine( $gameManager->Game );
                     $this->logger->info( "Restoring game {$cookie->id} for {$color}" );
                     
                     /*

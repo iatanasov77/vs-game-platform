@@ -11,6 +11,7 @@ enum ActionNames
     case connectionInfo;
     case gameRestore;
     case resign;
+    case createGame;
     case exitGame;
     case requestedDoubling;
     case acceptedDoubling;

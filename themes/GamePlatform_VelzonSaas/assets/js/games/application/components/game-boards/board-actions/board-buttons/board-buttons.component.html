@@ -1,6 +1,6 @@
 <div class="p-1 float-start">
     <ng-container *ngIf="! isRoomSelected">
-        <button (click)="selectGameRoom()" class="default-button">
+        <button *ngIf="hasRooms" (click)="selectGameRoom()" class="default-button">
             {{ 'game_board.select_room' | translate }}
         </button>
         <button (click)="createGameRoom()" class="default-button">

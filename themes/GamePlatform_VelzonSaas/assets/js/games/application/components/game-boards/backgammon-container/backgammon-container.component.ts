@@ -99,8 +99,11 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     dicesDto: DiceDto[] | undefined;
     
     appState?: MyGameState;
-    gameStarted: boolean                = false;
-    isRoomSelected: boolean             = false;
+    gameStarted: boolean    = false;
+    
+    isRoomSelected: boolean = true; // false;
+    hasRooms: boolean       = false;
+    
     gamePlayers: any;
     startedHandle: any;
     
@@ -142,20 +145,29 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         this.store.subscribe( ( state: any ) => {
             console.log( state.app.main );
             this.appState   = state.app.main;
+            this.hasRooms   = this?.appState?.rooms?.length && this?.appState?.rooms?.length > 0 ? true : false;
             
             if ( state.app.main.gamePlay ) {
                 this.gameStarted    = true;
+                this.statusMessageService.setWaitingForConnect();
             }
         });
         
         this.actions$.pipe( ofType( selectGameRoomSuccess ) ).subscribe( () => {
             this.isRoomSelected = true;
+            this.statusMessageService.setNotGameStarted();
         });
         
         this.actions$.pipe( ofType( startGameSuccess ) ).subscribe( () => {
             this.store.dispatch( loadGameRooms() );
             this.game.startGame();
         });
+    }
+    
+    ngAfterViewInit(): void
+    {
+        this.fireResize();
+        //this.statusMessageService.setNotRoomSelected();
     }
     
     ngOnDestroy(): void
@@ -284,11 +296,6 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             }
             dices.style.top = `${this.height / 2 - btnsOffset}px`;
         }
-    }
-    
-    ngAfterViewInit(): void
-    {
-        this.fireResize();
     }
     
     fireResize(): void

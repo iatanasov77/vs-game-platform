@@ -17,6 +17,10 @@ class GamePlayer implements ResourceInterface
     #[ORM\Id, ORM\Column(type: "integer"), ORM\GeneratedValue(strategy: "IDENTITY")]
     private $id;
     
+    /** @var string */
+    #[ORM\Column(type: "string", length: 40, nullable: true)]
+    private $guid;
+    
     /** @var User */
     #[ORM\OneToOne(targetEntity: User::class, inversedBy: "player", cascade: ["persist"])]
     #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id", nullable: true)]
@@ -46,6 +50,14 @@ class GamePlayer implements ResourceInterface
     #[ORM\Column(name: "last_free_gold", type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private $lastFreeGold;
     
+    /** @var string */
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    private $photoUrl;
+    
+    /** @var bool */
+    #[ORM\Column(name: "show_photo", type: "boolean", options: ["default" => 0])]
+    private $showPhoto  = false;
+    
     public function __construct()
     {
         $this->gamePlayers  = new ArrayCollection();
@@ -54,6 +66,18 @@ class GamePlayer implements ResourceInterface
     public function getId(): ?int
     {
         return $this->id;
+    }
+    
+    public function getGuid(): ?string
+    {
+        return $this->guid;
+    }
+    
+    public function setGuid( string $guid ): self
+    {
+        $this->guid = $guid;
+        
+        return $this;
     }
     
     public function getType(): ?string
@@ -150,6 +174,30 @@ class GamePlayer implements ResourceInterface
     public function setLastFreeGold(\DateTimeInterface $lastFreeGold): self
     {
         $this->lastFreeGold = $lastFreeGold;
+        
+        return $this;
+    }
+    
+    public function getPhotoUrl(): ?int
+    {
+        return $this->photoUrl;
+    }
+    
+    public function setPhotoUrl( string $photoUrl ): self
+    {
+        $this->photoUrl = $photoUrl;
+        
+        return $this;
+    }
+    
+    public function getShowPhoto(): ?int
+    {
+        return $this->showPhoto;
+    }
+    
+    public function setShowPhoto( bool $showPhoto ): self
+    {
+        $this->showPhoto = $showPhoto;
         
         return $this;
     }

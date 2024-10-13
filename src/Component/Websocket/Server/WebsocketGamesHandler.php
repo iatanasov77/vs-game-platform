@@ -3,8 +3,10 @@
 use SplObjectStorage as SplObjectStorageAlias;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
+use Sylius\Component\Resource\Repository\RepositoryInterface;
+use App\Component\Websocket\WebsocketClientFactory;
+use App\Component\GameService;
 use App\Component\Utils\Keys;
-use App\Component\Dto\GameCookieDto;
 
 final class WebsocketGamesHandler implements MessageComponentInterface
 {
@@ -15,20 +17,36 @@ final class WebsocketGamesHandler implements MessageComponentInterface
     
     const DELIMITER = "|";
     
+    /** @var RepositoryInterface */
+    private $usersRepository;
+    
+    /** @var WebsocketClientFactory */
+    private $wsClientFactory;
+    
+    /** @var GameService */
+    private $gameService;
+    
     /** @var \SplObjectStorage */
-    protected $clients;
+    private $clients;
     
     /** @var int */
-    protected $connectionSequenceId = 0;
+    private $connectionSequenceId = 0;
     
     /** @var array */
-    protected $names;
+    private $names;
     
     /** @var string */
-    protected $logFile;
+    private $logFile;
     
-    public function __construct()
-    {
+    public function __construct(
+        RepositoryInterface $usersRepository,
+        WebsocketClientFactory $wsClientFactory,
+        GameService $gameService
+    ) {
+        $this->usersRepository  = $usersRepository;
+        $this->wsClientFactory  = $wsClientFactory;
+        $this->gameService      = $gameService;
+        
         $this->clients  = new SplObjectStorageAlias();
         $this->names    = [];
         
@@ -48,12 +66,10 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         // initialize the drawing state for the user as false
         //$this->drawing[$this->connectionSequenceId] = false;
         
-        $this->log( " \n" );
         $this->log( "New connection ({$conn->resourceId})" . date( 'Y/m/d h:i:sa' ) );
-        $this->log( " \n" );
         
-        $cookieDto      = $this->getCookie( $conn );
-        //$this->ConnectGame( logger, context );
+        $cookieDto  = $this->getCookie( $conn );
+        $this->ConnectGame( $conn, $cookieDto );
     }
     
     public function onMessage( ConnectionInterface $from, $msg )
@@ -73,30 +89,31 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         unset( $this->names[$sequenceId] );
         //unset( $this->drawing[$this->connectionSequenceId] );
         
-        $this->log( "Connection {$conn->resourceId} has disconnected\n" );
+        $this->log( "Connection {$conn->resourceId} has disconnected" );
     }
     
     public function onError( ConnectionInterface $conn, \Exception $e )
     {
-        $this->log( "An error has occurred: {$e->getMessage()}\n" );
+        $this->log( "An error has occurred: {$e->getMessage()}" );
         $conn->close();
     }
     
     private function log( $logData ): void
     {
-        \file_put_contents( $this->logFile, $logData, FILE_APPEND | LOCK_EX );
+        \file_put_contents( $this->logFile, $logData . "\n", FILE_APPEND | LOCK_EX );
     }
     
-    private function getCookie( ConnectionInterface $conn ): ?GameCookieDto
+    private function getCookie( ConnectionInterface $conn ): ?string
     {
         $cookieDto      = null;
         $sessionCookies = $conn->httpRequest->getHeader( 'Cookie' );
         if ( ! empty( $sessionCookies ) ) {
-            $this->log( "All Cookies: ". $sessionCookies[0] );
+            //$this->log( "All Cookies: ". $sessionCookies[0] );
+            
             $cookiesArray   = \explode( '; ', $sessionCookies[0] );
             foreach( $cookiesArray as $cookie ) {
                 if( \strpos( $cookie, Keys::GAME_ID_KEY ) == 0 ) {
-                    $cookieDto  = GameCookieDto::TryParse( \explode( '=', $cookie )[1] );
+                    $cookieDto  = \explode( '=', $cookie )[1];
                     break;
                 }
             }
@@ -105,26 +122,35 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         return $cookieDto;
     }
     
-    /*
-    private function ConnectGame( ILogger<GameManager> $logger, HttpContext context )
+    private function ConnectGame( ConnectionInterface $conn, ?string $gameCookie ): void
     {
-        logger.LogInformation($"New web socket request.");
+        $this->log( "New web socket request." );
         
-        var webSocket = await context.WebSockets.AcceptWebSocketAsync();
-        var userId = context.Request.Query.FirstOrDefault(q => q.Key == "userId").Value;
-        var gameId = context.Request.Query.FirstOrDefault(q => q.Key == "gameId").Value;
-        var playAi = context.Request.Query.FirstOrDefault(q => q.Key == "playAi").Value == "true";
-        var forGold = context.Request.Query.FirstOrDefault(q => q.Key == "forGold").Value == "true";
-        try
-        {
-            await GamesService.Connect(webSocket, context, logger, userId, gameId, playAi, forGold);
+        \parse_str( $conn->httpRequest->getUri()->getQuery(), $queryParameters );
+        //$this->log( "API Verify Signature: ". $queryParameters['token'] );
+        
+        $user   = $this->usersRepository->findOneBy( ['apiVerifySiganature' => $queryParameters['token']] );
+        if ( ! $user ) {
+            return;
         }
-        catch (Exception exc)
-        {
-            logger.LogError(exc.ToString());
-            await context.Response.WriteAsync(exc.Message, CancellationToken.None);
-            context.Response.StatusCode = 400;
+        
+        $webSocket  = $this->wsClientFactory->createRatchetConnectionClient( $conn );
+        $gameCode   = $queryParameters['gameCode'];
+        
+        $userId = $user->getId();
+        $gameId = isset( $queryParameters['gameId'] ) ? $queryParameters['gameId'] : null;
+        $playAi = isset( $queryParameters['playAi'] ) ? $queryParameters['playAi'] : "true";
+        $forGold = isset( $queryParameters['forGold'] ) ? $queryParameters['forGold'] : "true";
+        
+        //$this->log( "Game Code: ". $gameCode );
+        //$this->log( "Game Id: ". $gameId );
+        
+        try {
+            $this->gameService->Connect( $webSocket, $gameCode, $userId, $gameId, $playAi, $forGold, $gameCookie );
+        } catch ( \Exception $exc ) {
+            $this->log( $exc->getMessage() );
+            //await context.Response.WriteAsync(exc.Message, CancellationToken.None);
+            //context.Response.StatusCode = 400;
         }
     }
-    */
 }

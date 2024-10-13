@@ -11,7 +11,7 @@ class DicesRolledActionDto extends ActionDto
     }
     
     public Collection $dices;
-    public PlayerColor $playerToMove;
+    public ?PlayerColor $playerToMove;
     public Collection $validMoves;
     public int $moveTimer;
     

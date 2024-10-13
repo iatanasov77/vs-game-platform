@@ -67,11 +67,12 @@ export class WebsocketGameService
         if ( this.socket ) {
             this.socket.close();
         }
-        this.url        = window.gamePlatformSettings.socketGameUrl;
         
-        const user      = this.appState.user.getValue();
-        const userId    = user ? user.id : '';
-        
+        const url   = window.gamePlatformSettings.socketGameUrl +
+                        '?gameCode=backgamon' +
+                        '&token=' + window.gamePlatformSettings.apiVerifySiganature;
+                        
+        this.url    = url;
         this.socket = new WebSocket( this.url );
         this.socket.onmessage   = this.onMessage.bind( this );
         this.socket.onerror     = this.onError.bind( this );
@@ -84,7 +85,13 @@ export class WebsocketGameService
         const now = new Date();
         const ping = now.getTime() - this.connectTime.getTime();
         
-        this.statusMessageService.setWaitingForConnect();
+        //console.log( 'User in State', this.appState.user );
+        if ( this.appState.user.getValue() ) {
+            //this.statusMessageService.setWaitingForConnect();
+            this.statusMessageService.setNotGameStarted();
+        } else {
+            this.statusMessageService.setNotLoggedIn();
+        }
         this.appState.myConnection.setValue({ connected: true, pingMs: ping });
         
         this.appState.game.clearValue();
@@ -133,6 +140,7 @@ export class WebsocketGameService
                 this.cookieService.set( Keys.gameIdKey, JSON.stringify( cookie ), 2 );
                 this.statusMessageService.setTextMessage( dto.game );
                 this.appState.moveTimer.setValue( dto.game.thinkTime );
+                this.sound.fadeIntro();
                 this.startTimer();
                 break;
             }
@@ -344,11 +352,16 @@ export class WebsocketGameService
         );
         
         if ( hit ) {
+            if ( move.to < 25 ) {
+                this.sound.playCheckerWood();
+            }
+            
             const hitIdx = gameClone.points[to].checkers.indexOf( hit );
             gameClone.points[to].checkers.splice( hitIdx, 1 );
             const barIdx = isWhite ? 0 : 25;
             gameClone.points[barIdx].checkers.push( hit );
-            if (move.color == PlayerColor.black) {
+            
+            if ( move.color == PlayerColor.black ) {
                 gameClone.whitePlayer.pointsLeft += 25 - move.to;
             } else {
                 gameClone.blackPlayer.pointsLeft += 25 - move.to;

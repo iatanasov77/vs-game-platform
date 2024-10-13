@@ -9,7 +9,7 @@ class GameDto
     public string $id;
     public PlayerDto $blackPlayer;
     public PlayerDto $whitePlayer;
-    public PlayerColor $currentPlayer;
+    public ?PlayerColor $currentPlayer;
     public PlayerColor $winner = PlayerColor::Neither;
     public GameState $playState;
     public float $thinkTime;

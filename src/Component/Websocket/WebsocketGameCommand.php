@@ -54,9 +54,14 @@ final class WebsocketGameCommand extends ContainerAwareCommand
      */
     protected function execute( InputInterface $input, OutputInterface $output ): int
     {
-        $port   = $input->getArgument( 'port' );
+        $port           = $input->getArgument( 'port' );
         
-        $gamesHandler   = new WebsocketGamesHandler();
+        $gamesHandler   = new WebsocketGamesHandler(
+            $this->get( 'vs_users.repository.users' ),
+            $this->get( 'app_websocket_client_factory' ),
+            $this->get( 'app_game_service' )
+        );
+        
         $loop           = EventLoopFactory::create();
         $socketServer   = new SocketServer( '0.0.0.0:' . $port, $loop );
         

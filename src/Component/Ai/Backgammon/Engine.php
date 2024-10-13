@@ -324,7 +324,7 @@ class Engine
     private static function _GenerateMovesSequence( array &$sequences, Collection $moves, int $diceIndex, Game $game ): void
     {
         $current = $game->CurrentPlayer;
-        $bar = $game->Bars[(int)$current];
+        $bar = $game->Bars[$current->value];
         $barHasCheckers = $bar->Checkers->filter(
             function( $entry ) use ( $current ) {
                 return $entry->Color == $current;
@@ -336,7 +336,7 @@ class Engine
             function( $entry ) use ( $current ) {
                 return $entry->Checkers->exists(
                     function( $entry ) use ( $current ) {
-                        return $entry->Color == $current;
+                        return $entry == $current;
                     }
                 );
             }

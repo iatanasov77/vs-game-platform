@@ -8,6 +8,7 @@
     connectionInfo,
     gameRestore,
     resign,
+    createGame,
     exitGame,
     requestedDoubling,
     acceptedDoubling,

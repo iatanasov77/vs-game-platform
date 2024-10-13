@@ -1,4 +1,4 @@
-﻿<?php namespace App\Component\Dto;
+<?php namespace App\Component\Dto;
 
 use App\Component\Type\PlayerColor;
 
@@ -12,7 +12,7 @@ class GameCookieDto
     
     /** @var PlayerColor */
     public PlayerColor $color;
-
+    
     public static function TryParse( ?string $v ): ?GameCookieDto
     {
         if ( $v ) {
@@ -21,7 +21,7 @@ class GameCookieDto
         
         return null;
     }
-
+    
     public function __toString(): string
     {
         return $this->id + " " + $this->color;

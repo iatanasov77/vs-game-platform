@@ -29,13 +29,12 @@
         "vankosoft/application": "1.10.*",
         "vankosoft/application-themes": "^1.0",
         "vankosoft/api-bundle": "^3.0",
-        "doctrine/orm": "^2.15",
         
-        "amphp/websocket-client": "^2.0",
+        "vankosoft/thruway-bundle": "^1.0",
         "cboden/ratchet": "^0.4",
-        
-        "vankosoft/thruway-bundle": "dev-develop",
-        "react/zmq": "0.2.*|0.3.*",
+        "react/react": "^1.4",
+        "react/partial": "^3.0",
+        "react/zmq": "^0.4",
         
         "knpuniversity/oauth2-client-bundle": "^2.18",
         "league/oauth2-facebook": "^2.2",

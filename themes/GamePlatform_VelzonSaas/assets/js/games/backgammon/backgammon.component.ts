@@ -62,23 +62,7 @@ export class BackgammonComponent extends GameBaseComponent implements OnInit
 //         });
         
         this.actions$.pipe( ofType( selectGameRoomSuccess ) ).subscribe( () => {
-            let  auth    = this.authService.getAuth();
-            //console.log( auth );
-            
-            if ( auth ) {
-                const userDto = {
-                    id: String( auth.id ),
-                    name: auth.username,
-                    email: auth.email,
-                    socialProviderId: String( auth.id ),
-                    socialProvider: '',
-                    photoUrl: '',
-                    createdNew: false
-                } as UserDto;
-                
-                this.appState.showBusy();
-                this.authService.signIn( userDto, auth.apiToken );
-            }
+            // Not Needed Nothing
         });
     }
     

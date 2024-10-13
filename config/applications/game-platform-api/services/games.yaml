@@ -1,7 +1,8 @@
 parameters:
     app_zmqsocket_url: '%env(ZMQSOCKET_URL)%'
     app_websocket_publisher_url: '%env(WEBSOCKET_PUBLISHER_URL)%'
-    app_websocket_server_url: '%env(WEBSOCKET_SERVER_URL)%'
+    app_websocket_chat_url: '%env(WEBSOCKET_CHAT_URL)%'
+    app_websocket_game_url: '%env(WEBSOCKET_GAME_URL)%'
     app_game_for_gold: '%env(bool:GAME_FOR_GOLD)%'
 
 services:
@@ -12,20 +13,7 @@ services:
     app_websocket_client_factory:
         class: App\Component\Websocket\WebsocketClientFactory
         arguments:
-            - '%app_websocket_server_url%'
+            - '%app_websocket_chat_url%'
+            - '%app_websocket_game_url%'
             - '%app_websocket_publisher_url%'
             - '%app_zmqsocket_url%'
-    
-    app_game_manager:
-        class: App\Component\Manager\GameManager
-        arguments:
-            - '@logger'
-            - '@event_dispatcher'
-            - '@doctrine'
-            - '@vsapp.repository.games'
-            - '@vsapp.repository.game_sessions'
-            - '@vsapp.factory.game_sessions'
-            - '@vsapp.repository.game_players'
-            - '@vsapp.repository.temp_players'
-            - '@vsapp.factory.temp_players'
-            - '%app_game_for_gold%'

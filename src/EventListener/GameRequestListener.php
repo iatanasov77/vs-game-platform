@@ -2,10 +2,9 @@
 
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpFoundation\Request;
-use App\Component\GamePlatform;
 use App\Component\GameService;
-use App\Component\ZmqGameService;
 use App\Component\Websocket\WebsocketClientFactory;
+use App\Component\Utils\Keys;
 
 final class GameRequestListener
 {
@@ -13,19 +12,14 @@ final class GameRequestListener
     private $wsClientFactory;
     
     /** @var GameService */
-    private $gameWebsocketService;
-    
-    /** @var ZmqGameService */
-    private $gameZmqService;
+    private $gameService;
     
     public function __construct(
         WebsocketClientFactory $wsClientFactory,
-//         GameService $gameWebsocketService,
-        ZmqGameService $gameZmqService
+        GameService $gameService
     ) {
-        $this->wsClientFactory      = $wsClientFactory;
-//         $this->gameWebsocketService = $gameWebsocketService;
-        $this->gameZmqService       = $gameZmqService;
+        $this->wsClientFactory  = $wsClientFactory;
+        $this->gameService      = $gameService;
     }
     
     public function onKernelRequest( RequestEvent $event ): void
@@ -39,10 +33,20 @@ final class GameRequestListener
         
         switch ( $routeName ) {
             case 'backgammon':
-                //$this->connectGameWithWebsocket( $request, 'backgammon', GamePlatform::BACKGAMMON_GAME_COOKIE_KEY );
-                $this->connectGameWithZmq( $request, 'backgammon', GamePlatform::BACKGAMMON_GAME_COOKIE_KEY );
+                $this->connectGameWithWebsocket( $request, 'backgammon', Keys::GAME_ID_KEY );
                 break;
         }
+    }
+    
+    private function connectChatWithWebsocket( Request $request, $gameCode, $cookieKey )
+    {
+        $gameCookie = $request->cookies->get( $cookieKey );
+        $userId     = $request->query->get( 'userId' );
+        $gameId     = $request->query->get( 'gameId' );
+        $playAi     = $request->query->get( 'playAi', true );
+        $forGold    = $request->query->get( 'forGold', true );
+        
+        $this->gameService->Connect( $this->wsClientFactory->createServerChatClient(), $gameCode, $userId, $gameId, $playAi, $forGold, $gameCookie );
     }
     
     private function connectGameWithWebsocket( Request $request, $gameCode, $cookieKey )
@@ -53,17 +57,6 @@ final class GameRequestListener
         $playAi     = $request->query->get( 'playAi', true );
         $forGold    = $request->query->get( 'forGold', true );
         
-        $this->gameWebsocketService->Connect( $this->wsClientFactory->createServerClient(), $gameCode, $userId, $gameId, $playAi, $forGold, $gameCookie );
-    }
-    
-    private function connectGameWithZmq( Request $request, $gameCode, $cookieKey )
-    {
-        $gameCookie = $request->cookies->get( $cookieKey );
-        $userId     = $request->query->get( 'userId' );
-        $gameId     = $request->query->get( 'gameId' );
-        $playAi     = $request->query->get( 'playAi', true );
-        $forGold    = $request->query->get( 'forGold', true );
-        
-        $this->gameZmqService->Connect( $this->wsClientFactory->createZmqClient(), $gameCode, $userId, $gameId, $playAi, $forGold, $gameCookie );
+        $this->gameService->Connect( $this->wsClientFactory->createServerGameClient(), $gameCode, $userId, $gameId, $playAi, $forGold, $gameCookie );
     }
 }

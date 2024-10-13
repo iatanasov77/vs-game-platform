@@ -55,7 +55,7 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
     @Input() sendVisible = false;
     @Input() undoVisible = false;
     @Input() newVisible = false;
-    @Input() exitVisible = true;
+    @Input() exitVisible = false;
     
     @Output() addMove = new EventEmitter<MoveDto>();
     @Output() addEditMove = new EventEmitter<MoveDto>();

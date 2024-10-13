@@ -1,6 +1,6 @@
 window.MessagePublished = false;
 
-const url           = window.clientSettings.socketServerUrl;
+const url           = window.clientSettings.socketChatUrl;
 const currentUser   = window.currentUser;
 var socket;
 

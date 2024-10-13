@@ -53,10 +53,11 @@ Encore
         assets: '[name].[ext]?[hash:8]'
     })
 
-    // Application Images
+    // Application Assets
     .copyFiles([
         {from: './assets/library/GamePlatform/Einaregilsson_Cards.Js/img', to: 'einaregilsson-cards.js/img/[path][name].[ext]'},
         {from: './themes/GamePlatform_VelzonSaas/assets/images', to: 'images/[path][name].[ext]'},
+        {from: './themes/GamePlatform_VelzonSaas/assets/sound', to: 'sound/[path][name].[ext]'},
      ])
      
      // Velzon Images

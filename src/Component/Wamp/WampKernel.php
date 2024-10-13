@@ -6,9 +6,9 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Thruway\ClientSession;
 use Thruway\Transport\TransportInterface;
-use Voryx\ThruwayBundle\WampKernel as BaseWampKernel;
-use Voryx\ThruwayBundle\ResourceMapper;
-use Voryx\ThruwayBundle\Event\SessionEvent;
+use Vankosoft\ThruwayBundle\WampKernel as BaseWampKernel;
+use Vankosoft\ThruwayBundle\ResourceMapper;
+use Vankosoft\ThruwayBundle\Event\SessionEvent;
 
 final class WampKernel extends BaseWampKernel
 {

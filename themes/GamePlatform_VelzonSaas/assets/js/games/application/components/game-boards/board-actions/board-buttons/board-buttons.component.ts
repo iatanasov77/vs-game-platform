@@ -15,11 +15,12 @@ import templateString from './board-buttons.component.html';
 export class BoardButtonsComponent implements OnChanges
 {
     @Input() isRoomSelected: boolean    = false;
+    @Input() hasRooms: boolean          = false;
     @Input() undoVisible = false;
     @Input() sendVisible = false;
     @Input() rollButtonVisible = false;
     @Input() newVisible = false;
-    @Input() exitVisible = true;
+    @Input() exitVisible = false;
     
     @Output() onSelectGameRoom = new EventEmitter<void>();
     @Output() onCreateGameRoom = new EventEmitter<void>();
@@ -41,6 +42,9 @@ export class BoardButtonsComponent implements OnChanges
             switch ( propName ) {
                 case 'isRoomSelected':
                     this.isRoomSelected = changedProp.currentValue;
+                    break;
+                case 'hasRooms':
+                    this.hasRooms = changedProp.currentValue;
                     break;
             }
         }

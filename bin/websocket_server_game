@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd /projects/VS_GamePlatform
+/usr/bin/php bin/game-platform vgp:websocket:game $1

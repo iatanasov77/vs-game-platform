@@ -4,7 +4,8 @@ use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 
 /**
- * See Logs: sudo tail -f /var/log/websocket/game-patform-server.log
+ * See Logs:        sudo tail -f /var/log/websocket/game-patform-server.log
+ * Start Service:   sudo service websocket_game_platform restart
  * 
  * Manual:  https://stackoverflow.com/questions/64292868/how-to-send-a-message-to-specific-websocket-clients-with-symfony-ratchet
  *          https://stackoverflow.com/questions/30953610/how-to-send-messages-to-particular-users-ratchet-php-websocket
@@ -29,7 +30,7 @@ class WebsocketMessageHandler implements MessageComponentInterface
         //$this->clients  = [];
         $this->names    = [];
         
-        $this->logFile  = '/var/log/websocket/game-patform-server.log';
+        $this->logFile  = '/var/log/websocket/game-patform-chat.log';
     }
     
     public function onOpen( ConnectionInterface $conn )

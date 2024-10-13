@@ -27,10 +27,11 @@ import { SelectGameRoomDialogComponent } from '../select-game-room-dialog/select
 import { CreateGameRoomDialogComponent } from '../create-game-room-dialog/create-game-room-dialog.component';
 
 // Services
-import { AuthService } from '../../../services/auth.service'
-import { ZmqService } from '../../../services/zmq.service'
+import { AuthService } from '../../../services/auth.service';
+import { ZmqGameService } from '../../../services/zmq-game.service';
+import { WebsocketGameService } from '../../../services/websocket-game.service';
 import { StatusMessageService } from '../../../services/status-message.service';
-import { SoundService } from '../../../services/sound.service'
+import { SoundService } from '../../../services/sound.service';
 
 // App State
 import { AppStateService } from '../../../state/app-state.service';
@@ -98,8 +99,11 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     dicesDto: DiceDto[] | undefined;
     
     appState?: MyGameState;
-    gameStarted: boolean                = false;
-    isRoomSelected: boolean             = false;
+    gameStarted: boolean    = false;
+    
+    isRoomSelected: boolean = true; // false;
+    hasRooms: boolean       = false;
+    
     gamePlayers: any;
     startedHandle: any;
     
@@ -109,7 +113,8 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         @Inject( NgbModal ) private ngbModal: NgbModal,
         
         @Inject( AuthService ) private authService: AuthService,
-        @Inject( ZmqService ) private zmqService: ZmqService,
+        @Inject( ZmqGameService ) private zmqService: ZmqGameService,
+        @Inject( WebsocketGameService ) private wsService: WebsocketGameService,
         @Inject( StatusMessageService ) private statusMessageService: StatusMessageService,
         @Inject( AppStateService ) private appStateService: AppStateService,
         @Inject( SoundService ) private sound: SoundService,
@@ -131,7 +136,8 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         const playAi = true;
         const forGold = true;
     
-        this.zmqService.connect( gameId, playAi, forGold );
+        //this.zmqService.connect( gameId, playAi, forGold );
+        this.wsService.connect( gameId, playAi, forGold );
     }
     
     ngOnInit(): void
@@ -139,20 +145,29 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         this.store.subscribe( ( state: any ) => {
             console.log( state.app.main );
             this.appState   = state.app.main;
+            this.hasRooms   = this?.appState?.rooms?.length && this?.appState?.rooms?.length > 0 ? true : false;
             
             if ( state.app.main.gamePlay ) {
                 this.gameStarted    = true;
+                this.statusMessageService.setWaitingForConnect();
             }
         });
         
         this.actions$.pipe( ofType( selectGameRoomSuccess ) ).subscribe( () => {
             this.isRoomSelected = true;
+            this.statusMessageService.setNotGameStarted();
         });
         
         this.actions$.pipe( ofType( startGameSuccess ) ).subscribe( () => {
             this.store.dispatch( loadGameRooms() );
             this.game.startGame();
         });
+    }
+    
+    ngAfterViewInit(): void
+    {
+        this.fireResize();
+        //this.statusMessageService.setNotRoomSelected();
     }
     
     ngOnDestroy(): void
@@ -192,25 +207,26 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     
     sendMoves(): void
     {
-//         this.socketsService.sendMoves();
-        this.zmqService.sendMoves();
+        //this.zmqService.sendMoves();
+        this.wsService.sendMoves();
+        
         this.rollButtonClicked = false;
     }
     
     doMove( move: MoveDto ): void
     {
-//         this.socketsService.doMove( move );
-//         this.socketsService.sendMove( move );
-        this.zmqService.doMove( move );
-        this.zmqService.sendMove( move );
+//         this.zmqService.doMove( move );
+//         this.zmqService.sendMove( move );
+        this.wsService.doMove( move );
+        this.wsService.sendMove( move );
     }
     
     undoMove(): void
     {
-//         this.socketsService.undoMove();
-//         this.socketsService.sendUndo();
-        this.zmqService.undoMove();
-        this.zmqService.sendUndo();
+//         this.zmqService.undoMove();
+//         this.zmqService.sendUndo();
+        this.wsService.undoMove();
+        this.wsService.sendUndo();
     }
     
     myTurn(): boolean
@@ -250,8 +266,8 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     
     moveAnimFinished(): void
     {
-//         this.socketsService.shiftMoveAnimationsQueue();
-        this.zmqService.shiftMoveAnimationsQueue();
+//         this.zmqService.shiftMoveAnimationsQueue();
+        this.wsService.shiftMoveAnimationsQueue();
     }
     
     @HostListener( 'window:resize', ['$event'] )
@@ -280,11 +296,6 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             }
             dices.style.top = `${this.height / 2 - btnsOffset}px`;
         }
-    }
-    
-    ngAfterViewInit(): void
-    {
-        this.fireResize();
     }
     
     fireResize(): void
@@ -350,8 +361,8 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     
     resignGame(): void
     {
-//         this.socketsService.resignGame();
-        this.zmqService.resignGame();
+//         this.zmqService.resignGame();
+        this.wsService.resignGame();
     }
     
     newGame(): void
@@ -360,15 +371,17 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         this.started = false;
         this.rollButtonClicked = false;
         
-        this.zmqService.resetGame();
-        this.zmqService.connect( '', this.playAiFlag, this.forGodlFlag );
+//         this.zmqService.resetGame();
+//         this.zmqService.connect( '', this.playAiFlag, this.forGodlFlag );
+        this.wsService.resetGame();
+        this.wsService.connect( '', this.playAiFlag, this.forGodlFlag );
         this.waitForOpponent();
     }
     
     exitGame(): void
     {
-//         this.socketsService.exitGame();
-        this.zmqService.exitGame();
+//         this.zmqService.exitGame();
+        this.wsService.exitGame();
         this.appStateService.hideBusy();
         //this.router.navigateByUrl( '/lobby' );
     }

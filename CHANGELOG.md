@@ -1,3 +1,16 @@
+0.10.1	|	Release date: **13.10.2024**
+============================================
+* New Features , Fixes and Improvements:
+  - Create WebsocketServerCommand .
+  - Replace Voryx ThruwayBundle with Vankosoft Thruway Bundle.
+  - Fix All Packages about Sylius Resource Bundle 1.12
+  - Create a WebSocket Server for Games.
+  - Add Websocket Game Url into service configs.
+  - Refactoring Game Service and Try to Get Game Cookie on WebSocket Open.
+  - Fix Game Sound Service to Find Sound Files.
+  - Finalize Backend Backgamon Game Manager.
+
+
 0.10.0	|	Release date: **08.10.2024**
 ============================================
 * New Features:

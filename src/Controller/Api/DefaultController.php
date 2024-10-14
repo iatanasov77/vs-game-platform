@@ -94,6 +94,12 @@ class DefaultController extends AbstractController
             
             'game_board.players.title'                      => 'Players',
             'game_board.rooms.title'                        => 'Game Rooms',
+            
+            // Play AI Question Box
+            'playaiquestion.icantfind'                      => 'I can\'t find anyone else playing at the moment.',
+            'playaiquestion.doyouwanttoplay'                => 'Do you want to play against the AI?',
+            'playaiquestion.playai'                         => 'Play AI',
+            'playaiquestion.keepwaiting'                    => 'Keep waiting',
         ];
     }
     
@@ -140,6 +146,12 @@ class DefaultController extends AbstractController
             
             'game_board.players.title'                      => 'Players',
             'game_board.rooms.title'                        => 'Game Rooms',
+            
+            // Play AI Question Box
+            'playaiquestion.icantfind'                      => 'I can\'t find anyone else playing at the moment.',
+            'playaiquestion.doyouwanttoplay'                => 'Do you want to play against the AI?',
+            'playaiquestion.playai'                         => 'Play AI',
+            'playaiquestion.keepwaiting'                    => 'Keep waiting',
         ];
     }
 }

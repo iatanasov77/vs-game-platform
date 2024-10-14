@@ -161,6 +161,10 @@ class GameService
         // Find existing game to reconnect to.
         if ( $gameCookie ) {
             $cookie = GameCookieDto::TryParse( $gameCookie );
+            if ( ! $cookie ) {
+                return false;
+            }
+            
             $color = $cookie->color;
             
             if ( $cookie != null )

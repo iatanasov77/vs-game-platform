@@ -77,7 +77,7 @@ export class AppStateService
         this.rolled = new StateObject<boolean>();
         this.opponentDone = new StateObject<boolean>();
         this.theme = new StateObject<string>();
-        this.theme.setValue('dark');
+        this.theme.setValue( 'dark' );
         this.tutorialStep = new StateObject<number>();
         this.tutorialStep.setValue(0);
         this.newVersion = new StateObject<boolean>();

@@ -22,6 +22,7 @@ import { BoardButtonsComponent } from './board-actions/board-buttons/board-butto
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { SelectGameRoomDialogComponent } from './select-game-room-dialog/select-game-room-dialog.component';
 import { CreateGameRoomDialogComponent } from './create-game-room-dialog/create-game-room-dialog.component';
+import { PlayAiQuestionComponent } from './play-ai-question/play-ai-question.component';
 
 @NgModule({
     declarations: [
@@ -38,7 +39,8 @@ import { CreateGameRoomDialogComponent } from './create-game-room-dialog/create-
         BoardMenuComponent,
         BoardButtonsComponent,
         SelectGameRoomDialogComponent,
-        CreateGameRoomDialogComponent
+        CreateGameRoomDialogComponent,
+        PlayAiQuestionComponent
     ],
     imports: [
         CommonModule,
@@ -63,7 +65,8 @@ import { CreateGameRoomDialogComponent } from './create-game-room-dialog/create-
         BoardMenuComponent,
         BoardButtonsComponent,
         SelectGameRoomDialogComponent,
-        CreateGameRoomDialogComponent
+        CreateGameRoomDialogComponent,
+        PlayAiQuestionComponent
     ]
 })
 export class GameBoardsModule { }

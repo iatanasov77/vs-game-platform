@@ -25,7 +25,14 @@ import GameState from '_@/GamePlatform/Model/BoardGame/gameState';
 
 import { CheckerArea, CheckerDrag, Point, MoveAnimation } from './';
 import { Checker } from './checker';
-import { DarkTheme, IThemes } from './themes';
+import {
+    BlueTheme,
+    DarkTheme,
+    GreenTheme,
+    IThemes,
+    LightTheme,
+    PinkTheme
+} from './themes';
 
 import cssGameString from './backgammon-board.component.scss';
 import templateString from './backgammon-board.component.html';
@@ -49,6 +56,9 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
     @Input() myColor: PlayerColor | null = PlayerColor.black;
     @Input() rotated = false;
     @Input() flipped = false;
+    @Input() themeName: string | null = 'dark';
+    @Input() timeLeft: number | null = 0;
+    @Input() editing: boolean = false;
     
     @Input() dicesVisible: boolean | null = false;
     @Input() rollButtonVisible = false;

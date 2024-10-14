@@ -110,6 +110,16 @@ class Game
         return $game;
     }
     
+    public function SwitchPlayer(): void
+    {
+        $this->CurrentPlayer = $this->OtherPlayer();
+    }
+    
+    public function OtherPlayer(): PlayerColor
+    {
+        return $this->CurrentPlayer == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
+    }
+    
     private static function CalcPointsLeft( Game &$game ): void
     {
         foreach ( $game->Points as $point ) {
@@ -131,11 +141,6 @@ class Game
                 $game->WhitePlayer->PointsLeft += 25 - $point->WhiteNumber;
             }
         }
-    }
-    
-    private function OtherPlayer(): PlayerColor
-    {
-        return $this->CurrentPlayer == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
     }
     
     private function SetStartPosition(): void

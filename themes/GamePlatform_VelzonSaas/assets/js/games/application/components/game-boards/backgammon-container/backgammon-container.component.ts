@@ -7,6 +7,7 @@ import {
     SimpleChanges,
     Inject,
     ElementRef,
+    ChangeDetectorRef,
     Input,
     ViewChild,
     HostListener
@@ -25,6 +26,7 @@ import { GameState as MyGameState } from '../../../+store/game.reducers';
 import { RequirementsDialogComponent } from '../../shared/requirements-dialog/requirements-dialog.component';
 import { SelectGameRoomDialogComponent } from '../select-game-room-dialog/select-game-room-dialog.component';
 import { CreateGameRoomDialogComponent } from '../create-game-room-dialog/create-game-room-dialog.component';
+import { PlayAiQuestionComponent } from '../play-ai-question/play-ai-question.component';
 
 // Services
 import { AuthService } from '../../../services/auth.service';
@@ -32,6 +34,7 @@ import { ZmqGameService } from '../../../services/zmq-game.service';
 import { WebsocketGameService } from '../../../services/websocket-game.service';
 import { StatusMessageService } from '../../../services/status-message.service';
 import { SoundService } from '../../../services/sound.service';
+import { EditorService } from '../../../services/editor.service';
 
 // App State
 import { AppStateService } from '../../../state/app-state.service';
@@ -78,6 +81,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     timeLeft$: Observable<number>;
     gameSubs: Subscription;
     diceSubs: Subscription;
+    themeName: string;
     
     width = 450;
     height = 450;
@@ -88,14 +92,21 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     flipped = false;
     playAiFlag = false;
     forGodlFlag = false;
+    lokalStake = 0;
+    animatingStake = false;
     playAiQuestion = false;
-  
+    editing = false;
+    nextDoublingFactor = 1;
+    
     rollButtonVisible = false;
     sendVisible = false;
     undoVisible = false;
     dicesVisible = false;
-    newVisible = true;
-    exitVisible = false;
+    newVisible = false;
+    exitVisible = true;
+    acceptDoublingVisible = false;
+    requestDoublingVisible = false;
+    requestHintVisible = false;
     dicesDto: DiceDto[] | undefined;
     
     appState?: MyGameState;
@@ -111,6 +122,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         @Inject( Store ) private store: Store,
         @Inject( Actions ) private actions$: Actions,
         @Inject( NgbModal ) private ngbModal: NgbModal,
+        @Inject( ChangeDetectorRef ) private changeDetector: ChangeDetectorRef,
         
         @Inject( AuthService ) private authService: AuthService,
         @Inject( ZmqGameService ) private zmqService: ZmqGameService,
@@ -118,6 +130,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         @Inject( StatusMessageService ) private statusMessageService: StatusMessageService,
         @Inject( AppStateService ) private appStateService: AppStateService,
         @Inject( SoundService ) private sound: SoundService,
+        @Inject( EditorService ) private editService: EditorService,
     ) {
         this.gameDto$ = this.appStateService.game.observe();
         this.dices$ = this.appStateService.dices.observe();
@@ -136,8 +149,22 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         const playAi = true;
         const forGold = true;
     
+        this.lokalStake = 0;
+        
         //this.zmqService.connect( gameId, playAi, forGold );
         this.wsService.connect( gameId, playAi, forGold );
+        
+        if ( this.editing ) {
+            this.exitVisible = true;
+            this.newVisible = false;
+            this.sendVisible = false;
+            this.dicesVisible = false;
+            this.editService.setStartPosition();
+        }
+        
+        // For some reason i could not use an observable for theme. Maybe i'll figure out why someday
+        // service.connect might need to be in a setTimeout callback.
+        this.themeName = this.appStateService.user.getValue()?.theme ?? 'dark';
     }
     
     ngOnInit(): void
@@ -166,6 +193,11 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     
     ngAfterViewInit(): void
     {
+        this.playAiQuestion = false;
+        this.lokalStake = 0;
+    
+        if ( ! this.playAiFlag && ! this.editing ) this.waitForOpponent();
+    
         this.fireResize();
         //this.statusMessageService.setNotRoomSelected();
     }
@@ -221,6 +253,12 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         this.wsService.sendMove( move );
     }
     
+    doEditMove( move: MoveDto ): void
+    {
+        this.editService.doMove( move );
+        this.editService.updateGameString();
+    }
+    
     undoMove(): void
     {
 //         this.zmqService.undoMove();
@@ -239,20 +277,89 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         return this.appStateService.doublingRequested();
     }
     
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     gameChanged( dto: GameDto ): void
     {
+        if ( this.editing ) {
+            this.fireResize();
+            return;
+        }
+        
+        if ( ! this.started && dto ) {
+            clearTimeout( this.startedHandle );
+            this.started = true;
+            this.playAiQuestion = false;
+            if ( dto.isGoldGame ) this.sound.playCoin();
+        }
+        // console.log(dto?.id);
+        
         this.setRollButtonVisible();
-        this.setDicesVisible();
         this.setSendVisible();
         this.setUndoVisible();
+        this.setDoublingVisible( dto );
         this.diceColor = dto?.currentPlayer;
         this.fireResize();
         this.newVisible = dto?.playState === GameState.ended;
-        this.exitVisible = dto?.playState !== GameState.playing;
+        this.exitVisible =
+            dto?.playState !== GameState.playing &&
+            dto?.playState !== GameState.requestedDoubling;
+        this.nextDoublingFactor = dto?.goldMultiplier * 2;
+        
+        this.animateStake( dto );
     }
     
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    animateStake( dto: GameDto )
+    {
+        if ( dto && dto.isGoldGame && dto.stake !== this.lokalStake ) {
+            this.animatingStake = true;
+            const step = Math.ceil( ( dto.stake - this.lokalStake ) / 10 );
+            setTimeout( () => {
+                const handle = setInterval( () => {
+                    this.lokalStake += step;
+                    this.changeDetector.detectChanges();
+                    
+                    if (
+                        ( step > 0 && this.lokalStake >= dto.stake ) ||
+                        ( step < 0 && this.lokalStake <= dto.stake )
+                    ) {
+                        clearInterval( handle );
+                        this.lokalStake = dto.stake;
+                        this.animatingStake = false;
+                    }
+                }, 100 );
+            }, 100 ); // Give time to show everything
+        }
+    }
+    
+    setDoublingVisible( gameDto: GameDto )
+    {
+        if ( ! gameDto ) return;
+        
+        this.acceptDoublingVisible =
+            gameDto.isGoldGame &&
+            gameDto.playState === GameState.requestedDoubling &&
+            this.myTurn();
+            
+        // Visible if it is a gold-game and if it is my turn to double.
+        const turn = this.appStateService.myColor.getValue() !== gameDto.lastDoubler;
+        const rightType = gameDto.isGoldGame;
+        
+        this.requestDoublingVisible =
+            turn &&
+            rightType &&
+            this.myTurn() &&
+            this.rollButtonVisible &&
+            gameDto.isGoldGame &&
+            this.hasFundsForDoubling( gameDto );
+    }
+    
+    hasFundsForDoubling( gameDto: GameDto ): boolean
+    {
+        return (
+            gameDto.blackPlayer.gold >= gameDto.stake / 2 &&
+            gameDto.whitePlayer.gold >= gameDto.stake / 2
+        );
+    }
+
     diceChanged( dto: DiceDto[] ): void
     {
         this.dicesDto = dto;
@@ -386,6 +493,29 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         //this.router.navigateByUrl( '/lobby' );
     }
     
+    async playAi()
+    {
+        this.playAiQuestion = false;
+        this.wsService.exitGame();
+        
+        while ( this.appStateService.myConnection.getValue().connected ) {
+            await this.delay( 500 );
+        }
+        
+        this.wsService.connect( '', true, this.forGodlFlag );
+    }
+    
+    delay( ms: number )
+    {
+        return new Promise( ( resolve ) => setTimeout( resolve, ms ) );
+    }
+    
+    keepWaiting(): void
+    {
+        this.sound.playBlues();
+        this.playAiQuestion = false;
+    }
+  
     selectGameRoom(): void
     {
         if ( ! this.isLoggedIn || ! this.hasPlayer ) {

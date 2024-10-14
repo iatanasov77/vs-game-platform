@@ -653,7 +653,7 @@ class GameManager
     {
         $winner = $this->GetWinner();
         $this->Game->SwitchPlayer();
-        if ( $winner.HasValue ) {
+        if ( $winner->HasValue ) {
             $this->EndGame( $winner->Value );
         } else {
             $this->SendNewRoll();

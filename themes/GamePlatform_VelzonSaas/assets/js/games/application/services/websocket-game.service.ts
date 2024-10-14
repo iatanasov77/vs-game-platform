@@ -7,7 +7,7 @@ import { AppStateService } from '../state/app-state.service';
 import { GameService } from './game.service';
 
 // Board Interfaces
-import CheckerDto from '_@/GamePlatform/Model/BoardGame/connectionDto';
+import CheckerDto from '_@/GamePlatform/Model/BoardGame/checkerDto';
 import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
 import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
 import DiceDto from '_@/GamePlatform/Model/BoardGame/diceDto';
@@ -69,7 +69,7 @@ export class WebsocketGameService
         }
         
         const url   = window.gamePlatformSettings.socketGameUrl +
-                        '?gameCode=backgamon' +
+                        '?gameCode=backgammon' +
                         '&token=' + window.gamePlatformSettings.apiVerifySiganature;
                         
         this.url    = url;

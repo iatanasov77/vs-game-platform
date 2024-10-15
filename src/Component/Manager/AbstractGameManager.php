@@ -5,9 +5,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
-
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
-use App\Entity\GamePlayer;
 
 use App\EventListener\GameEndedEvent;
 use App\Component\System\Guid;
@@ -32,13 +30,13 @@ use App\Component\Dto\Actions\GameRestoreActionDto;
 use App\Component\Dto\Actions\DoublingActionDto;
 use App\Component\Dto\Actions\OpponentMoveActionDto;
 
-class GameManager
+abstract class AbstractGameManager implements GameManagerInterface
 {
     /** @const int */
     const firstBet = 50;
     
-    /** @const string */
-    const AiUser = "ECC9A1FC-3E5C-45E6-BCE3-7C24DFE82C98";
+    /** @var \DateTime */
+    public $Created;
     
     /** @var LoggerInterface */
     protected $logger;
@@ -66,9 +64,6 @@ class GameManager
     
     /** @var FactoryInterface */
     protected $tempPlayersFactory;
-    
-    /** @var \DateTime */
-    protected $Created;
     
     /** @var DeferredCancellation */
     protected $moveTimeOut;
@@ -120,65 +115,17 @@ class GameManager
         $this->Created  = new \DateTime( 'now' );
     }
     
-    public function ConnectAndListen( WebsocketClientInterface $webSocket, PlayerColor $color, GamePlayer $dbUser, bool $playAi )
+    public function getClient( $clientId ): mixed
     {
-        if ( $color == PlayerColor::Black ) {
-            $this->Client1 = $webSocket;
-            
-            $this->Game->BlackPlayer->Id = $dbUser != null ? $dbUser->getId() : Guid::Empty();
-            $this->Game->BlackPlayer->Name = $dbUser != null ? $dbUser->getName() : "Guest";
-            $this->Game->BlackPlayer->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $dbUser->getPhotoUrl() : "";
-            $this->Game->BlackPlayer->Elo = $dbUser != null ? $dbUser->getElo() : 0;
-            
-            if ( $this->Game->IsGoldGame ) {
-                $this->Game->BlackPlayer->Gold = $dbUser != null ? $dbUser->getGold() - self::firstBet : 0;
-                $this->Game->Stake = self::firstBet * 2;
-            }
-            
-            if ( $playAi ) {
-                $aiUser = $this->playersRepository->findOneBy( ['guid' => self::AiUser] );
-                
-                $this->Game->WhitePlayer->Id = $aiUser->getId();
-                $this->Game->WhitePlayer->Name = $aiUser->getName();
-                // TODO: AI image
-                $this->Game->WhitePlayer->Photo = $aiUser->getPhotoUrl();
-                $this->Game->WhitePlayer->Elo = $aiUser->getElo();
-                
-                if ( $this->Game->IsGoldGame ) {
-                    $this->Game->WhitePlayer->Gold = $aiUser->getGold();
-                }
-                
-                $this->Engine = new AiEngine( $this->Game );
-                
-                $this->CreateDbGame();
-                $this->StartGame();
-                
-                if ( $this->Game->CurrentPlayer == PlayerColor::White ) {
-                    $this->EnginMoves( $this->Client1 );
-                }
-            }
-            
-            $this->ListenOn( $webSocket );
-        } else {
-            if ( $playAi ) {
-                throw new \Exception( "Ai always plays as white. This is not expected" );
-            }
-            $this->Client2 = $webSocket;
-            
-            $this->Game->WhitePlayer->Id = $dbUser != null ? $dbUser->getId() : Guid::Empty();
-            $this->Game->WhitePlayer->Name = $dbUser != null ? $dbUser->getName() : "Guest";
-            $this->Game->WhitePlayer->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $dbUser->getPhotoUrl() : "";
-            $this->Game->WhitePlayer->Elo = $dbUser != null ? $dbUser->getElo() : 0;
-            
-            if ( $this->Game->IsGoldGame ) {
-                $this->Game->WhitePlayer->Gold = $dbUser != null ? $dbUser->getGold() - self::firstBet : 0;
-            }
-            
-            $this->CreateDbGame();
-            $this->StartGame();
-            
-            $this->ListenOn( $webSocket );
+        if ( $this->Client1->getClientId() == $clientId ) {
+            return $this->Client1;
         }
+        
+        if ( $this->Client2->getClientId() == $clientId ) {
+            return $this->Client2;
+        }
+        
+        throw new \Exception( 'GameManager Websocket Client Not Found !!!' );
     }
     
     public function Restore( PlayerColor $color, WebsocketClientInterface $socket ): void
@@ -209,11 +156,91 @@ class GameManager
         } else {
             $this->logger->warning( "Failed to send restore to other client" );
         }
-        
-        $this->ListenOn( $socket );
     }
     
-    public function Send( WebsocketClientInterface $socket, object $obj ): void
+    public function DoAction( ActionNames $actionName, string $actionText, WebsocketClientInterface $socket, WebsocketClientInterface $otherSocket )
+    {
+        $this->logger->info( "Doing action: {$actionName}" );
+        
+        if ( $actionName == ActionNames::movesMade ) {
+            $this->Game->ThinkStart = new \DateTime( 'now' );
+            $action = \json_decode( $actionText );
+            
+            if ( $socket == $this->Client1 ) {
+                $this->Game->BlackPlayer->FirstMoveMade = true;
+            } else {
+                $this->Game->WhitePlayer->FirstMoveMade = true;
+            }
+            
+            $this->DoMoves( $action );
+            $this->NewTurn( $socket );
+                    
+        } else if ( $actionName == ActionNames::opponentMove ) {
+            $action = \json_decode( $actionText );
+            $this->Send( $otherSocket, $action );
+        } else if ( $actionName == ActionNames::undoMove ) {
+            $action = \json_decode( $actionText );
+            $this->Send( $otherSocket, $action );
+        } else if ( $actionName == ActionNames::rolled ) {
+            $action = \json_decode( $actionText );
+            $this->Send( $otherSocket, $action );
+        } else if ( $actionName == ActionNames::requestedDoubling ) {
+            if ( ! $this->Game->IsGoldGame ) {
+                throw new \Exception( "requestedDoubling should not be possible in a non gold game" );
+            }
+            
+            $action = \json_decode( $actionText );
+            $action->moveTimer = Game::ClientCountDown;
+            
+            $this->Game->ThinkStart = new \DateTime( 'now' );
+            $this->Game->SwitchPlayer();
+            if ( $this->AisTurn() ) {
+                if ( $this->Engine->AcceptDoubling() ) {
+                    $this->DoDoubling();
+                    $this->Game->SwitchPlayer();
+                    
+                    yield delay( 2000 );
+                    $doublingAction = new DoublingActionDto();
+                    $doublingAction->actionName = ActionNames::acceptedDoubling;
+                    $doublingAction->moveTimer = Game::ClientCountDown;
+                    
+                    $this->Send( $socket, $doublingAction );
+                } else {
+                    yield delay( 2000 );
+                    $this->Resign( $this->Game->OtherPlayer() );
+                }
+            } else {
+                $this->Send( $otherSocket, $action );
+            }
+        } else if ( $actionName == ActionNames::acceptedDoubling ) {
+            if ( ! $this->Game->IsGoldGame ) {
+                throw new \Exception( "acceptedDoubling should not be possible in a non gold game" );
+            }
+            
+            $action = \json_decode( $actionText );
+            $action->moveTimer = Game::ClientCountDown;
+            $this->Game->ThinkStart = new \DateTime( 'now' );
+            $this->DoDoubling();
+            $this->Game->SwitchPlayer();
+            $this->Send( $otherSocket, $action );
+        } else if ( $actionName == ActionNames::requestHint ) {
+            if ( ! $this->Game->IsGoldGame && $this->Game->CurrentPlayer == PlayerColor::Black ) {
+                // Aina is always white
+                $action = $this->GetHintAction();
+                $this->Send( $socket, $action );
+            }
+        } else if ( $actionName == ActionNames::connectionInfo ) {
+            $action = \json_decode( $actionText );
+            $this->Send( $otherSocket, $action );
+        } else if ( $actionName == ActionNames::resign ) {
+            $winner = $this->Client1 == $otherSocket ? PlayerColor::Black : PlayerColor::White;
+            $this->Resign( $winner );
+        } else if ( $actionName == ActionNames::exitGame ) {
+            $this->CloseConnections( $socket );
+        }
+    }
+    
+    public function Send( WebsocketClientInterface $socket, $obj ): void
     {
         if ( $socket == null || $socket->State != WebSocketState::Open ) {
             $this->logger->info( "Cannot send to socket, connection was lost." );
@@ -307,21 +334,21 @@ class GameManager
             function( $entry ) {
                 return Mapper::DiceToDto( $entry );
             }
-        )->toArray();
+        );
         $rollAction->playerToMove = $this->Game->CurrentPlayer;
         $rollAction->validMoves = $this->Game->ValidMoves->map(
             function( $entry ) {
                 return Mapper::MoveToDto( $entry );
             }
-        )->toArray();
+        );
         $rollAction->moveTimer = Game::ClientCountDown;
         
-        if ( ! $this->Game->BlackPlayer->IsAi() ) {
+        if ( $this->Client1 && ! $this->Game->BlackPlayer->IsAi() ) {
             $this->Send( $this->Client1, $rollAction );
         }
         
-        if ( ! $this->Game->WhitePlayer->IsAi() ) {
-            Send( $this->Client2, $rollAction );
+        if ( $this->Client2 && ! $this->Game->WhitePlayer->IsAi() ) {
+            $this->Send( $this->Client2, $rollAction );
         }
     }
     
@@ -379,126 +406,6 @@ class GameManager
         $em = $this->doctrine->getManager();
         $em->persist( $game );
         $em->flush();
-    }
-    
-    protected function ListenOn( WebsocketClientInterface $socket ): void
-    {
-        $socket->subscribe( "realm1", "game", \Closure::fromCallable( [$this, 'DoAction'] ) );
-        
-        
-        /*
-        while (
-            $socket->State != WebSocketState::Closed &&
-            $socket->State != WebSocketState::Aborted &&
-            $socket->State != WebSocketState::CloseReceived
-        ) {
-            $text = $this->ReceiveText( $socket );
-            if ( $text != null && ! empty( $text ) ) {
-                $this->logger->info( "Received: {$text}" );
-                
-                try
-                {
-                    $action = \json_decode( $text );
-                    $otherClient = $socket == $this->Client1 ? $this->Client2 : $this->Client1;
-                    
-                    // PHP Way to Call Async Methods
-                    async( \Closure::fromCallable( [$this, 'DoAction'] ), [
-                        $action->actionName,
-                        $text,
-                        $socket,
-                        $otherClient
-                    ])->await();
-                }
-                catch ( \Exception $e )
-                {
-                    $this->logger->error( "Failed to parse Action text {$e->getMessage()}" );
-                }
-            }
-        }
-        */
-    }
-    
-    protected function ReceiveText( WebsocketClientInterface $socket ): string
-    {
-        return $socket->receive();
-    }
-    
-    protected function DoAction( ActionNames $actionName, string $actionText, WebsocketClientInterface $socket, WebsocketClientInterface $otherSocket )
-    {
-        $this->logger->info( "Doing action: {$actionName}" );
-        
-        if ( $actionName == ActionNames::movesMade ) {
-            $this->Game->ThinkStart = new \DateTime( 'now' );
-            $action = \json_decode( $actionText );
-            if ( $socket == $this->Client1 )
-                $this->Game->BlackPlayer->FirstMoveMade = true;
-            else
-                $this->Game->WhitePlayer->FirstMoveMade = true;
-            
-            $this->DoMoves( $action );
-            //async( \Closure::fromCallable( [$this, 'NewTurn'] ), [$socket] )->await();
-                    
-        } else if ( $actionName == ActionNames::opponentMove ) {
-            $action = \json_decode( $actionText );
-            $this->Send( $otherSocket, $action );
-        } else if ( $actionName == ActionNames::undoMove ) {
-            $action = \json_decode( $actionText );
-            $this->Send( $otherSocket, $action );
-        } else if ( $actionName == ActionNames::rolled ) {
-            $action = \json_decode( $actionText );
-            $this->Send( $otherSocket, $action );
-        } else if ( $actionName == ActionNames::requestedDoubling ) {
-            if ( ! $this->Game->IsGoldGame )
-                throw new \Exception( "requestedDoubling should not be possible in a non gold game" );
-                
-            $action = \json_decode( $actionText );
-            $action->moveTimer = Game::ClientCountDown;
-            
-            $this->Game->ThinkStart = new \DateTime( 'now' );
-            $this->Game->SwitchPlayer();
-            if ( $this->AisTurn() ) {
-                if ( $this->Engine->AcceptDoubling() ) {
-                    $this->DoDoubling();
-                    $this->Game->SwitchPlayer();
-                    
-                    yield delay( 2000 );
-                    $doublingAction = new DoublingActionDto();
-                    $doublingAction->actionName = ActionNames::acceptedDoubling;
-                    $doublingAction->moveTimer = Game::ClientCountDown;
-                        
-                    $this->Send( $socket, $doublingAction );
-                } else {
-                    yield delay( 2000 );
-                    //async( \Closure::fromCallable( [$this, 'Resign'] ), [$this->Game->OtherPlayer()] )->await();
-                }
-            } else {
-                $this->Send( $otherSocket, $action );
-            }
-        } else if ( $actionName == ActionNames::acceptedDoubling ) {
-            if ( ! $this->Game->IsGoldGame )
-                throw new \Exception( "acceptedDoubling should not be possible in a non gold game" );
-            
-            $action = \json_decode( $actionText );
-            $action->moveTimer = Game::ClientCountDown;
-            $this->Game->ThinkStart = new \DateTime( 'now' );
-            $this->DoDoubling();
-            $this->Game->SwitchPlayer();
-            $this->Send( $otherSocket, $action );
-        } else if ( $actionName == ActionNames::requestHint ) {
-            if ( ! $this->Game->IsGoldGame && $this->Game->CurrentPlayer == PlayerColor::Black ) {
-                // Aina is always white
-                $action = $this->GetHintAction();
-                $this->Send( $socket, $action );
-            }
-        } else if ( $actionName == ActionNames::connectionInfo ) {
-            $action = \json_decode( $actionText );
-            $this->Send( $otherSocket, $action );
-        } else if ( $actionName == ActionNames::resign ) {
-            $winner = $this->Client1 == $otherSocket ? PlayerColor::Black : PlayerColor::White;
-            $this->Resign( $winner );
-        } else if ( $actionName == ActionNames::exitGame ) {
-            //async( \Closure::fromCallable( [$this, 'CloseConnections'] ), [$socket] )->await();
-        }
     }
     
     protected function SaveWinner( PlayerColor $color ): ?array
@@ -607,10 +514,14 @@ class GameManager
         $gameEndedAction->game = $game;
         
         $gameEndedAction->newScore = $newScore ? $newScore[0] : null;
-        //async( \Closure::fromCallable( [$this, 'Send'] ), [$this->Client1, $gameEndedAction] )->await();
+        if ( $this->Client1 ) {
+            $this->Send( $this->Client1, $gameEndedAction );
+        }
         
         $gameEndedAction->newScore = $newScore ? $newScore[1] : null;
-        //async( \Closure::fromCallable( [$this, 'Send'] ), [$this->Client2, $gameEndedAction] )->await();
+        if ( $this->Client2 ) {
+            $this->Send( $this->Client2, $gameEndedAction );
+        }
     }
     
     protected function ReturnStakes(): void
@@ -637,9 +548,8 @@ class GameManager
         if ( $socket != null ) {
             $this->logger->info( "Closing client" );
             //await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Game aborted by client", CancellationToken.None);
-            if ( $socket != null ) {
-                //socket.Dispose();
-            }
+            
+            $socket->close();
         }
     }
     
@@ -653,7 +563,7 @@ class GameManager
     {
         $winner = $this->GetWinner();
         $this->Game->SwitchPlayer();
-        if ( $winner->HasValue ) {
+        if ( $winner && $winner->HasValue ) {
             $this->EndGame( $winner->Value );
         } else {
             $this->SendNewRoll();

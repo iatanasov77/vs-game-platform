@@ -1,12 +1,15 @@
 <?php namespace App\Component\Websocket\Server;
 
 use SplObjectStorage as SplObjectStorageAlias;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use App\Component\Websocket\WebsocketClientFactory;
+use App\Component\Websocket\WebSocketState;
 use App\Component\GameService;
 use App\Component\Utils\Keys;
+use App\EventListener\WebsocketEvent\MessageEvent;
 
 final class WebsocketGamesHandler implements MessageComponentInterface
 {
@@ -26,6 +29,9 @@ final class WebsocketGamesHandler implements MessageComponentInterface
     /** @var GameService */
     private $gameService;
     
+    /** @var EventDispatcherInterface */
+    private $eventDispatcher;
+    
     /** @var \SplObjectStorage */
     private $clients;
     
@@ -35,20 +41,26 @@ final class WebsocketGamesHandler implements MessageComponentInterface
     /** @var array */
     private $names;
     
+    /** @var array */
+    private $games;
+    
     /** @var string */
     private $logFile;
     
     public function __construct(
         RepositoryInterface $usersRepository,
         WebsocketClientFactory $wsClientFactory,
-        GameService $gameService
+        GameService $gameService,
+        EventDispatcherInterface $eventDispatcher,
     ) {
         $this->usersRepository  = $usersRepository;
         $this->wsClientFactory  = $wsClientFactory;
         $this->gameService      = $gameService;
+        $this->eventDispatcher  = $eventDispatcher;
         
         $this->clients  = new SplObjectStorageAlias();
         $this->names    = [];
+        $this->games    = [];
         
         $this->logFile  = '/var/log/websocket/game-patform-game.log';
     }
@@ -74,20 +86,30 @@ final class WebsocketGamesHandler implements MessageComponentInterface
     
     public function onMessage( ConnectionInterface $from, $msg )
     {
+        $this->log( "New message from ({$from->resourceId}): " . $msg );
         
+        $gameManager    = $this->gameService->getGameManager( $this->games[$from->resourceId] );
+        $socket         = $gameManager->getClient( $from->resourceId );
+        
+        if ( $gameManager ) {
+            $this->eventDispatcher->dispatch( new MessageEvent( $gameManager, $socket, $msg, $this->logFile ) );
+        }
     }
     
     public function onClose( ConnectionInterface $conn )
     {
         // The connection is closed, remove it, as we can no longer send it messages
+        
+        $gameManager    = $this->gameService->getGameManager( $this->games[$conn->resourceId] );
+        $socket         = $gameManager->getClient( $conn->resourceId );
+        $socket->State  = WebSocketState::Closed;
+        
         /** @var int $sequenceId */
         $sequenceId = $this->clients[$conn];
-        //$this->onMessage( $conn, self::USER_DISCONNECTED . self::DELIMITER . $sequenceId . self::DELIMITER . $this->names[$sequenceId] );
         $this->clients->detach( $conn );
         
         // cleanup
         unset( $this->names[$sequenceId] );
-        //unset( $this->drawing[$this->connectionSequenceId] );
         
         $this->log( "Connection {$conn->resourceId} has disconnected" );
     }
@@ -134,23 +156,34 @@ final class WebsocketGamesHandler implements MessageComponentInterface
             return;
         }
         
-        $webSocket  = $this->wsClientFactory->createRatchetConnectionClient( $conn );
-        $gameCode   = $queryParameters['gameCode'];
+        $gameCode   = isset( $queryParameters['gameCode'] ) ? $queryParameters['gameCode'] : null;
+        if ( ! $gameCode ) {
+            return;
+        }
         
-        $userId = $user->getId();
-        $gameId = isset( $queryParameters['gameId'] ) ? $queryParameters['gameId'] : null;
-        $playAi = isset( $queryParameters['playAi'] ) ? $queryParameters['playAi'] : "true";
-        $forGold = isset( $queryParameters['forGold'] ) ? $queryParameters['forGold'] : "true";
+        $webSocket  = $this->wsClientFactory->createRatchetConnectionClient( $conn );
+        $webSocket->State   = WebSocketState::Open;
+        
+        $userId     = $user->getId();
+        $gameId     = isset( $queryParameters['gameId'] ) ? $queryParameters['gameId'] : null;
+        $playAi     = isset( $queryParameters['playAi'] ) ? $queryParameters['playAi'] : "true";
+        $forGold    = isset( $queryParameters['forGold'] ) ? $queryParameters['forGold'] : "true";
         
         //$this->log( "Game Code: ". $gameCode );
         //$this->log( "Game Id: ". $gameId );
         
         try {
-            $this->gameService->Connect( $webSocket, $gameCode, $userId, $gameId, $playAi, $forGold, $gameCookie );
+            $gameGuid   = $this->gameService->Connect( $webSocket, $gameCode, $userId, $gameId, $playAi, $forGold, $gameCookie );
         } catch ( \Exception $exc ) {
             $this->log( $exc->getMessage() );
             //await context.Response.WriteAsync(exc.Message, CancellationToken.None);
             //context.Response.StatusCode = 400;
+            
+            return;
+        }
+        
+        if ( $gameGuid ) {
+            $this->games[$conn->resourceId]  = $gameGuid;
         }
     }
 }

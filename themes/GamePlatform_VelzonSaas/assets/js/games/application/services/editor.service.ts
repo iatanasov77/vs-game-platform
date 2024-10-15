@@ -326,7 +326,7 @@ export class EditorService
             dice: dice
         };
         this.httpClient
-            .post( 'gamestring', dto )
+            .post( 'backgamon/editor/gamestring', dto )
             .pipe(
                 take( 1 ),
                 map( ( dto ) => dto as GameStringResponseDto )

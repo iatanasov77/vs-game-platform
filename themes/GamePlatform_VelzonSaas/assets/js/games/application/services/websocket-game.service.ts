@@ -106,21 +106,20 @@ export class WebsocketGameService
         this.statusMessageService.setMyConnectionLost( '' );
     }
     
-    onClose(): void
+    onClose( event: CloseEvent ): void
     {
-        // console.log( 'Close', { event } );
+        console.log( 'Close', { event } );
         const cnn = this.appState.myConnection.getValue();
         this.appState.myConnection.setValue({ ...cnn, connected: false });
-        // this.statusMessageService.setMyConnectionLost( event.reason );
+        this.statusMessageService.setMyConnectionLost( event.reason );
     }
     
     // Messages received from server.
     onMessage( message: MessageEvent<string> ): void
     {
         console.log( 'Message', message );
-        alert( 'Message: ' + message );
         
-        if ( ! message || typeof message !== 'object'  ) {
+        if ( ! message.data.length  ) {
             return;
         }
         
@@ -422,9 +421,9 @@ export class WebsocketGameService
       
     sendMessage( message: string ): void
     {
-      if ( this.socket && this.socket.readyState === this.socket.OPEN ) {
-        this.socket.send( message );
-      }
+        if ( this.socket && this.socket.readyState === this.socket.OPEN ) {
+            this.socket.send( message );
+        }
     }
   
     sendMoves(): void

@@ -11,7 +11,8 @@ use App\Entity\UserManagement\User;
 #[ORM\Table(name: "VSGP_GamePlayers")]
 class GamePlayer implements ResourceInterface
 {
-    const AiUser = "5";
+    /** @const string */
+    const AiUser = "ECC9A1FC-3E5C-45E6-BCE3-7C24DFE82C98";
     
     /** @var int */
     #[ORM\Id, ORM\Column(type: "integer"), ORM\GeneratedValue(strategy: "IDENTITY")]

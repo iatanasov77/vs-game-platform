@@ -17,3 +17,7 @@ vs_api_zmq_publish_message:
 vs_api_account_signin:
     path: /api/account/signin
     controller: App\Controller\Api\AccountController::signinAction
+
+vs_api_backgamon_editor_game_string:
+    path: /api/backgamon/editor/gamestring
+    controller: App\Controller\Api\BackgammonEditorController::gameString

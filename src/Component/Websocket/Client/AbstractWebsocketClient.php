@@ -14,6 +14,13 @@ abstract class AbstractWebsocketClient implements WebsocketClientInterface
     /** @var string */
     protected $websocketUrl;
     
+    /**
+     * Ratchet Connection Resource ID or Any Other Websocket Connection Identifier
+     * 
+     * @var mixed
+     */
+    protected $clientId;
+    
     /** @var WebSocketState */
     public $State;
     
@@ -21,5 +28,15 @@ abstract class AbstractWebsocketClient implements WebsocketClientInterface
     {
         $this->websocketUrl = $websocketUrl;
         $this->State        = WebSocketState::None;
+    }
+    
+    public function getClientId(): mixed
+    {
+        return $this->clientId;
+    }
+    
+    public function close(): void
+    {
+        
     }
 }

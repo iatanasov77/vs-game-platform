@@ -63,9 +63,9 @@ final class GameManagerFactory
         $this->forGold                  = $forGold;
     }
     
-    public function createGameManager(): GameManager
+    public function createWebsocketGameManager(): GameManagerInterface
     {
-        return new GameManager(
+        return new WebsocketGameManager(
             $this->logger,
             $this->eventDispatcher,
             $this->doctrine,
@@ -79,7 +79,23 @@ final class GameManagerFactory
         );
     }
     
-    public function createZmqGameManager(): GameManager
+    public function createThruwayGameManager(): GameManagerInterface
+    {
+        return new ThruwayGameManager(
+            $this->logger,
+            $this->eventDispatcher,
+            $this->doctrine,
+            $this->gameRepository,
+            $this->gamePlayRepository,
+            $this->gamePlayFactory,
+            $this->playersRepository,
+            $this->tempPlayersRepository,
+            $this->tempPlayersFactory,
+            $this->forGold
+        );
+    }
+    
+    public function createZmqGameManager(): GameManagerInterface
     {
         return new ZmqGameManager(
             $this->logger,

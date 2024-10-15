@@ -9,6 +9,10 @@ services:
         arguments:
             - '@vs_users.security_bridge'
             - '@vs_api.api_manager'
+    
+    App\Controller\Api\BackgammonEditorController:
+        tags: ['controller.service_arguments']
+        autowire: true
             
     App\Controller\Api\Games\ShowGameController:
         arguments:

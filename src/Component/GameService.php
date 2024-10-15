@@ -7,7 +7,7 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use Vankosoft\UsersBundle\Security\SecurityBridge;
 
-use App\Component\Manager\GameManager;
+use App\Component\Manager\GameManagerInterface;
 use App\Component\Manager\GameManagerFactory;
 use App\Component\Ai\Backgammon\Engine as AiEngine;
 use App\Component\System\Guid;
@@ -32,7 +32,7 @@ class GameService
     /** @var GameManagerFactory */
     protected $managerFactory;
     
-    /** @var Collection | GameManager[] */
+    /** @var Collection | GameManagerInterface[] */
     protected $AllGames;
     
     public function __construct(
@@ -49,28 +49,34 @@ class GameService
         $this->AllGames         = new ArrayCollection();
     }
     
-    public function Connect( WebsocketClientInterface $webSocket, $gameCode, $userId, $gameId, $playAi, $forGold, ?string $gameCookie ): void
+    public function getGameManager( string $gameId ): ?GameManagerInterface
     {
+        return isset( $this->AllGames[$gameId] ) ? $this->AllGames[$gameId] : null;
+    }
+    
+    public function Connect( WebsocketClientInterface $webSocket, $gameCode, $userId, $gameId, $playAi, $forGold, ?string $gameCookie ): ?string
+    {
+        $gameGuid   = null;
         $dbUser = $this->GetDbUser( $userId );
         if ( ! $dbUser ) {
-            return;
+            return $gameGuid;
         }
         
         $gamePlayer = $dbUser->getPlayer();
         if ( ! $gamePlayer ) {
-            return;
+            return $gameGuid;
         }
         
         if ( $this->TryReConnect( $webSocket, $gameCookie, $dbUser ) ) {
             // Game disconnected here
-            return;
+            return $gameGuid;
         }
         
         if ( ! empty ( $gameId ) ) {
             // async( \Closure::fromCallable( [$this, 'ConnectInvite'] ), [$webSocket, $dbUser, $gameId] )->await();
             
             // Game disconnected here.
-            return;
+            return $gameGuid;
         }
         
         //todo: pair with someone equal ranking?
@@ -100,8 +106,9 @@ class GameService
         
         $manager = $managers->first();
         if ( $manager == null || $playAi ) {
-            $manager = $this->managerFactory->createGameManager();
-            $this->AllGames->set( $manager->Game->Id, $manager );
+            $manager    = $this->managerFactory->createWebsocketGameManager();
+            $gameGuid   =  $manager->Game->Id;
+            $this->AllGames->set( $gameGuid, $manager );
             
             //$manager.Ended += Game_Ended;
             $manager->SearchingOpponent = ! $playAi;
@@ -131,8 +138,9 @@ class GameService
             //This is the end of the connection
             */
         }
-        
         $this->RemoveDissconnected( $manager );
+        
+        return $gameGuid;
     }
     
     protected static function GameAlreadyStarted( Collection $managers, $userId ): bool
@@ -199,7 +207,7 @@ class GameService
         return false;
     }
     
-    protected function RemoveDissconnected( GameManager $manager ): void
+    protected function RemoveDissconnected( GameManagerInterface $manager ): void
     {
         if (
             ( $manager->Client1 == null || $manager->Client1->State != WebSocketState::Open ) &&
@@ -237,7 +245,7 @@ class GameService
         */
     }
     
-    protected static function SendConnectionLost( PlayerColor $color, GameManager $manager )
+    protected static function SendConnectionLost( PlayerColor $color, GameManagerInterface $manager )
     {
         $socket = $manager->Client1;
         if ( $color == PlayerColor::White )
@@ -253,7 +261,7 @@ class GameService
         }
     }
     
-    protected static function MyColor( GameManager $manager, UserInterface $dbUser, PlayerColor $color ): bool
+    protected static function MyColor( GameManagerInterface $manager, UserInterface $dbUser, PlayerColor $color ): bool
     {
         //prevents someone with same game id, get someone elses side in the game.
         $player = $manager->Game->BlackPlayer;

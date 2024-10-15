@@ -29,7 +29,7 @@ use App\Component\Dto\Actions\DoublingActionDto;
 
 use App\Entity\GamePlayer;
 
-class ZmqGameManager extends GameManager
+class ZmqGameManager extends AbstractGameManager
 {
     public function Send( WebsocketClientInterface $socket, object $obj ): void
     {
@@ -52,7 +52,7 @@ class ZmqGameManager extends GameManager
         }
     }
     
-    public function ConnectAndListen( WebsocketClientInterface $webSocket, PlayerColor $color, UserInterface $dbUser, bool $playAi )
+    public function ConnectAndListen( WebsocketClientInterface $webSocket, PlayerColor $color, GamePlayer $dbUser, bool $playAi ): void
     {
         $this->Game     = Game::Create( true );
         $this->Created  = new \DateTime( 'now' );
@@ -62,17 +62,17 @@ class ZmqGameManager extends GameManager
             
             $this->Game->CurrentPlayer  = PlayerColor::Black;
             $this->Game->BlackPlayer->Id = $dbUser != null ? $dbUser->getId() : Guid::Empty();
-            $this->Game->BlackPlayer->Name = $dbUser != null ? $dbUser->getUsername() : "Guest";
+            $this->Game->BlackPlayer->Name = $dbUser != null ? $dbUser->getName() : "Guest";
             $this->Game->BlackPlayer->PlayerColor = PlayerColor::Black;
-            $this->Game->BlackPlayer->Photo = $dbUser != null && false ? $dbUser->PhotoUrl : "";
-            $this->Game->BlackPlayer->Elo = $dbUser != null ? $dbUser->getPlayer()->getElo() : 0;
+            $this->Game->BlackPlayer->Photo = $dbUser != null && false ? $dbUser->getPhotoUrl() : "";
+            $this->Game->BlackPlayer->Elo = $dbUser != null ? $dbUser->getElo() : 0;
             if ( $this->Game->IsGoldGame ) {
-                $this->Game->BlackPlayer->Gold = $dbUser != null ? $dbUser->getPlayer()->getGold() - self::firstBet : 0;
+                $this->Game->BlackPlayer->Gold = $dbUser != null ? $dbUser->getGold() - self::firstBet : 0;
                 $this->Game->Stake = self::firstBet * 2;
             }
             
             if ( $playAi ) {
-                $aiUser = $this->playersRepository->find( GamePlayer::AiUser );
+                $aiUser = $this->playersRepository->findOneBy( ['guid' => GamePlayer::AiUser] );
                 $this->Game->WhitePlayer->Id = $aiUser->getId();
                 $this->Game->WhitePlayer->Name = $aiUser->getName();
                 $this->Game->WhitePlayer->PlayerColor = PlayerColor::White;
@@ -113,6 +113,35 @@ class ZmqGameManager extends GameManager
             $this->StartGame();
             
             $this->ListenOn( $webSocket );
+        }
+    }
+    
+    private function ListenOn( WebsocketClientInterface $socket ): void
+    {
+        while (
+            $socket->State != WebSocketState::Closed &&
+            $socket->State != WebSocketState::Aborted &&
+            $socket->State != WebSocketState::CloseReceived
+        ) {
+            $text = $this->ReceiveText( $socket );
+            if ( $text != null && ! empty( $text ) ) {
+                $this->logger->info( "Received: {$text}" );
+            
+                try {
+                    $action = \json_decode( $text );
+                    $otherClient = $socket == $this->Client1 ? $this->Client2 : $this->Client1;
+                    
+                    // PHP Way to Call Async Methods
+                    async( \Closure::fromCallable( [$this, 'DoAction'] ), [
+                        $action->actionName,
+                        $text,
+                        $socket,
+                        $otherClient
+                    ])->await();
+                } catch ( \Exception $e ) {
+                    $this->logger->error( "Failed to parse Action text {$e->getMessage()}" );
+                }
+            }
         }
     }
 }

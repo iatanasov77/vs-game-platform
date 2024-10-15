@@ -27,6 +27,10 @@ services:
             - '@validator'
         tags:
             - 'console.command'
+            
+    app_websocket_event_subscriber:
+        class: App\EventListener\WebsocketEventSubscriber
+        tags: [kernel.event_subscriber]
     
 #     App\EventListener\GameRequestListener:
 #         arguments:

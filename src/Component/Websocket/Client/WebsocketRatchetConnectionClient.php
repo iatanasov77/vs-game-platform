@@ -1,5 +1,6 @@
 <?php namespace App\Component\Websocket\Client;
 
+use Symfony\Component\Serializer\SerializerInterface;
 use Ratchet\ConnectionInterface;
 
 final class WebsocketRatchetConnectionClient extends AbstractWebsocketClient
@@ -7,9 +8,9 @@ final class WebsocketRatchetConnectionClient extends AbstractWebsocketClient
     /** @var ConnectionInterface */
     private $connection;
     
-    public function __construct( string $websocketUrl, ConnectionInterface $connection )
+    public function __construct( string $websocketUrl, SerializerInterface $serializer, ConnectionInterface $connection )
     {
-        parent::__construct( $websocketUrl );
+        parent::__construct( $websocketUrl, $serializer );
         
         $this->connection   = $connection;
         $this->clientId     = $connection->resourceId;
@@ -18,7 +19,8 @@ final class WebsocketRatchetConnectionClient extends AbstractWebsocketClient
     public function send( object $msg ): void
     {
         // Here Use: Ratchet\Client\WebSocket
-        $this->connection->send( \json_encode( $msg ) );
+        $json   = $json = $this->serializer->serialize( $msg, 'json' );
+        $this->connection->send( $json );
     }
     
     public function receive(): string

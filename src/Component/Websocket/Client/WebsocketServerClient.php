@@ -14,7 +14,8 @@ final class WebsocketServerClient extends AbstractWebsocketClient
         // Here Use: Ratchet\Client\WebSocket
         $client = new \WebSocket\Client( $this->websocketUrl );
         
-        $client->text( \json_encode( $msg ) );
+        $json   = $json = $this->serializer->serialize( $msg, 'json' );
+        $client->text( $json );
         //$client->text( "Hello WebSocket.org!" );
         //echo $client->receive();
         

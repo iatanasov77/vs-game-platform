@@ -1,5 +1,6 @@
 <?php namespace App\Component\Manager;
 
+use Symfony\Component\Serializer\SerializerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -11,6 +12,9 @@ final class GameManagerFactory
 {
     /** @var LoggerInterface */
     private $logger;
+    
+    /** @var SerializerInterface */
+    private $serializer;
     
     /** @var EventDispatcherInterface */
     private $eventDispatcher;
@@ -41,6 +45,7 @@ final class GameManagerFactory
     
     public function __construct(
         LoggerInterface $logger,
+        SerializerInterface $serializer,
         EventDispatcherInterface $eventDispatcher,
         ManagerRegistry $doctrine,
         RepositoryInterface $gameRepository,
@@ -52,6 +57,7 @@ final class GameManagerFactory
         bool $forGold
     ) {
         $this->logger                   = $logger;
+        $this->serializer               = $serializer;
         $this->eventDispatcher          = $eventDispatcher;
         $this->doctrine                 = $doctrine;
         $this->gameRepository           = $gameRepository;
@@ -67,6 +73,7 @@ final class GameManagerFactory
     {
         return new WebsocketGameManager(
             $this->logger,
+            $this->serializer,
             $this->eventDispatcher,
             $this->doctrine,
             $this->gameRepository,
@@ -83,6 +90,7 @@ final class GameManagerFactory
     {
         return new ThruwayGameManager(
             $this->logger,
+            $this->serializer,
             $this->eventDispatcher,
             $this->doctrine,
             $this->gameRepository,
@@ -99,6 +107,7 @@ final class GameManagerFactory
     {
         return new ZmqGameManager(
             $this->logger,
+            $this->serializer,
             $this->eventDispatcher,
             $this->doctrine,
             $this->gameRepository,

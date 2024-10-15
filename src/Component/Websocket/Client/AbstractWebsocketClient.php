@@ -1,5 +1,6 @@
 <?php namespace App\Component\Websocket\Client;
 
+use Symfony\Component\Serializer\SerializerInterface;
 use App\Component\Websocket\WebSocketState;
 
 /**
@@ -14,6 +15,9 @@ abstract class AbstractWebsocketClient implements WebsocketClientInterface
     /** @var string */
     protected $websocketUrl;
     
+    /** @var SerializerInterface */
+    protected $serializer;
+    
     /**
      * Ratchet Connection Resource ID or Any Other Websocket Connection Identifier
      * 
@@ -24,9 +28,11 @@ abstract class AbstractWebsocketClient implements WebsocketClientInterface
     /** @var WebSocketState */
     public $State;
     
-    public function __construct( string $websocketUrl )
+    public function __construct( string $websocketUrl, SerializerInterface $serializer )
     {
         $this->websocketUrl = $websocketUrl;
+        $this->serializer   = $serializer;
+        
         $this->State        = WebSocketState::None;
     }
     

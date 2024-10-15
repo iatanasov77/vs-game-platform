@@ -11,6 +11,14 @@ use App\Component\GameService;
 use App\Component\Utils\Keys;
 use App\EventListener\WebsocketEvent\MessageEvent;
 
+/**
+ * See Logs:        sudo tail -f /var/log/websocket/game-patform-game.log
+ * Start Service:   sudo service websocket_game_platform_game restart
+ *                  sudo /projects/VS_GamePlatform/bin/websocket_server_game 8092
+ *
+ * Manual:  https://stackoverflow.com/questions/64292868/how-to-send-a-message-to-specific-websocket-clients-with-symfony-ratchet
+ *          https://stackoverflow.com/questions/30953610/how-to-send-messages-to-particular-users-ratchet-php-websocket
+ */
 final class WebsocketGamesHandler implements MessageComponentInterface
 {
     const USER_LIST = 0;
@@ -146,7 +154,7 @@ final class WebsocketGamesHandler implements MessageComponentInterface
     
     private function ConnectGame( ConnectionInterface $conn, ?string $gameCookie ): void
     {
-        $this->log( "New web socket request." );
+        $this->log( "Connect Game Request." );
         
         \parse_str( $conn->httpRequest->getUri()->getQuery(), $queryParameters );
         //$this->log( "API Verify Signature: ". $queryParameters['token'] );
@@ -182,6 +190,7 @@ final class WebsocketGamesHandler implements MessageComponentInterface
             return;
         }
         
+        $this->log( "Game GUID: ". $gameGuid );
         if ( $gameGuid ) {
             $this->games[$conn->resourceId]  = $gameGuid;
         }

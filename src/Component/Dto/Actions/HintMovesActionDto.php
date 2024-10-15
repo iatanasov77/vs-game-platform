@@ -8,6 +8,6 @@ class HintMovesActionDto extends ActionDto
     
     public function  __construct()
     {
-        $this->actionName = ActionNames::hintMoves;
+        $this->actionName = ActionNames::hintMoves->value;
     }
 }

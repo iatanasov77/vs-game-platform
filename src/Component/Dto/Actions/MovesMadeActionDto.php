@@ -6,7 +6,7 @@ class MovesMadeActionDto extends ActionDto
 {
     public function __construct()
     {
-        $this->actionName = ActionNames::movesMade;
+        $this->actionName = ActionNames::movesMade->value;
     }
 
     public Collection $moves; // MoveDto[]

@@ -1,5 +1,6 @@
 <?php namespace App\Component\Manager;
 
+use Symfony\Component\Serializer\SerializerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -40,6 +41,9 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     /** @var LoggerInterface */
     protected $logger;
+    
+    /** @var SerializerInterface */
+    protected $serializer;
     
     /** @var EventDispatcherInterface */
     protected $eventDispatcher;
@@ -91,6 +95,7 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     public function __construct(
         LoggerInterface $logger,
+        SerializerInterface $serializer,
         EventDispatcherInterface $eventDispatcher,
         ManagerRegistry $doctrine,
         RepositoryInterface $gameRepository,
@@ -102,6 +107,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         bool $forGold
     ) {
         $this->logger                   = $logger;
+        $this->serializer               = $serializer;
         $this->eventDispatcher          = $eventDispatcher;
         $this->doctrine                 = $doctrine;
         $this->gameRepository           = $gameRepository;
@@ -240,14 +246,14 @@ abstract class AbstractGameManager implements GameManagerInterface
         }
     }
     
-    public function Send( WebsocketClientInterface $socket, $obj ): void
+    public function Send( WebsocketClientInterface $socket, object $obj ): void
     {
         if ( $socket == null || $socket->State != WebSocketState::Open ) {
             $this->logger->info( "Cannot send to socket, connection was lost." );
             return;
         }
         
-        $json = \json_encode( $obj );
+        $json = $this->serializer->serialize( $obj, 'json' );
         $this->logger->info( "Sending to client {$json}" );
         
         try {
@@ -259,6 +265,7 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     protected function StartGame(): void
     {
+        $this->logger->info( 'MyDebug: Begin Start Game' );
         $this->Game->ThinkStart = new \DateTime( 'now' );
         $gameDto = Mapper::GameToDto( $this->Game );
         
@@ -274,6 +281,8 @@ abstract class AbstractGameManager implements GameManagerInterface
         // todo: visa på clienten även när det blir samma
         
         while ( $this->Game->PlayState == GameState::FirstThrow ) {
+            $this->logger->info( 'MyDebug: Entering Play State Loop' );
+            
             $this->Game->RollDice();
             $rollAction = new DicesRolledActionDto();
             $rollAction->dices = $this->Game->Roll->map(
@@ -291,11 +300,14 @@ abstract class AbstractGameManager implements GameManagerInterface
                 
             $this->Send( $this->Client1, $rollAction );
 //             $this->Send( $this->Client2, $rollAction );
+
+            //$this->logger->info( 'MyDebug: ' . $this->serializer->serialize( $rollAction, 'json' ) );
         }
+        $this->logger->info( 'MyDebug: Exited From Play State Loop' );
         
-        /*
+        /*  
         $this->moveTimeOut = new DeferredCancellation();
-        Utils::RepeatEvery(500, () =>
+        Utils::RepeatEvery( 500, () =>
         {
             TimeTick();
         }, $this->moveTimeOut );
@@ -318,7 +330,7 @@ abstract class AbstractGameManager implements GameManagerInterface
     protected function EndGame( PlayerColor $winner )
     {
         $this->moveTimeOut->cancel();
-        $this->Game->PlayState = GameState::ended;
+        $this->Game->PlayState = GameState::Ended;
         $this->Logger->info( "The winner is {$winner}" );
         
         $newScore = $this->SaveWinner( $winner );
@@ -487,7 +499,7 @@ abstract class AbstractGameManager implements GameManagerInterface
                     }
                 )->count() == 15
             ) {
-                $this->Game->PlayState = GameState::ended;
+                $this->Game->PlayState = GameState::Ended;
                 $winner = PlayerColor::Black;
             }
         } else {
@@ -498,7 +510,7 @@ abstract class AbstractGameManager implements GameManagerInterface
                     }
                 )->count() == 15
             ) {
-                $this->Game->PlayState = GameState::ended;
+                $this->Game->PlayState = GameState::Ended;
                 $winner = PlayerColor::White;
             }
         }
@@ -616,5 +628,32 @@ abstract class AbstractGameManager implements GameManagerInterface
         }
         
         $this->NewTurn( $client );
+    }
+    
+    public static function GetJsonError()
+    {
+        switch ( \json_last_error() ) {
+            case JSON_ERROR_NONE:
+                return ' - No errors';
+                break;
+            case JSON_ERROR_DEPTH:
+                return ' - Maximum stack depth exceeded';
+                break;
+            case JSON_ERROR_STATE_MISMATCH:
+                return ' - Underflow or the modes mismatch';
+                break;
+            case JSON_ERROR_CTRL_CHAR:
+                return ' - Unexpected control character found';
+                break;
+            case JSON_ERROR_SYNTAX:
+                return ' - Syntax error, malformed JSON';
+                break;
+            case JSON_ERROR_UTF8:
+                return ' - Malformed UTF-8 characters, possibly incorrectly encoded';
+                break;
+            default:
+                return ' - Unknown error';
+                break;
+        }
     }
 }

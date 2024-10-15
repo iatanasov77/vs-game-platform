@@ -85,7 +85,7 @@ export class WebsocketGameService
         const now = new Date();
         const ping = now.getTime() - this.connectTime.getTime();
         
-        //console.log( 'User in State', this.appState.user );
+        console.log( 'User in State', this.appState.user );
         if ( this.appState.user.getValue() ) {
             //this.statusMessageService.setWaitingForConnect();
             this.statusMessageService.setNotGameStarted();
@@ -115,10 +115,10 @@ export class WebsocketGameService
     }
     
     // Messages received from server.
-    onMessage( message: MessageEvent<string> ): void
+    //onMessage( message: MessageEvent<string> ): void
+    onMessage( message: MessageEvent ): void
     {
         console.log( 'Message', message );
-        
         if ( ! message.data.length  ) {
             return;
         }

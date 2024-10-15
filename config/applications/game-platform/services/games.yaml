@@ -50,6 +50,7 @@ services:
         class: App\Component\Websocket\WebsocketClientFactory
         public: true
         arguments:
+            - '@serializer'
             - '%app_websocket_chat_url%'
             - '%app_websocket_game_url%'
             - '%app_websocket_publisher_url%'
@@ -60,6 +61,7 @@ services:
         public: true
         arguments:
             - '@logger'
+            - '@serializer'
             - '@vs_users.repository.users'
             - '@vs_users.security_bridge'
             - '@app_game_manager_factory'
@@ -68,6 +70,7 @@ services:
         class: App\Component\Manager\GameManagerFactory
         arguments:
             - '@logger'
+            - '@serializer'
             - '@event_dispatcher'
             - '@doctrine'
             - '@vsapp.repository.games'

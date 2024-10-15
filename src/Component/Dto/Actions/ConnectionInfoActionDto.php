@@ -6,7 +6,7 @@ class ConnectionInfoActionDto extends ActionDto
 {
     public function  __construct()
     {
-        $this->actionName = ActionNames::connectionInfo;
+        $this->actionName = ActionNames::connectionInfo->value;
     }
 
     public ConnectionDto $connection;

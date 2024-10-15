@@ -1,5 +1,6 @@
 <?php namespace App\Component;
 
+use Symfony\Component\Serializer\SerializerInterface;
 use Psr\Log\LoggerInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,8 +12,12 @@ use App\Component\Manager\GameManagerInterface;
 use App\Component\Manager\GameManagerFactory;
 use App\Component\Ai\Backgammon\Engine as AiEngine;
 use App\Component\System\Guid;
+
+// DTO Objects
+use App\Component\Dto\TestWebsocketDto;
 use App\Component\Dto\GameCookieDto;
 use App\Component\Dto\Actions\ConnectionInfoActionDto;
+
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerColor;
 use App\Component\Websocket\Client\WebsocketClientInterface;
@@ -22,6 +27,9 @@ class GameService
 {
     /** @var LoggerInterface */
     protected $logger;
+    
+    /** @var SerializerInterface */
+    protected $serializer;
     
     /** @var RepositoryInterface */
     protected $usersRepository;
@@ -37,11 +45,13 @@ class GameService
     
     public function __construct(
         LoggerInterface $logger,
+        SerializerInterface $serializer,
         RepositoryInterface $usersRepository,
         SecurityBridge $securityBridge,
         GameManagerFactory $managerFactory
     ) {
         $this->logger           = $logger;
+        $this->serializer       = $serializer;
         $this->usersRepository  = $usersRepository;
         $this->securityBridge   = $securityBridge;
         $this->managerFactory   = $managerFactory;
@@ -73,7 +83,7 @@ class GameService
         }
         
         if ( ! empty ( $gameId ) ) {
-            // async( \Closure::fromCallable( [$this, 'ConnectInvite'] ), [$webSocket, $dbUser, $gameId] )->await();
+            $this->ConnectInvite( $webSocket, $dbUser, $gameId );
             
             // Game disconnected here.
             return $gameGuid;
@@ -111,6 +121,8 @@ class GameService
             $this->AllGames->set( $gameGuid, $manager );
             
             //$manager.Ended += Game_Ended;
+            $this->Game_Ended( $manager );
+            
             $manager->SearchingOpponent = ! $playAi;
             $manager->GameCode          = $gameCode;
             
@@ -123,6 +135,8 @@ class GameService
             $this->SendConnectionLost( PlayerColor::White, $manager );
             //This is the end of the connection
             
+            //$this->debugWebsockoket( $manager );
+            
         } else {
             $manager->SearchingOpponent = false;
             $manager->GameCode          = $gameCode;
@@ -130,13 +144,13 @@ class GameService
             $this->logger->info( "Found a game and added a second player. Game id {$manager->Game->Id}" );
             $color = $manager->Client1 == null ? PlayerColor::Black : PlayerColor::White;
             
-            /*
+            /*  */
             // entering socket loop
-            async( \Closure::fromCallable( [$manager, 'ConnectAndListen'] ), [$webSocket, $color, $dbUser, false] )->await();
+            $manager->ConnectAndListen( $webSocket, $color, $gamePlayer, false );
             $this->logger->info( "{$color} player disconnected.");
-            async( \Closure::fromCallable( [$this, 'SendConnectionLost'] ), [PlayerColor::Black, $manager] )->await();
+            $this->SendConnectionLost( PlayerColor::Black, $manager );
             //This is the end of the connection
-            */
+            
         }
         $this->RemoveDissconnected( $manager );
         
@@ -188,16 +202,16 @@ class GameService
                     $gameManager->Engine = new AiEngine( $gameManager->Game );
                     $this->logger->info( "Restoring game {$cookie->id} for {$color}" );
                     
-                    /*
+                    /*  */
                     // entering socket loop
-                    async( \Closure::fromCallable( [$gameManager, 'Restore'] ), [$color, $webSocket] )->await();
+                    $gameManager->Restore( $color, $webSocket );
                     
                     $otherColor = $color == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
-                    async( \Closure::fromCallable( [$this, 'SendConnectionLost'] ), [$otherColor, $gameManager] )->await();
+                    $this->SendConnectionLost( $otherColor, $gameManager );
                     
                     // socket loop exited
                     $this->RemoveDissconnected( $gameManager );
-                    */
+                    
                     
                     return true;
                 }
@@ -218,7 +232,7 @@ class GameService
         }
     }
     
-    protected static function ConnectInvite( WebsocketClientInterface $webSocket, UserInterface $dbUser, string $gameInviteId ): void
+    protected function ConnectInvite( WebsocketClientInterface $webSocket, UserInterface $dbUser, string $gameInviteId ): void
     {
         $manager = $this->AllGames->filter(
             function( $entry ) use ( $cookie ) {
@@ -227,7 +241,8 @@ class GameService
         )->first();
         
         if ( $manager == null ) {
-            //async( \Closure::fromCallable( [$webSocket, 'close'] ), [WebSocketCloseStatus.InvalidPayloadData, "Invite link has expired", CancellationToken.None] )->await();
+            //$webSocket->close( WebSocketCloseStatus.InvalidPayloadData, "Invite link has expired", CancellationToken.None );
+            $webSocket->close();
             
             return;
         }
@@ -237,15 +252,15 @@ class GameService
             $color = PlayerColor::White;
         }
         
-        /*
-        async( \Closure::fromCallable( [$manager, 'ConnectAndListen'] ), [$webSocket, $color, $dbUser, false] )->await();
+        /*  */
+        $manager->ConnectAndListen( $webSocket, $color, $dbUser, false );
         
-        self::RemoveDissconnected( $manager );
-        async( \Closure::fromCallable( [$this, 'SendConnectionLost'] ), [PlayerColor::White, $manager] )->await();
-        */
+        $this->RemoveDissconnected( $manager );
+        $this->SendConnectionLost( PlayerColor::White, $manager );
+        
     }
     
-    protected static function SendConnectionLost( PlayerColor $color, GameManagerInterface $manager )
+    protected function SendConnectionLost( PlayerColor $color, GameManagerInterface $manager )
     {
         $socket = $manager->Client1;
         if ( $color == PlayerColor::White )
@@ -257,7 +272,7 @@ class GameService
             $connection->connected = false;
             $action->connection = $connection;
             
-            //async( \Closure::fromCallable( [$manager, 'Send'] ), [$socket, $action] )->await();
+            $manager->Send( $socket, $action );
         }
     }
     
@@ -271,7 +286,7 @@ class GameService
         return $dbUser != null && $dbUser->getId() == $player->Id;
     }
     
-    protected static function Game_Ended( object $sender ): void
+    protected function Game_Ended( object $sender ): void
     {
         $this->AllGames->removeElement( $sender );
     }
@@ -284,5 +299,14 @@ class GameService
         });
             
         return new ArrayCollection( \iterator_to_array( $gamesIterator ) );
+    }
+    
+    protected function debugWebsockoket( GameManagerInterface $manager ): void
+    {
+        $data   = new TestWebsocketDto();
+        $data->message  = 'Test Succefull.';
+        
+        // Test WebSocket Send
+        $manager->Send( $manager->Client1, $data );
     }
 }

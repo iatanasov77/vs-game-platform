@@ -8,7 +8,7 @@ class GameRestoreActionDto extends ActionDto
 {
     public function __construct()
     {
-        $this->actionName = ActionNames::gameRestore;
+        $this->actionName = ActionNames::gameRestore->value;
     }
     
     public GameDto $game;

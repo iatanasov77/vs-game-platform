@@ -207,7 +207,7 @@ abstract class AbstractGameManager implements GameManagerInterface
                     
                     yield delay( 2000 );
                     $doublingAction = new DoublingActionDto();
-                    $doublingAction->actionName = ActionNames::acceptedDoubling;
+                    $doublingAction->actionName = ActionNames::acceptedDoubling->value;
                     $doublingAction->moveTimer = Game::ClientCountDown;
                     
                     $this->Send( $socket, $doublingAction );
@@ -265,7 +265,7 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     protected function StartGame(): void
     {
-        $this->logger->info( 'MyDebug: Begin Start Game' );
+        //$this->logger->info( 'MyDebug: Begin Start Game' );
         $this->Game->ThinkStart = new \DateTime( 'now' );
         $gameDto = Mapper::GameToDto( $this->Game );
         
@@ -281,7 +281,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         // todo: visa på clienten även när det blir samma
         
         while ( $this->Game->PlayState == GameState::FirstThrow ) {
-            $this->logger->info( 'MyDebug: Entering Play State Loop' );
+            //$this->logger->info( 'MyDebug: Entering Play State Loop' );
             
             $this->Game->RollDice();
             $rollAction = new DicesRolledActionDto();
@@ -303,7 +303,7 @@ abstract class AbstractGameManager implements GameManagerInterface
 
             //$this->logger->info( 'MyDebug: ' . $this->serializer->serialize( $rollAction, 'json' ) );
         }
-        $this->logger->info( 'MyDebug: Exited From Play State Loop' );
+        //$this->logger->info( 'MyDebug: Exited From Play State Loop' );
         
         /*  
         $this->moveTimeOut = new DeferredCancellation();
@@ -596,7 +596,7 @@ abstract class AbstractGameManager implements GameManagerInterface
     {
         \usleep( \rand( 700, 1200 ) );
         $action = new ActionDto();
-        $action->actionName = ActionNames::rolled;
+        $action->actionName = ActionNames::rolled->value;
         $this->Send( $client, $action );
         
         $moves = $this->Engine->GetBestMoves();

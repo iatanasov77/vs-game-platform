@@ -190,7 +190,7 @@ final class WebsocketGamesHandler implements MessageComponentInterface
             return;
         }
         
-        $this->log( "Game GUID: ". $gameGuid );
+        //$this->log( "Game GUID: ". $gameGuid );
         if ( $gameGuid ) {
             $this->games[$conn->resourceId]  = $gameGuid;
         }

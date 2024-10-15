@@ -2,5 +2,5 @@
 
 class ActionDto
 {
-    public ActionNames $actionName;
+    public int $actionName;
 }

@@ -1,5 +1,8 @@
 <?php namespace App\Component\Websocket\Client;
 
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Encoder\JsonEncode;
+
 /**
  * WebsocketClient Based on AMPHP
  * ==============================
@@ -14,7 +17,7 @@ final class WebsocketServerClient extends AbstractWebsocketClient
         // Here Use: Ratchet\Client\WebSocket
         $client = new \WebSocket\Client( $this->websocketUrl );
         
-        $json   = $json = $this->serializer->serialize( $msg, 'json' );
+        $json   = $json = $this->serializer->serialize( $msg, JsonEncoder::FORMAT, [JsonEncode::OPTIONS => JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT] );
         $client->text( $json );
         //$client->text( "Hello WebSocket.org!" );
         //echo $client->receive();

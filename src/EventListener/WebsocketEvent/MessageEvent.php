@@ -16,19 +16,14 @@ class MessageEvent
     /** @var string */
     private $message;
     
-    /** @var string */
-    private $logFile;
-    
     public function __construct(
         GameManagerInterface $manager,
         WebsocketClientInterface $socket,
-        string $message,
-        ?string $logFile
+        string $message
     ) {
         $this->manager  = $manager;
         $this->socket   = $socket;
         $this->message  = $message;
-        $this->logFile  = $logFile;
     }
     
     public function getGameManager()
@@ -43,15 +38,6 @@ class MessageEvent
     
     public function getWebsocketMessage()
     {
-        return $this->action;
-    }
-    
-    public function log( $logData ): void
-    {
-        if ( ! $this->logFile ) {
-            return;
-        }
-        
-        \file_put_contents( $this->logFile, $logData . "\n", FILE_APPEND | LOCK_EX );
+        return $this->message;
     }
 }

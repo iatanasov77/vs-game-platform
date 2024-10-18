@@ -170,7 +170,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     ngOnInit(): void
     {
         this.store.subscribe( ( state: any ) => {
-            console.log( state.app.main );
+            //console.log( state.app.main );
             this.appState   = state.app.main;
             this.hasRooms   = this?.appState?.rooms?.length && this?.appState?.rooms?.length > 0 ? true : false;
             
@@ -367,6 +367,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         this.setSendVisible();
         this.setUndoVisible();
         this.fireResize();
+        
         const game = this.appStateService.game.getValue();
         this.exitVisible = game?.playState !== GameState.playing && game?.playState !== GameState.requestedDoubling;
     }

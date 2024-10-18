@@ -91,6 +91,12 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
     blacksName = '';
     theme: IThemes = new DarkTheme();
     
+    // translated phrases
+    you = '';
+    white = '';
+    black = '';
+    left = '';
+
     constructor(
         @Inject( TranslateService ) private translateService: TranslateService,
         @Inject( AppStateService ) private appState: AppStateService
@@ -138,15 +144,16 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
             this.recalculateGeometry();
         }
         
+        //this.debugGame();
         this.requestDraw();
-        const bName = this.myColor === PlayerColor.black ? 'You' : this.game?.blackPlayer.name;
-        const wName = this.myColor === PlayerColor.white ? 'You' : this.game?.whitePlayer.name;
+        const bName = this.myColor === PlayerColor.black ? this.you : this.game?.blackPlayer.name;
+        const wName = this.myColor === PlayerColor.white ? this.you : this.game?.whitePlayer.name;
         const bLeft = this.game?.blackPlayer.pointsLeft;
         const wLeft = this.game?.whitePlayer.pointsLeft;
         
         this.blacksName = this.game ? `${bName} - ${bLeft} left` : '';
         this.whitesName = this.game ? `${wName} - ${wLeft} left` : '';
-        // console.log(this.game?.playState);
+        // console.log( this.game?.playState );
     }
     
     @HostListener( 'window:orientationchange', ['$event'] )
@@ -282,6 +289,7 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
             40,
             this.theme,
             PlayerColor.black,
+            false,
             false,
             false,
             false
@@ -425,7 +433,8 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
         const r = this.getCheckerRadius();
         const chWidth = this.getCheckerWidth();
         
-        for ( let p = 0; p < this.game.points.length; p++ ) {
+        //console.log( this.game );
+        for ( let p = 1; p < 25; p++ ) {
             const point = this.game.points[p];
             let checkerCount = point.checkers.length;
             const area = this.checkerAreas.filter( ( r ) => r.pointIdx === p )[0];
@@ -449,8 +458,11 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
             }
             
             cx.lineWidth = 1;
+            
+            //Preventing animated move to be drawn at its destination until animation is finished.
             const dragAnimationTo =
                 this.animatedMove &&
+                ! this.animatedMove.move.hint &&
                 (
                     (
                         this.animatedMove?.move.color === PlayerColor.black &&
@@ -461,31 +473,21 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
                         this.animatedMove.move.to == 25 - p
                     )
                 );
-            
+        
             if ( dragAnimationTo ) {
                 checkerCount--;
             }
-            
+        
             // distance between checkers on a point
             const dist = Math.min(
                 2 * chWidth,
-                ( area.height - chWidth ) / checkerCount
+                (area.height - chWidth) / checkerCount
             );
+        
             // main draw checkers loop
             for ( let i = 0; i < checkerCount; i++ ) {
                 const checker = point.checkers[i];
-                // skipping checkers att home.
-                if (
-                    ( p === 0 && checker.color === PlayerColor.white ) ||
-                    ( p === 25 && checker.color === PlayerColor.black )
-                ) {
-                    continue;
-                }
-                
-                let x = area.x + r;
-                if ( p === 0 || p === 25 ) {
-                    x = area.x + chWidth / 2;
-                }
+                const x = area.x + r;
                 let y = 0;
                 if ( ( p > 0 && p < 13 ) || p === 25 ) {
                     // blacks bar and top triangles are drawn bottom down.
@@ -503,11 +505,15 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
                     checker.color,
                     highLight,
                     false,
-                    this.flipped
+                    this.rotated || this.flipped,
+                    false
                 );
             }
         }
         
+        this.drawHomes( cx );
+        this.drawBars( cx );
+            
         if ( this.dragging ) {
             Checker.draw(
                 cx,
@@ -517,10 +523,10 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
                 this.dragging.color,
                 false,
                 true,
-                this.flipped
+                this.rotated || this.flipped,
+                false
             );
         }
-        this.drawHomes( cx );
     }
     
     drawHomes( cx: CanvasRenderingContext2D ): void
@@ -572,6 +578,88 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
         }
     }
     
+    drawBars( cx: CanvasRenderingContext2D ): void
+    {
+        // draw checkers at  home.
+        if ( ! this.game ) {
+            return;
+        }
+        // black
+        let blackCount = this.game.points[0].checkers.filter(
+            ( c ) => c.color === PlayerColor.black
+        ).length;
+        const draggingBlack = this.dragging && this.dragging.checkerArea == this.blackBar;
+        if (
+            (
+                this.animatedMove &&
+                this.animatedMove?.move.color === PlayerColor.black &&
+                this.animatedMove.move.to == 0
+            ) ||
+            draggingBlack
+        ) {
+            blackCount--;
+        }
+        
+        const bw = this.borderWidth;
+        let x = this.blackBar.x + this.blackBar.width / 2;
+        let y = this.blackBar.y + this.blackBar.height - bw * 1.5;
+        const chWidth = this.getCheckerWidth();
+        
+        const highLightBlack = this.blackBar.hasValidMove && !draggingBlack;
+        
+        for ( let i = 0; i < blackCount; i++ ) {
+            const yi = y - i * chWidth * 1.5;
+            Checker.draw(
+                cx,
+                { x, y: yi },
+                chWidth,
+                this.theme,
+                PlayerColor.black,
+                highLightBlack && i === blackCount - 1,
+                false,
+                this.rotated || this.flipped,
+                false
+            );
+        }
+        
+        // white
+        let whiteCount = this.game.points[25].checkers.filter(
+            ( c ) => c.color === PlayerColor.white
+        ).length;
+        const draggingWhite =
+            this.dragging && this.dragging.checkerArea == this.whiteBar;
+        if (
+            (
+                this.animatedMove &&
+                this.animatedMove?.move.color === PlayerColor.white &&
+                this.animatedMove.move.to == 0
+            ) ||
+            draggingWhite
+        ) {
+            whiteCount--;
+        }
+        
+        x = this.whiteBar.x + this.whiteBar.width / 2;
+        y = this.whiteBar.y + bw;
+        
+        const highLightWhite = this.whiteBar.hasValidMove && !draggingWhite;
+        
+        for ( let i = 0; i < whiteCount; i++ ) {
+            const yi = y + i * chWidth * 1.5;
+            Checker.draw(
+                cx,
+                { x, y: yi },
+                chWidth,
+                this.theme,
+                PlayerColor.white,
+                highLightWhite && i === whiteCount - 1,
+                false,
+                this.rotated || this.flipped,
+                false
+            );
+        }
+    }
+  
     //Draws the background and also set shape of all rectangles used for interaction.
     drawBoard( cx: CanvasRenderingContext2D | null ): void
     {
@@ -1041,5 +1129,12 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
         const w = this.getCheckerWidth();
         
         this.handleMove( x - w / 2, y - w / 2 );
+    }
+    
+    debugGame(): void
+    {
+        console.log( this.game );
+        alert( 'My Color: ' + this.myColor );
+        alert( 'Black Color: ' + PlayerColor.black );
     }
 }

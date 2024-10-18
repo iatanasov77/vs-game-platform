@@ -1,4 +1,4 @@
-<?php namespace App\EventListener;
+<?php namespace App\EventListener\WebsocketEvent;
 
 use Symfony\Component\EventDispatcher\GenericEvent;
 

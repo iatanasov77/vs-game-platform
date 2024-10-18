@@ -9,7 +9,7 @@ use App\Component\Rules\Backgammon\Checker;
 use App\Component\Rules\Backgammon\Dice;
 use App\Component\Rules\Backgammon\Move;
 
-class Mapper
+final class Mapper
 {
     public static function GameToDto( Game $game ): GameDto
     {

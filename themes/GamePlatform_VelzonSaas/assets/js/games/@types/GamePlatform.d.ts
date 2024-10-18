@@ -114,6 +114,7 @@ declare module '_@/GamePlatform/Model/BoardGame/moveDto' {
         nextMoves: MoveDto[];
         to: number;
         animate: boolean;
+        hint: boolean;
     }
     
     export = MoveDto;
@@ -178,6 +179,8 @@ declare module '_@/GamePlatform/Model/BoardGame/diceDto' {
 
 declare module '_@/GamePlatform/Model/BoardGame/gameState' {
     enum GameState {
+        starting,
+        
         opponentConnectWaiting,
         firstThrow,
         playing,

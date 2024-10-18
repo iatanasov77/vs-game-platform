@@ -31,6 +31,11 @@ services:
     app_websocket_event_subscriber:
         class: App\EventListener\WebsocketEventSubscriber
         tags: [kernel.event_subscriber]
+        arguments:
+            - '@logger'
+            - '@serializer'
+            - '@doctrine'
+            - '@vsapp.repository.game_sessions'
     
 #     App\EventListener\GameRequestListener:
 #         arguments:
@@ -38,13 +43,6 @@ services:
 #             - '@app_game_service'
 #         tags:
 #             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
-            
-    App\EventListener\GameEndedListener:
-        arguments:
-            - '@doctrine'
-            - '@vsapp.repository.game_sessions'
-        tags:
-           -  { name: kernel.event_listener, event: app.game_ended, method: onGameEnded }
             
     app_websocket_client_factory:
         class: App\Component\Websocket\WebsocketClientFactory

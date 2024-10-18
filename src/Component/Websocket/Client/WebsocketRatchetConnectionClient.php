@@ -1,6 +1,8 @@
 <?php namespace App\Component\Websocket\Client;
 
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Ratchet\ConnectionInterface;
 
 final class WebsocketRatchetConnectionClient extends AbstractWebsocketClient
@@ -19,7 +21,9 @@ final class WebsocketRatchetConnectionClient extends AbstractWebsocketClient
     public function send( object $msg ): void
     {
         // Here Use: Ratchet\Client\WebSocket
-        $json   = $json = $this->serializer->serialize( $msg, 'json' );
+        
+        // , [JsonEncode::OPTIONS => JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT]
+        $json   = $json = $this->serializer->serialize( $msg, JsonEncoder::FORMAT );
         $this->connection->send( $json );
     }
     

@@ -76,7 +76,7 @@ export class GameBaseComponent implements OnInit, OnDestroy
     {
         if ( window.gamePlatformSettings.apiVerifySiganature.length ) {
             this.store.dispatch( loginBySignature( { apiVerifySiganature: window.gamePlatformSettings.apiVerifySiganature } ) );
-            this.store.dispatch( loadGameBySlug( { slug: 'bridge-belote' } ) );
+            this.store.dispatch( loadGameBySlug( { slug: window.gamePlatformSettings.gameSlug } ) );
             return;
         }
         

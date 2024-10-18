@@ -57,8 +57,10 @@ export class AppStateService
     {
         this.busy = new StateObject<Busy>();
         this.game = new StateObject<GameDto>();
+        
         this.myColor = new StateObject<PlayerColor>();
-        this.myColor.setValue(PlayerColor.neither);
+        this.myColor.setValue( PlayerColor.neither );
+        
         this.dices = new StateObject<DiceDto[]>();
         this.dices.setValue([]);
         this.moveAnimations = new StateObject<MoveDto[]>();
@@ -85,6 +87,7 @@ export class AppStateService
         this.feedbackList = new StateObject<FeedbackDto[]>();
         this.feedbackList.setValue([]);
         this.gameString = new StateObject<string>();
+        
         this.chatOpen = new StateObject<boolean>();
         this.chatMessages = new StateObject<ChatMessageDto[]>();
         this.chatMessages.setValue([]);

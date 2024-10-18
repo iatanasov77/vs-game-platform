@@ -27,7 +27,6 @@ class WebsocketMessageHandler implements MessageComponentInterface
     public function __construct()
     {
         $this->clients  = new \SplObjectStorage;
-        //$this->clients  = [];
         $this->names    = [];
         
         $this->logFile  = '/var/log/websocket/game-patform-chat.log';

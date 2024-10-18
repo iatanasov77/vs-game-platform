@@ -48,7 +48,8 @@ export class MoveAnimation
             this.move.color,
             false,
             true,
-            this.flipped
+            this.flipped,
+            this.move.hint
         );
     }
 }

@@ -10,4 +10,5 @@ class MoveDto
     public Collection $nextMoves; // MoveDto[]
     public int $to;
     public bool $animate;
+    public bool $hint;
 }

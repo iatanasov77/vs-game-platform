@@ -13,6 +13,8 @@ use App\EventListener\WebsocketEvent\MessageEvent;
 
 /**
  * See Logs:        sudo tail -f /var/log/websocket/game-patform-game.log
+ *                  sudo tail -f /dev/shm/game-platform.lh/game-platform/log/dev.log | grep MyDebug
+ * 
  * Start Service:   sudo service websocket_game_platform_game restart
  *                  sudo /projects/VS_GamePlatform/bin/websocket_server_game 8092
  *
@@ -21,13 +23,6 @@ use App\EventListener\WebsocketEvent\MessageEvent;
  */
 final class WebsocketGamesHandler implements MessageComponentInterface
 {
-    const USER_LIST = 0;
-    const USER_ID = 1;
-    const USER_CONNECTED = 2;
-    const USER_DISCONNECTED = 3;
-    
-    const DELIMITER = "|";
-    
     /** @var RepositoryInterface */
     private $usersRepository;
     
@@ -83,13 +78,14 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         // default nickname
         $this->names[$this->connectionSequenceId] = "Guest {$this->connectionSequenceId}";
         
-        // initialize the drawing state for the user as false
-        //$this->drawing[$this->connectionSequenceId] = false;
-        
         $this->log( "New connection ({$conn->resourceId})" . date( 'Y/m/d h:i:sa' ) );
+        $conn->send( "SDSD DHD DDFDFSDS" );
         
         $cookieDto  = $this->getCookie( $conn );
         $this->ConnectGame( $conn, $cookieDto );
+        
+        // broadcast new user
+        $this->onMessage( $conn, "New Connection: " . $this->connectionSequenceId );
     }
     
     public function onMessage( ConnectionInterface $from, $msg )
@@ -100,13 +96,14 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         $socket         = $gameManager->getClient( $from->resourceId );
         
         if ( $gameManager ) {
-            $this->eventDispatcher->dispatch( new MessageEvent( $gameManager, $socket, $msg, $this->logFile ) );
+            $this->eventDispatcher->dispatch( new MessageEvent( $gameManager, $socket, $msg ) );
         }
     }
     
     public function onClose( ConnectionInterface $conn )
     {
         // The connection is closed, remove it, as we can no longer send it messages
+        $this->log( "Connection {$conn->resourceId} has disconnected" );
         
         $gameManager    = $this->gameService->getGameManager( $this->games[$conn->resourceId] );
         $socket         = $gameManager->getClient( $conn->resourceId );
@@ -118,8 +115,6 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         
         // cleanup
         unset( $this->names[$sequenceId] );
-        
-        $this->log( "Connection {$conn->resourceId} has disconnected" );
     }
     
     public function onError( ConnectionInterface $conn, \Exception $e )
@@ -152,7 +147,7 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         return $cookieDto;
     }
     
-    private function ConnectGame( ConnectionInterface $conn, ?string $gameCookie ): void
+    private function ConnectGame( ConnectionInterface &$conn, ?string $gameCookie ): void
     {
         $this->log( "Connect Game Request." );
         
@@ -180,6 +175,7 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         //$this->log( "Game Code: ". $gameCode );
         //$this->log( "Game Id: ". $gameId );
         
+        $gameGuid   = null;
         try {
             $gameGuid   = $this->gameService->Connect( $webSocket, $gameCode, $userId, $gameId, $playAi, $forGold, $gameCookie );
         } catch ( \Exception $exc ) {

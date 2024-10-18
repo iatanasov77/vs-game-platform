@@ -1,6 +1,9 @@
 <?php namespace App\Component;
 
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Encoder\JsonEncode;
+use Symfony\Component\Filesystem\Filesystem;
 use Psr\Log\LoggerInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -17,6 +20,7 @@ use App\Component\System\Guid;
 use App\Component\Dto\TestWebsocketDto;
 use App\Component\Dto\GameCookieDto;
 use App\Component\Dto\Actions\ConnectionInfoActionDto;
+use App\Component\Dto\ConnectionDto;
 
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerColor;
@@ -69,20 +73,24 @@ class GameService
         $gameGuid   = null;
         $dbUser = $this->GetDbUser( $userId );
         if ( ! $dbUser ) {
+            $this->logger->info( 'MyDebug: Missing DB User' );
             return $gameGuid;
         }
         
         $gamePlayer = $dbUser->getPlayer();
         if ( ! $gamePlayer ) {
+            $this->logger->info( 'MyDebug: Missing Game Player' );
             return $gameGuid;
         }
         
         if ( $this->TryReConnect( $webSocket, $gameCookie, $dbUser ) ) {
+            $this->logger->info( 'MyDebug: Try Reconnect' );
             // Game disconnected here
             return $gameGuid;
         }
         
         if ( ! empty ( $gameId ) ) {
+            $this->logger->info( 'MyDebug: Invite to Game' );
             $this->ConnectInvite( $webSocket, $dbUser, $gameId );
             
             // Game disconnected here.
@@ -99,7 +107,7 @@ class GameService
         );
         
         if ( self::GameAlreadyStarted( $managers, $userId ) ) {
-            $warning = "The user {$userId} has already started a game";
+            $warning = "MyDebug: The user {$userId} has already started a game";
             $this->logger->warning( $warning );
             throw new \Exception( $warning );
         }
@@ -117,18 +125,28 @@ class GameService
         $manager = $managers->first();
         if ( $manager == null || $playAi ) {
             $manager    = $this->managerFactory->createWebsocketGameManager();
+            
+            /** @NOTE Workaround  */
+            if ( $webSocket->State != WebSocketState::Open ) {
+                $webSocket->State   = WebSocketState::Open;
+            }
+            
+            if ( ! $manager->Game ) {
+                $this->logger->info( "MyDebug: Creting New Game Manager." );
+                $manager->Client1   = $webSocket;
+                $manager->CreateGame();
+            }
+            
             $gameGuid   =  $manager->Game->Id;
             $this->AllGames->set( $gameGuid, $manager );
             
             //$manager.Ended += Game_Ended;
-            $this->Game_Ended( $manager );
+            //$this->Game_Ended( $manager );
             
             $manager->SearchingOpponent = ! $playAi;
             $manager->GameCode          = $gameCode;
             
-            /*  */
-            $this->AllGames[]   = $manager;
-            $this->logger->info( "Added a new game and waiting for opponent. Game id {$manager->Game->Id}" );
+            $this->logger->info( "MyDebug: Added a new game and waiting for opponent. Game id {$manager->Game->Id}" );
             
             // entering socket loop
             $manager->ConnectAndListen( $webSocket, PlayerColor::Black, $gamePlayer, $playAi );
@@ -141,7 +159,7 @@ class GameService
             $manager->SearchingOpponent = false;
             $manager->GameCode          = $gameCode;
             
-            $this->logger->info( "Found a game and added a second player. Game id {$manager->Game->Id}" );
+            $this->logger->info( "MyDebug: Found a game and added a second player. Game id {$manager->Game->Id}" );
             $color = $manager->Client1 == null ? PlayerColor::Black : PlayerColor::White;
             
             /*  */
@@ -166,6 +184,7 @@ class GameService
                 $m->Game>WhitePlayer->Id == $userId &&
                 $userId != Guid::Empty
             ) {
+                $this->logger->info( "MyDebug: Game Already Started" );
                 return true;
             }
         }
@@ -173,9 +192,56 @@ class GameService
         return false;
     }
     
-    protected function GetDbUser( $userId ): ?UserInterface
+    public function SaveState(): void
     {
-        return $userId ? $this->usersRepository->find( $userId ) : $this->securityBridge->getUser();
+        $filesystem = new Filesystem();
+        $state      = $this->serializer->serialize(
+            $this->AllGames,
+            JsonEncoder::FORMAT,
+            [JsonEncode::OPTIONS => JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT]
+        );
+        $filesystem->dumpFile( $projectRootDir . '/var/SavedGames.json', $state );
+    }
+    
+    public function RestoreState(): void
+    {
+        $filesystem = new Filesystem();
+        $now  = new \DateTime( 'now' );
+        if ( $filesystem->exists( $projectRootDir . '/var/SavedGames.json' ) ) {
+            $state = \file_get_contents( $projectRootDir . '/var/SavedGames.json' );
+            
+            $this->AllGames = $this->serializer->deserialize( $state, ArrayCollection::class, JsonEncoder::FORMAT );
+            $this->AllGames = $this->AllGames->filter(
+                function( $entry ) use ( $now ) {
+                    return $entry->Created == $now;
+                }
+            );
+            
+            foreach ( $this->AllGames as $game ) {
+                $game->setLogger( $this->logger );
+            }
+        }
+    }
+    
+    public function CreateInvite( string $userId ): string
+    {
+        $existing = $this->AllGames->filter(
+            function( $entry ) use ( $userId ) {
+                return $entry->Inviter == $userId;
+            }
+        );
+            
+        for ( $i = $existing->count() - 1; $i >= 0; $i-- ) {
+            $this->AllGames->removeElement( $existing[$i] );
+        }
+            
+        $manager    = $this->managerFactory->createWebsocketGameManager();
+        //$manager.Ended += Game_Ended;
+        $manager->Inviter = $userId;
+        $manager->SearchingOpponent = false;
+        $this->AllGames[]   = $manager;
+        
+        return $manager->Game->Id;
     }
     
     protected function TryReConnect( WebsocketClientInterface $webSocket, ?string $gameCookie, ?UserInterface $dbUser ): bool
@@ -228,7 +294,7 @@ class GameService
             ( $manager->Client2 == null || $manager->Client2->State != WebSocketState::Open )
         ) {
             $this->AllGames->removeElement( $manager );
-            //$this->logger->info( "Removing game {$manager->Game->Id} which is not used." );
+            $this->logger->info( "MyDebug: Removing game {$manager->Game->Id} which is not used." );
         }
     }
     
@@ -263,8 +329,9 @@ class GameService
     protected function SendConnectionLost( PlayerColor $color, GameManagerInterface $manager )
     {
         $socket = $manager->Client1;
-        if ( $color == PlayerColor::White )
+        if ( $color == PlayerColor::White ) {
             $socket = $manager->Client2;
+        }
         
         if ( $socket != null && $socket->State == WebSocketState::Open ) {
             $action     = new ConnectionInfoActionDto();
@@ -280,8 +347,9 @@ class GameService
     {
         //prevents someone with same game id, get someone elses side in the game.
         $player = $manager->Game->BlackPlayer;
-        if ( $color == PlayerColor::White )
+        if ( $color == PlayerColor::White ) {
             $player = $manager->Game->WhitePlayer;
+        }
             
         return $dbUser != null && $dbUser->getId() == $player->Id;
     }
@@ -289,6 +357,11 @@ class GameService
     protected function Game_Ended( object $sender ): void
     {
         $this->AllGames->removeElement( $sender );
+    }
+    
+    protected function GetDbUser( $userId ): ?UserInterface
+    {
+        return $userId ? $this->usersRepository->find( $userId ) : $this->securityBridge->getUser();
     }
     
     protected function orderAllGames(): Collection

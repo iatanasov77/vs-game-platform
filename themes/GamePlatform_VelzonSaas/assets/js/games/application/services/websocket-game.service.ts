@@ -17,9 +17,9 @@ import GameState from '_@/GamePlatform/Model/BoardGame/gameState';
 
 // Action Interfaces
 import ActionDto from '../dto/Actions/actionDto';
+import ActionNames from '../dto/Actions/actionNames';
 import DoublingActionDto from '../dto/Actions/doublingActionDto';
 import HintMovesActionDto from '../dto/Actions/hintMovesActionDto';
-import ActionNames from '../dto/Actions/actionNames';
 import DicesRolledActionDto from '../dto/Actions/dicesRolledActionDto';
 import GameCreatedActionDto from '../dto/Actions/gameCreatedActionDto';
 import GameEndedActionDto from '../dto/Actions/gameEndedActionDto';
@@ -28,6 +28,7 @@ import OpponentMoveActionDto from '../dto/Actions/opponentMoveActionDto';
 import UndoActionDto from '../dto/Actions/undoActionDto';
 import ConnectionInfoActionDto from '../dto/Actions/connectionInfoActionDto';
 import GameRestoreActionDto from '../dto/Actions/gameRestoreActionDto';
+import RolledActionDto from '../dto/Actions/rolledActionDto';
 
 import { Keys } from '../utils/keys';
 import { MessageLevel, StatusMessage } from '../utils/status-message';
@@ -85,14 +86,14 @@ export class WebsocketGameService
         const now = new Date();
         const ping = now.getTime() - this.connectTime.getTime();
         
-        console.log( 'User in State', this.appState.user );
+        //console.log( 'User in State', this.appState.user );
         if ( this.appState.user.getValue() ) {
             //this.statusMessageService.setWaitingForConnect();
             this.statusMessageService.setNotGameStarted();
         } else {
             this.statusMessageService.setNotLoggedIn();
         }
-        this.appState.myConnection.setValue({ connected: true, pingMs: ping });
+        this.appState.myConnection.setValue( { connected: true, pingMs: ping } );
         
         this.appState.game.clearValue();
         this.appState.dices.clearValue();
@@ -118,17 +119,22 @@ export class WebsocketGameService
     //onMessage( message: MessageEvent<string> ): void
     onMessage( message: MessageEvent ): void
     {
-        console.log( 'Message', message );
+        alert( message.data );
+        //console.log( 'Message', message );
         if ( ! message.data.length  ) {
             return;
         }
         
         const action = JSON.parse( message.data ) as ActionDto;
         const game = this.appState.game.getValue();
-        console.log( 'Action', action );
+        //console.log( 'Action', action );
+        console.log( 'Game in State', game );
         
         switch ( action.actionName ) {
             case ActionNames.gameCreated: {
+                console.log( 'WebSocket Action Game Created', action.actionName );
+                alert( 'WebSocket Action Game Created Handled' );
+                
                 const dto = JSON.parse( message.data ) as GameCreatedActionDto;
                 this.appState.myColor.setValue( dto.myColor );
                 this.appState.game.setValue( dto.game );
@@ -144,6 +150,8 @@ export class WebsocketGameService
                 break;
             }
             case ActionNames.dicesRolled: {
+                console.log( 'WebSocket Action Dices Rolled', action.actionName );
+                
                 const dicesAction = JSON.parse( message.data ) as DicesRolledActionDto;
                 this.appState.dices.setValue( dicesAction.dices );
                 const cGame = {
@@ -160,10 +168,14 @@ export class WebsocketGameService
                 break;
             }
             case ActionNames.movesMade: {
+                console.log( 'WebSocket Action Moves Made', action.actionName );
+                
                 // This action is only sent to server.
                 break;
             }
             case ActionNames.gameEnded: {
+                console.log( 'WebSocket Action Game Ended', action.actionName );
+                
                 const endedAction = JSON.parse( message.data ) as GameEndedActionDto;
                 // console.log( 'game ended', endedAction.game.winner );
                 this.appState.game.setValue({
@@ -178,6 +190,8 @@ export class WebsocketGameService
                 break;
             }
             case ActionNames.requestedDoubling: {
+                console.log( 'WebSocket Action Requested Doubling' ); // , action.actionName
+                
                 // Opponent has requested
                 const action = JSON.parse( message.data ) as DoublingActionDto;
                 this.appState.moveTimer.setValue( action.moveTimer );
@@ -191,6 +205,8 @@ export class WebsocketGameService
                 break;
             }
             case ActionNames.acceptedDoubling: {
+                console.log( 'WebSocket Action Accepted Doubling' ); // , action.actionName
+                
                 const action = JSON.parse( message.data ) as DoublingActionDto;
                 this.appState.moveTimer.setValue( action.moveTimer );
                 // Opponent has accepted
@@ -215,21 +231,29 @@ export class WebsocketGameService
                 break;
             }
             case ActionNames.opponentMove: {
+                console.log( 'WebSocket Action Opponent Move' ); // , action.actionName
+                
                 const action = JSON.parse( message.data ) as OpponentMoveActionDto;
                 this.doMove( action.move );
                 break;
             }
             case ActionNames.undoMove: {
+                console.log( 'WebSocket Action Undo Move', action.actionName );
+                
                 // const action = JSON.parse( message.data ) as UndoActionDto;
                 this.undoMove();
                 break;
             }
             case ActionNames.rolled: {
+                console.log( 'WebSocket Action Rolled', action.actionName );
+                
                 // this is just to fire the changed event. The value is not important.
                 this.appState.rolled.setValue( true );
                 break;
             }
             case ActionNames.connectionInfo: {
+                console.log( 'WebSocket Action Connection Info' ); // , action.actionName
+                
                 const action = JSON.parse( message.data ) as ConnectionInfoActionDto;
                 if ( ! action.connection.connected ) {
                     console.log( 'Opponent disconnected' );
@@ -243,6 +267,8 @@ export class WebsocketGameService
                 break;
             }
             case ActionNames.gameRestore: {
+                console.log( 'WebSocket Action Game Restore', action.actionName );
+                
                 const dto = JSON.parse( message.data ) as GameRestoreActionDto;
                 this.appState.myColor.setValue( dto.color );
                 this.appState.game.setValue( dto.game );
@@ -253,6 +279,8 @@ export class WebsocketGameService
                 break;
             }
             case ActionNames.hintMoves: {
+                console.log( 'WebSocket Action Hint Moves', action.actionName );
+                
                 const dto = JSON.parse( message.data ) as HintMovesActionDto;
                 
                 dto.moves.forEach( ( hint ) => {

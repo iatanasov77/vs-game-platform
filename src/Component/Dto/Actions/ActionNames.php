@@ -11,11 +11,10 @@ enum ActionNames: int
     case connectionInfo     = 7;
     case gameRestore        = 8;
     case resign             = 9;
-    case createGame         = 10;
-    case exitGame           = 11;
-    case requestedDoubling  = 12;
-    case acceptedDoubling   = 13;
-    case rolled             = 14;
-    case requestHint        = 15;
-    case hintMoves          = 16;
+    case exitGame           = 10;
+    case requestedDoubling  = 11;
+    case acceptedDoubling   = 12;
+    case rolled             = 13;
+    case requestHint        = 14;
+    case hintMoves          = 15;
 }

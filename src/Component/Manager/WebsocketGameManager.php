@@ -6,11 +6,14 @@ use App\Component\Type\PlayerColor;
 use App\Component\Type\GameState;
 use App\Component\Ai\Backgammon\Engine as AiEngine;
 use App\Entity\GamePlayer;
+use App\EventListener\WebsocketEvent\MessageEvent;
 
 final class WebsocketGameManager extends AbstractGameManager
 {
     public function ConnectAndListen( WebsocketClientInterface $webSocket, PlayerColor $color, GamePlayer $dbUser, bool $playAi ): void
     {
+        $this->logger->info( "MyDebug: Connecting Game Manager ..." );
+        
         if ( $color == PlayerColor::Black ) {
             $this->Client1 = $webSocket;
             
@@ -43,6 +46,8 @@ final class WebsocketGameManager extends AbstractGameManager
                 $this->StartGame();
                 
                 if ( $this->Game->CurrentPlayer == PlayerColor::White ) {
+                    $this->logger->info( "MyDebug CurrentPlayer: White" );
+                    
                     $this->EnginMoves( $this->Client1 );
                 }
             }
@@ -63,6 +68,8 @@ final class WebsocketGameManager extends AbstractGameManager
             
             $this->CreateDbGame();
             $this->StartGame();
+            
+            $this->eventDispatcher->dispatch( new GameEndedEvent( Mapper::GameToDto( $this->Game ) ), GameEndedEvent::NAME );
         }
     }
 }

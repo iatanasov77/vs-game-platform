@@ -284,9 +284,9 @@ abstract class AbstractGameManager implements GameManagerInterface
             $socket->send( $obj );
             
             /** @NOTE My Workaround */
-            if ( $this->Game->PlayState == GameState::Starting ) {
-                $this->Game->PlayState = GameState::OpponentConnectWaiting;
-            }
+//             if ( $this->Game->PlayState == GameState::Starting ) {
+//                 $this->Game->PlayState = GameState::OpponentConnectWaiting;
+//             }
         } catch ( \Exception $exc ) {
             $this->logger->error( "MyDebug: Failed to send socket data. Exception: {$exc->getMessage()}" );
         }
@@ -301,17 +301,12 @@ abstract class AbstractGameManager implements GameManagerInterface
         $action = new GameCreatedActionDto();
         $action->game       = $gameDto;
         
-        $this->Game->PlayState = GameState::Starting;
-        while ( $this->Game->PlayState == GameState::Starting ) {
-            $this->logger->info( 'MyDebug: Entering GameState::Starting Loop' );
-            
-            $action->myColor    = PlayerColor::Black;
-            $this->Send( $this->Client1, $action );
-            
-            $action->myColor = PlayerColor::White;
-            $this->Send( $this->Client2, $action );
-        }
-        $this->logger->info( 'MyDebug: Exited From GameState::Starting Loop With State: ' . $this->Game->PlayState->value );
+        //$this->Game->PlayState = GameState::Starting;
+        $action->myColor    = PlayerColor::Black;
+        $this->Send( $this->Client1, $action );
+        
+        $action->myColor = PlayerColor::White;
+        $this->Send( $this->Client2, $action );
         
         $this->Game->PlayState = GameState::FirstThrow;
         // todo: visa på clienten även när det blir samma
@@ -337,7 +332,7 @@ abstract class AbstractGameManager implements GameManagerInterface
             $this->Send( $this->Client1, $rollAction );
             $this->Send( $this->Client2, $rollAction );
         }
-        $this->logger->info( 'MyDebug: Exited From GameState::FirstThrow Loop With State: ' . $this->Game->PlayState->value );
+        //$this->logger->info( 'MyDebug: Exited From GameState::FirstThrow Loop With State: ' . $this->Game->PlayState->value );
         
         /*  
         $this->moveTimeOut = new DeferredCancellation();

@@ -2,19 +2,19 @@
 
 enum ActionNames: int
 {
-    case gameCreated        = 1;
-    case dicesRolled        = 2;
-    case movesMade          = 3;
-    case gameEnded          = 4;
-    case opponentMove       = 5;
-    case undoMove           = 6;
-    case connectionInfo     = 7;
-    case gameRestore        = 8;
-    case resign             = 9;
-    case exitGame           = 10;
-    case requestedDoubling  = 11;
-    case acceptedDoubling   = 12;
-    case rolled             = 13;
-    case requestHint        = 14;
-    case hintMoves          = 15;
+    case gameCreated        = 0;
+    case dicesRolled        = 1;
+    case movesMade          = 2;
+    case gameEnded          = 3;
+    case opponentMove       = 4;
+    case undoMove           = 5;
+    case connectionInfo     = 6;
+    case gameRestore        = 7;
+    case resign             = 8;
+    case exitGame           = 9;
+    case requestedDoubling  = 10;
+    case acceptedDoubling   = 11;
+    case rolled             = 12;
+    case requestHint        = 13;
+    case hintMoves          = 14;
 }

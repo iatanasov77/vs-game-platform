@@ -12,11 +12,17 @@ class GameDto
     public ?PlayerColor $currentPlayer;
     public PlayerColor $winner = PlayerColor::Neither;
     public GameState $playState;
-    public float $thinkTime;
     
     /** @var Collection | PointDto[] */
     public Collection $points;
     
     /** @var Collection | MoveDto[] */
     public Collection  $validMoves;
+    
+    public float $thinkTime;
+    
+    public int $goldMultiplier;
+    public bool $isGoldGame;
+    public ?PlayerColor $lastDoubler;
+    public int $stake;
 }

@@ -119,17 +119,17 @@ export class WebsocketGameService
     //onMessage( message: MessageEvent<string> ): void
     onMessage( message: MessageEvent ): void
     {
-        alert( message.data );
-        //console.log( 'Message', message );
         if ( ! message.data.length  ) {
             return;
         }
         
         const action = JSON.parse( message.data ) as ActionDto;
         const game = this.appState.game.getValue();
-        //console.log( 'Action', action );
-        console.log( 'Game in State', game );
+        console.log( 'Action', action );
+        alert( action.actionName );
+        alert( message.data );
         
+        //console.log( 'Game in State', game );
         switch ( action.actionName ) {
             case ActionNames.gameCreated: {
                 console.log( 'WebSocket Action Game Created', action.actionName );
@@ -150,8 +150,6 @@ export class WebsocketGameService
                 break;
             }
             case ActionNames.dicesRolled: {
-                console.log( 'WebSocket Action Dices Rolled', action.actionName );
-                
                 const dicesAction = JSON.parse( message.data ) as DicesRolledActionDto;
                 this.appState.dices.setValue( dicesAction.dices );
                 const cGame = {

@@ -79,7 +79,6 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         $this->names[$this->connectionSequenceId] = "Guest {$this->connectionSequenceId}";
         
         $this->log( "New connection ({$conn->resourceId})" . date( 'Y/m/d h:i:sa' ) );
-        $conn->send( "SDSD DHD DDFDFSDS" );
         
         $cookieDto  = $this->getCookie( $conn );
         $this->ConnectGame( $conn, $cookieDto );

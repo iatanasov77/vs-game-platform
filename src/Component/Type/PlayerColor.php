@@ -5,8 +5,8 @@
  */
 enum PlayerColor: int
 {
-    case Black      = 1;
-    case White      = 2;
-    case Neither    = 3;
+    case Black      = 0;
+    case White      = 1;
+    case Neither    = 2;
 }
     

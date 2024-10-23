@@ -36,6 +36,11 @@ final class Mapper
             ( new \DateTime( 'now' ) )->getTimestamp() - $game->ThinkStart->getTimestamp()
         );
         
+        $gameDto->goldMultiplier    = $game->GoldMultiplier;
+        $gameDto->isGoldGame        = $game->IsGoldGame;
+        $gameDto->lastDoubler       = $game->LastDoubler;
+        $gameDto->stake             = $game->Stake;
+        
         return $gameDto;
     }
     

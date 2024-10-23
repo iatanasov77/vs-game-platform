@@ -24,53 +24,78 @@ export class StatusMessageService
     {
         const myColor = this.appState.myColor.getValue();
         let message: StatusMessage;
+        const currentColor = this.trans.instant( PlayerColor[game.currentPlayer] );
         if ( game && myColor === game.currentPlayer ) {
             this.appState.hideBusy();
-            message = StatusMessage.info( `Your turn to move.  ( ${PlayerColor[game.currentPlayer]} )` );
+            const m = this.trans.instant( 'statusmessage.yourturn', {
+                color: currentColor
+            });
+            message = StatusMessage.info( m );
         } else {
             this.appState.hideBusy();
-            message = StatusMessage.info( `Waiting for ${PlayerColor[game.currentPlayer]} to move.` );
+            const m = this.trans.instant( 'statusmessage.waitingfor', {
+                color: currentColor
+            });
+            message = StatusMessage.info( m );
         }
         this.appState.statusMessage.setValue( message );
     }
     
-    setMyConnectionLost( reason: string ): void
+    setMyConnectionLost(reason: string): void
     {
-        const statusMessage = StatusMessage.error( reason || 'No server connection' );
+        const m = this.trans.instant( 'statusmessage.noconnection' );
+        const statusMessage = StatusMessage.error( reason || m );
         this.appState.statusMessage.setValue( statusMessage );
     }
     
     setOpponentConnectionLost(): void
     {
-        const statusMessage = StatusMessage.warning( 'Opponent connection lost' );
+        const m = this.trans.instant( 'statusmessage.opponentconnectionlost' );
+        const statusMessage = StatusMessage.warning( m );
         this.appState.statusMessage.setValue( statusMessage );
     }
     
     setWaitingForConnect(): void
     {
-        const statusMessage = StatusMessage.info( 'Waiting for opponent to connect' );
+        const m = this.trans.instant( 'statusmessage.waitingoppcnn' );
+        const statusMessage = StatusMessage.info( m );
         this.appState.showBusyNoOverlay();
         this.appState.statusMessage.setValue( statusMessage );
     }
     
-    setGameEnded( game: GameDto, newScore: NewScoreDto ): void
+    setGameEnded(game: GameDto, newScore: NewScoreDto): void
     {
-        // console.log(this.myColor, this.game.winner);
         const myColor = this.appState.myColor.getValue();
-        let message = StatusMessage.info( 'Game ended.' );
+        let score = '';
         if ( newScore ) {
-            const score = `New score ${newScore.score} (${newScore.increase})`;
-            
-            message = StatusMessage.info(
-                myColor === game.winner ? `Congrats! You won. ${score}` : `Sorry. You lost the game. ${score}`
-            );
-            this.appState.statusMessage.setValue( message );
+            let increase = newScore.increase.toString();
+            if ( newScore.increase > 0 ) increase = `+${newScore.increase}`;
+            score = this.trans.instant( 'statusmessage.newscore', {
+                score: newScore.score,
+                increase: increase
+            });
+        }
+        
+        const message = StatusMessage.info(
+            myColor === game.winner
+                ? this.trans.instant( 'statusmessage.youwon', { score: score } )
+                : this.trans.instant( 'statusmessage.youlost', { score: score } )
+        );
+        this.appState.statusMessage.setValue( message );
+        if ( myColor === game.winner ) {
+            this.sound.playWinner();
+            if ( game.isGoldGame )
+                setTimeout( () => {
+                  this.sound.playCoin();
+                }, 2000 );
+        } else {
+          this.sound.playLooser();
         }
     }
     
     setBlockedMessage(): void
     {
-        const text = 'You are blocked. Click "Done"';
+        const text = this.trans.instant( 'statusmessage.youareblocked' );
         const msg = StatusMessage.warning( text );
         this.appState.statusMessage.setValue( msg );
     }

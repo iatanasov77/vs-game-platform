@@ -100,6 +100,21 @@ class DefaultController extends AbstractController
             'playaiquestion.doyouwanttoplay'                => 'Do you want to play against the AI?',
             'playaiquestion.playai'                         => 'Play AI',
             'playaiquestion.keepwaiting'                    => 'Keep waiting',
+            
+            // Status Messages
+            'statusmessage.yourturn'                        => 'Your turn to move.  ({{color}})',
+            'statusmessage.waitingfor'                      => 'Waiting for {{color}} to move.',
+            'statusmessage.youareblocked'                   => 'You are blocked. Click "Done"',
+            'statusmessage.noconnection'                    => 'No server connection',
+            'statusmessage.opponentconnectionlost'          => 'Opponent connection lost',
+            'statusmessage.waitingoppcnn'                   => 'Waiting for opponent to connect',
+            'statusmessage.newscore'                        => 'New score {{ score }} ({{ increase }})',
+            'statusmessage.youwon'                          => 'Congrats! You won. {{score}}',
+            'statusmessage.youlost'                         => 'Sorry. You lost the game. {{score}}',
+            'statusmessage.movenow'                         => 'Move now or lose!',
+            'statusmessage.dblaccepted'                     => 'Opponent did accept. Your turn to move.',
+            'statusmessage.dblrequested'                    => 'Double your bet or give up.',
+            'statusmessage.waitfordblresponse'              => 'Waiting for opponent to respond.',
         ];
     }
     
@@ -152,6 +167,21 @@ class DefaultController extends AbstractController
             'playaiquestion.doyouwanttoplay'                => 'Do you want to play against the AI?',
             'playaiquestion.playai'                         => 'Play AI',
             'playaiquestion.keepwaiting'                    => 'Keep waiting',
+            
+            // Status Messages
+            'statusmessage.yourturn'                        => 'Your turn to move.  ({{color}})',
+            'statusmessage.waitingfor'                      => 'Waiting for {{color}} to move.',
+            'statusmessage.youareblocked'                   => 'You are blocked. Click "Done"',
+            'statusmessage.noconnection'                    => 'No server connection',
+            'statusmessage.opponentconnectionlost'          => 'Opponent connection lost',
+            'statusmessage.waitingoppcnn'                   => 'Waiting for opponent to connect',
+            'statusmessage.newscore'                        => 'New score {{ score }} ({{ increase }})',
+            'statusmessage.youwon'                          => 'Congrats! You won. {{score}}',
+            'statusmessage.youlost'                         => 'Sorry. You lost the game. {{score}}',
+            'statusmessage.movenow'                         => 'Move now or lose!',
+            'statusmessage.dblaccepted'                     => 'Opponent did accept. Your turn to move.',
+            'statusmessage.dblrequested'                    => 'Double your bet or give up.',
+            'statusmessage.waitfordblresponse'              => 'Waiting for opponent to respond.',
         ];
     }
 }

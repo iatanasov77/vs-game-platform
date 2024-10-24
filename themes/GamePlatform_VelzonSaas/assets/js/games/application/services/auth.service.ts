@@ -1,11 +1,14 @@
 import { Injectable, Inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
-import { BehaviorSubject, Observable, tap, map } from 'rxjs';
+import { BehaviorSubject, Observable, tap, map, take, finalize } from 'rxjs';
 import { AppConstants } from "../constants";
 
 import { IAuth } from '../interfaces/auth';
 import { ISignedUrlResponse } from '../interfaces/signed-url-response';
+import { IToggleSoundMuteResponse } from '../interfaces/toggle-sound-mute-response';
 
+import { SoundService } from './sound.service';
 import { StatusMessageService } from './status-message.service';
 import { StorageService, LOCAL_STORAGE } from 'ngx-webstorage-service';
 import { AppStateService } from '../state/app-state.service';
@@ -33,6 +36,8 @@ export class AuthService
         @Inject( LOCAL_STORAGE ) private storage: StorageService,
         @Inject( AppStateService ) private appState: AppStateService,
         @Inject( StatusMessageService ) private statusMessageService: StatusMessageService,
+        @Inject( TranslateService ) private trans: TranslateService,
+        @Inject( SoundService ) private sound: SoundService,
     ) {
         let auth        = this.getAuth();
         this.loggedIn   = auth && auth.apiToken ? true : false;
@@ -176,5 +181,27 @@ export class AuthService
     {
         const user = this.storage.get( Keys.loginKey ) as UserDto;
         this.appState.user.setValue( user );
+    }
+    
+    toggleIntro(): void
+    {
+        const headers = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.getApiToken() );
+        
+        let mute = false;
+        this.httpClient.get<IToggleSoundMuteResponse>( 'account/toggleIntro', {headers} ).pipe(
+            map( ( response ) => {
+                if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.mute ) {
+                    mute = response.mute;
+                }
+                const user = this.appState.user.getValue();
+                this.appState.user.setValue( { ...user, muteIntro: mute } );
+                if ( mute ) {
+                    this.sound.fadeIntro();
+                } else {
+                    this.sound.unMuteIntro();
+                }
+            }),
+            take( 1 )
+        ).subscribe();
     }
 }

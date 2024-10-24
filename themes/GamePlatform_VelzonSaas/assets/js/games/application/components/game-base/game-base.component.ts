@@ -10,6 +10,7 @@ import { selectAuth } from '../../+store/login.selectors';
 import { AuthState } from '../../+store/login.reducers';
 import { AuthService } from '../../services/auth.service'
 import { IAuth } from '../../interfaces/auth';
+import { SoundService } from '../../services/sound.service'
 import { GameService } from '../../services/game.service'
 
 import { loadGameBySlug } from '../../+store/game.actions';
@@ -30,12 +31,14 @@ declare global {
 export class GameBaseComponent implements OnInit, OnDestroy
 {
     isLoggedIn: boolean         = false;
+    introPlaying: boolean       = false;
     hasPlayer: boolean          = false;
     developementClass: string   = '';
     currentPlayer: any;
     
     constructor(
         protected authService: AuthService,
+        protected soundService: SoundService,
         protected gameService: GameService,
         protected store: Store
     ) {
@@ -59,6 +62,13 @@ export class GameBaseComponent implements OnInit, OnDestroy
                     this.currentPlayer  = player;
                 });
             }
+        });
+        
+        setTimeout( () => {
+            this.soundService.isIntroPlaying().subscribe( ( introPlaying: boolean ) => {
+                //alert( 'Intro Playing: ' + introPlaying );
+                this.introPlaying = introPlaying;
+            });
         });
         
         this.gameService.hasPlayer().subscribe( ( hasPlayer: boolean ) => {

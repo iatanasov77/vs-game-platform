@@ -2,6 +2,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { Store } from '@ngrx/store';
 
 import { AuthService } from '../application/services/auth.service'
+import { SoundService } from '../application/services/sound.service'
 import { GameService } from '../application/services/game.service'
 import { GameBaseComponent } from '../application/components/game-base/game-base.component';
 
@@ -28,10 +29,11 @@ export class ChessComponent extends GameBaseComponent implements OnInit
     
     constructor(
         @Inject( AuthService ) authService: AuthService,
+        @Inject( SoundService ) soundService: SoundService,
         @Inject( GameService ) gameService: GameService,
         @Inject( Store ) store: Store,
     ) {
-        super( authService, gameService, store );
+        super( authService, soundService, gameService, store );
     }
     
     override ngOnInit()

@@ -115,6 +115,12 @@ class DefaultController extends AbstractController
             'statusmessage.dblaccepted'                     => 'Opponent did accept. Your turn to move.',
             'statusmessage.dblrequested'                    => 'Double your bet or give up.',
             'statusmessage.waitfordblresponse'              => 'Waiting for opponent to respond.',
+            
+            // Game Global Messages
+            'backgammon'                                    => 'Backgammon',
+            'black'                                         => 'black',
+            'white'                                         => 'white',
+            "pleasewait"                                    => "Please wait",
         ];
     }
     
@@ -182,6 +188,12 @@ class DefaultController extends AbstractController
             'statusmessage.dblaccepted'                     => 'Opponent did accept. Your turn to move.',
             'statusmessage.dblrequested'                    => 'Double your bet or give up.',
             'statusmessage.waitfordblresponse'              => 'Waiting for opponent to respond.',
+            
+            // Game Global Messages
+            'backgammon'                                    => 'Backgammon',
+            'black'                                         => 'black',
+            'white'                                         => 'white',
+            "pleasewait"                                    => "Please wait",
         ];
     }
 }

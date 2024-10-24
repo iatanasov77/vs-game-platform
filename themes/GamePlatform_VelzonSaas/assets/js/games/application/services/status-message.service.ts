@@ -24,7 +24,13 @@ export class StatusMessageService
     {
         const myColor = this.appState.myColor.getValue();
         let message: StatusMessage;
+        
+        //alert( PlayerColor[game.currentPlayer] );
+        if ( ! PlayerColor[game.currentPlayer] ) {
+            return;
+        }
         const currentColor = this.trans.instant( PlayerColor[game.currentPlayer] );
+        
         if ( game && myColor === game.currentPlayer ) {
             this.appState.hideBusy();
             const m = this.trans.instant( 'statusmessage.yourturn', {

@@ -80,6 +80,7 @@ services:
         autowire: true
         arguments:
             - '@doctrine'
+            - '@vs_users.security_bridge'
             - '@vs_users.repository.users'
             - '@vsapp.factory.game_sessions'
             - '@mercure.hub.default'

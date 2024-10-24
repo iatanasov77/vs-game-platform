@@ -42,6 +42,7 @@ import { StatusMessage } from '../../../utils/status-message';
 import { Busy } from '../../../state/busy';
 
 // Board Interfaces
+import UserDto from '_@/GamePlatform/Model/BoardGame/userDto';
 import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
 import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
 import DiceDto from '_@/GamePlatform/Model/BoardGame/diceDto';
@@ -68,6 +69,7 @@ declare var $: any;
 export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges
 {
     @Input() isLoggedIn: boolean        = false;
+    @Input() introPlaying: boolean      = false;
     @Input() hasPlayer: boolean         = false;
     @Input() game: any;
     
@@ -79,8 +81,16 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     playerColor$: Observable<PlayerColor>;
     message$: Observable<StatusMessage>;
     timeLeft$: Observable<number>;
+    
+    user$: Observable<UserDto>;
+    //tutorialStep$: Observable<number>;
+    gameString$: Observable<string>;
+  
     gameSubs: Subscription;
     diceSubs: Subscription;
+    rolledSubs: Subscription;
+    oponnetDoneSubs: Subscription;
+    
     themeName: string;
     
     width = 450;
@@ -89,14 +99,17 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     rollButtonClicked = false;
     diceColor: PlayerColor | null = PlayerColor.neither;
     messageCenter = 0;
+    rotated = false;
     flipped = false;
     playAiFlag = false;
     forGodlFlag = false;
     lokalStake = 0;
     animatingStake = false;
     playAiQuestion = false;
+    tutorial = false;
     editing = false;
     nextDoublingFactor = 1;
+    introMuted = this.appStateService.user.getValue()?.muteIntro ?? false;
     
     rollButtonVisible = false;
     sendVisible = false;
@@ -136,20 +149,39 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         this.dices$ = this.appStateService.dices.observe();
         this.diceSubs = this.appStateService.dices.observe().subscribe( this.diceChanged.bind( this ) );
         this.playerColor$ = this.appStateService.myColor.observe();
+        
         this.gameSubs = this.appStateService.game.observe().subscribe( this.gameChanged.bind( this ) );
+        this.rolledSubs = this.appStateService.rolled.observe().subscribe( this.opponentRolled.bind( this ) );
+        this.oponnetDoneSubs = this.appStateService.opponentDone.observe().subscribe( this.oponnentDone.bind( this ) );
+      
         this.message$ = this.appStateService.statusMessage.observe();
         this.timeLeft$ = this.appStateService.moveTimer.observe();
+        this.appStateService.moveTimer.observe().subscribe( this.timeTick.bind( this ) );
         
+        this.user$ = this.appStateService.user.observe();
+        //this.tutorialStep$ = this.appStateService.tutorialStep.observe();
+        this.gameString$ = this.appStateService.gameString.observe();
+        
+        this.user$.subscribe( ( user ) => {
+            if ( user ) this.introMuted = user.muteIntro;
+        });
+
         // if game page is refreshed, restore user from login cookie
         if ( ! this.appStateService.user.getValue() ) {
             this.authService.repair();
         }
         
         const gameId = 'backgammon';
-        const playAi = true;
-        const forGold = true;
+        const playAi = false;
+        const forGold = false;
+        const tutorial = false;
+        const editing = false;
     
+        this.playAiFlag = playAi;
+        this.forGodlFlag = forGold;
         this.lokalStake = 0;
+        this.tutorial = tutorial;
+        this.editing = editing;
         
         //this.zmqService.connect( gameId, playAi, forGold );
         this.wsService.connect( gameId, playAi, forGold );
@@ -206,6 +238,17 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     {
         this.gameSubs.unsubscribe();
         this.diceSubs.unsubscribe();
+        this.rolledSubs.unsubscribe();
+        this.oponnetDoneSubs.unsubscribe();
+        clearTimeout( this.startedHandle );
+        this.appStateService.game.clearValue();
+        this.appStateService.myColor.clearValue();
+        this.appStateService.dices.clearValue();
+        this.appStateService.messages.clearValue();
+        this.appStateService.moveTimer.clearValue();
+        this.started = false;
+        this.wsService.exitGame();
+        this.sound.fadeIntro();
     }
     
     ngOnChanges( changes: SimpleChanges ): void
@@ -216,6 +259,9 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             switch ( propName ) {
                 case 'isLoggedIn':
                     this.isLoggedIn = changedProp.currentValue;
+                    break;
+                case 'introPlaying':
+                    this.introPlaying = changedProp.currentValue;
                     break;
                 case 'hasPlayer':
                     this.hasPlayer = changedProp.currentValue;
@@ -275,6 +321,11 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     doublingRequested(): boolean
     {
         return this.appStateService.doublingRequested();
+    }
+    
+    oponnentDone(): void
+    {
+        this.dicesVisible = false;
     }
     
     gameChanged( dto: GameDto ): void
@@ -424,6 +475,12 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         if ( ! gme.validMoves || gme.validMoves.length === 0 ) {
             this.statusMessageService.setBlockedMessage();
         }
+    }
+    
+    opponentRolled(): void
+    {
+        this.dicesVisible = true;
+        this.sound.playDice();
     }
     
     setRollButtonVisible(): void
@@ -582,5 +639,45 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
             modalRef.dismiss();
         });
+    }
+    
+    onFlipped(): void
+    {
+        this.flipped = ! this.flipped;
+        // both flipped and rotated is not supported
+        if ( this.flipped ) {
+            this.rotated = false;
+        }
+    }
+    
+    onRotated(): void
+    {
+        this.rotated = ! this.rotated;
+        if ( this.rotated ) {
+            this.flipped = false;
+        }
+    }
+    
+    timeTick( time: number )
+    {
+        if ( time < 30 && this.myTurn() ) {
+            const game = this.appStateService.game.getValue();
+            if (
+                game &&
+                ! game.isGoldGame &&
+                game.playState === GameState.playing &&
+                ! this.rollButtonVisible &&
+                ! this.undoVisible
+            ) {
+                this.requestHintVisible = true;
+                return;
+            }
+        }
+        this.requestHintVisible = false;
+    }
+    
+    toggleMuted()
+    {
+        this.authService.toggleIntro();
     }
 }

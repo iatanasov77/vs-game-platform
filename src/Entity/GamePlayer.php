@@ -59,6 +59,10 @@ class GamePlayer implements ResourceInterface
     #[ORM\Column(name: "show_photo", type: "boolean", options: ["default" => 0])]
     private $showPhoto  = false;
     
+    /** @var bool */
+    #[ORM\Column(name: "mute_intro", type: "boolean", options: ["default" => 0])]
+    private $muteIntro;
+    
     public function __construct()
     {
         $this->gamePlayers  = new ArrayCollection();
@@ -199,6 +203,18 @@ class GamePlayer implements ResourceInterface
     public function setShowPhoto( bool $showPhoto ): self
     {
         $this->showPhoto = $showPhoto;
+        
+        return $this;
+    }
+    
+    public function getMuteIntro(): ?int
+    {
+        return $this->muteIntro;
+    }
+    
+    public function setMuteIntro( bool $muteIntro ): self
+    {
+        $this->muteIntro = $muteIntro;
         
         return $this;
     }

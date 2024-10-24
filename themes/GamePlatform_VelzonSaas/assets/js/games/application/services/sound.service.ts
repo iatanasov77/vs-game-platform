@@ -1,4 +1,5 @@
 import { Injectable, Inject, OnDestroy } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { AppStateService } from '../state/app-state.service';
 
 @Injectable({
@@ -19,9 +20,13 @@ export class SoundService implements OnDestroy
     tick: HTMLAudioElement;
     pianointro: HTMLAudioElement;
     introPlaying = false;
+    
+    introPlaying$: BehaviorSubject<boolean>;
 
     constructor( @Inject( AppStateService ) private appState: AppStateService )
     {
+        this.introPlaying$  = new BehaviorSubject<boolean>( this.introPlaying );
+        
         this.click = new Audio();
         this.click.src = '/build/gameplatform-velzonsaas-theme/sound/click.wav';
         this.click.load();
@@ -75,6 +80,11 @@ export class SoundService implements OnDestroy
         this.pianointro.onended = () => {
             this.introPlaying = false;
         };
+    }
+    
+    isIntroPlaying(): Observable<boolean>
+    {
+        return this.introPlaying$.asObservable();
     }
     
     ngOnDestroy()
@@ -150,6 +160,8 @@ export class SoundService implements OnDestroy
     {
         let vol = 0.3;
         this.introPlaying = true;
+        this.introPlaying$.next( this.introPlaying );
+        
         if ( this.appState.user.getValue()?.muteIntro ) vol = 0;
         
         this.pianointro.volume = vol;

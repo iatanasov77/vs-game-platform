@@ -126,14 +126,14 @@ export class WebsocketGameService
         const action = JSON.parse( message.data ) as ActionDto;
         const game = this.appState.game.getValue();
         console.log( 'Action', action );
-        alert( action.actionName );
-        alert( message.data );
+        //alert( action.actionName );
+        //alert( message.data );
         
         //console.log( 'Game in State', game );
         switch ( action.actionName ) {
             case ActionNames.gameCreated: {
                 console.log( 'WebSocket Action Game Created', action.actionName );
-                alert( 'WebSocket Action Game Created Handled' );
+                //alert( 'WebSocket Action Game Created Handled' );
                 
                 const dto = JSON.parse( message.data ) as GameCreatedActionDto;
                 this.appState.myColor.setValue( dto.myColor );

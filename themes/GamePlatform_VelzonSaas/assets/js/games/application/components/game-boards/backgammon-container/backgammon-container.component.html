@@ -8,6 +8,20 @@
         ></app-messages>
     </div>
     
+    <div *ngIf="introPlaying" class="mute-button">
+        <app-button [small]="true" (click)="toggleMuted()">
+          <i
+            [ngClass]="{
+                fas: true,
+                'fa-music': introMuted,
+                'fa-volume-off': ! introMuted
+            }"
+          >
+          </i>
+          <span class="x-char">{{ introMuted ? '' : 'x' }}</span>
+        </app-button>
+    </div>
+  
     <!-- Not Needed
     <app-board-menu
       class="app-menu"

@@ -7,7 +7,7 @@ import { AppStateService } from '../state/app-state.service';
 import { GameService } from './game.service';
 
 // Board Interfaces
-import CheckerDto from '_@/GamePlatform/Model/BoardGame/connectionDto';
+import CheckerDto from '_@/GamePlatform/Model/BoardGame/checkerDto';
 import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
 import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
 import DiceDto from '_@/GamePlatform/Model/BoardGame/diceDto';
@@ -17,9 +17,9 @@ import GameState from '_@/GamePlatform/Model/BoardGame/gameState';
 
 // Action Interfaces
 import ActionDto from '../dto/Actions/actionDto';
+import ActionNames from '../dto/Actions/actionNames';
 import DoublingActionDto from '../dto/Actions/doublingActionDto';
 import HintMovesActionDto from '../dto/Actions/hintMovesActionDto';
-import ActionNames from '../dto/Actions/actionNames';
 import DicesRolledActionDto from '../dto/Actions/dicesRolledActionDto';
 import GameCreatedActionDto from '../dto/Actions/gameCreatedActionDto';
 import GameEndedActionDto from '../dto/Actions/gameEndedActionDto';
@@ -28,6 +28,7 @@ import OpponentMoveActionDto from '../dto/Actions/opponentMoveActionDto';
 import UndoActionDto from '../dto/Actions/undoActionDto';
 import ConnectionInfoActionDto from '../dto/Actions/connectionInfoActionDto';
 import GameRestoreActionDto from '../dto/Actions/gameRestoreActionDto';
+import RolledActionDto from '../dto/Actions/rolledActionDto';
 
 import { Keys } from '../utils/keys';
 import { MessageLevel, StatusMessage } from '../utils/status-message';
@@ -69,7 +70,7 @@ export class WebsocketGameService
         }
         
         const url   = window.gamePlatformSettings.socketGameUrl +
-                        '?gameCode=backgamon' +
+                        '?gameCode=backgammon' +
                         '&token=' + window.gamePlatformSettings.apiVerifySiganature;
                         
         this.url    = url;
@@ -92,7 +93,7 @@ export class WebsocketGameService
         } else {
             this.statusMessageService.setNotLoggedIn();
         }
-        this.appState.myConnection.setValue({ connected: true, pingMs: ping });
+        this.appState.myConnection.setValue( { connected: true, pingMs: ping } );
         
         this.appState.game.clearValue();
         this.appState.dices.clearValue();
@@ -106,30 +107,34 @@ export class WebsocketGameService
         this.statusMessageService.setMyConnectionLost( '' );
     }
     
-    onClose(): void
+    onClose( event: CloseEvent ): void
     {
-        // console.log( 'Close', { event } );
+        console.log( 'Close', { event } );
         const cnn = this.appState.myConnection.getValue();
         this.appState.myConnection.setValue({ ...cnn, connected: false });
-        // this.statusMessageService.setMyConnectionLost( event.reason );
+        this.statusMessageService.setMyConnectionLost( event.reason );
     }
     
     // Messages received from server.
-    onMessage( message: MessageEvent<string> ): void
+    //onMessage( message: MessageEvent<string> ): void
+    onMessage( message: MessageEvent ): void
     {
-        console.log( 'Message', message );
-        alert( 'Message: ' + message );
-        
-        if ( ! message || typeof message !== 'object'  ) {
+        if ( ! message.data.length  ) {
             return;
         }
         
         const action = JSON.parse( message.data ) as ActionDto;
         const game = this.appState.game.getValue();
         console.log( 'Action', action );
+        //alert( action.actionName );
+        //alert( message.data );
         
+        //console.log( 'Game in State', game );
         switch ( action.actionName ) {
             case ActionNames.gameCreated: {
+                console.log( 'WebSocket Action Game Created', action.actionName );
+                //alert( 'WebSocket Action Game Created Handled' );
+                
                 const dto = JSON.parse( message.data ) as GameCreatedActionDto;
                 this.appState.myColor.setValue( dto.myColor );
                 this.appState.game.setValue( dto.game );
@@ -161,10 +166,14 @@ export class WebsocketGameService
                 break;
             }
             case ActionNames.movesMade: {
+                console.log( 'WebSocket Action Moves Made', action.actionName );
+                
                 // This action is only sent to server.
                 break;
             }
             case ActionNames.gameEnded: {
+                console.log( 'WebSocket Action Game Ended', action.actionName );
+                
                 const endedAction = JSON.parse( message.data ) as GameEndedActionDto;
                 // console.log( 'game ended', endedAction.game.winner );
                 this.appState.game.setValue({
@@ -179,6 +188,8 @@ export class WebsocketGameService
                 break;
             }
             case ActionNames.requestedDoubling: {
+                console.log( 'WebSocket Action Requested Doubling' ); // , action.actionName
+                
                 // Opponent has requested
                 const action = JSON.parse( message.data ) as DoublingActionDto;
                 this.appState.moveTimer.setValue( action.moveTimer );
@@ -192,6 +203,8 @@ export class WebsocketGameService
                 break;
             }
             case ActionNames.acceptedDoubling: {
+                console.log( 'WebSocket Action Accepted Doubling' ); // , action.actionName
+                
                 const action = JSON.parse( message.data ) as DoublingActionDto;
                 this.appState.moveTimer.setValue( action.moveTimer );
                 // Opponent has accepted
@@ -216,21 +229,29 @@ export class WebsocketGameService
                 break;
             }
             case ActionNames.opponentMove: {
+                console.log( 'WebSocket Action Opponent Move' ); // , action.actionName
+                
                 const action = JSON.parse( message.data ) as OpponentMoveActionDto;
                 this.doMove( action.move );
                 break;
             }
             case ActionNames.undoMove: {
+                console.log( 'WebSocket Action Undo Move', action.actionName );
+                
                 // const action = JSON.parse( message.data ) as UndoActionDto;
                 this.undoMove();
                 break;
             }
             case ActionNames.rolled: {
+                console.log( 'WebSocket Action Rolled', action.actionName );
+                
                 // this is just to fire the changed event. The value is not important.
                 this.appState.rolled.setValue( true );
                 break;
             }
             case ActionNames.connectionInfo: {
+                console.log( 'WebSocket Action Connection Info' ); // , action.actionName
+                
                 const action = JSON.parse( message.data ) as ConnectionInfoActionDto;
                 if ( ! action.connection.connected ) {
                     console.log( 'Opponent disconnected' );
@@ -244,6 +265,8 @@ export class WebsocketGameService
                 break;
             }
             case ActionNames.gameRestore: {
+                console.log( 'WebSocket Action Game Restore', action.actionName );
+                
                 const dto = JSON.parse( message.data ) as GameRestoreActionDto;
                 this.appState.myColor.setValue( dto.color );
                 this.appState.game.setValue( dto.game );
@@ -254,6 +277,8 @@ export class WebsocketGameService
                 break;
             }
             case ActionNames.hintMoves: {
+                console.log( 'WebSocket Action Hint Moves', action.actionName );
+                
                 const dto = JSON.parse( message.data ) as HintMovesActionDto;
                 
                 dto.moves.forEach( ( hint ) => {
@@ -422,9 +447,9 @@ export class WebsocketGameService
       
     sendMessage( message: string ): void
     {
-      if ( this.socket && this.socket.readyState === this.socket.OPEN ) {
-        this.socket.send( message );
-      }
+        if ( this.socket && this.socket.readyState === this.socket.OPEN ) {
+            this.socket.send( message );
+        }
     }
   
     sendMoves(): void

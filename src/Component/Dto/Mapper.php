@@ -9,7 +9,7 @@ use App\Component\Rules\Backgammon\Checker;
 use App\Component\Rules\Backgammon\Dice;
 use App\Component\Rules\Backgammon\Move;
 
-class Mapper
+final class Mapper
 {
     public static function GameToDto( Game $game ): GameDto
     {
@@ -35,6 +35,11 @@ class Mapper
         $gameDto->thinkTime = Game::ClientCountDown - (
             ( new \DateTime( 'now' ) )->getTimestamp() - $game->ThinkStart->getTimestamp()
         );
+        
+        $gameDto->goldMultiplier    = $game->GoldMultiplier;
+        $gameDto->isGoldGame        = $game->IsGoldGame;
+        $gameDto->lastDoubler       = $game->LastDoubler;
+        $gameDto->stake             = $game->Stake;
         
         return $gameDto;
     }

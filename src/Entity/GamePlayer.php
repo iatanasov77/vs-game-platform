@@ -11,7 +11,8 @@ use App\Entity\UserManagement\User;
 #[ORM\Table(name: "VSGP_GamePlayers")]
 class GamePlayer implements ResourceInterface
 {
-    const AiUser = "5";
+    /** @const string */
+    const AiUser = "ECC9A1FC-3E5C-45E6-BCE3-7C24DFE82C98";
     
     /** @var int */
     #[ORM\Id, ORM\Column(type: "integer"), ORM\GeneratedValue(strategy: "IDENTITY")]
@@ -57,6 +58,10 @@ class GamePlayer implements ResourceInterface
     /** @var bool */
     #[ORM\Column(name: "show_photo", type: "boolean", options: ["default" => 0])]
     private $showPhoto  = false;
+    
+    /** @var bool */
+    #[ORM\Column(name: "mute_intro", type: "boolean", options: ["default" => 0])]
+    private $muteIntro;
     
     public function __construct()
     {
@@ -198,6 +203,18 @@ class GamePlayer implements ResourceInterface
     public function setShowPhoto( bool $showPhoto ): self
     {
         $this->showPhoto = $showPhoto;
+        
+        return $this;
+    }
+    
+    public function getMuteIntro(): ?int
+    {
+        return $this->muteIntro;
+    }
+    
+    public function setMuteIntro( bool $muteIntro ): self
+    {
+        $this->muteIntro = $muteIntro;
         
         return $this;
     }

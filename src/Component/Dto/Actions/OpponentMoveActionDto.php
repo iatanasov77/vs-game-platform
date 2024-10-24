@@ -7,7 +7,7 @@ class OpponentMoveActionDto extends ActionDto
 {
     public function __construct()
     {
-        $this->actionName = ActionNames::opponentMove;
+        $this->actionName = ActionNames::opponentMove->value;
     }
     
     public MoveDto $move;

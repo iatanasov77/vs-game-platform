@@ -35,7 +35,7 @@ class Game
     public $ValidMoves;
     
     /** @var GameState */
-    public $PlayState = GameState::FirstThrow;
+    public $PlayState = GameState::FirstThrow; // GameState::Starting;
     
     /** @var \DateTime */
     public $Created;
@@ -79,11 +79,14 @@ class Game
         $game->BlackPlayer->Name = "Guest";
         
         $game->WhitePlayer = new Player();
-        $game->BlackPlayer->PlayerColor = PlayerColor::White;
-        $game->BlackPlayer->Name = "Guest";
+        $game->WhitePlayer->PlayerColor = PlayerColor::White;
+        $game->WhitePlayer->Name = "Guest";
         
         $game->Created = new \DateTime( 'now' );
+        
         $game->PlayState = GameState::OpponentConnectWaiting;
+        //$game->PlayState = GameState::Starting;
+        
         $game->GoldMultiplier = 1;
         $game->IsGoldGame = $forGold;
         $game->LastDoubler = null;
@@ -110,6 +113,16 @@ class Game
         return $game;
     }
     
+    public function SwitchPlayer(): void
+    {
+        $this->CurrentPlayer = $this->OtherPlayer();
+    }
+    
+    public function OtherPlayer(): PlayerColor
+    {
+        return $this->CurrentPlayer == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
+    }
+    
     private static function CalcPointsLeft( Game &$game ): void
     {
         foreach ( $game->Points as $point ) {
@@ -131,11 +144,6 @@ class Game
                 $game->WhitePlayer->PointsLeft += 25 - $point->WhiteNumber;
             }
         }
-    }
-    
-    private function OtherPlayer(): PlayerColor
-    {
-        return $this->CurrentPlayer == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
     }
     
     private function SetStartPosition(): void

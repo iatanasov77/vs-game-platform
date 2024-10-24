@@ -27,6 +27,15 @@ services:
             - '@validator'
         tags:
             - 'console.command'
+            
+    app_websocket_event_subscriber:
+        class: App\EventListener\WebsocketEventSubscriber
+        tags: [kernel.event_subscriber]
+        arguments:
+            - '@logger'
+            - '@serializer'
+            - '@doctrine'
+            - '@vsapp.repository.game_sessions'
     
 #     App\EventListener\GameRequestListener:
 #         arguments:
@@ -35,17 +44,11 @@ services:
 #         tags:
 #             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
             
-    App\EventListener\GameEndedListener:
-        arguments:
-            - '@doctrine'
-            - '@vsapp.repository.game_sessions'
-        tags:
-           -  { name: kernel.event_listener, event: app.game_ended, method: onGameEnded }
-            
     app_websocket_client_factory:
         class: App\Component\Websocket\WebsocketClientFactory
         public: true
         arguments:
+            - '@serializer'
             - '%app_websocket_chat_url%'
             - '%app_websocket_game_url%'
             - '%app_websocket_publisher_url%'
@@ -56,6 +59,7 @@ services:
         public: true
         arguments:
             - '@logger'
+            - '@serializer'
             - '@vs_users.repository.users'
             - '@vs_users.security_bridge'
             - '@app_game_manager_factory'
@@ -64,6 +68,7 @@ services:
         class: App\Component\Manager\GameManagerFactory
         arguments:
             - '@logger'
+            - '@serializer'
             - '@event_dispatcher'
             - '@doctrine'
             - '@vsapp.repository.games'

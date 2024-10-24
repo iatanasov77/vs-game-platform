@@ -13,6 +13,7 @@ services:
     app_websocket_client_factory:
         class: App\Component\Websocket\WebsocketClientFactory
         arguments:
+            - '@serializer'
             - '%app_websocket_chat_url%'
             - '%app_websocket_game_url%'
             - '%app_websocket_publisher_url%'

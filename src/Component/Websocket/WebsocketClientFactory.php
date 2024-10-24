@@ -1,5 +1,6 @@
 <?php namespace App\Component\Websocket;
 
+use Symfony\Component\Serializer\SerializerInterface;
 use App\Component\Websocket\Client\WebsocketServerClient;
 use App\Component\Websocket\Client\WebsocketZmqClient;
 use App\Component\Websocket\Client\WebsocketThruwayClient;
@@ -7,6 +8,9 @@ use App\Component\Websocket\Client\WebsocketRatchetConnectionClient;
 
 final class WebsocketClientFactory
 {
+    /** @var SerializerInterface */
+    private $serializer;
+    
     /** @var string */
     private $websocketChatUrl;
     
@@ -20,11 +24,13 @@ final class WebsocketClientFactory
     private $zmqServerUrl;
     
     public function __construct(
+        SerializerInterface $serializer,
         string $websocketChatUrl,
         string $websocketGameUrl,
         string $websocketPublisherUrl,
         string $zmqServerUrl
     ) {
+        $this->serializer               = $serializer;
         $this->websocketChatUrl         = $websocketChatUrl;
         $this->websocketGameUrl         = $websocketGameUrl;
         $this->websocketPublisherUrl    = $websocketPublisherUrl;
@@ -37,7 +43,7 @@ final class WebsocketClientFactory
      */
     public function createServerChatClient()
     {
-        return new WebsocketServerClient( $this->websocketChatUrl );
+        return new WebsocketServerClient( $this->websocketChatUrl, $this->serializer );
     }
     
     /**
@@ -46,7 +52,7 @@ final class WebsocketClientFactory
      */
     public function createServerGameClient()
     {
-        return new WebsocketServerClient( $this->websocketGameUrl );
+        return new WebsocketServerClient( $this->websocketGameUrl, $this->serializer );
     }
     
     /**
@@ -55,7 +61,7 @@ final class WebsocketClientFactory
      */
     public function createZmqClient()
     {
-        return new WebsocketZmqClient( $this->zmqServerUrl );
+        return new WebsocketZmqClient( $this->zmqServerUrl, $this->serializer );
     }
     
     /**
@@ -64,7 +70,7 @@ final class WebsocketClientFactory
      */
     public function createThruwayClient()
     {
-        return new WebsocketThruwayClient( $this->websocketPublisherUrl );
+        return new WebsocketThruwayClient( $this->websocketPublisherUrl, $this->serializer );
     }
     
     /**
@@ -73,6 +79,6 @@ final class WebsocketClientFactory
      */
     public function createRatchetConnectionClient( $connection )
     {
-        return new WebsocketRatchetConnectionClient( $this->websocketGameUrl, $connection );
+        return new WebsocketRatchetConnectionClient( $this->websocketGameUrl, $this->serializer, $connection );
     }
 }

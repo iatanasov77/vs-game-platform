@@ -2,6 +2,7 @@
 
 use App\Component\Type\PlayerColor;
 use App\Component\System\Guid;
+use App\Entity\GamePlayer;
 
 class Player
 {
@@ -13,6 +14,15 @@ class Player
     
     /** @var int */
     public $PointsLeft;
+    
+    /** @var string */
+    public $Photo;
+    
+    /** @var int */
+    public $Gold;
+    
+    /** @var int */
+    public $Elo;
     
     /// <summary>
     /// Do not map this to the dto. Opponnents id should never be revealed to anyone else.
@@ -31,5 +41,10 @@ class Player
     public function IsGuest(): bool
     {
         return $this->Id == Guid::Empty();
+    }
+    
+    public function IsAi(): bool
+    {
+        return $this->Id == GamePlayer::AiUser;
     }
 }

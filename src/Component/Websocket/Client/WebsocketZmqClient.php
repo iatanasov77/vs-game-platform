@@ -1,5 +1,7 @@
 <?php namespace App\Component\Websocket\Client;
 
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Thruway\ClientSession;
 use Thruway\Peer\Client;
 use Thruway\Transport\PawlTransportProvider;
@@ -19,7 +21,8 @@ final class WebsocketZmqClient extends AbstractWebsocketClient
         $socket = $context->getSocket( \ZMQ::SOCKET_PUSH, 'my publisher' );
         $socket->connect( $this->websocketUrl );
         
-        $socket->send( \json_encode( $msg ) );
+        $json   = $json = $this->serializer->serialize( $msg, JsonEncoder::FORMAT, [JsonEncode::OPTIONS => JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT] );
+        $socket->send( $json );
     }
     
     public function receive(): string

@@ -7,7 +7,7 @@ class GameCreatedActionDto extends ActionDto
 {
     public function __construct()
     {
-        $this->actionName = ActionNames::gameCreated;
+        $this->actionName = ActionNames::gameCreated->value;
     }
     
     public GameDto $game;

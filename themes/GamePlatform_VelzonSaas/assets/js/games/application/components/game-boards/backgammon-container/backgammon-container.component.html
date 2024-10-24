@@ -8,6 +8,20 @@
         ></app-messages>
     </div>
     
+    <div *ngIf="introPlaying" class="mute-button">
+        <app-button [small]="true" (click)="toggleMuted()">
+          <i
+            [ngClass]="{
+                fas: true,
+                'fa-music': introMuted,
+                'fa-volume-off': ! introMuted
+            }"
+          >
+          </i>
+          <span class="x-char">{{ introMuted ? '' : 'x' }}</span>
+        </app-button>
+    </div>
+  
     <!-- Not Needed
     <app-board-menu
       class="app-menu"
@@ -23,8 +37,12 @@
         [height]="height"
         [game]="gameDto$ | async"
         [myColor]="playerColor$ | async"
-        [flipped]="flipped"
         [dicesVisible]="dicesVisible"
+        [rotated]="rotated"
+        [flipped]="flipped"
+        [themeName]="themeName"
+        [timeLeft]="timeLeft$ | async"
+        [editing]="editing"
         [rollButtonVisible]="rollButtonVisible"
         [sendVisible]="dicesVisible"
         [undoVisible]="undoVisible"
@@ -32,6 +50,7 @@
         [exitVisible]="exitVisible"
         (addMove)="doMove($event)"
         (moveAnimFinished)="moveAnimFinished()"
+        (addEditMove)="doEditMove($event)"
     ></app-backgammon-board>
     
     <div class="dices" #dices>
@@ -61,6 +80,13 @@
             (onSelectGameRoom)="selectGameRoom()"
             (onCreateGameRoom)="createGameRoom()"
         ></app-board-buttons>
+    </div>
+    
+    <div *ngIf="playAiQuestion" class="playAiQuestion app-colors">
+        <app-play-ai-question
+            (onPlayAi)="playAi()"
+            (onKeepWaiting)="keepWaiting()"
+        ></app-play-ai-question>
     </div>
     
     <div class="game-id">{{ (gameDto$ | async)?.id | uppercase }}</div>   

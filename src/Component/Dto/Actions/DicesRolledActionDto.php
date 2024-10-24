@@ -7,7 +7,7 @@ class DicesRolledActionDto extends ActionDto
 {
     public function __construct()
     {
-        $this->actionName = ActionNames::dicesRolled;
+        $this->actionName = ActionNames::dicesRolled->value;
     }
     
     public Collection $dices;

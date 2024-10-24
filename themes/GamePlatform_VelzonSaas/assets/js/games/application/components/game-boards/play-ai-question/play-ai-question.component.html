@@ -1,0 +1,13 @@
+<p>
+    {{ 'playaiquestion.icantfind' | translate }}<br />{{
+        'playaiquestion.doyouwanttoplay' | translate
+    }}
+</p>
+<div class="buttons">
+    <app-button (click)="playAi()">
+        {{ 'playaiquestion.playai' | translate }} </app-button
+    >&nbsp;
+    <app-button (click)="continueWait()">
+        {{ 'playaiquestion.keepwaiting' | translate }}
+    </app-button>
+</div>

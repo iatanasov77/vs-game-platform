@@ -10,6 +10,7 @@ import { MessagesComponent } from './messages/messages.component';
 import { BusyComponent } from './busy/busy.component';
 import { ErrorHandlerComponent } from './error-handler/error-handler.component';
 import { RequirementsDialogComponent } from './requirements-dialog/requirements-dialog.component';
+import { ButtonComponent } from './button/button.component';
 
 @NgModule({
     declarations: [
@@ -17,7 +18,8 @@ import { RequirementsDialogComponent } from './requirements-dialog/requirements-
         MessagesComponent,
         BusyComponent,
         ErrorHandlerComponent,
-        RequirementsDialogComponent
+        RequirementsDialogComponent,
+        ButtonComponent
     ],
     imports: [
         CommonModule,
@@ -31,7 +33,8 @@ import { RequirementsDialogComponent } from './requirements-dialog/requirements-
         MessagesComponent,
         BusyComponent,
         ErrorHandlerComponent,
-        RequirementsDialogComponent
+        RequirementsDialogComponent,
+        ButtonComponent
     ]
 })
 export class SharedModule { }

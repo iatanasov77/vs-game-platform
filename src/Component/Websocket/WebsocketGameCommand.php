@@ -18,8 +18,8 @@ use React\Socket\Server as SocketServer;
 use App\Component\Websocket\Server\WebsocketGamesHandler;
 
 /**
- * See Logs:        sudo tail -f /var/log/websocket/game-patform-server.log
- * Start Service:   sudo service websocket_game_platform_chat restart
+ * See Logs:        sudo tail -f /var/log/websocket/game-patform-game.log
+ * Start Service:   sudo service websocket_game_platform_game restart
  *
  * Manual:  https://stackoverflow.com/questions/64292868/how-to-send-a-message-to-specific-websocket-clients-with-symfony-ratchet
  *          https://stackoverflow.com/questions/30953610/how-to-send-messages-to-particular-users-ratchet-php-websocket
@@ -59,7 +59,8 @@ final class WebsocketGameCommand extends ContainerAwareCommand
         $gamesHandler   = new WebsocketGamesHandler(
             $this->get( 'vs_users.repository.users' ),
             $this->get( 'app_websocket_client_factory' ),
-            $this->get( 'app_game_service' )
+            $this->get( 'app_game_service' ),
+            $this->get( 'event_dispatcher' )
         );
         
         $loop           = EventLoopFactory::create();

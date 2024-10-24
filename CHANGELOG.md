@@ -1,3 +1,12 @@
+0.10.2	|	Release date: **24.10.2024**
+============================================
+* New Features and Improvements:
+  - Add Play AI Question Dialog.
+  - Finishing WebSocket Comunication.
+  - Many WebSocket Comunnication Improvements.
+  - Add Sound Mute Component.
+
+
 0.10.1	|	Release date: **13.10.2024**
 ============================================
 * New Features , Fixes and Improvements:

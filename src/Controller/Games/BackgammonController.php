@@ -20,6 +20,14 @@ class BackgammonController extends GameController
             'socketGameUrl'         => $this->getParameter( 'app_websocket_game_url' ),
             'apiVerifySiganature'   => $signature,
             'timeoutBetweenPlayers' => $gamePlatformSettings->getTimeoutBetweenPlayers(),
+            
+            'queryParams'           => [
+                'gameId'    => $request->query->get( 'gameId' ),
+                'playAi'    => $request->query->get( 'playAi' ),
+                'forGold'   => $request->query->get( 'forGold' ),
+                'tutorial'  => $request->query->get( 'tutorial' ),
+                'editing'   => $request->query->get( 'editing' ),
+            ],
         ];
         
         return new Response(

@@ -102,7 +102,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     rotated = false;
     flipped = false;
     playAiFlag = false;
-    forGodlFlag = false;
+    forGoldFlag = false;
     lokalStake = 0;
     animatingStake = false;
     playAiQuestion = false;
@@ -143,7 +143,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         @Inject( StatusMessageService ) private statusMessageService: StatusMessageService,
         @Inject( AppStateService ) private appStateService: AppStateService,
         @Inject( SoundService ) private sound: SoundService,
-        @Inject( EditorService ) private editService: EditorService,
+        @Inject( EditorService ) private editService: EditorService
     ) {
         this.gameDto$ = this.appStateService.game.observe();
         this.dices$ = this.appStateService.dices.observe();
@@ -171,20 +171,28 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             this.authService.repair();
         }
         
-        const gameId = 'backgammon';
-        const playAi = false;
-        const forGold = false;
-        const tutorial = false;
-        const editing = false;
+        //console.log( 'Game Settings: ', window.gamePlatformSettings );
+        const gameId = window.gamePlatformSettings.queryParams.gameId;
+        const playAi = window.gamePlatformSettings.queryParams.playAi;
+        const forGold = window.gamePlatformSettings.queryParams.forGold;
+        const tutorial = window.gamePlatformSettings.queryParams.tutorial;
+        const editing = window.gamePlatformSettings.queryParams.editing;
     
-        this.playAiFlag = playAi;
-        this.forGodlFlag = forGold;
+        this.playAiFlag = playAi === 'true';
+        this.forGoldFlag = forGold === 'true';
         this.lokalStake = 0;
-        this.tutorial = tutorial;
-        this.editing = editing;
+        this.tutorial = tutorial === 'true';
+        this.editing = editing === 'true';
         
-        //this.zmqService.connect( gameId, playAi, forGold );
-        this.wsService.connect( gameId, playAi, forGold );
+        if ( tutorial ) {
+            // Waiting for everything else before starting makes Input data update components.
+//             setTimeout( () => {
+//                 this.tutorialService.start();
+//             }, 1 );
+        } else if ( ! this.editing ) {
+            //this.zmqService.connect( gameId, playAi, forGold );
+            this.wsService.connect( gameId, playAi, forGold );
+        }
         
         if ( this.editing ) {
             this.exitVisible = true;
@@ -537,9 +545,9 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         this.rollButtonClicked = false;
         
 //         this.zmqService.resetGame();
-//         this.zmqService.connect( '', this.playAiFlag, this.forGodlFlag );
+//         this.zmqService.connect( '', this.playAiFlag, this.forGoldFlag );
         this.wsService.resetGame();
-        this.wsService.connect( '', this.playAiFlag, this.forGodlFlag );
+        this.wsService.connect( '', this.playAiFlag, this.forGoldFlag );
         this.waitForOpponent();
     }
     
@@ -560,7 +568,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             await this.delay( 500 );
         }
         
-        this.wsService.connect( '', true, this.forGodlFlag );
+        this.wsService.connect( '', true, this.forGoldFlag );
     }
     
     delay( ms: number )

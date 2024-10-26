@@ -11,7 +11,6 @@ import { HttpClient, HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromD
 import { BaseUrlInterceptor } from '../application/services/base-url-interceptor';
 
 import { StoreModule, provideStore, ActionReducerMap } from '@ngrx/store';
-import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { EffectsModule } from '@ngrx/effects';
 
 import { loginReducer } from '../application/+store/login.reducers';

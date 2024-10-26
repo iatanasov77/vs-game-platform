@@ -11,7 +11,6 @@ import { HttpClient, HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromD
 import { BaseUrlInterceptor } from '../application/services/base-url-interceptor';
 
 import { StoreModule, provideStore, ActionReducerMap } from '@ngrx/store';
-import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { EffectsModule } from '@ngrx/effects';
 
 import { loginReducer } from '../application/+store/login.reducers';
@@ -21,8 +20,6 @@ import { gameReducer, GameState } from '../application/+store/game.reducers';
 import { CustomSerializer } from '../application/+store/router';
 import { GameEffects } from '../application/+store/game.effects';
 import { IAppState, getReducers } from '../application/+store/state';
-
-import { AppRoutingModule } from './app-routing.module';
 
 import { BridgeBeloteComponent } from './bridge-belote.component';
 import { SharedModule } from '../application/components/shared/shared.module';

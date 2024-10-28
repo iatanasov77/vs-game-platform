@@ -1,0 +1,14 @@
+<div class="container">
+    <button (click)="requestHint()" *ngIf="requestHintVisible" class="blue-button help-button">
+        {{ 'game_board.help' | translate }}&nbsp;<i class="fas fa-lightbulb"></i>
+    </button>
+    <button (click)="sendMoves()" *ngIf="sendVisible" class="default-button">
+        {{ 'game_board.done' | translate }}
+    </button>
+    <button (click)="undoMove()" *ngIf="undoVisible" class="secondary-button">
+        {{ 'game_board.undo' | translate }}
+    </button>
+    <button *ngIf="rollButtonVisible" (click)="rollButtonClick()" class="default-button">
+        {{ 'game_board.roll' | translate }}
+    </button>
+</div>

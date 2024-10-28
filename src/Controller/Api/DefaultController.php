@@ -86,6 +86,9 @@ class DefaultController extends AbstractController
             'game_board.start_game'                         => 'Start Game',
             'game_board.game'                               => 'Game',
             
+            'game_board.acceptDoubling'                     => 'Accept',
+            'game_board.resign'                             => 'Resign',
+            'game_board.help'                               => 'Help',
             'game_board.done'                               => 'Done',
             'game_board.undo'                               => 'Undo',
             'game_board.roll'                               => 'Roll',
@@ -159,6 +162,9 @@ class DefaultController extends AbstractController
             'game_board.start_game'                         => 'Start Game',
             'game_board.game'                               => 'Game',
             
+            'game_board.acceptDoubling'                     => 'Accept',
+            'game_board.resign'                             => 'Resign',
+            'game_board.help'                               => 'Help',
             'game_board.done'                               => 'Done',
             'game_board.undo'                               => 'Undo',
             'game_board.roll'                               => 'Roll',

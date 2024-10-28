@@ -70,14 +70,6 @@ export class BackgammonComponent extends GameBaseComponent implements OnInit
         this.actions$.pipe( ofType( selectGameRoomSuccess ) ).subscribe( () => {
             // Not Needed Nothing
         });
-        
-//         this.route.paramMap.pipe(
-//             switchMap( ( params: ParamMap ) => {
-//                 this.playAi = Boolean( params.get( 'playAi' ) );
-//                 this.forGold = Boolean( params.get( 'forGold' ) );
-//                 alert( "this.playAi = " + this.playAi );
-//             })
-//         );
     }
     
     saveErrorReport( errorDto: ErrorReportDto ): void

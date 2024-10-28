@@ -74,6 +74,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     @Input() game: any;
     
     @ViewChild( 'dices' ) dices: ElementRef | undefined;
+    @ViewChild( 'backgammonBoardButtons' ) backgammonBoardButtons: ElementRef | undefined;
     @ViewChild( 'messages' ) messages: ElementRef | undefined;
     
     gameDto$: Observable<GameDto>;
@@ -83,7 +84,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     timeLeft$: Observable<number>;
     
     user$: Observable<UserDto>;
-    //tutorialStep$: Observable<number>;
+    tutorialStep$: Observable<number>;
     gameString$: Observable<string>;
   
     gameSubs: Subscription;
@@ -125,7 +126,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     appState?: MyGameState;
     gameStarted: boolean    = false;
     
-    isRoomSelected: boolean = true; // false;
+    isRoomSelected: boolean = false;
     hasRooms: boolean       = false;
     
     gamePlayers: any;
@@ -159,7 +160,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         this.appStateService.moveTimer.observe().subscribe( this.timeTick.bind( this ) );
         
         this.user$ = this.appStateService.user.observe();
-        //this.tutorialStep$ = this.appStateService.tutorialStep.observe();
+        this.tutorialStep$ = this.appStateService.tutorialStep.observe();
         this.gameString$ = this.appStateService.gameString.observe();
         
         this.user$.subscribe( ( user ) => {
@@ -286,17 +287,20 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         this.sound.playPianoIntro();
         this.startedHandle = setTimeout( () => {
             if ( ! this.started ) {
-                this.playAiQuestion = true;
+                if ( this.appStateService.user?.getValue() ) {
+                    this.playAiQuestion = true;
+                } else {
+                    this.appStateService.hideBusy();
+                }
             }
         }, 11000 );
     }
     
     sendMoves(): void
     {
-        //this.zmqService.sendMoves();
         this.wsService.sendMoves();
-        
         this.rollButtonClicked = false;
+        this.dicesVisible = false;
     }
     
     doMove( move: MoveDto ): void
@@ -342,7 +346,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             this.fireResize();
             return;
         }
-        
+        alert( this.started );
         if ( ! this.started && dto ) {
             clearTimeout( this.startedHandle );
             this.started = true;
@@ -450,7 +454,13 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         
         this.height = Math.min( window.innerHeight - 40, this.width * 0.6 );
         
-        const btnsOffset = 5; //Cheating. Could not get the height.
+        const buttons = this.backgammonBoardButtons?.nativeElement as HTMLElement;
+        const btnsOffset = 15; //Cheating. Could not get the height.
+        if ( buttons ) {
+            buttons.style.top = `${this.height / 2 + btnsOffset}px`;
+            buttons.style.right = `${this.width * 0.30}px`;
+        }
+        
         const dices = this.dices?.nativeElement as HTMLElement;
         if ( dices ) {
             // Puts the dices on right side if its my turn.
@@ -474,15 +484,22 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     
     rollButtonClick(): void
     {
+        this.wsService.sendRolled();
         this.rollButtonClicked = true;
         this.setRollButtonVisible();
-        this.setDicesVisible();
+        this.dicesVisible = true;
+    
+        this.sound.playDice();
+    
         this.setSendVisible();
         this.fireResize();
+        this.requestDoublingVisible = false;
+        
         const gme = this.appStateService.game.getValue();
-        if ( ! gme.validMoves || gme.validMoves.length === 0 ) {
+        if( ! gme.validMoves || gme.validMoves.length === 0 ) {
             this.statusMessageService.setBlockedMessage();
         }
+        this.changeDetector.detectChanges();
     }
     
     opponentRolled(): void
@@ -498,7 +515,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             return;
         }
         
-        this.rollButtonVisible = !this.rollButtonClicked;
+        this.rollButtonVisible = ! this.rollButtonClicked;
     }
     
     setSendVisible(): void
@@ -529,7 +546,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             this.dicesVisible = true;
             return;
         }
-        this.dicesVisible = !this.rollButtonVisible;
+        this.dicesVisible = ! this.rollButtonVisible;
     }
     
     resignGame(): void

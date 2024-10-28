@@ -15,6 +15,7 @@ import { CardGameAnnounceComponent } from './board-actions/card-game-announce/ca
 
 import { BackgammonContainerComponent } from './backgammon-container/backgammon-container.component';
 import { BackgammonBoardComponent } from './backgammon-board/backgammon-board.component';
+import { BackgammonBoardButtonsComponent } from './board-actions/backgammon-board-buttons/backgammon-board-buttons.component';
 import { DicesComponent } from './dices/dices.component';
 import { BoardMenuComponent } from './board-actions/board-menu/board-menu.component';
 import { BoardButtonsComponent } from './board-actions/board-buttons/board-buttons.component';
@@ -35,6 +36,7 @@ import { PlayAiQuestionComponent } from './play-ai-question/play-ai-question.com
         CardGameAnnounceComponent,
         BackgammonContainerComponent,
         BackgammonBoardComponent,
+        BackgammonBoardButtonsComponent,
         DicesComponent,
         BoardMenuComponent,
         BoardButtonsComponent,
@@ -61,6 +63,7 @@ import { PlayAiQuestionComponent } from './play-ai-question/play-ai-question.com
         CardGameAnnounceComponent,
         BackgammonContainerComponent,
         BackgammonBoardComponent,
+        BackgammonBoardButtonsComponent,
         DicesComponent,
         BoardMenuComponent,
         BoardButtonsComponent,

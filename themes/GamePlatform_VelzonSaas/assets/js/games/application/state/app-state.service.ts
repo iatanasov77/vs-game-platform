@@ -62,9 +62,9 @@ export class AppStateService
         this.myColor.setValue( PlayerColor.neither );
         
         this.dices = new StateObject<DiceDto[]>();
-        this.dices.setValue([]);
+        this.dices.setValue( [] );
         this.moveAnimations = new StateObject<MoveDto[]>();
-        this.moveAnimations.setValue([]);
+        this.moveAnimations.setValue( [] );
         this.myConnection = new StateObject<ConnectionDto>();
         this.opponentConnection = new StateObject<ConnectionDto>();
         this.user = new StateObject<UserDto>();
@@ -73,26 +73,26 @@ export class AppStateService
         this.toplist = new StateObject<Toplist>();
         this.errors = new StateObject<ErrorState>();
         this.playedGames = new StateObject<PlayedGameListDto>();
-        this.playedGames.setValue({ games: [] });
+        this.playedGames.setValue( { games: [] } );
         this.messages = new StateObject<MessageDto[]>();
-        this.messages.setValue([]);
+        this.messages.setValue( [] );
         this.rolled = new StateObject<boolean>();
         this.opponentDone = new StateObject<boolean>();
         this.theme = new StateObject<string>();
         this.theme.setValue( 'dark' );
         this.tutorialStep = new StateObject<number>();
-        this.tutorialStep.setValue(0);
+        this.tutorialStep.setValue( 0 );
         this.newVersion = new StateObject<boolean>();
         this.newVersion.setValue(false);
         this.feedbackList = new StateObject<FeedbackDto[]>();
-        this.feedbackList.setValue([]);
+        this.feedbackList.setValue( [] );
         this.gameString = new StateObject<string>();
         
         this.chatOpen = new StateObject<boolean>();
         this.chatMessages = new StateObject<ChatMessageDto[]>();
-        this.chatMessages.setValue([]);
+        this.chatMessages.setValue( [] );
         this.chatUsers = new StateObject<string[]>();
-        this.chatUsers.setValue([]);
+        this.chatUsers.setValue( [] );
     }
 
     myTurn(): boolean

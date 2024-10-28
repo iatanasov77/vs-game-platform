@@ -91,6 +91,10 @@ final class WebsocketGamesHandler implements MessageComponentInterface
     {
         $this->log( "New message from ({$from->resourceId}): " . $msg );
         
+        if ( ! isset( $this->games[$from->resourceId] ) ) {
+            return;
+        }
+        
         $gameManager    = $this->gameService->getGameManager( $this->games[$from->resourceId] );
         $socket         = $gameManager->getClient( $from->resourceId );
         

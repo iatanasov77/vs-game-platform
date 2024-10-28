@@ -493,6 +493,14 @@ export class WebsocketGameService
         this.sendMessage( JSON.stringify( action ) );
     }
     
+    sendRolled()
+    {
+        const action: ActionDto = {
+            actionName: ActionNames.rolled
+        };
+        this.sendMessage( JSON.stringify( action ) );
+    }
+
     resignGame(): void
     {
         const action: ActionDto = {

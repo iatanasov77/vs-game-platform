@@ -47,7 +47,7 @@ export class StatusMessageService
         this.appState.statusMessage.setValue( message );
     }
     
-    setMyConnectionLost(reason: string): void
+    setMyConnectionLost( reason: string ): void
     {
         const m = this.trans.instant( 'statusmessage.noconnection' );
         const statusMessage = StatusMessage.error( reason || m );
@@ -69,7 +69,7 @@ export class StatusMessageService
         this.appState.statusMessage.setValue( statusMessage );
     }
     
-    setGameEnded(game: GameDto, newScore: NewScoreDto): void
+    setGameEnded( game: GameDto, newScore: NewScoreDto ): void
     {
         const myColor = this.appState.myColor.getValue();
         let score = '';

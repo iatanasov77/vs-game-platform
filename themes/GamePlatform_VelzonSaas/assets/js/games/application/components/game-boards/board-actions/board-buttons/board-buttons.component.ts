@@ -16,19 +16,14 @@ export class BoardButtonsComponent implements OnChanges
 {
     @Input() isRoomSelected: boolean    = false;
     @Input() hasRooms: boolean          = false;
-    @Input() undoVisible = false;
-    @Input() sendVisible = false;
-    @Input() rollButtonVisible = false;
     @Input() newVisible = false;
     @Input() exitVisible = false;
     
     @Output() onSelectGameRoom = new EventEmitter<void>();
     @Output() onCreateGameRoom = new EventEmitter<void>();
-    @Output() onUndoMove = new EventEmitter<void>();
-    @Output() onSendMoves = new EventEmitter<void>();
-    @Output() onRoll = new EventEmitter<void>();
     @Output() onNew = new EventEmitter<void>();
     @Output() onExit = new EventEmitter<void>();
+    @Output() onResign = new EventEmitter<void>();
     
     constructor(
         @Inject( TranslateService ) private translate: TranslateService
@@ -50,21 +45,6 @@ export class BoardButtonsComponent implements OnChanges
         }
     }
     
-    undoMove(): void
-    {
-        this.onUndoMove.emit();
-    }
-    
-    sendMoves(): void
-    {
-        this.onSendMoves.emit();
-    }
-    
-    rollButtonClick(): void
-    {
-        this.onRoll.emit();
-    }
-    
     newGame(): void
     {
         this.onNew.emit();
@@ -73,6 +53,11 @@ export class BoardButtonsComponent implements OnChanges
     exitGame(): void
     {
         this.onExit.emit();
+    }
+    
+    resign(): void
+    {
+      this.onResign.emit();
     }
     
     selectGameRoom(): void

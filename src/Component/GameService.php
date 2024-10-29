@@ -4,6 +4,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Psr\Log\LoggerInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -35,6 +36,9 @@ class GameService
     /** @var SerializerInterface */
     protected $serializer;
     
+    /** @var HttpClientInterface */
+    protected $httpClient;
+    
     /** @var RepositoryInterface */
     protected $usersRepository;
     
@@ -50,12 +54,14 @@ class GameService
     public function __construct(
         LoggerInterface $logger,
         SerializerInterface $serializer,
+        HttpClientInterface $httpClient,
         RepositoryInterface $usersRepository,
         SecurityBridge $securityBridge,
         GameManagerFactory $managerFactory
     ) {
         $this->logger           = $logger;
         $this->serializer       = $serializer;
+        $this->httpClient       = $httpClient;
         $this->usersRepository  = $usersRepository;
         $this->securityBridge   = $securityBridge;
         $this->managerFactory   = $managerFactory;
@@ -83,6 +89,7 @@ class GameService
             return $gameGuid;
         }
         
+        $this->logger->info( 'MyDebug Game Cookie: ' . $gameCookie );
         if ( $this->TryReConnect( $webSocket, $gameCookie, $dbUser ) ) {
             $this->logger->info( 'MyDebug: Try Reconnect' );
             // Game disconnected here
@@ -175,23 +182,6 @@ class GameService
         return $gameGuid;
     }
     
-    protected static function GameAlreadyStarted( Collection $managers, $userId ): bool
-    {
-        foreach ( $managers as $m ) {
-            // Guest vs guest must be allowed. When guest games are enabled.
-            if (
-                $m->Game->BlackPlayer->Id == $userId ||
-                $m->Game>WhitePlayer->Id == $userId &&
-                $userId != Guid::Empty
-            ) {
-                $this->logger->info( "MyDebug: Game Already Started" );
-                return true;
-            }
-        }
-        
-        return false;
-    }
-    
     public function SaveState(): void
     {
         $filesystem = new Filesystem();
@@ -246,6 +236,13 @@ class GameService
     
     protected function TryReConnect( WebsocketClientInterface $webSocket, ?string $gameCookie, ?UserInterface $dbUser ): bool
     {
+        $getCookieUrl   = 'http://game-platform.lh/games/game-cookie';
+        $response       = $this->httpClient->request( 'GET', $getCookieUrl );
+        $decodedPayload = $response->toArray( false );
+        
+        $logData    = \print_r( $decodedPayload, true );
+        $this->logger->info( "MyDebug Game Cookie: {$logData}" );
+            
         // Find existing game to reconnect to.
         if ( $gameCookie ) {
             $cookie = GameCookieDto::TryParse( $gameCookie );
@@ -282,6 +279,23 @@ class GameService
                     return true;
                 }
             }
+        }
+        
+        return false;
+    }
+    
+    protected static function GameAlreadyStarted( Collection $managers, $userId ): bool
+    {
+        foreach ( $managers as $m ) {
+            // Guest vs guest must be allowed. When guest games are enabled.
+            if (
+                $m->Game->BlackPlayer->Id == $userId ||
+                $m->Game>WhitePlayer->Id == $userId &&
+                $userId != Guid::Empty
+                ) {
+                    $this->logger->info( "MyDebug: Game Already Started" );
+                    return true;
+                }
         }
         
         return false;

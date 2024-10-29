@@ -35,6 +35,7 @@ import { WebsocketGameService } from '../../../services/websocket-game.service';
 import { StatusMessageService } from '../../../services/status-message.service';
 import { SoundService } from '../../../services/sound.service';
 import { EditorService } from '../../../services/editor.service';
+import { TutorialService } from '../../../services/tutorial.service';
 
 // App State
 import { AppStateService } from '../../../state/app-state.service';
@@ -144,12 +145,14 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         @Inject( StatusMessageService ) private statusMessageService: StatusMessageService,
         @Inject( AppStateService ) private appStateService: AppStateService,
         @Inject( SoundService ) private sound: SoundService,
-        @Inject( EditorService ) private editService: EditorService
+        @Inject( EditorService ) private editService: EditorService,
+        @Inject( TutorialService ) private tutorialService: TutorialService
     ) {
         this.gameDto$ = this.appStateService.game.observe();
         this.dices$ = this.appStateService.dices.observe();
         this.diceSubs = this.appStateService.dices.observe().subscribe( this.diceChanged.bind( this ) );
         this.playerColor$ = this.appStateService.myColor.observe();
+        this.playerColor$.subscribe( this.gotPlayerColor.bind( this ) );
         
         this.gameSubs = this.appStateService.game.observe().subscribe( this.gameChanged.bind( this ) );
         this.rolledSubs = this.appStateService.rolled.observe().subscribe( this.opponentRolled.bind( this ) );
@@ -187,9 +190,9 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         
         if ( tutorial ) {
             // Waiting for everything else before starting makes Input data update components.
-//             setTimeout( () => {
-//                 this.tutorialService.start();
-//             }, 1 );
+            setTimeout( () => {
+                this.tutorialService.start();
+            }, 1 );
         } else if ( ! this.editing ) {
             //this.zmqService.connect( gameId, playAi, forGold );
             this.wsService.connect( gameId, playAi, forGold );
@@ -287,6 +290,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         this.sound.playPianoIntro();
         this.startedHandle = setTimeout( () => {
             if ( ! this.started ) {
+                //alert( this.appStateService.user );
                 if ( this.appStateService.user?.getValue() ) {
                     this.playAiQuestion = true;
                 } else {
@@ -296,6 +300,13 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         }, 11000 );
     }
     
+    gotPlayerColor()
+    {
+        if ( this.appStateService.myColor.getValue() == PlayerColor.white ) {
+            this.flipped = true;
+        }
+    }
+
     sendMoves(): void
     {
         this.wsService.sendMoves();
@@ -346,7 +357,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             this.fireResize();
             return;
         }
-        alert( this.started );
+        
         if ( ! this.started && dto ) {
             clearTimeout( this.startedHandle );
             this.started = true;

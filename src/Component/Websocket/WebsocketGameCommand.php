@@ -56,6 +56,11 @@ final class WebsocketGameCommand extends ContainerAwareCommand
     {
         $port           = $input->getArgument( 'port' );
         
+        //$string = $this->get( 'request_stack' )->getMainRequest()->getCookie( 'game-platform-game-id' );
+        $string = \print_r( $_COOKIE, true );
+        $logData = 'MyDebug Game Cookie: ' . $string;
+        \file_put_contents( '/var/log/websocket/cookie.log', $logData . "\n", FILE_APPEND | LOCK_EX );
+        
         $gamesHandler   = new WebsocketGamesHandler(
             $this->get( 'vs_users.repository.users' ),
             $this->get( 'app_websocket_client_factory' ),

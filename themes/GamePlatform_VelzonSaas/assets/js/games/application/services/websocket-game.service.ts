@@ -65,6 +65,7 @@ export class WebsocketGameService
     
     connect( gameId: string, playAi: boolean, forGold: boolean ): void
     {
+        alert( this.cookieService.get( Keys.gameIdKey ) );
         if ( this.socket ) {
             this.socket.close();
         }

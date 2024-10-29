@@ -4,6 +4,10 @@ use App\Controller\Application\GameController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Vankosoft\ApplicationBundle\Component\Status;
+use App\Component\Utils\Keys;
+
 class BackgammonController extends GameController
 {
     public function index( Request $request ): Response
@@ -29,6 +33,12 @@ class BackgammonController extends GameController
                 'editing'   => $request->query->get( 'editing' ),
             ],
         ];
+        
+        
+//         return new JsonResponse([
+//             'status'        => Status::STATUS_OK,
+//             'gameCookie'    => $request->cookies->get( Keys::GAME_ID_KEY ),
+//         ]);
         
         return new Response(
             $this->templatingEngine->render( $this->getTemplate( $gameSlug , 'Pages/Games/backgammon.html.twig' ), [

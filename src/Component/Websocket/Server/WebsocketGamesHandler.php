@@ -134,9 +134,12 @@ final class WebsocketGamesHandler implements MessageComponentInterface
     private function getCookie( ConnectionInterface $conn ): ?string
     {
         $cookieDto      = null;
+        
+        //$this->log( \get_class( $conn->httpRequest ) );
         $sessionCookies = $conn->httpRequest->getHeader( 'Cookie' );
+        
         if ( ! empty( $sessionCookies ) ) {
-            //$this->log( "All Cookies: ". $sessionCookies[0] );
+            $this->log( "All Cookies: ". \print_r( $sessionCookies, true ) );
             
             $cookiesArray   = \explode( '; ', $sessionCookies[0] );
             foreach( $cookiesArray as $cookie ) {

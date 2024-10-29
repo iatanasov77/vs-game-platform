@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 //import { Router } from '@angular/router';
 
 import GameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
@@ -13,8 +13,8 @@ import { AppStateService } from '../state/app-state.service';
 export class TutorialService
 {
     constructor(
-//         private router: Router,
-        private appState: AppStateService
+//         @Inject( Router ) private router: Router,
+        @Inject( AppStateService ) private appState: AppStateService
     ) {}
     
     nextStep()

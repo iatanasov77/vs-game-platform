@@ -13,6 +13,9 @@ class GameCookieDto
     /** @var PlayerColor */
     public PlayerColor $color;
     
+    /** @var string */
+    public string $game;
+    
     public static function TryParse( ?string $v ): ?GameCookieDto
     {
         if ( $v ) {

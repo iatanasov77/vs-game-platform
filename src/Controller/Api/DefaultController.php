@@ -119,6 +119,8 @@ class DefaultController extends AbstractController
             'statusmessage.dblrequested'                    => 'Double your bet or give up.',
             'statusmessage.waitfordblresponse'              => 'Waiting for opponent to respond.',
             
+            'chat.entermessage'                             => 'Chat here',
+            
             // Game Global Messages
             'backgammon'                                    => 'Backgammon',
             'black'                                         => 'black',
@@ -194,6 +196,8 @@ class DefaultController extends AbstractController
             'statusmessage.dblaccepted'                     => 'Opponent did accept. Your turn to move.',
             'statusmessage.dblrequested'                    => 'Double your bet or give up.',
             'statusmessage.waitfordblresponse'              => 'Waiting for opponent to respond.',
+            
+            'chat.entermessage'                             => 'Chat here',
             
             // Game Global Messages
             'backgammon'                                    => 'Backgammon',

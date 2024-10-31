@@ -15,7 +15,6 @@ import {
     loadPlayersSuccess
 } from '../../../+store/game.actions';
 
-
 import templateString from './game-players.component.html'
 import cssString from './game-players.component.scss'
 

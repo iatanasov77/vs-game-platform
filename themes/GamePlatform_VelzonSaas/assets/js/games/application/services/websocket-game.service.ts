@@ -65,7 +65,6 @@ export class WebsocketGameService
     
     connect( gameId: string, playAi: boolean, forGold: boolean ): void
     {
-        alert( this.cookieService.get( Keys.gameIdKey ) );
         if ( this.socket ) {
             this.socket.close();
         }
@@ -134,13 +133,16 @@ export class WebsocketGameService
         switch ( action.actionName ) {
             case ActionNames.gameCreated: {
                 console.log( 'WebSocket Action Game Created', action.actionName );
-                //alert( 'WebSocket Action Game Created Handled' );
                 
                 const dto = JSON.parse( message.data ) as GameCreatedActionDto;
                 this.appState.myColor.setValue( dto.myColor );
                 this.appState.game.setValue( dto.game );
                 
-                const cookie: GameCookieDto = { id: dto.game.id, color: dto.myColor };
+                const cookie: GameCookieDto = {
+                    id: dto.game.id,
+                    color: dto.myColor,
+                    game: window.gamePlatformSettings.gameSlug
+                };
                 this.cookieService.deleteAll( Keys.gameIdKey );
                 // console.log('Settings cookie', cookie);
                 this.cookieService.set( Keys.gameIdKey, JSON.stringify( cookie ), 2 );

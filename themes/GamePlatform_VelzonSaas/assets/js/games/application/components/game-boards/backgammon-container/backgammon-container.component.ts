@@ -17,6 +17,7 @@ import { Observable, Subscription, of } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
 import {
+    selectGameRoom,
     selectGameRoomSuccess,
     startGameSuccess,
     loadGameRooms
@@ -36,6 +37,10 @@ import { StatusMessageService } from '../../../services/status-message.service';
 import { SoundService } from '../../../services/sound.service';
 import { EditorService } from '../../../services/editor.service';
 import { TutorialService } from '../../../services/tutorial.service';
+
+import GameCookieDto from '_@/GamePlatform/Model/BoardGame/gameCookieDto';
+import { CookieService } from 'ngx-cookie-service';
+import { Keys } from '../../../utils/keys';
 
 // App State
 import { AppStateService } from '../../../state/app-state.service';
@@ -146,7 +151,8 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         @Inject( AppStateService ) private appStateService: AppStateService,
         @Inject( SoundService ) private sound: SoundService,
         @Inject( EditorService ) private editService: EditorService,
-        @Inject( TutorialService ) private tutorialService: TutorialService
+        @Inject( TutorialService ) private tutorialService: TutorialService,
+        @Inject( CookieService ) private cookieService: CookieService
     ) {
         this.gameDto$ = this.appStateService.game.observe();
         this.dices$ = this.appStateService.dices.observe();
@@ -195,7 +201,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             }, 1 );
         } else if ( ! this.editing ) {
             //this.zmqService.connect( gameId, playAi, forGold );
-            this.wsService.connect( gameId, playAi, forGold );
+            //this.wsService.connect( gameId, playAi, forGold );
         }
         
         if ( this.editing ) {
@@ -215,8 +221,10 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     {
         this.store.subscribe( ( state: any ) => {
             //console.log( state.app.main );
+            
             this.appState   = state.app.main;
             this.hasRooms   = this?.appState?.rooms?.length && this?.appState?.rooms?.length > 0 ? true : false;
+            this.selectGameRoomFromCookie();
             
             if ( state.app.main.gamePlay ) {
                 this.gameStarted    = true;
@@ -240,10 +248,15 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         this.playAiQuestion = false;
         this.lokalStake = 0;
     
-        if ( ! this.playAiFlag && ! this.editing ) this.waitForOpponent();
-    
+        //if ( ! this.playAiFlag && ! this.editing ) this.waitForOpponent();
         this.fireResize();
-        //this.statusMessageService.setNotRoomSelected();
+        
+        setTimeout( () => {
+            if ( ! this.isRoomSelected ) {
+                //alert( this.appStateService.user );
+                this.statusMessageService.setNotRoomSelected();
+            }
+        }, 11000 );
     }
     
     ngOnDestroy(): void
@@ -281,6 +294,26 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
                 case 'game':
                     this.game = changedProp.currentValue;
                     break;
+            }
+        }
+    }
+    
+    selectGameRoomFromCookie(): void
+    {
+        if ( ! this?.appState?.game || ! this?.appState?.rooms ) {
+            return;
+        }
+        
+        let gameCookie  = this.cookieService.get( Keys.gameIdKey );
+        if ( gameCookie ) {
+            let gameCookieDto   = JSON.parse( gameCookie ) as GameCookieDto;
+            if ( gameCookieDto.game === window.gamePlatformSettings.gameSlug ) {
+                //alert( gameCookie );
+                let gameRoom    = this?.appState?.rooms.find( ( item: any ) => item?.name === gameCookieDto.id );
+                if ( gameRoom && ! this.isRoomSelected ) {
+                    //alert( gameCookie );
+                    this.store.dispatch( selectGameRoom( { game: this?.appState?.game, room: gameRoom } ) );
+                }
             }
         }
     }

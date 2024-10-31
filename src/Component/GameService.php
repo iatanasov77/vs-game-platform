@@ -275,7 +275,6 @@ class GameService
                     // socket loop exited
                     $this->RemoveDissconnected( $gameManager );
                     
-                    
                     return true;
                 }
             }

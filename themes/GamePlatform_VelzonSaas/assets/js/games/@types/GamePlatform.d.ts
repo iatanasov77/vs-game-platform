@@ -99,6 +99,7 @@ declare module '_@/GamePlatform/Model/BoardGame/gameCookieDto' {
     interface GameCookieDto {
         id: string;
         color: PlayerColor;
+        game: string;
     }
     
     export = GameCookieDto;

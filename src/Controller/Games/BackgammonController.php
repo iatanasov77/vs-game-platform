@@ -31,6 +31,7 @@ class BackgammonController extends GameController
                 'forGold'   => $request->query->get( 'forGold' ),
                 'tutorial'  => $request->query->get( 'tutorial' ),
                 'editing'   => $request->query->get( 'editing' ),
+                'inviteId'  => $request->query->get( 'inviteId' ),
             ],
         ];
         

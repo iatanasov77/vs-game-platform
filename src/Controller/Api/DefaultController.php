@@ -94,6 +94,7 @@ class DefaultController extends AbstractController
             'game_board.roll'                               => 'Roll',
             'game_board.new_game'                           => 'New Game',
             'game_board.exit_game'                          => 'Exit Game',
+            'game_board.invite_friend'                      => 'Invite a friend',
             
             'game_board.players.title'                      => 'Players',
             'game_board.rooms.title'                        => 'Game Rooms',
@@ -172,6 +173,7 @@ class DefaultController extends AbstractController
             'game_board.roll'                               => 'Roll',
             'game_board.new_game'                           => 'New Game',
             'game_board.exit_game'                          => 'Exit Game',
+            'game_board.invite_friend'                      => 'Invite a friend',
             
             'game_board.players.title'                      => 'Players',
             'game_board.rooms.title'                        => 'Game Rooms',

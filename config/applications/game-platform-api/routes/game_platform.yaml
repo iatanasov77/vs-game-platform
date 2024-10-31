@@ -25,3 +25,7 @@ vs_api_account_toggleintro:
 vs_api_backgamon_editor_game_string:
     path: /api/backgamon/editor/gamestring
     controller: App\Controller\Api\BackgammonEditorController::gameString
+
+vs_api_create_invite:
+    path: /api/invite/create
+    controller: App\Controller\Api\InviteController::createInviteAction

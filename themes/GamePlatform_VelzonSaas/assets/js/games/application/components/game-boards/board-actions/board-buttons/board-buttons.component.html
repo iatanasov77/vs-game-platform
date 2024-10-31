@@ -3,6 +3,7 @@
         <button *ngIf="hasRooms" (click)="selectGameRoom()" class="default-button">
             {{ 'game_board.select_room' | translate }}
         </button>
+        
         <button (click)="createGameRoom()" class="default-button">
             {{ 'game_board.create_room' | translate }}
         </button>
@@ -12,12 +13,17 @@
         <button (click)="newGame()" *ngIf="newVisible" class="default-button">
             {{ 'game_board.new_game' | translate }}
         </button>
+        
         <button (click)="exitGame()" *ngIf="exitVisible" class="secondary-button">
             {{ 'game_board.exit_game' | translate }}
         </button>
         
         <button (click)="resign()" *ngIf="acceptDoublingVisible" class="red-button smaller">
             {{ 'game_board.resign' | translate }}
+        </button>
+        
+        <button (click)="inviteFriendClick()" *ngIf="newVisible" class="default-button">
+            {{ 'game_board.invite_friend' | translate }}
         </button>
     </ng-container>
 </div>

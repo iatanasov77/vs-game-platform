@@ -28,6 +28,7 @@ import { RequirementsDialogComponent } from '../../game-dialogs/requirements-dia
 import { SelectGameRoomDialogComponent } from '../../game-dialogs/select-game-room-dialog/select-game-room-dialog.component';
 import { CreateGameRoomDialogComponent } from '../../game-dialogs/create-game-room-dialog/create-game-room-dialog.component';
 import { PlayAiQuestionComponent } from '../../game-dialogs/play-ai-question/play-ai-question.component';
+import { CreateInviteGameDialogComponent } from '../../game-dialogs/create-invite-game-dialog/create-invite-game-dialog.component';
 
 // Services
 import { AuthService } from '../../../services/auth.service';
@@ -708,6 +709,17 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
             modalRef.dismiss();
         });
+    }
+    
+    inviteFriend(): void
+    {
+        const modalRef = this.ngbModal.open( CreateInviteGameDialogComponent );
+        
+        modalRef.componentInstance.closeModal.subscribe( () => {
+            // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
+            modalRef.dismiss();
+        });
+        
     }
     
     onFlipped(): void

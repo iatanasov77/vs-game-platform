@@ -30,6 +30,8 @@
     ></app-board-menu>
     -->
     
+    <app-invite-game></app-invite-game>
+    
     <app-backgammon-board
         class="game-board"
         
@@ -86,6 +88,7 @@
             (onNew)="newGame()"
             (onExit)="exitGame()"
             (onResign)="resignGame()"
+            (onInviteFriend)="inviteFriend()"
             
             (onSelectGameRoom)="selectGameRoom()"
             (onCreateGameRoom)="createGameRoom()"

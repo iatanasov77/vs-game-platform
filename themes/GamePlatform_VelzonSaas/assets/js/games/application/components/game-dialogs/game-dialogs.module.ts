@@ -8,13 +8,15 @@ import { RequirementsDialogComponent } from './requirements-dialog/requirements-
 import { SelectGameRoomDialogComponent } from './select-game-room-dialog/select-game-room-dialog.component';
 import { CreateGameRoomDialogComponent } from './create-game-room-dialog/create-game-room-dialog.component';
 import { PlayAiQuestionComponent } from './play-ai-question/play-ai-question.component';
+import { CreateInviteGameDialogComponent } from './create-invite-game-dialog/create-invite-game-dialog.component';
 
 @NgModule({
     declarations: [
         RequirementsDialogComponent,
         SelectGameRoomDialogComponent,
         CreateGameRoomDialogComponent,
-        PlayAiQuestionComponent
+        PlayAiQuestionComponent,
+        CreateInviteGameDialogComponent
     ],
     imports: [
         CommonModule,
@@ -26,7 +28,8 @@ import { PlayAiQuestionComponent } from './play-ai-question/play-ai-question.com
         RequirementsDialogComponent,
         SelectGameRoomDialogComponent,
         CreateGameRoomDialogComponent,
-        PlayAiQuestionComponent
+        PlayAiQuestionComponent,
+        CreateInviteGameDialogComponent
     ]
 })
 export class GameDialogsModule { }

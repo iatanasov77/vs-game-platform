@@ -24,6 +24,7 @@ export class BoardButtonsComponent implements OnChanges
     @Output() onNew = new EventEmitter<void>();
     @Output() onExit = new EventEmitter<void>();
     @Output() onResign = new EventEmitter<void>();
+    @Output() onInviteFriend = new EventEmitter<void>();
     
     constructor(
         @Inject( TranslateService ) private translate: TranslateService
@@ -57,7 +58,7 @@ export class BoardButtonsComponent implements OnChanges
     
     resign(): void
     {
-      this.onResign.emit();
+        this.onResign.emit();
     }
     
     selectGameRoom(): void
@@ -68,5 +69,10 @@ export class BoardButtonsComponent implements OnChanges
     createGameRoom(): void
     {
         this.onCreateGameRoom.emit();
+    }
+    
+    inviteFriendClick(): void
+    {
+        this.onInviteFriend.emit();
     }
 }

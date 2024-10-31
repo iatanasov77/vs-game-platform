@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
@@ -22,7 +23,9 @@ import { CreateInviteGameDialogComponent } from './create-invite-game-dialog/cre
         CommonModule,
         MatTooltipModule,
         NgbModule,
-        TranslateModule.forChild()
+        TranslateModule.forChild(),
+        FormsModule,
+        ReactiveFormsModule,
     ],
     exports: [
         RequirementsDialogComponent,

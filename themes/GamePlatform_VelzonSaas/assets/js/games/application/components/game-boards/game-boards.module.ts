@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
@@ -39,9 +38,6 @@ import { BoardButtonsComponent } from './board-actions/board-buttons/board-butto
         MatTooltipModule,
         NgbModule,
         TranslateModule.forChild(),
-        FormsModule,
-        ReactiveFormsModule,
-        
         SharedModule,
         GameDialogsModule
     ],

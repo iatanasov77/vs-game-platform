@@ -1,3 +1,15 @@
+0.10.3	|	Release date: **31.10.2024**
+============================================
+* New Features , Improvements and Refactoring:
+  - Send Query Params to Backgammon Game.
+  - Create a Separate Angular Component for Backgammon Board Buttons.
+  - Add Tutorial Service for Backgammon Game.
+  - Create a Game Chat Component.
+  - Move Some Angular Components From GameBoards to SideBars Module.
+  - Create GameDialogsModule and Move Angular Components that are dialogs to this Module.
+  - Create Invite Angular Component.
+
+
 0.10.2	|	Release date: **24.10.2024**
 ============================================
 * New Features and Improvements:

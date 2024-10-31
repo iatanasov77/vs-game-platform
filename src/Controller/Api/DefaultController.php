@@ -126,7 +126,13 @@ class DefaultController extends AbstractController
             'backgammon'                                    => 'Backgammon',
             'black'                                         => 'black',
             'white'                                         => 'white',
-            "pleasewait"                                    => "Please wait",
+            'pleasewait'                                    => 'Please wait',
+            
+            // Backgammon Variants
+            'game_board.backgammon_variants.variants'       => 'Variants',
+            'game_board.backgammon_variants.normal'         => 'Normal',
+            'game_board.backgammon_variants.gulbara'        => 'GulBara',
+            'game_board.backgammon_variants.tapa'           => 'Tapa',
         ];
     }
     
@@ -205,7 +211,13 @@ class DefaultController extends AbstractController
             'backgammon'                                    => 'Backgammon',
             'black'                                         => 'black',
             'white'                                         => 'white',
-            "pleasewait"                                    => "Please wait",
+            'pleasewait'                                    => 'Please wait',
+            
+            // Backgammon Variants
+            'game_board.backgammon_variants.variants'       => 'Variants',
+            'game_board.backgammon_variants.normal'         => 'Normal',
+            'game_board.backgammon_variants.gulbara'        => 'GulBara',
+            'game_board.backgammon_variants.tapa'           => 'Tapa',
         ];
     }
 }

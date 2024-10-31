@@ -23,7 +23,7 @@ import { GameEffects } from '../application/+store/game.effects';
 import { IAppState, getReducers } from '../application/+store/state';
 
 import { GlobalErrorService } from '../application/services/global-error-service';
-import { BackgammonComponent } from './backgammon.component';
+import { BackgammonNormalComponent } from './backgammon-normal.component';
 import { SharedModule } from '../application/components/shared/shared.module';
 import { GameBoardsModule } from '../application/components/game-boards/game-boards.module';
 import { SideBarsModule } from '../application/components/side-bars/side-bars.module';
@@ -32,7 +32,7 @@ export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppSta
 
 @NgModule({
     declarations: [
-        BackgammonComponent,
+        BackgammonNormalComponent,
     ],
     imports: [
         BrowserModule,
@@ -64,7 +64,7 @@ export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppSta
             GameEffects,
         ]),
     ],
-    bootstrap: [BackgammonComponent],
+    bootstrap: [BackgammonNormalComponent],
     providers: [
         //{ provide: Window, useValue: window },
         { provide: APP_BASE_HREF, useValue: window.location.pathname },
@@ -75,4 +75,4 @@ export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppSta
         { provide: ErrorHandler, useClass: GlobalErrorService }
     ]
 })
-export class BackgammonModule { }
+export class BackgammonNormalModule { }

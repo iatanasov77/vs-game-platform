@@ -1,0 +1,32 @@
+<!--
+<router-outlet></router-outlet>
+-->
+<app-busy [busy]="busy$ | async"></app-busy>
+<app-error-handler [errors]="errors$ | async" (save)="saveErrorReport($event)"></app-error-handler>
+
+<div class="row">
+    <div class="col-2">
+        <backgammon-variants></backgammon-variants>
+        <game-statistics></game-statistics>
+        <div class="mt-4">
+            <game-chat></game-chat>
+        </div>
+    </div>
+    
+    <div class="col-8">
+        <app-backgammon-container
+            [isLoggedIn]="isLoggedIn"
+            [introPlaying]="introPlaying"
+            [isLoggedIn]="isLoggedIn"
+            [hasPlayer]="hasPlayer"
+            [game]="game"
+        ></app-backgammon-container>
+    </div>
+    
+    <div class="col-2">
+        <game-players></game-players>
+        <div class="mt-4">
+            <game-rooms></game-rooms>
+        </div>
+    </div>
+</div>

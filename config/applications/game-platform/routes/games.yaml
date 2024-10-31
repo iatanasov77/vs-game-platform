@@ -56,6 +56,14 @@ chess:
     path: /games/chess
     controller: App\Controller\Games\ChessController::index
    
-backgammon:
-    path: /games/backgammon
-    controller: App\Controller\Games\BackgammonController::index
+backgammon_normal:
+    path: /games/backgammon/normal
+    controller: App\Controller\Games\BackgammonController::normal
+
+backgammon_gulbara:
+    path: /games/backgammon/gulbara
+    controller: App\Controller\Games\BackgammonController::gulbara
+
+backgammon_tapa:
+    path: /games/backgammon/tapa
+    controller: App\Controller\Games\BackgammonController::tapa

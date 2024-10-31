@@ -9,11 +9,11 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 const {context} = require( '../application/context' );
 
-import { BackgammonModule } from './backgammon.module';
+import { BackgammonTapaModule } from './backgammon-tapa.module';
 
 if ( context.isProduction ) {
     enableProdMode();
 }
 
-platformBrowserDynamic().bootstrapModule( BackgammonModule )
+platformBrowserDynamic().bootstrapModule( BackgammonTapaModule )
                         .catch( ( err: any ) => console.error( err ) );

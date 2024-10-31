@@ -24,10 +24,10 @@ import {
 } from '../../../+store/game.actions';
 import { GameState as MyGameState } from '../../../+store/game.reducers';
 
-import { RequirementsDialogComponent } from '../../shared/requirements-dialog/requirements-dialog.component';
-import { SelectGameRoomDialogComponent } from '../select-game-room-dialog/select-game-room-dialog.component';
-import { CreateGameRoomDialogComponent } from '../create-game-room-dialog/create-game-room-dialog.component';
-import { PlayAiQuestionComponent } from '../play-ai-question/play-ai-question.component';
+import { RequirementsDialogComponent } from '../../game-dialogs/requirements-dialog/requirements-dialog.component';
+import { SelectGameRoomDialogComponent } from '../../game-dialogs/select-game-room-dialog/select-game-room-dialog.component';
+import { CreateGameRoomDialogComponent } from '../../game-dialogs/create-game-room-dialog/create-game-room-dialog.component';
+import { PlayAiQuestionComponent } from '../../game-dialogs/play-ai-question/play-ai-question.component';
 
 // Services
 import { AuthService } from '../../../services/auth.service';

@@ -6,9 +6,6 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { SharedModule } from '../shared/shared.module';
 import { PlayerAnnounceComponent } from './player-announce/player-announce.component';
-import { GameRoomsComponent } from './game-rooms/game-rooms.component';
-import { GamePlayersComponent } from './game-players/game-players.component';
-import { GameStatisticsComponent } from './game-statistics/game-statistics.component';
 import { CardGameBoardComponent } from './card-game-board/card-game-board.component';
 import { GameStartComponent } from './board-actions/game-start/game-start.component';
 import { CardGameAnnounceComponent } from './board-actions/card-game-announce/card-game-announce.component';
@@ -28,9 +25,6 @@ import { PlayAiQuestionComponent } from './play-ai-question/play-ai-question.com
 @NgModule({
     declarations: [
         PlayerAnnounceComponent,
-        GameRoomsComponent,
-        GamePlayersComponent,
-        GameStatisticsComponent,
         CardGameBoardComponent,
         GameStartComponent,
         CardGameAnnounceComponent,
@@ -55,9 +49,6 @@ import { PlayAiQuestionComponent } from './play-ai-question/play-ai-question.com
     ],
     exports: [
         PlayerAnnounceComponent,
-        GameRoomsComponent,
-        GamePlayersComponent,
-        GameStatisticsComponent,
         CardGameBoardComponent,
         GameStartComponent,
         CardGameAnnounceComponent,

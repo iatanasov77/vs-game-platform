@@ -7,6 +7,7 @@ import { AppConstants } from "../constants";
 import IGamePlay from '_@/GamePlatform/Model/GamePlayInterface';
 import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
 import IGame from '_@/GamePlatform/Model/GameInterface';
+import { InviteResponseDto } from '../dto/rest/inviteResponseDto';
 
 @Injectable({
     providedIn: 'root'
@@ -58,6 +59,13 @@ export class GamePlayService
         
         return this.httpClient.post<IGamePlay>( 'finish-game', {game_room: gamePlay.room.id}, {headers} ).pipe(
             map( ( response: any ) => this.mapGamePlay( response ) )
+        );
+    }
+    
+    createInvite(): Observable<InviteResponseDto>
+    {
+        return this.httpClient.get<InviteResponseDto>( 'invite/create' ).pipe(
+            map( ( dto ) => dto as InviteResponseDto )
         );
     }
     

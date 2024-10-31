@@ -24,7 +24,7 @@ framework:
         # Setting 'cookie_domain' not work in symfony 5.4.1
         cookie_domain: '%vs_users.cookie.domain%'
         cookie_secure: auto
-        #cookie_httponly: true
+        cookie_httponly: false
         cookie_samesite: lax
         
         # The cookie_lifetime would be set to a relatively high value, 

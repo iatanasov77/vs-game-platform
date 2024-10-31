@@ -133,13 +133,16 @@ export class WebsocketGameService
         switch ( action.actionName ) {
             case ActionNames.gameCreated: {
                 console.log( 'WebSocket Action Game Created', action.actionName );
-                //alert( 'WebSocket Action Game Created Handled' );
                 
                 const dto = JSON.parse( message.data ) as GameCreatedActionDto;
                 this.appState.myColor.setValue( dto.myColor );
                 this.appState.game.setValue( dto.game );
                 
-                const cookie: GameCookieDto = { id: dto.game.id, color: dto.myColor };
+                const cookie: GameCookieDto = {
+                    id: dto.game.id,
+                    color: dto.myColor,
+                    game: window.gamePlatformSettings.gameSlug
+                };
                 this.cookieService.deleteAll( Keys.gameIdKey );
                 // console.log('Settings cookie', cookie);
                 this.cookieService.set( Keys.gameIdKey, JSON.stringify( cookie ), 2 );
@@ -493,6 +496,14 @@ export class WebsocketGameService
         this.sendMessage( JSON.stringify( action ) );
     }
     
+    sendRolled()
+    {
+        const action: ActionDto = {
+            actionName: ActionNames.rolled
+        };
+        this.sendMessage( JSON.stringify( action ) );
+    }
+
     resignGame(): void
     {
         const action: ActionDto = {

@@ -436,7 +436,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         $gameBase   = $this->gameRepository->findOneBy(['slug' => $this->GameCode]);
         $game       = $this->gamePlayFactory->createNew();
         $game->setGame( $gameBase );
-        $game->setGuid( Guid::NewGuid() );
+        $game->setGuid( $this->Game->Id );
         
         $black->setGame( $game );
         $white->setGame( $game );

@@ -17,16 +17,18 @@ import { Observable, Subscription, of } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
 import {
+    selectGameRoom,
     selectGameRoomSuccess,
     startGameSuccess,
     loadGameRooms
 } from '../../../+store/game.actions';
 import { GameState as MyGameState } from '../../../+store/game.reducers';
 
-import { RequirementsDialogComponent } from '../../shared/requirements-dialog/requirements-dialog.component';
-import { SelectGameRoomDialogComponent } from '../select-game-room-dialog/select-game-room-dialog.component';
-import { CreateGameRoomDialogComponent } from '../create-game-room-dialog/create-game-room-dialog.component';
-import { PlayAiQuestionComponent } from '../play-ai-question/play-ai-question.component';
+import { RequirementsDialogComponent } from '../../game-dialogs/requirements-dialog/requirements-dialog.component';
+import { SelectGameRoomDialogComponent } from '../../game-dialogs/select-game-room-dialog/select-game-room-dialog.component';
+import { CreateGameRoomDialogComponent } from '../../game-dialogs/create-game-room-dialog/create-game-room-dialog.component';
+import { PlayAiQuestionComponent } from '../../game-dialogs/play-ai-question/play-ai-question.component';
+import { CreateInviteGameDialogComponent } from '../../game-dialogs/create-invite-game-dialog/create-invite-game-dialog.component';
 
 // Services
 import { AuthService } from '../../../services/auth.service';
@@ -35,6 +37,11 @@ import { WebsocketGameService } from '../../../services/websocket-game.service';
 import { StatusMessageService } from '../../../services/status-message.service';
 import { SoundService } from '../../../services/sound.service';
 import { EditorService } from '../../../services/editor.service';
+import { TutorialService } from '../../../services/tutorial.service';
+
+import GameCookieDto from '_@/GamePlatform/Model/BoardGame/gameCookieDto';
+import { CookieService } from 'ngx-cookie-service';
+import { Keys } from '../../../utils/keys';
 
 // App State
 import { AppStateService } from '../../../state/app-state.service';
@@ -74,6 +81,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     @Input() game: any;
     
     @ViewChild( 'dices' ) dices: ElementRef | undefined;
+    @ViewChild( 'backgammonBoardButtons' ) backgammonBoardButtons: ElementRef | undefined;
     @ViewChild( 'messages' ) messages: ElementRef | undefined;
     
     gameDto$: Observable<GameDto>;
@@ -83,7 +91,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     timeLeft$: Observable<number>;
     
     user$: Observable<UserDto>;
-    //tutorialStep$: Observable<number>;
+    tutorialStep$: Observable<number>;
     gameString$: Observable<string>;
   
     gameSubs: Subscription;
@@ -102,7 +110,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     rotated = false;
     flipped = false;
     playAiFlag = false;
-    forGodlFlag = false;
+    forGoldFlag = false;
     lokalStake = 0;
     animatingStake = false;
     playAiQuestion = false;
@@ -125,7 +133,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     appState?: MyGameState;
     gameStarted: boolean    = false;
     
-    isRoomSelected: boolean = true; // false;
+    isRoomSelected: boolean = false;
     hasRooms: boolean       = false;
     
     gamePlayers: any;
@@ -144,11 +152,14 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         @Inject( AppStateService ) private appStateService: AppStateService,
         @Inject( SoundService ) private sound: SoundService,
         @Inject( EditorService ) private editService: EditorService,
+        @Inject( TutorialService ) private tutorialService: TutorialService,
+        @Inject( CookieService ) private cookieService: CookieService
     ) {
         this.gameDto$ = this.appStateService.game.observe();
         this.dices$ = this.appStateService.dices.observe();
         this.diceSubs = this.appStateService.dices.observe().subscribe( this.diceChanged.bind( this ) );
         this.playerColor$ = this.appStateService.myColor.observe();
+        this.playerColor$.subscribe( this.gotPlayerColor.bind( this ) );
         
         this.gameSubs = this.appStateService.game.observe().subscribe( this.gameChanged.bind( this ) );
         this.rolledSubs = this.appStateService.rolled.observe().subscribe( this.opponentRolled.bind( this ) );
@@ -159,7 +170,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         this.appStateService.moveTimer.observe().subscribe( this.timeTick.bind( this ) );
         
         this.user$ = this.appStateService.user.observe();
-        //this.tutorialStep$ = this.appStateService.tutorialStep.observe();
+        this.tutorialStep$ = this.appStateService.tutorialStep.observe();
         this.gameString$ = this.appStateService.gameString.observe();
         
         this.user$.subscribe( ( user ) => {
@@ -171,20 +182,28 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             this.authService.repair();
         }
         
-        const gameId = 'backgammon';
-        const playAi = false;
-        const forGold = false;
-        const tutorial = false;
-        const editing = false;
+        //console.log( 'Game Settings: ', window.gamePlatformSettings );
+        const gameId = window.gamePlatformSettings.queryParams.gameId;
+        const playAi = window.gamePlatformSettings.queryParams.playAi;
+        const forGold = window.gamePlatformSettings.queryParams.forGold;
+        const tutorial = window.gamePlatformSettings.queryParams.tutorial;
+        const editing = window.gamePlatformSettings.queryParams.editing;
     
-        this.playAiFlag = playAi;
-        this.forGodlFlag = forGold;
+        this.playAiFlag = playAi === 'true';
+        this.forGoldFlag = forGold === 'true';
         this.lokalStake = 0;
-        this.tutorial = tutorial;
-        this.editing = editing;
+        this.tutorial = tutorial === 'true';
+        this.editing = editing === 'true';
         
-        //this.zmqService.connect( gameId, playAi, forGold );
-        this.wsService.connect( gameId, playAi, forGold );
+        if ( tutorial ) {
+            // Waiting for everything else before starting makes Input data update components.
+            setTimeout( () => {
+                this.tutorialService.start();
+            }, 1 );
+        } else if ( ! this.editing ) {
+            //this.zmqService.connect( gameId, playAi, forGold );
+            //this.wsService.connect( gameId, playAi, forGold );
+        }
         
         if ( this.editing ) {
             this.exitVisible = true;
@@ -203,8 +222,10 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     {
         this.store.subscribe( ( state: any ) => {
             //console.log( state.app.main );
+            
             this.appState   = state.app.main;
             this.hasRooms   = this?.appState?.rooms?.length && this?.appState?.rooms?.length > 0 ? true : false;
+            this.selectGameRoomFromCookie();
             
             if ( state.app.main.gamePlay ) {
                 this.gameStarted    = true;
@@ -228,10 +249,15 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         this.playAiQuestion = false;
         this.lokalStake = 0;
     
-        if ( ! this.playAiFlag && ! this.editing ) this.waitForOpponent();
-    
+        //if ( ! this.playAiFlag && ! this.editing ) this.waitForOpponent();
         this.fireResize();
-        //this.statusMessageService.setNotRoomSelected();
+        
+        setTimeout( () => {
+            if ( ! this.isRoomSelected ) {
+                //alert( this.appStateService.user );
+                this.statusMessageService.setNotRoomSelected();
+            }
+        }, 11000 );
     }
     
     ngOnDestroy(): void
@@ -273,22 +299,53 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         }
     }
     
+    selectGameRoomFromCookie(): void
+    {
+        if ( ! this?.appState?.game || ! this?.appState?.rooms ) {
+            return;
+        }
+        
+        let gameCookie  = this.cookieService.get( Keys.gameIdKey );
+        if ( gameCookie ) {
+            let gameCookieDto   = JSON.parse( gameCookie ) as GameCookieDto;
+            if ( gameCookieDto.game === window.gamePlatformSettings.gameSlug ) {
+                //alert( gameCookie );
+                let gameRoom    = this?.appState?.rooms.find( ( item: any ) => item?.name === gameCookieDto.id );
+                if ( gameRoom && ! this.isRoomSelected ) {
+                    //alert( gameCookie );
+                    this.store.dispatch( selectGameRoom( { game: this?.appState?.game, room: gameRoom } ) );
+                }
+            }
+        }
+    }
+    
     private waitForOpponent()
     {
         this.sound.playPianoIntro();
         this.startedHandle = setTimeout( () => {
             if ( ! this.started ) {
-                this.playAiQuestion = true;
+                //alert( this.appStateService.user );
+                if ( this.appStateService.user?.getValue() ) {
+                    this.playAiQuestion = true;
+                } else {
+                    this.appStateService.hideBusy();
+                }
             }
         }, 11000 );
     }
     
+    gotPlayerColor()
+    {
+        if ( this.appStateService.myColor.getValue() == PlayerColor.white ) {
+            this.flipped = true;
+        }
+    }
+
     sendMoves(): void
     {
-        //this.zmqService.sendMoves();
         this.wsService.sendMoves();
-        
         this.rollButtonClicked = false;
+        this.dicesVisible = false;
     }
     
     doMove( move: MoveDto ): void
@@ -442,7 +499,13 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         
         this.height = Math.min( window.innerHeight - 40, this.width * 0.6 );
         
-        const btnsOffset = 5; //Cheating. Could not get the height.
+        const buttons = this.backgammonBoardButtons?.nativeElement as HTMLElement;
+        const btnsOffset = 15; //Cheating. Could not get the height.
+        if ( buttons ) {
+            buttons.style.top = `${this.height / 2 + btnsOffset}px`;
+            buttons.style.right = `${this.width * 0.30}px`;
+        }
+        
         const dices = this.dices?.nativeElement as HTMLElement;
         if ( dices ) {
             // Puts the dices on right side if its my turn.
@@ -466,15 +529,22 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     
     rollButtonClick(): void
     {
+        this.wsService.sendRolled();
         this.rollButtonClicked = true;
         this.setRollButtonVisible();
-        this.setDicesVisible();
+        this.dicesVisible = true;
+    
+        this.sound.playDice();
+    
         this.setSendVisible();
         this.fireResize();
+        this.requestDoublingVisible = false;
+        
         const gme = this.appStateService.game.getValue();
-        if ( ! gme.validMoves || gme.validMoves.length === 0 ) {
+        if( ! gme.validMoves || gme.validMoves.length === 0 ) {
             this.statusMessageService.setBlockedMessage();
         }
+        this.changeDetector.detectChanges();
     }
     
     opponentRolled(): void
@@ -490,7 +560,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             return;
         }
         
-        this.rollButtonVisible = !this.rollButtonClicked;
+        this.rollButtonVisible = ! this.rollButtonClicked;
     }
     
     setSendVisible(): void
@@ -521,7 +591,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             this.dicesVisible = true;
             return;
         }
-        this.dicesVisible = !this.rollButtonVisible;
+        this.dicesVisible = ! this.rollButtonVisible;
     }
     
     resignGame(): void
@@ -537,9 +607,9 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         this.rollButtonClicked = false;
         
 //         this.zmqService.resetGame();
-//         this.zmqService.connect( '', this.playAiFlag, this.forGodlFlag );
+//         this.zmqService.connect( '', this.playAiFlag, this.forGoldFlag );
         this.wsService.resetGame();
-        this.wsService.connect( '', this.playAiFlag, this.forGodlFlag );
+        this.wsService.connect( '', this.playAiFlag, this.forGoldFlag );
         this.waitForOpponent();
     }
     
@@ -560,7 +630,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             await this.delay( 500 );
         }
         
-        this.wsService.connect( '', true, this.forGodlFlag );
+        this.wsService.connect( '', true, this.forGoldFlag );
     }
     
     delay( ms: number )
@@ -639,6 +709,17 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
             modalRef.dismiss();
         });
+    }
+    
+    inviteFriend(): void
+    {
+        const modalRef = this.ngbModal.open( CreateInviteGameDialogComponent );
+        
+        modalRef.componentInstance.closeModal.subscribe( () => {
+            // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
+            modalRef.dismiss();
+        });
+        
     }
     
     onFlipped(): void

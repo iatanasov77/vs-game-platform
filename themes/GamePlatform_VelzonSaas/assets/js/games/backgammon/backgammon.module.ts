@@ -12,7 +12,6 @@ import { HttpClient, HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromD
 import { BaseUrlInterceptor } from '../application/services/base-url-interceptor';
 
 import { StoreModule, provideStore, ActionReducerMap } from '@ngrx/store';
-import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { EffectsModule } from '@ngrx/effects';
 
 import { loginReducer } from '../application/+store/login.reducers';
@@ -27,6 +26,7 @@ import { GlobalErrorService } from '../application/services/global-error-service
 import { BackgammonComponent } from './backgammon.component';
 import { SharedModule } from '../application/components/shared/shared.module';
 import { GameBoardsModule } from '../application/components/game-boards/game-boards.module';
+import { SideBarsModule } from '../application/components/side-bars/side-bars.module';
 
 export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppState>>( 'Game Reducers' );
 
@@ -47,8 +47,10 @@ export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppSta
                 deps: [HttpClient]
             }
         }),
+        
         SharedModule,
         GameBoardsModule,
+        SideBarsModule,
         
         StoreModule.forRoot([
             loginReducer,
@@ -70,7 +72,7 @@ export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppSta
         
         provideHttpClient( withInterceptorsFromDi() ),
         { provide: HTTP_INTERCEPTORS, useClass: BaseUrlInterceptor, multi: true },
-        { provide: ErrorHandler, useClass: GlobalErrorService },
+        { provide: ErrorHandler, useClass: GlobalErrorService }
     ]
 })
 export class BackgammonModule { }

@@ -60,9 +60,13 @@ services:
         arguments:
             - '@logger'
             - '@serializer'
+            - '@http_client'
             - '@vs_users.repository.users'
             - '@vs_users.security_bridge'
             - '@app_game_manager_factory'
+        tags:
+            - { name: app.game_service, priority: -2000 }
+            #- { name: kernel.event_listener, event: kernel.response, priority: -2000 }
             
     app_game_manager_factory:
         class: App\Component\Manager\GameManagerFactory

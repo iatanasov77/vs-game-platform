@@ -4,6 +4,10 @@ use App\Controller\Application\GameController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Vankosoft\ApplicationBundle\Component\Status;
+use App\Component\Utils\Keys;
+
 class BackgammonController extends GameController
 {
     public function index( Request $request ): Response
@@ -20,7 +24,22 @@ class BackgammonController extends GameController
             'socketGameUrl'         => $this->getParameter( 'app_websocket_game_url' ),
             'apiVerifySiganature'   => $signature,
             'timeoutBetweenPlayers' => $gamePlatformSettings->getTimeoutBetweenPlayers(),
+            
+            'queryParams'           => [
+                'gameId'    => $request->query->get( 'gameId' ),
+                'playAi'    => $request->query->get( 'playAi' ),
+                'forGold'   => $request->query->get( 'forGold' ),
+                'tutorial'  => $request->query->get( 'tutorial' ),
+                'editing'   => $request->query->get( 'editing' ),
+                'inviteId'  => $request->query->get( 'inviteId' ),
+            ],
         ];
+        
+        
+//         return new JsonResponse([
+//             'status'        => Status::STATUS_OK,
+//             'gameCookie'    => $request->cookies->get( Keys::GAME_ID_KEY ),
+//         ]);
         
         return new Response(
             $this->templatingEngine->render( $this->getTemplate( $gameSlug , 'Pages/Games/backgammon.html.twig' ), [

@@ -3,28 +3,27 @@
         <button *ngIf="hasRooms" (click)="selectGameRoom()" class="default-button">
             {{ 'game_board.select_room' | translate }}
         </button>
+        
         <button (click)="createGameRoom()" class="default-button">
             {{ 'game_board.create_room' | translate }}
         </button>
     </ng-container>
     
     <ng-container *ngIf="isRoomSelected">
-        <button (click)="sendMoves()" *ngIf="sendVisible" class="default-button">
-            {{ 'game_board.done' | translate }}
-        </button>
-        <button (click)="undoMove()" *ngIf="undoVisible" class="secondary-button">
-            {{ 'game_board.undo' | translate }}
-        </button>
-        <button *ngIf="rollButtonVisible" (click)="rollButtonClick()" class="default-button">
-            {{ 'game_board.roll' | translate }}
-        </button>
-        
-        <!-- MAY BE ONLY New Game and Exit Game Buttons Must to be Here -->
         <button (click)="newGame()" *ngIf="newVisible" class="default-button">
             {{ 'game_board.new_game' | translate }}
         </button>
+        
         <button (click)="exitGame()" *ngIf="exitVisible" class="secondary-button">
             {{ 'game_board.exit_game' | translate }}
+        </button>
+        
+        <button (click)="resign()" *ngIf="acceptDoublingVisible" class="red-button smaller">
+            {{ 'game_board.resign' | translate }}
+        </button>
+        
+        <button (click)="inviteFriendClick()" *ngIf="newVisible" class="default-button">
+            {{ 'game_board.invite_friend' | translate }}
         </button>
     </ng-container>
 </div>

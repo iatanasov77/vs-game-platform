@@ -3,10 +3,13 @@
 use App\Controller\Application\DefaultController as BaseDefaultController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Twig\Environment;
 use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 
 use Vankosoft\ApplicationBundle\Component\Context\ApplicationContextInterface;
+use Vankosoft\ApplicationBundle\Component\Status;
+use App\Component\Utils\Keys;
 
 class DefaultController extends BaseDefaultController
 {
@@ -34,6 +37,14 @@ class DefaultController extends BaseDefaultController
         return new Response( $this->templatingEngine->render( $this->getTemplate(), [
             'gameCategories'    => $this->gcRepository->findAll(),
         ]));
+    }
+    
+    public function getGameCookie( Request $request ): Response
+    {
+        return new JsonResponse([
+            'status'        => Status::STATUS_OK,
+            'gameCookie'    => $request->cookies->get( Keys::GAME_ID_KEY ),
+        ]);
     }
     
     protected function getTemplate(): string

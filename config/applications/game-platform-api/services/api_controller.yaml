@@ -10,6 +10,13 @@ services:
             - '@vs_users.security_bridge'
             - '@vs_api.api_manager'
     
+    App\Controller\Api\InviteController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@vs_users.security_bridge'
+            - '@app_game_service'
+    
     App\Controller\Api\BackgammonEditorController:
         tags: ['controller.service_arguments']
         autowire: true

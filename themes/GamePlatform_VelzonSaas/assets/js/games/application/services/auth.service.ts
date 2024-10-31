@@ -88,7 +88,7 @@ export class AuthService
                     
                     // Add Backgamon User in Local Storage
                     this.signIn( this.createUserDto( auth ), auth.apiToken );
-                    this.statusMessageService.setWaitingForConnect();
+                    //this.statusMessageService.setWaitingForConnect();
                 }
             })
         );

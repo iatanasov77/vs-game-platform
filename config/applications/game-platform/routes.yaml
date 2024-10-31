@@ -13,4 +13,7 @@ app_set_lang:
 app_set_locale:
     path: /set_locale/{locale}
     controller: App\Controller\GamePlatform\DefaultController::setLocale
-    
+
+app_get_game_cookie:
+    path: /games/game-cookie
+    controller: App\Controller\GamePlatform\DefaultController::getGameCookie

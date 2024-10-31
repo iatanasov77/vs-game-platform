@@ -30,6 +30,8 @@
     ></app-board-menu>
     -->
     
+    <app-invite-game></app-invite-game>
+    
     <app-backgammon-board
         class="game-board"
         
@@ -42,6 +44,7 @@
         [flipped]="flipped"
         [themeName]="themeName"
         [timeLeft]="timeLeft$ | async"
+        [tutorialStep]="tutorialStep$ | async"
         [editing]="editing"
         [rollButtonVisible]="rollButtonVisible"
         [sendVisible]="dicesVisible"
@@ -61,21 +64,31 @@
         ></app-dices>
     </div>
     
+    <div *ngIf="!tutorial" class="backgammon-board-buttons" #backgammonBoardButtons>
+        <backgammon-board-buttons
+          [undoVisible]="undoVisible"
+          [sendVisible]="sendVisible"
+          [rollButtonVisible]="rollButtonVisible"
+          [requestHintVisible]="requestHintVisible"
+          (onUndoMove)="undoMove()"
+          (onSendMoves)="sendMoves()"
+          (onRoll)="rollButtonClick()"
+          (onRequestHint)="requestHint()"
+        >
+        </backgammon-board-buttons>
+    </div>
+  
     <div class="board-buttons" #boardButtons>
         <app-board-buttons
             [isRoomSelected]="isRoomSelected"
             [hasRooms]="hasRooms"
             
-            [undoVisible]="undoVisible"
-            [sendVisible]="sendVisible"
-            [rollButtonVisible]="rollButtonVisible"
             [newVisible]="newVisible"
             [exitVisible]="exitVisible"
-            (onUndoMove)="undoMove()"
-            (onSendMoves)="sendMoves()"
-            (onRoll)="rollButtonClick()"
             (onNew)="newGame()"
             (onExit)="exitGame()"
+            (onResign)="resignGame()"
+            (onInviteFriend)="inviteFriend()"
             
             (onSelectGameRoom)="selectGameRoom()"
             (onCreateGameRoom)="createGameRoom()"

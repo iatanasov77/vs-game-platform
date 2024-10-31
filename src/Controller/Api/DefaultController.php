@@ -86,11 +86,15 @@ class DefaultController extends AbstractController
             'game_board.start_game'                         => 'Start Game',
             'game_board.game'                               => 'Game',
             
+            'game_board.acceptDoubling'                     => 'Accept',
+            'game_board.resign'                             => 'Resign',
+            'game_board.help'                               => 'Help',
             'game_board.done'                               => 'Done',
             'game_board.undo'                               => 'Undo',
             'game_board.roll'                               => 'Roll',
             'game_board.new_game'                           => 'New Game',
             'game_board.exit_game'                          => 'Exit Game',
+            'game_board.invite_friend'                      => 'Invite a friend',
             
             'game_board.players.title'                      => 'Players',
             'game_board.rooms.title'                        => 'Game Rooms',
@@ -115,6 +119,8 @@ class DefaultController extends AbstractController
             'statusmessage.dblaccepted'                     => 'Opponent did accept. Your turn to move.',
             'statusmessage.dblrequested'                    => 'Double your bet or give up.',
             'statusmessage.waitfordblresponse'              => 'Waiting for opponent to respond.',
+            
+            'chat.entermessage'                             => 'Chat here',
             
             // Game Global Messages
             'backgammon'                                    => 'Backgammon',
@@ -159,11 +165,15 @@ class DefaultController extends AbstractController
             'game_board.start_game'                         => 'Start Game',
             'game_board.game'                               => 'Game',
             
+            'game_board.acceptDoubling'                     => 'Accept',
+            'game_board.resign'                             => 'Resign',
+            'game_board.help'                               => 'Help',
             'game_board.done'                               => 'Done',
             'game_board.undo'                               => 'Undo',
             'game_board.roll'                               => 'Roll',
             'game_board.new_game'                           => 'New Game',
             'game_board.exit_game'                          => 'Exit Game',
+            'game_board.invite_friend'                      => 'Invite a friend',
             
             'game_board.players.title'                      => 'Players',
             'game_board.rooms.title'                        => 'Game Rooms',
@@ -188,6 +198,8 @@ class DefaultController extends AbstractController
             'statusmessage.dblaccepted'                     => 'Opponent did accept. Your turn to move.',
             'statusmessage.dblrequested'                    => 'Double your bet or give up.',
             'statusmessage.waitfordblresponse'              => 'Waiting for opponent to respond.',
+            
+            'chat.entermessage'                             => 'Chat here',
             
             // Game Global Messages
             'backgammon'                                    => 'Backgammon',

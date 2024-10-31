@@ -15,7 +15,7 @@ import {
 } from '../../../../+store/game.actions';
 import { GameState } from '../../../../+store/game.reducers';
 
-import { RequirementsDialogComponent } from '../../../shared/requirements-dialog/requirements-dialog.component';
+import { RequirementsDialogComponent } from '../../../game-dialogs/requirements-dialog/requirements-dialog.component';
 
 import templateString from './game-start.component.html'
 declare var $: any;

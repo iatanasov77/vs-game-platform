@@ -77,11 +77,6 @@ div.playAiQuestion p {
     }
 }
 
-.board-buttons {
-    display: inline-block;
-    /*position: absolute;*/
-}
-
 .dices {
     display: inline-block;
     position: absolute;
@@ -94,4 +89,12 @@ div.playAiQuestion p {
     text-align: center;
     width: 100%;
     color: #777;
+}
+
+/*
+ * backgammon-board-buttons
+ */
+.backgammon-board-buttons {
+    display: inline-block;
+    position: absolute;
 }

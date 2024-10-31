@@ -1,5 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
 import { loginBySignatureSuccess } from '../application/+store/login.actions';
@@ -37,6 +38,9 @@ export class BackgammonComponent extends GameBaseComponent implements OnInit
     title   = 'Backgammon';
     busy$: Observable<Busy>;
     errors$: Observable<ErrorState>;
+    
+    playAi = false;
+    forGold = false;
   
     constructor(
         @Inject( AuthService ) authService: AuthService,

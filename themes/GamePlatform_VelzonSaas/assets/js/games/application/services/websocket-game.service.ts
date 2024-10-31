@@ -90,8 +90,10 @@ export class WebsocketGameService
         if ( this.appState.user.getValue() ) {
             //this.statusMessageService.setWaitingForConnect();
             this.statusMessageService.setNotGameStarted();
+            this.appState.hideBusy();
         } else {
             this.statusMessageService.setNotLoggedIn();
+            this.appState.hideBusy();
         }
         this.appState.myConnection.setValue( { connected: true, pingMs: ping } );
         

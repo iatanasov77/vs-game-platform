@@ -236,6 +236,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         this.actions$.pipe( ofType( selectGameRoomSuccess ) ).subscribe( () => {
             this.isRoomSelected = true;
             this.statusMessageService.setNotGameStarted();
+            this.appStateService.hideBusy();
         });
         
         this.actions$.pipe( ofType( startGameSuccess ) ).subscribe( () => {
@@ -256,6 +257,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             if ( ! this.isRoomSelected ) {
                 //alert( this.appStateService.user );
                 this.statusMessageService.setNotRoomSelected();
+                this.appStateService.hideBusy();
             }
         }, 11000 );
     }

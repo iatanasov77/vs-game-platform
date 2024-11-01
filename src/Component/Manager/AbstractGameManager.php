@@ -308,6 +308,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         $action->myColor = PlayerColor::White;
         $this->Send( $this->Client2, $action );
         
+        return;
         $this->Game->PlayState = GameState::FirstThrow;
         // todo: visa på clienten även när det blir samma
         

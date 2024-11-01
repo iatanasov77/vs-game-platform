@@ -1,6 +1,8 @@
 export interface IThemes
 {
+    name: string;
     boardBackground: string | CanvasGradient | CanvasPattern;
+    homeBackground: string | CanvasGradient | CanvasPattern;
     border: string | CanvasGradient | CanvasPattern;
     whiteTriangle: string | CanvasGradient | CanvasPattern;
     blackTriangle: string | CanvasGradient | CanvasPattern;

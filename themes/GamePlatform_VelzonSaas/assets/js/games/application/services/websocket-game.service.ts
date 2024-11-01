@@ -149,9 +149,11 @@ export class WebsocketGameService
                 // console.log('Settings cookie', cookie);
                 this.cookieService.set( Keys.gameIdKey, JSON.stringify( cookie ), 2 );
                 this.statusMessageService.setTextMessage( dto.game );
+                
                 this.appState.moveTimer.setValue( dto.game.thinkTime );
                 this.sound.fadeIntro();
                 this.startTimer();
+                
                 break;
             }
             case ActionNames.dicesRolled: {

@@ -86,6 +86,11 @@ class DefaultController extends AbstractController
             'game_board.start_game'                         => 'Start Game',
             'game_board.game'                               => 'Game',
             
+            'gameboard.black'                               => 'Black',
+            'gameboard.white'                               => 'White',
+            'gameboard.you'                                 => 'You',
+            'gameboard.left'                                => 'left',
+            
             'game_board.acceptDoubling'                     => 'Accept',
             'game_board.resign'                             => 'Resign',
             'game_board.help'                               => 'Help',
@@ -170,6 +175,11 @@ class DefaultController extends AbstractController
             'game_board.play_with_friends'                  => 'Play with Friends',
             'game_board.start_game'                         => 'Start Game',
             'game_board.game'                               => 'Game',
+            
+            'gameboard.black'                               => 'Black',
+            'gameboard.white'                               => 'White',
+            'gameboard.you'                                 => 'You',
+            'gameboard.left'                                => 'left',
             
             'game_board.acceptDoubling'                     => 'Accept',
             'game_board.resign'                             => 'Resign',

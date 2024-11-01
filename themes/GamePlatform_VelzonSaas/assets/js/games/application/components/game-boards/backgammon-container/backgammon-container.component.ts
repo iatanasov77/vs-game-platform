@@ -202,7 +202,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             }, 1 );
         } else if ( ! this.editing ) {
             //this.zmqService.connect( gameId, playAi, forGold );
-            //this.wsService.connect( gameId, playAi, forGold );
+            this.wsService.connect( gameId, playAi, forGold );
         }
         
         if ( this.editing ) {
@@ -396,8 +396,13 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         
         if ( ! this.started && dto ) {
             clearTimeout( this.startedHandle );
-            this.started = true;
-            this.playAiQuestion = false;
+            
+            if ( dto.playState === GameState.playing ) {
+                //alert( dto.playState );
+                this.started = true;
+                this.playAiQuestion = false;
+            }
+            
             if ( dto.isGoldGame ) this.sound.playCoin();
         }
         // console.log(dto?.id);

@@ -46,11 +46,6 @@
         [timeLeft]="timeLeft$ | async"
         [tutorialStep]="tutorialStep$ | async"
         [editing]="editing"
-        [rollButtonVisible]="rollButtonVisible"
-        [sendVisible]="dicesVisible"
-        [undoVisible]="undoVisible"
-        [newVisible]="newVisible"
-        [exitVisible]="exitVisible"
         (addMove)="doMove($event)"
         (moveAnimFinished)="moveAnimFinished()"
         (addEditMove)="doEditMove($event)"
@@ -59,7 +54,7 @@
     <div class="dices" #dices>
         <app-dices
             *ngIf="dicesVisible"
-            [dices]="dices$ | async"
+            [dices]="dicesDto"
             [color]="diceColor"
         ></app-dices>
     </div>

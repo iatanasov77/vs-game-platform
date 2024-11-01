@@ -138,25 +138,27 @@ export class StatusMessageService
     /**
      * Vankata Statuses
      */
-     
     setNotLoggedIn(): void
     {
-        const statusMessage = StatusMessage.info( 'You are NOT Logged in' );
+        const text = this.trans.instant( 'statusmessage.youarenotloggedin' );
+        const msg = StatusMessage.info( text );
         this.appState.showBusyNoOverlay();
-        this.appState.statusMessage.setValue( statusMessage );
+        this.appState.statusMessage.setValue( msg );
     }
     
     setNotRoomSelected(): void
     {
-        const statusMessage = StatusMessage.info( 'You must select a Room' );
+        const text = this.trans.instant( 'statusmessage.youmustselectroom' );
+        const msg = StatusMessage.info( text );
         this.appState.showBusyNoOverlay();
-        this.appState.statusMessage.setValue( statusMessage );
+        this.appState.statusMessage.setValue( msg );
     }
     
     setNotGameStarted(): void
     {
-        const statusMessage = StatusMessage.info( 'Game is NOT Started' );
+        const text = this.trans.instant( 'statusmessage.gamenotstarted' );
+        const msg = StatusMessage.info( text );
         this.appState.showBusyNoOverlay();
-        this.appState.statusMessage.setValue( statusMessage );
+        this.appState.statusMessage.setValue( msg );
     }
 }

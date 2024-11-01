@@ -125,6 +125,10 @@ class DefaultController extends AbstractController
             'statusmessage.dblrequested'                    => 'Double your bet or give up.',
             'statusmessage.waitfordblresponse'              => 'Waiting for opponent to respond.',
             
+            'statusmessage.youarenotloggedin'               => 'You are NOT Logged in',
+            'statusmessage.youmustselectroom'               => 'You must select a Room',
+            'statusmessage.gamenotstarted'                  => 'Game is NOT Started',
+            
             'chat.entermessage'                             => 'Chat here',
             
             // Game Global Messages
@@ -214,6 +218,10 @@ class DefaultController extends AbstractController
             'statusmessage.dblaccepted'                     => 'Opponent did accept. Your turn to move.',
             'statusmessage.dblrequested'                    => 'Double your bet or give up.',
             'statusmessage.waitfordblresponse'              => 'Waiting for opponent to respond.',
+            
+            'statusmessage.youarenotloggedin'               => 'You are NOT Logged in',
+            'statusmessage.youmustselectroom'               => 'You must select a Room',
+            'statusmessage.gamenotstarted'                  => 'Game is NOT Started',
             
             'chat.entermessage'                             => 'Chat here',
             

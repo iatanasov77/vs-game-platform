@@ -20,9 +20,7 @@ import {
     selectGameRoom,
     selectGameRoomSuccess,
     startGameSuccess,
-    loadGameRooms,
-    loadGameRoomsSuccess,
-    loadGameSuccess
+    loadGameRooms
 } from '../../../+store/game.actions';
 import { GameState as MyGameState } from '../../../+store/game.reducers';
 
@@ -234,13 +232,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             }
         });
         
-//         this.actions$.pipe( ofType( loadGameRoomsSuccess ) ).subscribe( () => {
-//             this.selectGameRoomFromCookie();
-//         });
-        
         this.actions$.pipe( ofType( selectGameRoomSuccess ) ).subscribe( () => {
-            //alert( 'Game Room Selected.' );
-            
             //this.newVisible = this.appStateService.game.getValue()?.playState === GameState.created;
             this.newVisible = true;
             this.exitVisible = false;
@@ -316,26 +308,6 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
                 case 'game':
                     this.game = changedProp.currentValue;
                     break;
-            }
-        }
-    }
-    
-    selectGameRoomFromCookie(): void
-    {
-        //alert( 'EHO 1' );
-        let gameCookie  = this.cookieService.get( Keys.gameIdKey );
-        if ( gameCookie ) {
-            let gameCookieDto   = JSON.parse( gameCookie ) as GameCookieDto;
-            if ( gameCookieDto.game === window.gamePlatformSettings.gameSlug ) {
-                //alert( gameCookie );
-                let gameRoom    = this?.appState?.rooms?.find( ( item: any ) => item?.name === gameCookieDto.id );
-                if ( gameRoom && ! this.isRoomSelected ) {
-                    //alert( gameCookie );
-                    //alert( 'EHO 2' );
-                    if ( this?.appState?.game ) {
-                        this.store.dispatch( selectGameRoom( { game: this?.appState?.game, room: gameRoom } ) );
-                    }
-                }
             }
         }
     }

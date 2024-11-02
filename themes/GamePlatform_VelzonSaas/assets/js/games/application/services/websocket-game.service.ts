@@ -9,9 +9,7 @@ import { GameService } from './game.service';
 
 // NGRX Store
 import { Store } from '@ngrx/store';
-import { Actions, ofType } from '@ngrx/effects';
-import { loadGameRoomsSuccess, selectGameRoom, loadGameRooms } from '../+store/game.actions';
-import { GameState as MyGameState } from '../+store/game.reducers';
+import { selectGameRoom, loadGameRooms } from '../+store/game.actions';
 import IGameRoom from '_@/GamePlatform/Model/GameRoomInterface';
 
 // Board Interfaces
@@ -62,8 +60,6 @@ export class WebsocketGameService
     
     timerStarted = false;
     timerId: any;
-  
-    myGameState?: MyGameState;
     
     constructor(
         @Inject( CookieService ) private cookieService: CookieService,
@@ -72,11 +68,8 @@ export class WebsocketGameService
         @Inject( AppStateService ) private appState: AppStateService,
         @Inject( GameService ) private gameService: GameService,
         @Inject( Store ) private store: Store,
-        @Inject( Actions ) private actions$: Actions,
     ) {
         this.store.subscribe( ( state: any ) => {
-            this.myGameState   = state.app.main;
-            
             //alert( state.app.main.rooms );
             if ( state.app.main.rooms ) {
                 this.selectGameRoomFromCookie( state.app.main.rooms );

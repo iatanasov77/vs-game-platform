@@ -1,10 +1,17 @@
 import { Injectable, Inject } from '@angular/core';
 
+// Services
 import { CookieService } from 'ngx-cookie-service';
 import { StatusMessageService } from './status-message.service';
 import { SoundService } from './sound.service';
 import { AppStateService } from '../state/app-state.service';
 import { GameService } from './game.service';
+
+// NGRX Store
+import { Store } from '@ngrx/store';
+import { Actions, ofType } from '@ngrx/effects';
+import { loadGameRoomsSuccess, selectGameRoom } from '../+store/game.actions';
+import { GameState as MyGameState } from '../+store/game.reducers';
 
 // Board Interfaces
 import CheckerDto from '_@/GamePlatform/Model/BoardGame/checkerDto';
@@ -55,13 +62,21 @@ export class WebsocketGameService
     timerStarted = false;
     timerId: any;
   
+    myGameState?: MyGameState;
+    
     constructor(
         @Inject( CookieService ) private cookieService: CookieService,
         @Inject( StatusMessageService ) private statusMessageService: StatusMessageService,
         @Inject( SoundService ) private sound: SoundService,
         @Inject( AppStateService ) private appState: AppStateService,
         @Inject( GameService ) private gameService: GameService,
-    ) { }
+        @Inject( Store ) private store: Store,
+        @Inject( Actions ) private actions$: Actions,
+    ) {
+        this.store.subscribe( ( state: any ) => {
+            this.myGameState   = state.app.main;
+        });
+    }
     
     connect( gameId: string, playAi: boolean, forGold: boolean ): void
     {
@@ -79,6 +94,25 @@ export class WebsocketGameService
         this.socket.onerror     = this.onError.bind( this );
         this.socket.onopen      = this.onOpen.bind( this );
         this.socket.onclose     = this.onClose.bind( this );
+    }
+    
+    tryReconnect(): void
+    {
+    
+    }
+    
+    selectGameRoomFromCookie( cookie: GameCookieDto ): void
+    {
+        alert( 'Game ID: ' + cookie.id );
+        this.actions$.pipe( ofType( loadGameRoomsSuccess ) ).subscribe( () => {
+            let gameRoom    = this?.myGameState?.rooms?.find( ( item: any ) => item?.name === cookie.id );
+            if ( gameRoom ) {
+                alert( 'EHO 2' );
+                if ( this?.myGameState?.game ) {
+                    this.store.dispatch( selectGameRoom( { game: this?.myGameState?.game, room: gameRoom } ) );
+                }
+            }
+        });
     }
     
     onOpen(): void
@@ -149,6 +183,8 @@ export class WebsocketGameService
                 // console.log('Settings cookie', cookie);
                 this.cookieService.set( Keys.gameIdKey, JSON.stringify( cookie ), 2 );
                 this.statusMessageService.setTextMessage( dto.game );
+                
+                this.selectGameRoomFromCookie( cookie );
                 
                 this.appState.moveTimer.setValue( dto.game.thinkTime );
                 this.sound.fadeIntro();

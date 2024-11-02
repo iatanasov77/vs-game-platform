@@ -43,7 +43,8 @@ final class WebsocketGameManager extends AbstractGameManager
                 $this->Engine = new AiEngine( $this->Game );
                 
                 $this->CreateDbGame();
-                $this->StartGame();
+                $this->CreateGame();
+                //$this->StartGame();
                 
                 if ( $this->Game->CurrentPlayer == PlayerColor::White ) {
                     $this->logger->info( "MyDebug CurrentPlayer: White" );
@@ -67,9 +68,10 @@ final class WebsocketGameManager extends AbstractGameManager
             }
             
             $this->CreateDbGame();
-            $this->StartGame();
+            $this->CreateGame();
+            //$this->StartGame();
             
-            $this->eventDispatcher->dispatch( new GameEndedEvent( Mapper::GameToDto( $this->Game ) ), GameEndedEvent::NAME );
+            $this->dispatchGameEnded();
         }
     }
 }

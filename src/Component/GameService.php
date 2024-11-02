@@ -133,26 +133,19 @@ class GameService
         if ( $manager == null || $playAi ) {
             $manager    = $this->managerFactory->createWebsocketGameManager();
             
-            /** @NOTE Workaround  */
-            if ( $webSocket->State != WebSocketState::Open ) {
-                $webSocket->State   = WebSocketState::Open;
-            }
-            
             if ( ! $manager->Game ) {
                 $this->logger->info( "MyDebug: Creting New Game Manager." );
                 $manager->Client1   = $webSocket;
-                $manager->CreateGame();
+                $manager->InitializeGame();
             }
             
-            $gameGuid   =  $manager->Game->Id;
-            $this->AllGames->set( $gameGuid, $manager );
-            
-            //$manager.Ended += Game_Ended;
-            //$this->Game_Ended( $manager );
+            $manager->dispatchGameEnded();
             
             $manager->SearchingOpponent = ! $playAi;
             $manager->GameCode          = $gameCode;
             
+            $gameGuid                   =  $manager->Game->Id;
+            $this->AllGames->set( $gameGuid, $manager );
             $this->logger->info( "MyDebug: Added a new game and waiting for opponent. Game id {$manager->Game->Id}" );
             
             // entering socket loop

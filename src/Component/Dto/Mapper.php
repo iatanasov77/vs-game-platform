@@ -24,13 +24,13 @@ final class Mapper
             function( $entry ) {
                 return self::PointToDto( $entry );
             }
-        ); // ->toArray()
+        );
         
         $gameDto->validMoves = $game->ValidMoves->map(
             function( $entry ) {
                 return self::MoveToDto( $entry );
             }
-        ); // ->toArray()
+        );
         
         $gameDto->thinkTime = Game::ClientCountDown - (
             ( new \DateTime( 'now' ) )->getTimestamp() - $game->ThinkStart->getTimestamp()
@@ -39,7 +39,7 @@ final class Mapper
         $gameDto->goldMultiplier    = $game->GoldMultiplier;
         $gameDto->isGoldGame        = $game->IsGoldGame;
         $gameDto->lastDoubler       = $game->LastDoubler;
-        $gameDto->stake             = $game->Stake;
+        $gameDto->stake             = \intval( $game->Stake );
         
         return $gameDto;
     }

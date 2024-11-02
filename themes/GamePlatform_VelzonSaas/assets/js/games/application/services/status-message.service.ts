@@ -18,7 +18,9 @@ export class StatusMessageService
         @Inject( TranslateService ) private trans: TranslateService,
         @Inject( SoundService ) private sound: SoundService,
         @Inject( AppStateService ) private appState: AppStateService,
-    ) { }
+    ) {
+        this.trans.use( 'en' );
+    }
     
     setTextMessage( game: GameDto ): void
     {
@@ -142,7 +144,6 @@ export class StatusMessageService
     {
         const text = this.trans.instant( 'statusmessage.youarenotloggedin' );
         const msg = StatusMessage.info( text );
-        this.appState.showBusyNoOverlay();
         this.appState.statusMessage.setValue( msg );
     }
     
@@ -150,7 +151,6 @@ export class StatusMessageService
     {
         const text = this.trans.instant( 'statusmessage.youmustselectroom' );
         const msg = StatusMessage.info( text );
-        this.appState.showBusyNoOverlay();
         this.appState.statusMessage.setValue( msg );
     }
     
@@ -158,7 +158,6 @@ export class StatusMessageService
     {
         const text = this.trans.instant( 'statusmessage.gamenotstarted' );
         const msg = StatusMessage.info( text );
-        this.appState.showBusyNoOverlay();
         this.appState.statusMessage.setValue( msg );
     }
 }

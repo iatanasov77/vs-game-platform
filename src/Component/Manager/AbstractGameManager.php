@@ -11,7 +11,7 @@ use Sylius\Component\Resource\Factory\FactoryInterface;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 
 // Game Events
-use App\EventListener\GameEndedEvent;
+use App\EventListener\WebsocketEvent\GameEndedEvent;
 use App\EventListener\WebsocketEvent\MessageEvent;
 
 use App\Component\System\Guid;
@@ -148,10 +148,16 @@ abstract class AbstractGameManager implements GameManagerInterface
         throw new \Exception( 'GameManager Websocket Client Not Found !!!' );
     }
     
-    public function CreateGame(): void
+    public function InitializeGame(): void
     {
         $this->Game     = Game::Create( $this->ForGold );
         $this->Created  = new \DateTime( 'now' );
+        $this->Game->ThinkStart = new \DateTime( 'now' );
+    }
+    
+    public function dispatchGameEnded(): void
+    {
+        $this->eventDispatcher->dispatch( new GameEndedEvent( Mapper::GameToDto( $this->Game ) ), GameEndedEvent::NAME );
     }
     
     public function Restore( PlayerColor $color, WebsocketClientInterface $socket ): void
@@ -282,33 +288,29 @@ abstract class AbstractGameManager implements GameManagerInterface
         
         try {
             $socket->send( $obj );
-            
-            /** @NOTE My Workaround */
-//             if ( $this->Game->PlayState == GameState::Starting ) {
-//                 $this->Game->PlayState = GameState::OpponentConnectWaiting;
-//             }
         } catch ( \Exception $exc ) {
             $this->logger->error( "MyDebug: Failed to send socket data. Exception: {$exc->getMessage()}" );
         }
     }
     
-    protected function StartGame(): void
+    protected function CreateGame(): void
     {
-        //$this->logger->info( 'MyDebug: Begin Start Game' );
-        $this->Game->ThinkStart = new \DateTime( 'now' );
         $gameDto = Mapper::GameToDto( $this->Game );
         
         $action = new GameCreatedActionDto();
         $action->game       = $gameDto;
         
-        //$this->Game->PlayState = GameState::Starting;
         $action->myColor    = PlayerColor::Black;
         $this->Send( $this->Client1, $action );
         
         $action->myColor = PlayerColor::White;
         $this->Send( $this->Client2, $action );
-        
-        return;
+    }
+    
+    protected function StartGame(): void
+    {
+        $this->logger->info( 'MyDebug: Begin Start Game' );
+        //$game->PlayState = GameState::OpponentConnectWaiting;
         $this->Game->PlayState = GameState::FirstThrow;
         // todo: visa på clienten även när det blir samma
         
@@ -333,7 +335,7 @@ abstract class AbstractGameManager implements GameManagerInterface
             $this->Send( $this->Client1, $rollAction );
             $this->Send( $this->Client2, $rollAction );
         }
-        //$this->logger->info( 'MyDebug: Exited From GameState::FirstThrow Loop With State: ' . $this->Game->PlayState->value );
+        //$this->logger->info( 'MyDebug: Exited From GameState::FirstThrow Loop With State: ' . $this->Game->PlayState );
         
         /*  
         $this->moveTimeOut = new DeferredCancellation();
@@ -349,7 +351,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         if ( ! $this->moveTimeOut->IsCancellationRequested ) {
             $ellapsed = ( new \DateTime( 'now' ) ) - $this->Game->ThinkStart;
             if ( $ellapsed->TotalSeconds > $this->Game->TotalThinkTime ) {
-                $this->logger->info( "The time run out for {$this->Game->CurrentPlayer}" );
+                $this->logger->info( "MyDebug: The time run out for {$this->Game->CurrentPlayer}" );
                 $this->moveTimeOut->cancel();
                 $winner = $this->Game->CurrentPlayer == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
                 $this->EndGame( $winner );
@@ -483,8 +485,8 @@ abstract class AbstractGameManager implements GameManagerInterface
             
             $stake = $this->Game->Stake;
             $this->Game->Stake = 0;
-            $this->logger->info( "Stake" . $stake );
-            $this->logger->info( "Initial gold: {$black->getGold()} {$this->Game->BlackPlayer->Gold} {$white->getGold()} {$this->Game->WhitePlayer->Gold}" );
+            $this->logger->info( "MyDebug: Stake" . $stake );
+            $this->logger->info( "MyDebug Initial gold: {$black->getGold()} {$this->Game->BlackPlayer->Gold} {$white->getGold()} {$this->Game->WhitePlayer->Gold}" );
             
             if ( $color == PlayerColor::Black ) {
                 if ( ! $this->IsAi( $black->getGuid() ) )
@@ -495,7 +497,7 @@ abstract class AbstractGameManager implements GameManagerInterface
                     $white->addGold( $stake );
                     $this->Game->WhitePlayer->Gold += stake;
             }
-            $this->logger->info( "After transfer: {$black->Gold} {$this->Game->BlackPlayer->Gold} {$white->Gold} {$this->Game->WhitePlayer->Gold}" );
+            $this->logger->info( "MyDebug After transfer: {$black->Gold} {$this->Game->BlackPlayer->Gold} {$white->Gold} {$this->Game->WhitePlayer->Gold}" );
         }
         
         $em->persist( $black );
@@ -588,7 +590,7 @@ abstract class AbstractGameManager implements GameManagerInterface
     protected function CloseConnections( WebsocketClientInterface $socket )
     {
         if ( $socket != null ) {
-            $this->logger->info( "Closing client" );
+            $this->logger->info( "MyDebug: Closing client" );
             //await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Game aborted by client", CancellationToken.None);
             
             $socket->close();
@@ -598,7 +600,7 @@ abstract class AbstractGameManager implements GameManagerInterface
     protected function Resign( PlayerColor $winner ): void
     {
         $this->EndGame( $winner );
-        $this->logger->info( "{$winner} won Game {$this->Game->Id} by resignition.");
+        $this->logger->info( "MyDebug: {$winner} won Game {$this->Game->Id} by resignition.");
     }
     
     protected function NewTurn( WebsocketClientInterface $socket )

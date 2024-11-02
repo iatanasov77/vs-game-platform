@@ -180,7 +180,7 @@ declare module '_@/GamePlatform/Model/BoardGame/diceDto' {
 
 declare module '_@/GamePlatform/Model/BoardGame/gameState' {
     enum GameState {
-        starting,
+        created,
         
         opponentConnectWaiting,
         firstThrow,

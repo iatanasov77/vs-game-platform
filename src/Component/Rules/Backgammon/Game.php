@@ -32,7 +32,7 @@ class Game
     public $ValidMoves;
     
     /** @var GameState */
-    public $PlayState = GameState::FirstThrow; // GameState::Starting;
+    public $PlayState = GameState::FirstThrow;
     
     /** @var \DateTime */
     public $Created;
@@ -81,8 +81,7 @@ class Game
         
         $game->Created = new \DateTime( 'now' );
         
-        $game->PlayState = GameState::OpponentConnectWaiting;
-        //$game->PlayState = GameState::Starting;
+        $game->PlayState = GameState::Created;
         
         $game->GoldMultiplier = 1;
         $game->IsGoldGame = $forGold;

@@ -20,7 +20,9 @@ import {
     selectGameRoom,
     selectGameRoomSuccess,
     startGameSuccess,
-    loadGameRooms
+    loadGameRooms,
+    loadGameRoomsSuccess,
+    loadGameSuccess
 } from '../../../+store/game.actions';
 import { GameState as MyGameState } from '../../../+store/game.reducers';
 
@@ -123,8 +125,8 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     sendVisible = false;
     undoVisible = false;
     dicesVisible = false;
-    newVisible = false;
-    exitVisible = true;
+    newVisible = true;
+    exitVisible = false;
     acceptDoublingVisible = false;
     requestDoublingVisible = false;
     requestHintVisible = false;
@@ -225,7 +227,6 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             
             this.appState   = state.app.main;
             this.hasRooms   = this?.appState?.rooms?.length && this?.appState?.rooms?.length > 0 ? true : false;
-            this.selectGameRoomFromCookie();
             
             if ( state.app.main.gamePlay ) {
                 this.gameStarted    = true;
@@ -233,7 +234,14 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             }
         });
         
+//         this.actions$.pipe( ofType( loadGameRoomsSuccess ) ).subscribe( () => {
+//             this.selectGameRoomFromCookie();
+//         });
+        
         this.actions$.pipe( ofType( selectGameRoomSuccess ) ).subscribe( () => {
+            this.newVisible = this.appStateService.game.getValue()?.playState === GameState.created;
+            alert( this.newVisible );
+            
             this.isRoomSelected = true;
             this.statusMessageService.setNotGameStarted();
             this.appStateService.hideBusy();
@@ -303,19 +311,19 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     
     selectGameRoomFromCookie(): void
     {
-        if ( ! this?.appState?.game || ! this?.appState?.rooms ) {
-            return;
-        }
-        
+        //alert( 'EHO 1' );
         let gameCookie  = this.cookieService.get( Keys.gameIdKey );
         if ( gameCookie ) {
             let gameCookieDto   = JSON.parse( gameCookie ) as GameCookieDto;
             if ( gameCookieDto.game === window.gamePlatformSettings.gameSlug ) {
                 //alert( gameCookie );
-                let gameRoom    = this?.appState?.rooms.find( ( item: any ) => item?.name === gameCookieDto.id );
+                let gameRoom    = this?.appState?.rooms?.find( ( item: any ) => item?.name === gameCookieDto.id );
                 if ( gameRoom && ! this.isRoomSelected ) {
                     //alert( gameCookie );
-                    this.store.dispatch( selectGameRoom( { game: this?.appState?.game, room: gameRoom } ) );
+                    //alert( 'EHO 2' );
+                    if ( this?.appState?.game ) {
+                        this.store.dispatch( selectGameRoom( { game: this?.appState?.game, room: gameRoom } ) );
+                    }
                 }
             }
         }
@@ -394,6 +402,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             return;
         }
         
+        //alert( dto?.playState );
         if ( ! this.started && dto ) {
             clearTimeout( this.startedHandle );
             
@@ -413,7 +422,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         this.setDoublingVisible( dto );
         this.diceColor = dto?.currentPlayer;
         this.fireResize();
-        this.newVisible = dto?.playState === GameState.ended;
+        this.newVisible = dto?.playState === GameState.ended || dto?.playState === GameState.created;
         this.exitVisible =
             dto?.playState !== GameState.playing &&
             dto?.playState !== GameState.requestedDoubling;

@@ -142,6 +142,12 @@ class DefaultController extends AbstractController
             'game_board.backgammon_variants.normal'         => 'Normal',
             'game_board.backgammon_variants.gulbara'        => 'GulBara',
             'game_board.backgammon_variants.tapa'           => 'Tapa',
+            
+            // Invite a friend Dialog
+            'invite.invite_friend'                          => 'Invite a friend',
+            'invite.copylink'                               => 'Copy this link and send it to your friend',
+            'invite.startgame'                              => 'Start game',
+            'invite.cancelinvite'                           => 'Cancel',
         ];
     }
     
@@ -236,6 +242,12 @@ class DefaultController extends AbstractController
             'game_board.backgammon_variants.normal'         => 'Normal',
             'game_board.backgammon_variants.gulbara'        => 'GulBara',
             'game_board.backgammon_variants.tapa'           => 'Tapa',
+            
+            // Invite a friend Dialog
+            'invite.invite_friend'                          => 'Invite a friend',
+            'invite.copylink'                               => 'Copy this link and send it to your friend',
+            'invite.startgame'                              => 'Start game',
+            'invite.cancelinvite'                           => 'Cancel',
         ];
     }
 }

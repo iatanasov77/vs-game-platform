@@ -100,6 +100,7 @@ declare module '_@/GamePlatform/Model/BoardGame/gameCookieDto' {
         id: string;
         color: PlayerColor;
         game: string;
+        roomSelected: boolean;
     }
     
     export = GameCookieDto;

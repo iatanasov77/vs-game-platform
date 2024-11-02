@@ -10,8 +10,9 @@ import { GameService } from './game.service';
 // NGRX Store
 import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
-import { loadGameRoomsSuccess, selectGameRoom } from '../+store/game.actions';
+import { loadGameRoomsSuccess, selectGameRoom, loadGameRooms } from '../+store/game.actions';
 import { GameState as MyGameState } from '../+store/game.reducers';
+import IGameRoom from '_@/GamePlatform/Model/GameRoomInterface';
 
 // Board Interfaces
 import CheckerDto from '_@/GamePlatform/Model/BoardGame/checkerDto';
@@ -75,6 +76,11 @@ export class WebsocketGameService
     ) {
         this.store.subscribe( ( state: any ) => {
             this.myGameState   = state.app.main;
+            
+            //alert( state.app.main.rooms );
+            if ( state.app.main.rooms ) {
+                this.selectGameRoomFromCookie( state.app.main.rooms );
+            }
         });
     }
     
@@ -96,23 +102,20 @@ export class WebsocketGameService
         this.socket.onclose     = this.onClose.bind( this );
     }
     
-    tryReconnect(): void
+    selectGameRoomFromCookie( rooms: IGameRoom[] ): void
     {
-    
-    }
-    
-    selectGameRoomFromCookie( cookie: GameCookieDto ): void
-    {
-        alert( 'Game ID: ' + cookie.id );
-        this.actions$.pipe( ofType( loadGameRoomsSuccess ) ).subscribe( () => {
-            let gameRoom    = this?.myGameState?.rooms?.find( ( item: any ) => item?.name === cookie.id );
-            if ( gameRoom ) {
-                alert( 'EHO 2' );
-                if ( this?.myGameState?.game ) {
-                    this.store.dispatch( selectGameRoom( { game: this?.myGameState?.game, room: gameRoom } ) );
-                }
+        //console.log( 'Rooms in Game State: ', rooms );
+        let gameCookie  = this.cookieService.get( Keys.gameIdKey );
+        if ( gameCookie ) {
+            let gameCookieDto   = JSON.parse( gameCookie ) as GameCookieDto;
+            //alert( 'Game ID: ' + gameCookieDto.id );
+            
+            let gameRoom    = rooms.find( ( item: any ) => item?.name === gameCookieDto.id );
+            if ( gameRoom && ! gameCookieDto.roomSelected ) {
+                //alert( 'Game Room Found From Cookie.' );
+                this.store.dispatch( selectGameRoom( { game: gameRoom.game, room: gameRoom } ) );
             }
-        });
+        }
     }
     
     onOpen(): void
@@ -177,14 +180,15 @@ export class WebsocketGameService
                 const cookie: GameCookieDto = {
                     id: dto.game.id,
                     color: dto.myColor,
-                    game: window.gamePlatformSettings.gameSlug
+                    game: window.gamePlatformSettings.gameSlug,
+                    roomSelected: false
                 };
                 this.cookieService.deleteAll( Keys.gameIdKey );
                 // console.log('Settings cookie', cookie);
                 this.cookieService.set( Keys.gameIdKey, JSON.stringify( cookie ), 2 );
                 this.statusMessageService.setTextMessage( dto.game );
                 
-                this.selectGameRoomFromCookie( cookie );
+                this.store.dispatch( loadGameRooms() );
                 
                 this.appState.moveTimer.setValue( dto.game.thinkTime );
                 this.sound.fadeIntro();

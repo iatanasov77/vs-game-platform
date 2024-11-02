@@ -239,8 +239,19 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
 //         });
         
         this.actions$.pipe( ofType( selectGameRoomSuccess ) ).subscribe( () => {
-            this.newVisible = this.appStateService.game.getValue()?.playState === GameState.created;
-            alert( this.newVisible );
+            //alert( 'Game Room Selected.' );
+            
+            //this.newVisible = this.appStateService.game.getValue()?.playState === GameState.created;
+            this.newVisible = true;
+            this.exitVisible = false;
+            
+            let gameCookie  = this.cookieService.get( Keys.gameIdKey );
+            if ( gameCookie ) {
+                let gameCookieDto   = JSON.parse( gameCookie ) as GameCookieDto;
+                
+                gameCookieDto.roomSelected = true;
+                this.cookieService.set( Keys.gameIdKey, JSON.stringify( gameCookieDto ), 2 );
+            }
             
             this.isRoomSelected = true;
             this.statusMessageService.setNotGameStarted();

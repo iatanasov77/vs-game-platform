@@ -77,22 +77,23 @@ export class WebsocketGameService
         });
     }
     
-    connect( gameId: string, playAi: boolean, forGold: boolean ): void
+    websocketUrl(): string
     {
-        if ( this.socket ) {
-            this.socket.close();
+        let gameCookie  = this.cookieService.get( Keys.gameIdKey );
+        let b64Cookie;
+        if ( gameCookie ) {
+            b64Cookie   = window.btoa( gameCookie );
         }
         
-        const url   = window.gamePlatformSettings.socketGameUrl +
-                        '?gameCode=backgammon' +
-                        '&token=' + window.gamePlatformSettings.apiVerifySiganature;
-                        
-        this.url    = url;
-        this.socket = new WebSocket( this.url );
-        this.socket.onmessage   = this.onMessage.bind( this );
-        this.socket.onerror     = this.onError.bind( this );
-        this.socket.onopen      = this.onOpen.bind( this );
-        this.socket.onclose     = this.onClose.bind( this );
+        let url = new URL( window.gamePlatformSettings.socketGameUrl );
+        
+        url.searchParams.append( 'gameCode', 'backgammon' );
+        url.searchParams.append( 'token', window.gamePlatformSettings.apiVerifySiganature );
+        if ( b64Cookie ) {
+            url.searchParams.append( 'gameCookie', b64Cookie );
+        }
+        
+        return url.href;
     }
     
     selectGameRoomFromCookie( rooms: IGameRoom[] ): void
@@ -109,6 +110,20 @@ export class WebsocketGameService
                 this.store.dispatch( selectGameRoom( { game: gameRoom.game, room: gameRoom } ) );
             }
         }
+    }
+    
+    connect( gameId: string, playAi: boolean, forGold: boolean ): void
+    {
+        if ( this.socket ) {
+            this.socket.close();
+        }
+                        
+        this.url    = this.websocketUrl();
+        this.socket = new WebSocket( this.url );
+        this.socket.onmessage   = this.onMessage.bind( this );
+        this.socket.onerror     = this.onError.bind( this );
+        this.socket.onopen      = this.onOpen.bind( this );
+        this.socket.onclose     = this.onClose.bind( this );
     }
     
     onOpen(): void
@@ -141,6 +156,7 @@ export class WebsocketGameService
     
     onClose( event: CloseEvent ): void
     {
+        //alert( event.code );
         console.log( 'Close', { event } );
         const cnn = this.appState.myConnection.getValue();
         this.appState.myConnection.setValue({ ...cnn, connected: false });
@@ -564,5 +580,68 @@ export class WebsocketGameService
         this.gameHistory = [];
         this.dicesHistory = [];
         this.connectTime = new Date();
+    }
+    
+    //This is when this player accepts a doubling.
+    acceptDoubling()
+    {
+        const action: DoublingActionDto = {
+            actionName: ActionNames.acceptedDoubling,
+            moveTimer: 0 // Set on the server
+        };
+        const game = this.appState.game.getValue();
+        this.appState.game.setValue({
+            ...game,
+            playState: GameState.playing,
+            goldMultiplier: game.goldMultiplier * 2,
+            lastDoubler: this.appState.getOtherPlayer(),
+            currentPlayer: this.appState.getOtherPlayer(),
+            whitePlayer: {
+                ...game.whitePlayer,
+                gold: game.whitePlayer.gold - game.stake / 2
+            },
+            blackPlayer: {
+                ...game.blackPlayer,
+                gold: game.blackPlayer.gold - game.stake / 2
+            },
+            stake: game.stake * 2
+        });
+        
+        // TODO: The client countdown is currently only a constant on the backend.
+        // What is the best design here?
+        this.appState.moveTimer.setValue( 40 );
+        this.sendMessage( JSON.stringify( action ) );
+        this.statusMessageService.setTextMessage( this.appState.game.getValue() );
+    }
+    
+    //This player requests doubling.
+    requestDoubling()
+    {
+        const game = this.appState.game.getValue();
+        const otherPlyr = this.appState.getOtherPlayer();
+        this.appState.game.setValue({
+            ...game,
+            playState: GameState.requestedDoubling,
+            currentPlayer: otherPlyr
+        });
+        
+        const action: DoublingActionDto = {
+            actionName: ActionNames.requestedDoubling,
+            moveTimer: 0 // set on the server
+        };
+        
+        // TODO: The client countdown is currently only a constant on the backend.
+        // What is the best design here? Where to store the constant? One extra server message for this case?
+        this.appState.moveTimer.setValue( 40 );
+        this.sendMessage( JSON.stringify( action ) );
+        this.statusMessageService.setWaitingForDoubleResponse();
+    }
+    
+    requestHint(): void
+    {
+        const action: ActionDto = {
+            actionName: ActionNames.requestHint
+        };
+        this.sendMessage( JSON.stringify( action ) );
     }
 }

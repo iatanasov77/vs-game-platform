@@ -16,14 +16,14 @@ class GameCookieDto
     /** @var string */
     public string $game;
     
-    public static function TryParse( ?string $v ): ?GameCookieDto
-    {
-        if ( $v ) {
-            return \json_decode( $v, false );
-        }
+//     public static function TryParse( ?string $v ): ?GameCookieDto
+//     {
+//         if ( $v ) {
+//             return \json_decode( $v, false );
+//         }
         
-        return null;
-    }
+//         return null;
+//     }
     
     public function __toString(): string
     {

@@ -35,12 +35,6 @@ class BackgammonController extends GameController
             ],
         ];
         
-        
-//         return new JsonResponse([
-//             'status'        => Status::STATUS_OK,
-//             'gameCookie'    => $request->cookies->get( Keys::GAME_ID_KEY ),
-//         ]);
-        
         return new Response(
             $this->templatingEngine->render( $this->getTemplate( $gameSlug , 'Pages/Games/Backgammon/normal.html.twig' ), [
                 'game'          => $game,

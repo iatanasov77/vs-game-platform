@@ -8,7 +8,6 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 use App\Component\Websocket\WebsocketClientFactory;
 use App\Component\Websocket\WebSocketState;
 use App\Component\GameService;
-use App\Component\Utils\Keys;
 use App\EventListener\WebsocketEvent\MessageEvent;
 
 /**
@@ -79,9 +78,7 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         $this->names[$this->connectionSequenceId] = "Guest {$this->connectionSequenceId}";
         
         $this->log( "New connection ({$conn->resourceId})" . date( 'Y/m/d h:i:sa' ) );
-        
-        $cookieDto  = $this->getCookie( $conn );
-        $this->ConnectGame( $conn, $cookieDto );
+        $this->ConnectGame( $conn );
         
         // broadcast new user
         $this->onMessage( $conn, "New Connection: " . $this->connectionSequenceId );
@@ -131,29 +128,7 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         \file_put_contents( $this->logFile, $logData . "\n", FILE_APPEND | LOCK_EX );
     }
     
-    private function getCookie( ConnectionInterface $conn ): ?string
-    {
-        $cookieDto      = null;
-        
-        //$this->log( \get_class( $conn->httpRequest ) );
-        $sessionCookies = $conn->httpRequest->getHeader( 'Cookie' );
-        
-        if ( ! empty( $sessionCookies ) ) {
-            $this->log( "All Cookies: ". \print_r( $sessionCookies, true ) );
-            
-            $cookiesArray   = \explode( '; ', $sessionCookies[0] );
-            foreach( $cookiesArray as $cookie ) {
-                if( \strpos( $cookie, Keys::GAME_ID_KEY ) == 0 ) {
-                    $cookieDto  = \explode( '=', $cookie )[1];
-                    break;
-                }
-            }
-        }
-        
-        return $cookieDto;
-    }
-    
-    private function ConnectGame( ConnectionInterface &$conn, ?string $gameCookie ): void
+    private function ConnectGame( ConnectionInterface &$conn ): void
     {
         $this->log( "Connect Game Request." );
         
@@ -175,8 +150,14 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         
         $userId     = $user->getId();
         $gameId     = isset( $queryParameters['gameId'] ) ? $queryParameters['gameId'] : null;
+        $gameCookie = isset( $queryParameters['gameCookie'] ) ? $queryParameters['gameCookie'] : null;
         $playAi     = isset( $queryParameters['playAi'] ) ? $queryParameters['playAi'] : "true";
         $forGold    = isset( $queryParameters['forGold'] ) ? $queryParameters['forGold'] : "true";
+        
+        if ( $gameCookie ) {
+            $gameCookie = \base64_decode( $gameCookie );
+            $this->log( "Game Cookie: ". $gameCookie );
+        }
         
         //$this->log( "Game Code: ". $gameCode );
         //$this->log( "Game Id: ". $gameId );

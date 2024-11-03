@@ -32,6 +32,34 @@
     
     <app-invite-game></app-invite-game>
     
+    <div
+        *ngIf="(gameDto$ | async)?.isGoldGame"
+        class="players"
+        [ngStyle]="{ height: height + 'px' }"
+        [ngClass]="{ rotated: rotated, flipped: flipped }"
+    >
+        
+        <app-board-player
+            [playerDto]="(gameDto$ | async)?.whitePlayer"
+            [doubling]="getDoubling(PlayerColor.white) | async"
+        >
+        </app-board-player>
+        
+        <div class="stake-container">
+            <div class="stake" [ngClass]="{ hilightStake: animatingStake }">
+                {{ lokalStake }}
+                <i class="fas fa-coins"></i>
+            </div>
+        </div>
+        
+        <app-board-player
+            [playerDto]="(gameDto$ | async)?.blackPlayer"
+            [doubling]="getDoubling(PlayerColor.black) | async"
+        >
+        </app-board-player>
+        
+    </div>
+  
     <app-backgammon-board
         class="game-board"
         

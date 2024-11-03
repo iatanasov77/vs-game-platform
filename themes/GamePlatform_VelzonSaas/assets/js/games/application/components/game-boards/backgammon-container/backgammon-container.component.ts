@@ -13,7 +13,7 @@ import {
     HostListener
 } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Observable, Subscription, of } from 'rxjs';
+import { Observable, Subscription, of, map, tap } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
 import {
@@ -111,6 +111,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     flipped = false;
     playAiFlag = false;
     forGoldFlag = false;
+    PlayerColor = PlayerColor;
     lokalStake = 0;
     animatingStake = false;
     playAiQuestion = false;
@@ -254,6 +255,12 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             this.store.dispatch( loadGameRooms() );
             this.game.startGame();
         });
+        
+        this.gameDto$.pipe(
+            tap( ( game ) => {
+                console.log( "Debug Game DTO: ", game );
+            })
+        );
     }
     
     ngAfterViewInit(): void
@@ -620,6 +627,33 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         //this.router.navigateByUrl( '/lobby' );
     }
     
+    requestDoubling(): void
+    {
+        this.requestDoublingVisible = false;
+        this.wsService.requestDoubling();
+    }
+    
+    requestHint(): void
+    {
+        this.requestHintVisible = false;
+        this.wsService.requestHint();
+    }
+    
+    acceptDoubling(): void
+    {
+        this.acceptDoublingVisible = false;
+        this.wsService.acceptDoubling();
+    }
+    
+    getDoubling( color: PlayerColor ): Observable<number>
+    {
+        return this.gameDto$.pipe(
+            map( ( game ) => {
+                return game?.lastDoubler === color ? game?.goldMultiplier : 0;
+            })
+        );
+    }
+
     async playAi()
     {
         this.playAiQuestion = false;

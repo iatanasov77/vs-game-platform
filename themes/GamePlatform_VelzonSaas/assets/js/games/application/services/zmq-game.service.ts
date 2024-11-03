@@ -146,7 +146,8 @@ export class ZmqGameService
                 const cookie: GameCookieDto = {
                     id: dto.game.id,
                     color: dto.myColor,
-                    game: window.gamePlatformSettings.gameSlug
+                    game: window.gamePlatformSettings.gameSlug,
+                    roomSelected: false
                 };
                 this.cookieService.deleteAll( Keys.gameIdKey );
                 // console.log('Settings cookie', cookie);

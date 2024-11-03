@@ -86,6 +86,11 @@ class DefaultController extends AbstractController
             'game_board.start_game'                         => 'Start Game',
             'game_board.game'                               => 'Game',
             
+            'gameboard.black'                               => 'Black',
+            'gameboard.white'                               => 'White',
+            'gameboard.you'                                 => 'You',
+            'gameboard.left'                                => 'left',
+            
             'game_board.acceptDoubling'                     => 'Accept',
             'game_board.resign'                             => 'Resign',
             'game_board.help'                               => 'Help',
@@ -120,13 +125,29 @@ class DefaultController extends AbstractController
             'statusmessage.dblrequested'                    => 'Double your bet or give up.',
             'statusmessage.waitfordblresponse'              => 'Waiting for opponent to respond.',
             
+            'statusmessage.youarenotloggedin'               => 'You are NOT Logged in',
+            'statusmessage.youmustselectroom'               => 'You must select a Room',
+            'statusmessage.gamenotstarted'                  => 'Game is NOT Started',
+            
             'chat.entermessage'                             => 'Chat here',
             
             // Game Global Messages
             'backgammon'                                    => 'Backgammon',
             'black'                                         => 'black',
             'white'                                         => 'white',
-            "pleasewait"                                    => "Please wait",
+            'pleasewait'                                    => 'Please wait',
+            
+            // Backgammon Variants
+            'game_board.backgammon_variants.variants'       => 'Variants',
+            'game_board.backgammon_variants.normal'         => 'Normal',
+            'game_board.backgammon_variants.gulbara'        => 'GulBara',
+            'game_board.backgammon_variants.tapa'           => 'Tapa',
+            
+            // Invite a friend Dialog
+            'invite.invite_friend'                          => 'Invite a friend',
+            'invite.copylink'                               => 'Copy this link and send it to your friend',
+            'invite.startgame'                              => 'Start game',
+            'invite.cancelinvite'                           => 'Cancel',
         ];
     }
     
@@ -165,6 +186,11 @@ class DefaultController extends AbstractController
             'game_board.start_game'                         => 'Start Game',
             'game_board.game'                               => 'Game',
             
+            'gameboard.black'                               => 'Black',
+            'gameboard.white'                               => 'White',
+            'gameboard.you'                                 => 'You',
+            'gameboard.left'                                => 'left',
+            
             'game_board.acceptDoubling'                     => 'Accept',
             'game_board.resign'                             => 'Resign',
             'game_board.help'                               => 'Help',
@@ -199,13 +225,29 @@ class DefaultController extends AbstractController
             'statusmessage.dblrequested'                    => 'Double your bet or give up.',
             'statusmessage.waitfordblresponse'              => 'Waiting for opponent to respond.',
             
+            'statusmessage.youarenotloggedin'               => 'You are NOT Logged in',
+            'statusmessage.youmustselectroom'               => 'You must select a Room',
+            'statusmessage.gamenotstarted'                  => 'Game is NOT Started',
+            
             'chat.entermessage'                             => 'Chat here',
             
             // Game Global Messages
             'backgammon'                                    => 'Backgammon',
             'black'                                         => 'black',
             'white'                                         => 'white',
-            "pleasewait"                                    => "Please wait",
+            'pleasewait'                                    => 'Please wait',
+            
+            // Backgammon Variants
+            'game_board.backgammon_variants.variants'       => 'Variants',
+            'game_board.backgammon_variants.normal'         => 'Normal',
+            'game_board.backgammon_variants.gulbara'        => 'GulBara',
+            'game_board.backgammon_variants.tapa'           => 'Tapa',
+            
+            // Invite a friend Dialog
+            'invite.invite_friend'                          => 'Invite a friend',
+            'invite.copylink'                               => 'Copy this link and send it to your friend',
+            'invite.startgame'                              => 'Start game',
+            'invite.cancelinvite'                           => 'Cancel',
         ];
     }
 }

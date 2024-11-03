@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
@@ -19,6 +18,7 @@ import { BackgammonBoardButtonsComponent } from './board-actions/backgammon-boar
 import { DicesComponent } from './dices/dices.component';
 import { BoardMenuComponent } from './board-actions/board-menu/board-menu.component';
 import { BoardButtonsComponent } from './board-actions/board-buttons/board-buttons.component';
+import { BoardPlayerComponent } from './board-player/board-player.component';
 
 @NgModule({
     declarations: [
@@ -32,16 +32,14 @@ import { BoardButtonsComponent } from './board-actions/board-buttons/board-butto
         BackgammonBoardButtonsComponent,
         DicesComponent,
         BoardMenuComponent,
-        BoardButtonsComponent
+        BoardButtonsComponent,
+        BoardPlayerComponent
     ],
     imports: [
         CommonModule,
         MatTooltipModule,
         NgbModule,
         TranslateModule.forChild(),
-        FormsModule,
-        ReactiveFormsModule,
-        
         SharedModule,
         GameDialogsModule
     ],
@@ -56,7 +54,8 @@ import { BoardButtonsComponent } from './board-actions/board-buttons/board-butto
         BackgammonBoardButtonsComponent,
         DicesComponent,
         BoardMenuComponent,
-        BoardButtonsComponent
+        BoardButtonsComponent,
+        BoardPlayerComponent
     ]
 })
 export class GameBoardsModule { }

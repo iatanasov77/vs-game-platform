@@ -36,6 +36,7 @@ export class InviteGameComponent implements OnInit
         this.inviteId = window.gamePlatformSettings.queryParams[
             Keys.inviteId
         ];
+        //alert( this.inviteId );
     }
     
     startInvitedGame( id: string ): void

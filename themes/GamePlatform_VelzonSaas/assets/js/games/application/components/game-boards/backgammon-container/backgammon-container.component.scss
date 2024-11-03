@@ -1,3 +1,5 @@
+@import '../../../../../backgamon_styles/buttons.scss';
+
 /*
 .game-container {
     animation: fadein 2s;
@@ -27,7 +29,7 @@ div.playAiQuestion p {
 
 .board-buttons {
     background-color: green;
-    width: 710px;
+    width: 100%;
     height: 80px;
     border: solid 6px brown;
     border-radius: 8px;
@@ -89,6 +91,52 @@ div.playAiQuestion p {
     text-align: center;
     width: 100%;
     color: #777;
+}
+
+.players {
+    position: absolute;
+    display: flex;
+    padding-top: 20px;
+    flex-direction: column;
+    justify-content: space-around;
+    top: 0;
+    width: calc(10% - 8px);
+    overflow: hidden;
+    margin-left: 8px;
+    
+    &.rotated {
+        right: 0;
+        flex-direction: column-reverse;
+    }
+    
+    &.flipped {
+        flex-direction: column-reverse;
+    }
+}
+
+.stake-container {
+    /*background-color: #111;*/
+    display: inline-block;
+    width: calc(100% - 8px);
+    border-radius: 7px;
+    padding: 4px 0 4px 0;
+}
+
+.stake {
+    text-align: center;
+    font-size: 18px;
+    
+    /*@include glod-text();*/
+    background: black;
+    font-size: 22px;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hilightStake {
+    font-weight: 600;
+    text-shadow: 0px 0px 5px rgba(251, 245, 183, 0.5);
 }
 
 /*

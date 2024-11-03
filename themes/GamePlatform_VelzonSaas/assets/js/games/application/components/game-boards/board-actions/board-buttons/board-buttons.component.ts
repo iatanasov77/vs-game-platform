@@ -42,6 +42,12 @@ export class BoardButtonsComponent implements OnChanges
                 case 'hasRooms':
                     this.hasRooms = changedProp.currentValue;
                     break;
+                case 'newVisible':
+                    this.newVisible = changedProp.currentValue;
+                    break;
+                case 'exitVisible':
+                    this.exitVisible = changedProp.currentValue;
+                    break;
             }
         }
     }

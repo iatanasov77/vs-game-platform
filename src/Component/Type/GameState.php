@@ -3,14 +3,14 @@
 /**
  * Manual: https://www.php.net/manual/en/language.enumerations.backed.php
  */
-enum GameState: string
+enum GameState: int
 {
     // My Workaround State
-    case Starting               = 'starting';
+    case Created                = 0;
     
-    case OpponentConnectWaiting = 'opponentConnectWaiting';
-    case FirstThrow             = 'firstThrow';
-    case Playing                = 'playing';
-    case Ended                  = 'ended';
+    case OpponentConnectWaiting = 1;
+    case FirstThrow             = 2;
+    case Playing                = 3;
+    case Ended                  = 4;
 }
     

@@ -48,25 +48,18 @@ import templateString from './backgammon-board.component.html';
 export class BackgammonBoardComponent implements AfterViewInit, OnChanges
 {
     @ViewChild( 'canvas' ) public canvas: ElementRef | undefined;
-    @ViewChild( 'boardButtons' ) boardButtons: ElementRef | undefined;
     
     @Input() public width = 600;
     @Input() public height = 400;
     @Input() game: GameDto | null = null;
     @Input() myColor: PlayerColor | null = PlayerColor.black;
+    @Input() dicesVisible: boolean | null = false;
     @Input() rotated = false;
     @Input() flipped = false;
     @Input() themeName: string | null = 'dark';
     @Input() timeLeft: number | null = 0;
     @Input() tutorialStep: number | null = 0;
     @Input() editing: boolean = false;
-    
-    @Input() dicesVisible: boolean | null = false;
-    @Input() rollButtonVisible = false;
-    @Input() sendVisible = false;
-    @Input() undoVisible = false;
-    @Input() newVisible = false;
-    @Input() exitVisible = false;
     
     @Output() addMove = new EventEmitter<MoveDto>();
     @Output() addEditMove = new EventEmitter<MoveDto>();
@@ -90,7 +83,8 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
     hasTouch = false;
     whitesName = '';
     blacksName = '';
-    theme: IThemes = new DarkTheme();
+    //theme: IThemes = new DarkTheme();
+    private _theme: IThemes | undefined = undefined;
     
     // translated phrases
     you = '';
@@ -114,7 +108,7 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
                     this.getMoveStartPoint( moves[0] ),
                     this.getMoveEndPoint( moves[0] ),
                     this.theme,
-                    this.flipped,
+                    this.rotated || this.flipped,
                     () => {
                         // finished callback
                         this.animatedMove = undefined;
@@ -136,12 +130,52 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
         
         const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
         this.cx = canvasEl.getContext( '2d' );
-        this.requestDraw();
+        if ( this.cx ) this.cx.imageSmoothingEnabled = true;
+        
+        // I. Atanasov - Get Translations Before Draw
+        this.translateService.getTranslation( this.translateService.getBrowserLang()! ).subscribe( () => {
+            this.translate();
+            this.requestDraw();
+        });
+        
+        this.translateService.onLangChange.subscribe( () => {
+            this.translate();
+        });
     }
     
+    get theme(): IThemes
+    {
+        if ( !! this._theme && this._theme.name === this.themeName ) {
+            return this._theme;
+        }
+        
+        this._theme = new DarkTheme();
+        if ( this.themeName === 'light' ) this._theme = new LightTheme();
+        if ( this.themeName === 'blue' ) this._theme = new BlueTheme();
+        if ( this.themeName === 'pink' ) this._theme = new PinkTheme();
+        if ( this.themeName === 'green' ) this._theme = new GreenTheme();
+        
+        return this._theme as IThemes;
+    }
+  
+    translate(): void
+    {
+        this.you = this.translateService.instant( 'gameboard.you' );
+        this.white = this.translateService.instant( 'gameboard.white' );
+        this.black = this.translateService.instant( 'gameboard.black' );
+        this.left = this.translateService.instant( 'gameboard.left' );
+        
+//         this.you = this.translateService.get( 'gameboard.you' );
+//         this.white = this.translateService.get( 'gameboard.white' );
+//         this.black = this.translateService.get( 'gameboard.black' );
+//         this.left = this.translateService.get( 'gameboard.left' );
+        
+        this.requestDraw();
+    }
+  
     ngOnChanges( changes: SimpleChanges ): void
     {
-        if ( changes['width'] || changes['height'] || changes['flipped'] ) {
+        if ( changes['width'] || changes['height'] || changes['flipped'] || changes['rotated'] ) {
             this.recalculateGeometry();
         }
         
@@ -152,8 +186,8 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
         const bLeft = this.game?.blackPlayer.pointsLeft;
         const wLeft = this.game?.whitePlayer.pointsLeft;
         
-        this.blacksName = this.game ? `${bName} - ${bLeft} left` : '';
-        this.whitesName = this.game ? `${wName} - ${wLeft} left` : '';
+        this.blacksName = this.game ? `${bName} - ${bLeft} ${this.left}` : '';
+        this.whitesName = this.game ? `${wName} - ${wLeft} ${this.left}` : '';
         // console.log( this.game?.playState );
     }
     
@@ -940,23 +974,31 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
     {
         cx.strokeStyle = this.theme.border;
         cx.lineWidth = this.borderWidth;
-        this.whiteHome.fill( cx, this.theme.boardBackground );
+        this.whiteHome.fill( cx, this.theme.homeBackground );
         this.whiteHome.drawBorder( cx, false );
-        this.blackHome.fill( cx, this.theme.boardBackground );
+        this.blackHome.fill( cx, this.theme.homeBackground );
         this.blackHome.drawBorder( cx, false );
         const homeFntSize = this.blackHome.width / 2 + 'px Arial';
+        
         // names of players
         cx.font = '18px Arial';
         cx.fillStyle = this.theme.textColor;
         cx.save();
         cx.translate( this.blackHome.x, this.blackHome.y );
         cx.rotate( Math.PI / 2 );
-        cx.fillStyle = this.theme.textColor;
+        if ( this.flipped ) {
+            cx.scale( -1, 1 );
+            cx.translate( -this.blackHome.height, 0 );
+        }
+        
+        //alert( this.blacksName );
+        //cx.fillStyle = this.theme.textColor;
+        cx.fillStyle = '#000';
         cx.fillText( this.blacksName, 0, -this.blackHome.width - 11 );
         cx.fillStyle = this.theme.border;
         cx.font = homeFntSize;
         cx.fillText(
-            'Black',
+            this.black,
             this.borderWidth / 2 + 2,
             -this.borderWidth / 2 - 2,
             this.blackHome.height
@@ -966,14 +1008,19 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
         cx.save();
         cx.translate( this.whiteHome.x, this.whiteHome.y );
         cx.rotate( Math.PI / 2 );
+        if ( this.flipped ) {
+            cx.scale( -1, 1 );
+            cx.translate( -this.whiteHome.height, 0 );
+        }
         cx.font = '18px Arial';
-        cx.fillStyle = this.theme.textColor;
+        //cx.fillStyle = this.theme.textColor;
+        cx.fillStyle = '#000';
         cx.fillText( this.whitesName, 0, -this.whiteHome.width - 11 );
         cx.fillStyle = this.theme.border;
         cx.font = homeFntSize;
         
         cx.fillText(
-            'White',
+            this.white,
             this.borderWidth / 2 + 2,
             -this.borderWidth / 2 - 2,
             this.whiteHome.height

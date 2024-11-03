@@ -18,7 +18,9 @@ export class StatusMessageService
         @Inject( TranslateService ) private trans: TranslateService,
         @Inject( SoundService ) private sound: SoundService,
         @Inject( AppStateService ) private appState: AppStateService,
-    ) { }
+    ) {
+        this.trans.use( 'en' );
+    }
     
     setTextMessage( game: GameDto ): void
     {
@@ -138,25 +140,24 @@ export class StatusMessageService
     /**
      * Vankata Statuses
      */
-     
     setNotLoggedIn(): void
     {
-        const statusMessage = StatusMessage.info( 'You are NOT Logged in' );
-        this.appState.showBusyNoOverlay();
-        this.appState.statusMessage.setValue( statusMessage );
+        const text = this.trans.instant( 'statusmessage.youarenotloggedin' );
+        const msg = StatusMessage.info( text );
+        this.appState.statusMessage.setValue( msg );
     }
     
     setNotRoomSelected(): void
     {
-        const statusMessage = StatusMessage.info( 'You must select a Room' );
-        this.appState.showBusyNoOverlay();
-        this.appState.statusMessage.setValue( statusMessage );
+        const text = this.trans.instant( 'statusmessage.youmustselectroom' );
+        const msg = StatusMessage.info( text );
+        this.appState.statusMessage.setValue( msg );
     }
     
     setNotGameStarted(): void
     {
-        const statusMessage = StatusMessage.info( 'Game is NOT Started' );
-        this.appState.showBusyNoOverlay();
-        this.appState.statusMessage.setValue( statusMessage );
+        const text = this.trans.instant( 'statusmessage.gamenotstarted' );
+        const msg = StatusMessage.info( text );
+        this.appState.statusMessage.setValue( msg );
     }
 }

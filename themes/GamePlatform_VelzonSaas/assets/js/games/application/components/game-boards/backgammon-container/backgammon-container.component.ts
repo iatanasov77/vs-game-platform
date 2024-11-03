@@ -13,7 +13,7 @@ import {
     HostListener
 } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Observable, Subscription, of } from 'rxjs';
+import { Observable, Subscription, of, map, tap } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
 import {
@@ -111,6 +111,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     flipped = false;
     playAiFlag = false;
     forGoldFlag = false;
+    PlayerColor = PlayerColor;
     lokalStake = 0;
     animatingStake = false;
     playAiQuestion = false;
@@ -123,8 +124,8 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     sendVisible = false;
     undoVisible = false;
     dicesVisible = false;
-    newVisible = false;
-    exitVisible = true;
+    newVisible = true;
+    exitVisible = false;
     acceptDoublingVisible = false;
     requestDoublingVisible = false;
     requestHintVisible = false;
@@ -202,7 +203,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             }, 1 );
         } else if ( ! this.editing ) {
             //this.zmqService.connect( gameId, playAi, forGold );
-            //this.wsService.connect( gameId, playAi, forGold );
+            this.wsService.connect( gameId, playAi, forGold );
         }
         
         if ( this.editing ) {
@@ -216,6 +217,13 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         // For some reason i could not use an observable for theme. Maybe i'll figure out why someday
         // service.connect might need to be in a setTimeout callback.
         this.themeName = this.appStateService.user.getValue()?.theme ?? 'dark';
+        
+        this.appStateService.game.observe().subscribe( this.debug.bind( this ) );
+    }
+    
+    debug( dto: GameDto )
+    {
+        console.log( "Debug Game DTO: ", dto );
     }
     
     ngOnInit(): void
@@ -225,7 +233,6 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             
             this.appState   = state.app.main;
             this.hasRooms   = this?.appState?.rooms?.length && this?.appState?.rooms?.length > 0 ? true : false;
-            this.selectGameRoomFromCookie();
             
             if ( state.app.main.gamePlay ) {
                 this.gameStarted    = true;
@@ -234,8 +241,21 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         });
         
         this.actions$.pipe( ofType( selectGameRoomSuccess ) ).subscribe( () => {
+            //this.newVisible = this.appStateService.game.getValue()?.playState === GameState.created;
+            this.newVisible = true;
+            this.exitVisible = false;
+            
+            let gameCookie  = this.cookieService.get( Keys.gameIdKey );
+            if ( gameCookie ) {
+                let gameCookieDto   = JSON.parse( gameCookie ) as GameCookieDto;
+                
+                gameCookieDto.roomSelected = true;
+                this.cookieService.set( Keys.gameIdKey, JSON.stringify( gameCookieDto ), 2 );
+            }
+            
             this.isRoomSelected = true;
             this.statusMessageService.setNotGameStarted();
+            this.appStateService.hideBusy();
         });
         
         this.actions$.pipe( ofType( startGameSuccess ) ).subscribe( () => {
@@ -256,6 +276,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             if ( ! this.isRoomSelected ) {
                 //alert( this.appStateService.user );
                 this.statusMessageService.setNotRoomSelected();
+                this.appStateService.hideBusy();
             }
         }, 11000 );
     }
@@ -295,26 +316,6 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
                 case 'game':
                     this.game = changedProp.currentValue;
                     break;
-            }
-        }
-    }
-    
-    selectGameRoomFromCookie(): void
-    {
-        if ( ! this?.appState?.game || ! this?.appState?.rooms ) {
-            return;
-        }
-        
-        let gameCookie  = this.cookieService.get( Keys.gameIdKey );
-        if ( gameCookie ) {
-            let gameCookieDto   = JSON.parse( gameCookie ) as GameCookieDto;
-            if ( gameCookieDto.game === window.gamePlatformSettings.gameSlug ) {
-                //alert( gameCookie );
-                let gameRoom    = this?.appState?.rooms.find( ( item: any ) => item?.name === gameCookieDto.id );
-                if ( gameRoom && ! this.isRoomSelected ) {
-                    //alert( gameCookie );
-                    this.store.dispatch( selectGameRoom( { game: this?.appState?.game, room: gameRoom } ) );
-                }
             }
         }
     }
@@ -392,13 +393,20 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             return;
         }
         
+        //alert( dto?.playState );
         if ( ! this.started && dto ) {
             clearTimeout( this.startedHandle );
-            this.started = true;
-            this.playAiQuestion = false;
+            
+            if ( dto.playState === GameState.playing ) {
+                //alert( dto.playState );
+                this.started = true;
+                this.playAiQuestion = false;
+            }
+            
             if ( dto.isGoldGame ) this.sound.playCoin();
         }
-        // console.log(dto?.id);
+        // console.log( dto?.id );
+        // console.log( 'Debug GameDto: ', dto );
         
         this.setRollButtonVisible();
         this.setSendVisible();
@@ -406,7 +414,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         this.setDoublingVisible( dto );
         this.diceColor = dto?.currentPlayer;
         this.fireResize();
-        this.newVisible = dto?.playState === GameState.ended;
+        this.newVisible = dto?.playState === GameState.ended || dto?.playState === GameState.created;
         this.exitVisible =
             dto?.playState !== GameState.playing &&
             dto?.playState !== GameState.requestedDoubling;
@@ -489,7 +497,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     @HostListener( 'window:resize', ['$event'] )
     onResize(): void
     {
-        const _innerWidth   = $( '#GameBoardContainer' ).width() * 0.8;
+        const _innerWidth   = $( '#GameBoardContainer' ).width();
         //alert( _innerWidth );
         
         this.width = Math.min( _innerWidth, 1024 );
@@ -503,7 +511,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         const btnsOffset = 15; //Cheating. Could not get the height.
         if ( buttons ) {
             buttons.style.top = `${this.height / 2 + btnsOffset}px`;
-            buttons.style.right = `${this.width * 0.30}px`;
+            buttons.style.right = `${this.width * 0.12}px`;
         }
         
         const dices = this.dices?.nativeElement as HTMLElement;
@@ -621,6 +629,33 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         //this.router.navigateByUrl( '/lobby' );
     }
     
+    requestDoubling(): void
+    {
+        this.requestDoublingVisible = false;
+        this.wsService.requestDoubling();
+    }
+    
+    requestHint(): void
+    {
+        this.requestHintVisible = false;
+        this.wsService.requestHint();
+    }
+    
+    acceptDoubling(): void
+    {
+        this.acceptDoublingVisible = false;
+        this.wsService.acceptDoubling();
+    }
+    
+    getDoubling( color: PlayerColor ): Observable<number>
+    {
+        return this.gameDto$.pipe(
+            map( ( game ) => {
+                return game?.lastDoubler === color ? game?.goldMultiplier : 0;
+            })
+        );
+    }
+
     async playAi()
     {
         this.playAiQuestion = false;

@@ -32,13 +32,22 @@ export class InputCopyComponent implements OnChanges
     
     selectAndCopy(): void
     {
-        setTimeout( () => {
-            const input = this.linkText?.nativeElement as HTMLInputElement;
-            input.focus();
-            input.select();
-            input.setSelectionRange( 0, 99999 ); /* For mobile devices */
-            navigator.clipboard.writeText( input.value );
-            // document.execCommand('copy');
-        }, 1 );
+        /**
+         * This feature is available only in secure contexts (HTTPS)
+         * =========================================================
+         * https://stackoverflow.com/a/71876238/12693473
+         */
+        if ( window.isSecureContext ) {
+            setTimeout( () => {
+                const input = this.linkText?.nativeElement as HTMLInputElement;
+                input.focus();
+                input.select();
+                input.setSelectionRange( 0, 99999 ); /* For mobile devices */
+                navigator.clipboard.writeText( input.value );
+                // document.execCommand('copy');
+            }, 1 );
+        } else {
+            console.log( 'Copy to Clipboard feature is available only in secure contexts (HTTPS)' );
+        }
     }
 }

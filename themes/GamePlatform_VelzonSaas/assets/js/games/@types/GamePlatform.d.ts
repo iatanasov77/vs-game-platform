@@ -100,6 +100,7 @@ declare module '_@/GamePlatform/Model/BoardGame/gameCookieDto' {
         id: string;
         color: PlayerColor;
         game: string;
+        roomSelected: boolean;
     }
     
     export = GameCookieDto;
@@ -180,7 +181,7 @@ declare module '_@/GamePlatform/Model/BoardGame/diceDto' {
 
 declare module '_@/GamePlatform/Model/BoardGame/gameState' {
     enum GameState {
-        starting,
+        created,
         
         opponentConnectWaiting,
         firstThrow,

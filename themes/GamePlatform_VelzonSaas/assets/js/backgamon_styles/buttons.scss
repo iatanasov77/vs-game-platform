@@ -69,6 +69,41 @@
     background-image: linear-gradient(#000000, #252525);
 }
 
+.blue-button {
+    @include button();
+    @include glass();
+    background-image: linear-gradient(rgb(31, 32, 71), rgb(38, 35, 184));
+    color: #fff !important;
+}
+
+.red-button {
+    @include button();
+    @include glass();
+    background-image: linear-gradient(rgb(71, 31, 31), rgb(136, 27, 27));
+    color: #fff !important;
+}
+
 .flat-button {
-  @include button();
+    @include button();
+}
+
+.small-button {
+    font-size: 16px;
+    padding: 6px 12px;
+    height: auto;
+}
+
+@mixin glod-text {
+    background: linear-gradient(
+      69deg,
+      #bf953f,
+      #fcf6ba,
+      #b38728,
+      #fbf5b7,
+      #aa771c
+    );
+    font-size: 22px;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }

@@ -1,5 +1,5 @@
 ﻿enum GameState {
-    starting,
+    created,
     
     opponentConnectWaiting,
     firstThrow,

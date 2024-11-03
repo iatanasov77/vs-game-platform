@@ -34,7 +34,7 @@ export class WebsocketChatService implements OnDestroy
     {
         const user = this.appState.user.getValue();
         
-        return `${window.gamePlatformSettings.socketGameUrl}?userId=${user.id}`;
+        return `${window.gamePlatformSettings.socketChatUrl}?userId=${user.id}`;
     }
     
     onOpen( event: Event ): void

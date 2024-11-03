@@ -4,7 +4,6 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Psr\Log\LoggerInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -36,9 +35,6 @@ class GameService
     /** @var SerializerInterface */
     protected $serializer;
     
-    /** @var HttpClientInterface */
-    protected $httpClient;
-    
     /** @var RepositoryInterface */
     protected $usersRepository;
     
@@ -54,14 +50,12 @@ class GameService
     public function __construct(
         LoggerInterface $logger,
         SerializerInterface $serializer,
-        HttpClientInterface $httpClient,
         RepositoryInterface $usersRepository,
         SecurityBridge $securityBridge,
         GameManagerFactory $managerFactory
     ) {
         $this->logger           = $logger;
         $this->serializer       = $serializer;
-        $this->httpClient       = $httpClient;
         $this->usersRepository  = $usersRepository;
         $this->securityBridge   = $securityBridge;
         $this->managerFactory   = $managerFactory;
@@ -89,8 +83,7 @@ class GameService
             return $gameGuid;
         }
         
-        $this->logger->info( 'MyDebug Game Cookie: ' . $gameCookie );
-        if ( $this->TryReConnect( $webSocket, $gameCookie, $dbUser ) ) {
+        if ( $gameGuid = $this->TryReConnect( $webSocket, $gameCookie, $dbUser ) ) {
             $this->logger->info( 'MyDebug: Try Reconnect' );
             // Game disconnected here
             return $gameGuid;
@@ -133,26 +126,19 @@ class GameService
         if ( $manager == null || $playAi ) {
             $manager    = $this->managerFactory->createWebsocketGameManager();
             
-            /** @NOTE Workaround  */
-            if ( $webSocket->State != WebSocketState::Open ) {
-                $webSocket->State   = WebSocketState::Open;
-            }
-            
             if ( ! $manager->Game ) {
                 $this->logger->info( "MyDebug: Creting New Game Manager." );
                 $manager->Client1   = $webSocket;
-                $manager->CreateGame();
+                $manager->InitializeGame();
             }
             
-            $gameGuid   =  $manager->Game->Id;
-            $this->AllGames->set( $gameGuid, $manager );
-            
-            //$manager.Ended += Game_Ended;
-            //$this->Game_Ended( $manager );
+            $manager->dispatchGameEnded();
             
             $manager->SearchingOpponent = ! $playAi;
             $manager->GameCode          = $gameCode;
             
+            $gameGuid                   =  $manager->Game->Id;
+            $this->AllGames->set( $gameGuid, $manager );
             $this->logger->info( "MyDebug: Added a new game and waiting for opponent. Game id {$manager->Game->Id}" );
             
             // entering socket loop
@@ -234,22 +220,12 @@ class GameService
         return $manager->Game->Id;
     }
     
-    protected function TryReConnect( WebsocketClientInterface $webSocket, ?string $gameCookie, ?UserInterface $dbUser ): bool
+    protected function TryReConnect( WebsocketClientInterface $webSocket, ?string $gameCookie, ?UserInterface $dbUser ): ?string
     {
-        $getCookieUrl   = 'http://game-platform.lh/games/game-cookie';
-        $response       = $this->httpClient->request( 'GET', $getCookieUrl );
-        $decodedPayload = $response->toArray( false );
-        
-        $logData    = \print_r( $decodedPayload, true );
-        $this->logger->info( "MyDebug Game Cookie: {$logData}" );
-            
         // Find existing game to reconnect to.
         if ( $gameCookie ) {
-            $cookie = GameCookieDto::TryParse( $gameCookie );
-            if ( ! $cookie ) {
-                return false;
-            }
-            
+            //$cookie = GameCookieDto::TryParse( $gameCookie );
+            $cookie = $this->serializer->deserialize( $gameCookie, GameCookieDto::class, JsonEncoder::FORMAT );
             $color = $cookie->color;
             
             if ( $cookie != null )
@@ -265,7 +241,6 @@ class GameService
                     $gameManager->Engine = new AiEngine( $gameManager->Game );
                     $this->logger->info( "Restoring game {$cookie->id} for {$color}" );
                     
-                    /*  */
                     // entering socket loop
                     $gameManager->Restore( $color, $webSocket );
                     
@@ -275,12 +250,12 @@ class GameService
                     // socket loop exited
                     $this->RemoveDissconnected( $gameManager );
                     
-                    return true;
+                    return $cookie->id;
                 }
             }
         }
         
-        return false;
+        return null;
     }
     
     protected static function GameAlreadyStarted( Collection $managers, $userId ): bool

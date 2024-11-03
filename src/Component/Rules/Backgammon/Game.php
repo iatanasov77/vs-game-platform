@@ -8,9 +8,6 @@ use App\Component\Type\GameState;
 use App\Component\Type\PlayerColor;
 use App\Entity\GamePlayer;
 
-/**
- * Rules: https://www.bkgm.com/rules.html
- */
 class Game
 {
     /** @var string */
@@ -35,7 +32,7 @@ class Game
     public $ValidMoves;
     
     /** @var GameState */
-    public $PlayState = GameState::FirstThrow; // GameState::Starting;
+    public $PlayState = GameState::FirstThrow;
     
     /** @var \DateTime */
     public $Created;
@@ -84,8 +81,7 @@ class Game
         
         $game->Created = new \DateTime( 'now' );
         
-        $game->PlayState = GameState::OpponentConnectWaiting;
-        //$game->PlayState = GameState::Starting;
+        $game->PlayState = GameState::Created;
         
         $game->GoldMultiplier = 1;
         $game->IsGoldGame = $forGold;
@@ -123,14 +119,14 @@ class Game
         return $this->CurrentPlayer == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
     }
     
-    private static function CalcPointsLeft( Game &$game ): void
+    protected static function CalcPointsLeft( Game &$game ): void
     {
         foreach ( $game->Points as $point ) {
             $blackCheckers  = $point->Checkers->filter(
                 function( $entry ) {
                     return $entry->Color == PlayerColor::Black;
                 }
-                );
+            );
             foreach ( $blackCheckers as $ckr ) {
                 $game->BlackPlayer->PointsLeft += 25 - $point->BlackNumber;
             }
@@ -139,14 +135,14 @@ class Game
                 function( $entry ) {
                     return $entry->Color == PlayerColor::White;
                 }
-                );
+            );
             foreach ( $whiteCheckers as $ckr ) {
                 $game->WhitePlayer->PointsLeft += 25 - $point->WhiteNumber;
             }
         }
     }
     
-    private function SetStartPosition(): void
+    protected function SetStartPosition(): void
     {
         foreach ( $this->Points as $point ) {
             $point->Checkers->clear();
@@ -173,7 +169,7 @@ class Game
         // AtHomeAndOtherAtBar();
     }
     
-    private function AtHomeAndOtherAtBar(): void
+    protected function AtHomeAndOtherAtBar(): void
     {
         $this->AddCheckers( 3, PlayerColor::Black, 21 );
         $this->AddCheckers( 2, PlayerColor::Black, 22 );
@@ -191,7 +187,7 @@ class Game
         
     }
     
-    private function OneMoveToVictory(): void
+    protected function OneMoveToVictory(): void
     {
         //Only one move to victory
         $this->AddCheckers( 14, PlayerColor::Black, 25 );
@@ -201,7 +197,7 @@ class Game
         $this->AddCheckers( 1, PlayerColor::White, 24 );
     }
     
-    private function DebugBlocked(): void
+    protected function DebugBlocked(): void
     {
         $this->AddCheckers( 3, PlayerColor::Black, 20 );
         $this->AddCheckers( 3, PlayerColor::White, 20 );
@@ -222,7 +218,7 @@ class Game
         $this->AddCheckers( 1, PlayerColor::White, 0 );
     }
     
-    private function DebugBearingOff(): void
+    protected function DebugBearingOff(): void
     {
         $this->AddCheckers( 3, PlayerColor::Black, 20 );
         $this->AddCheckers( 3, PlayerColor::White, 20 );
@@ -314,7 +310,7 @@ class Game
 //         $this->_GenerateMoves( $this->ValidMoves );
     }
     
-    private function ClearMoves( Collection &$moves ): void
+    protected function ClearMoves( Collection &$moves ): void
     {
         // This will probably make it a lot easier for GC, and might even prevent memory leaks
         foreach ( $moves as $move ) {
@@ -365,7 +361,7 @@ class Game
             )->first();
     }
     
-    private function _GenerateMoves( Collection &$moves ): void
+    protected function _GenerateMoves( Collection &$moves ): void
     {
         $currentPlayer  = $this->CurrentPlayer;
         $bar = $this->Points->filter(

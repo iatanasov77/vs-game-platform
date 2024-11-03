@@ -32,6 +32,34 @@
     
     <app-invite-game></app-invite-game>
     
+    <div
+        *ngIf="(gameDto$ | async)?.isGoldGame"
+        class="players"
+        [ngStyle]="{ height: height + 'px' }"
+        [ngClass]="{ rotated: rotated, flipped: flipped }"
+    >
+        
+        <app-board-player
+            [playerDto]="(gameDto$ | async)?.whitePlayer"
+            [doubling]="getDoubling(PlayerColor.white) | async"
+        >
+        </app-board-player>
+        
+        <div class="stake-container">
+            <div class="stake" [ngClass]="{ hilightStake: animatingStake }">
+                {{ lokalStake }}
+                <i class="fas fa-coins"></i>
+            </div>
+        </div>
+        
+        <app-board-player
+            [playerDto]="(gameDto$ | async)?.blackPlayer"
+            [doubling]="getDoubling(PlayerColor.black) | async"
+        >
+        </app-board-player>
+        
+    </div>
+  
     <app-backgammon-board
         class="game-board"
         
@@ -46,11 +74,6 @@
         [timeLeft]="timeLeft$ | async"
         [tutorialStep]="tutorialStep$ | async"
         [editing]="editing"
-        [rollButtonVisible]="rollButtonVisible"
-        [sendVisible]="dicesVisible"
-        [undoVisible]="undoVisible"
-        [newVisible]="newVisible"
-        [exitVisible]="exitVisible"
         (addMove)="doMove($event)"
         (moveAnimFinished)="moveAnimFinished()"
         (addEditMove)="doEditMove($event)"
@@ -59,7 +82,7 @@
     <div class="dices" #dices>
         <app-dices
             *ngIf="dicesVisible"
-            [dices]="dices$ | async"
+            [dices]="dicesDto"
             [color]="diceColor"
         ></app-dices>
     </div>
@@ -102,5 +125,8 @@
         ></app-play-ai-question>
     </div>
     
-    <div class="game-id">{{ (gameDto$ | async)?.id | uppercase }}</div>   
+    <div *ngIf="editing" class="editing-input">
+        <app-input-copy [text]="gameString$ | async"></app-input-copy>
+        <!-- <div class="game-id">{{ (gameDto$ | async)?.id | uppercase }}</div> -->
+    </div>
 </div>

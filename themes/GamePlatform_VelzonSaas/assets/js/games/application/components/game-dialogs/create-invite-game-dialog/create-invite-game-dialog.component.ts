@@ -3,13 +3,14 @@ import {
     Component,
     ElementRef,
     EventEmitter,
-    Input,
-    OnChanges,
     Output,
-    ViewChild
+    ViewChild,
+    Inject
 } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Keys } from '../../../utils/keys';
+import { CookieService } from 'ngx-cookie-service';
+import GameCookieDto from '_@/GamePlatform/Model/BoardGame/gameCookieDto';
 
 import cssString from './create-invite-game-dialog.component.scss';
 import templateString from './create-invite-game-dialog.component.html';
@@ -20,34 +21,49 @@ import templateString from './create-invite-game-dialog.component.html';
     styles: [cssString || 'Game CSS Not Loaded !!!'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CreateInviteGameDialogComponent implements OnChanges
+export class CreateInviteGameDialogComponent
 {
-    @Input() gameId: string | undefined = '';
     @Output() closeModal: EventEmitter<any> = new EventEmitter();
     @Output() cancel = new EventEmitter<string>();
     @Output() started = new EventEmitter<string>();
-    @ViewChild('linkText', { static: false }) linkText: ElementRef | undefined;
+    @ViewChild( 'linkText', { static: false } ) linkText: ElementRef | undefined;
     
-    link = '';
+    gameId?: string;
+    link: string;
     
-    ngOnChanges(): void
+    constructor( @Inject( CookieService ) private cookieService: CookieService )
     {
-        this.link = `${window.location.href}?${Keys.inviteId}=${this.gameId}`;
+        // https://stackoverflow.com/a/75840412/12693473
+        let url = new URL( window.location.href );
+        //alert( url.search );
+        
+        let gameCookie  = this.cookieService.get( Keys.gameIdKey );
+        if ( gameCookie ) {
+            let gameCookieDto = JSON.parse( gameCookie ) as GameCookieDto;
+            this.gameId = gameCookieDto.id
+            url.searchParams.append( Keys.inviteId, this.gameId );
+        }
+    
+        this.link = url.href;
     }
     
     startClick(): void
     {
-        this.started.emit( this.gameId );
+        if ( this.gameId ) {
+            this.started.emit( this.gameId );
+        }
     }
     
     cancelClick(): void
     {
-        //this.cancel.emit( this.gameId );
-        this.dismissModal();
+        if ( this.gameId ) {
+            this.cancel.emit( this.gameId );
+        }
+        this.closeModal.emit();
     }
     
     dismissModal(): void
     {
-        this.closeModal.emit();
+        this.cancelClick();
     }
 }

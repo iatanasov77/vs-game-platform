@@ -183,7 +183,7 @@ class GamePlayer implements ResourceInterface
         return $this;
     }
     
-    public function getPhotoUrl(): ?int
+    public function getPhotoUrl(): ?string
     {
         return $this->photoUrl;
     }
@@ -195,7 +195,7 @@ class GamePlayer implements ResourceInterface
         return $this;
     }
     
-    public function getShowPhoto(): ?int
+    public function getShowPhoto(): ?bool
     {
         return $this->showPhoto;
     }
@@ -207,7 +207,7 @@ class GamePlayer implements ResourceInterface
         return $this;
     }
     
-    public function getMuteIntro(): ?int
+    public function getMuteIntro(): ?bool
     {
         return $this->muteIntro;
     }

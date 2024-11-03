@@ -6,12 +6,14 @@
             readonly
             [textContent]="chatMessages$ | async"
             tabindex="-1"
+            rows="15"
         ></textarea>
         <textarea
             class="users"
             readonly
             [textContent]="users$ | async"
             tabindex="-1"
+            rows="15"
         ></textarea>
         <form
             [formGroup]="formGroup"

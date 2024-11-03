@@ -126,7 +126,7 @@ class Game
                 function( $entry ) {
                     return $entry->Color == PlayerColor::Black;
                 }
-                );
+            );
             foreach ( $blackCheckers as $ckr ) {
                 $game->BlackPlayer->PointsLeft += 25 - $point->BlackNumber;
             }
@@ -135,7 +135,7 @@ class Game
                 function( $entry ) {
                     return $entry->Color == PlayerColor::White;
                 }
-                );
+            );
             foreach ( $whiteCheckers as $ckr ) {
                 $game->WhitePlayer->PointsLeft += 25 - $point->WhiteNumber;
             }

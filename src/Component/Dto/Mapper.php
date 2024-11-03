@@ -51,7 +51,9 @@ final class Mapper
         $playerDto->playerColor = $player->PlayerColor;
         $playerDto->name = $player->Name;
         $playerDto->pointsLeft = $player->PointsLeft;
-        // todo: image? But do not force users to show their image. It should be an active choice.
+        $playerDto->elo = $player->Elo;
+        $playerDto->gold = $player->Gold;
+        $playerDto->photoUrl = $player->Photo;
         
         return $playerDto;
     }

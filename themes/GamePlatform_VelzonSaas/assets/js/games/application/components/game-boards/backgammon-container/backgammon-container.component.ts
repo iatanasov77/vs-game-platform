@@ -217,6 +217,13 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         // For some reason i could not use an observable for theme. Maybe i'll figure out why someday
         // service.connect might need to be in a setTimeout callback.
         this.themeName = this.appStateService.user.getValue()?.theme ?? 'dark';
+        
+        this.appStateService.game.observe().subscribe( this.debug.bind( this ) );
+    }
+    
+    debug( dto: GameDto )
+    {
+        console.log( "Debug Game DTO: ", dto );
     }
     
     ngOnInit(): void
@@ -255,12 +262,6 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             this.store.dispatch( loadGameRooms() );
             this.game.startGame();
         });
-        
-        this.gameDto$.pipe(
-            tap( ( game ) => {
-                console.log( "Debug Game DTO: ", game );
-            })
-        );
     }
     
     ngAfterViewInit(): void
@@ -404,7 +405,8 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             
             if ( dto.isGoldGame ) this.sound.playCoin();
         }
-        // console.log(dto?.id);
+        // console.log( dto?.id );
+        // console.log( 'Debug GameDto: ', dto );
         
         this.setRollButtonVisible();
         this.setSendVisible();
@@ -495,7 +497,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     @HostListener( 'window:resize', ['$event'] )
     onResize(): void
     {
-        const _innerWidth   = $( '#GameBoardContainer' ).width() * 0.8;
+        const _innerWidth   = $( '#GameBoardContainer' ).width();
         //alert( _innerWidth );
         
         this.width = Math.min( _innerWidth, 1024 );
@@ -509,7 +511,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         const btnsOffset = 15; //Cheating. Could not get the height.
         if ( buttons ) {
             buttons.style.top = `${this.height / 2 + btnsOffset}px`;
-            buttons.style.right = `${this.width * 0.30}px`;
+            buttons.style.right = `${this.width * 0.12}px`;
         }
         
         const dices = this.dices?.nativeElement as HTMLElement;

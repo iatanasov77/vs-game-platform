@@ -295,6 +295,7 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     protected function CreateGame(): void
     {
+        //$this->logger->info( 'MyDebug: Game ' . print_r( $this->Game, true ) );
         $gameDto = Mapper::GameToDto( $this->Game );
         
         $action = new GameCreatedActionDto();
@@ -305,6 +306,8 @@ abstract class AbstractGameManager implements GameManagerInterface
         
         $action->myColor = PlayerColor::White;
         $this->Send( $this->Client2, $action );
+        
+        $this->StartGame();
     }
     
     protected function StartGame(): void

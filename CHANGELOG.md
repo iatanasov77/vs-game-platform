@@ -1,3 +1,20 @@
+0.10.4	|	Release date: **03.11.2024**
+============================================
+* New Features:
+  - Create Different Backgammon Variants.
+  - Hide Busy Spinner on Some Status Mesages.
+  - Translate some Angular Status Mesages.
+  - Select Game Room for Backgammon Game From Cookie.
+  - Create a 'BoardPlayerComponent' to show at left of Backgammon GameBoard.
+* Bug-Fixes and Improvements:
+  - Fix Depend of FormsModule in GameDialogsModule.
+  - Fix and Improve Backgammon Board.
+  - Many Improvements.
+  - Fix 'Invite a Friend' Dialog.
+  - Fix Reconnecting from Cookie.
+  - Fix BackGammon Board Canvas Size and Drawing.
+
+
 0.10.3	|	Release date: **31.10.2024**
 ============================================
 * New Features , Improvements and Refactoring:

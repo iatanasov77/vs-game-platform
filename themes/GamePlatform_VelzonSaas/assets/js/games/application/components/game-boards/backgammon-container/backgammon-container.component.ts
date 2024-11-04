@@ -518,13 +518,13 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         if ( dices ) {
             // Puts the dices on right side if its my turn.
             if ( this.myTurn() ) {
-                dices.style.left = `${this.width / 2 + 20}px`;
+                dices.style.left = `${this.width / 2 - ( btnsOffset + 30 )}px`;
                 dices.style.right = '';
             } else {
-                dices.style.right = `${this.width / 2 + 20}px`;
+                dices.style.right = `${this.width / 2 - ( btnsOffset + 30 )}px`;
                 dices.style.left = '';
             }
-            dices.style.top = `${this.height / 2 - btnsOffset}px`;
+            dices.style.top = `${this.height / 2 + btnsOffset}px`;
         }
     }
     

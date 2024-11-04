@@ -80,8 +80,9 @@ div.playAiQuestion p {
 }
 
 .dices {
-    display: inline-block;
-    position: absolute;
+    display: inline-block !important;
+    position: absolute !important;
+    width: 100px !important;
 }
 
 .game-id {

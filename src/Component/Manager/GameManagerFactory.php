@@ -1,8 +1,9 @@
 <?php namespace App\Component\Manager;
 
-use Symfony\Component\Serializer\SerializerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Liip\ImagineBundle\Imagine\Cache\CacheManager as LiipImagineCacheManager;
 use Doctrine\Persistence\ManagerRegistry;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
@@ -15,6 +16,9 @@ final class GameManagerFactory
     
     /** @var SerializerInterface */
     private $serializer;
+    
+    /** @var LiipImagineCacheManager */
+    private $imagineCacheManager;
     
     /** @var EventDispatcherInterface */
     private $eventDispatcher;
@@ -46,6 +50,7 @@ final class GameManagerFactory
     public function __construct(
         LoggerInterface $logger,
         SerializerInterface $serializer,
+        LiipImagineCacheManager $imagineCacheManager,
         EventDispatcherInterface $eventDispatcher,
         ManagerRegistry $doctrine,
         RepositoryInterface $gameRepository,
@@ -58,6 +63,7 @@ final class GameManagerFactory
     ) {
         $this->logger                   = $logger;
         $this->serializer               = $serializer;
+        $this->imagineCacheManager      = $imagineCacheManager;
         $this->eventDispatcher          = $eventDispatcher;
         $this->doctrine                 = $doctrine;
         $this->gameRepository           = $gameRepository;
@@ -74,6 +80,7 @@ final class GameManagerFactory
         return new WebsocketGameManager(
             $this->logger,
             $this->serializer,
+            $this->imagineCacheManager,
             $this->eventDispatcher,
             $this->doctrine,
             $this->gameRepository,
@@ -91,6 +98,7 @@ final class GameManagerFactory
         return new ThruwayGameManager(
             $this->logger,
             $this->serializer,
+            $this->imagineCacheManager,
             $this->eventDispatcher,
             $this->doctrine,
             $this->gameRepository,
@@ -108,6 +116,7 @@ final class GameManagerFactory
         return new ZmqGameManager(
             $this->logger,
             $this->serializer,
+            $this->imagineCacheManager,
             $this->eventDispatcher,
             $this->doctrine,
             $this->gameRepository,

@@ -4,6 +4,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Liip\ImagineBundle\Imagine\Cache\CacheManager as LiipImagineCacheManager;
 use Psr\Log\LoggerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
@@ -52,6 +53,9 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     /** @var SerializerInterface */
     protected $serializer;
+    
+    /** @var LiipImagineCacheManager */
+    protected $imagineCacheManager;
     
     /** @var EventDispatcherInterface */
     protected $eventDispatcher;
@@ -107,6 +111,7 @@ abstract class AbstractGameManager implements GameManagerInterface
     public function __construct(
         LoggerInterface $logger,
         SerializerInterface $serializer,
+        LiipImagineCacheManager $imagineCacheManager,
         EventDispatcherInterface $eventDispatcher,
         ManagerRegistry $doctrine,
         RepositoryInterface $gameRepository,
@@ -119,6 +124,7 @@ abstract class AbstractGameManager implements GameManagerInterface
     ) {
         $this->logger                   = $logger;
         $this->serializer               = $serializer;
+        $this->imagineCacheManager      = $imagineCacheManager;
         $this->eventDispatcher          = $eventDispatcher;
         $this->doctrine                 = $doctrine;
         $this->gameRepository           = $gameRepository;
@@ -146,6 +152,20 @@ abstract class AbstractGameManager implements GameManagerInterface
         }
         
         throw new \Exception( 'GameManager Websocket Client Not Found !!!' );
+    }
+    
+    public function getPlayerPhotoUrl( GamePlayer $player ): ? string
+    {
+        if ( $player->getUser() ) {
+            $url    = $this->imagineCacheManager->getBrowserPath(
+                $player->getUser()->getInfo()->getAvatar()->getPath(),
+                'users_crud_index_thumb',
+            );
+            
+            return \parse_url( $url, PHP_URL_PATH );
+        } else {
+            return $player->getPhotoUrl();
+        }
     }
     
     public function InitializeGame(): void

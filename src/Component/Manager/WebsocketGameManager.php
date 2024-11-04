@@ -20,7 +20,7 @@ final class WebsocketGameManager extends AbstractGameManager
             
             $this->Game->BlackPlayer->Id = $dbUser != null ? $dbUser->getId() : Guid::Empty();
             $this->Game->BlackPlayer->Name = $dbUser != null ? $dbUser->getName() : "Guest";
-            $this->Game->BlackPlayer->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $dbUser->getPhotoUrl() : "";
+            $this->Game->BlackPlayer->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $this->getPlayerPhotoUrl( $dbUser ) : "";
             $this->Game->BlackPlayer->Elo = $dbUser != null ? $dbUser->getElo() : 0;
             
             if ( $this->Game->IsGoldGame ) {
@@ -45,7 +45,6 @@ final class WebsocketGameManager extends AbstractGameManager
                 
                 $this->CreateDbGame();
                 $this->CreateGame();
-                //$this->StartGame();
                 
                 if ( $this->Game->CurrentPlayer == PlayerColor::White ) {
                     $this->logger->info( "MyDebug CurrentPlayer: White" );
@@ -61,7 +60,7 @@ final class WebsocketGameManager extends AbstractGameManager
             
             $this->Game->WhitePlayer->Id = $dbUser != null ? $dbUser->getId() : Guid::Empty();
             $this->Game->WhitePlayer->Name = $dbUser != null ? $dbUser->getName() : "Guest";
-            $this->Game->WhitePlayer->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $dbUser->getPhotoUrl() : "";
+            $this->Game->WhitePlayer->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $this->getPlayerPhotoUrl( $dbUser ) : "";
             $this->Game->WhitePlayer->Elo = $dbUser != null ? $dbUser->getElo() : 0;
             
             if ( $this->Game->IsGoldGame ) {
@@ -70,7 +69,6 @@ final class WebsocketGameManager extends AbstractGameManager
             
             $this->CreateDbGame();
             $this->CreateGame();
-            //$this->StartGame();
             
             $this->dispatchGameEnded();
         }

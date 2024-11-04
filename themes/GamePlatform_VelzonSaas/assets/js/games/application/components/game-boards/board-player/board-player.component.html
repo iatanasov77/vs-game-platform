@@ -1,5 +1,5 @@
 <div *ngIf="playerDto" class="player" [title]="playerDto.name">
-    <div>Score {{ playerDto.elo }}</div>
+    <div class="text-nowrap">Score {{ playerDto.elo }}</div>
     <img
         *ngIf="playerDto.photoUrl"
         class="user-photo"
@@ -9,7 +9,7 @@
     <div *ngIf="!playerDto.photoUrl" class="initials">
         {{ getInitials() }}
     </div>
-    <div>
+    <div class="text-nowrap">
         {{ this.playerDto.gold }}
         <i class="fas fa-coins"></i>
     </div>

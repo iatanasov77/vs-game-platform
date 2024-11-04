@@ -65,6 +65,7 @@ services:
         arguments:
             - '@logger'
             - '@serializer'
+            - '@liip_imagine.cache.manager'
             - '@event_dispatcher'
             - '@doctrine'
             - '@vsapp.repository.games'

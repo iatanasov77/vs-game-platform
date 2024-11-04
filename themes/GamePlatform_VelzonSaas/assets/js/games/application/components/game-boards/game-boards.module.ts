@@ -19,6 +19,7 @@ import { DicesComponent } from './dices/dices.component';
 import { BoardMenuComponent } from './board-actions/board-menu/board-menu.component';
 import { BoardButtonsComponent } from './board-actions/board-buttons/board-buttons.component';
 import { BoardPlayerComponent } from './board-player/board-player.component';
+import { GameVariantsComponent } from './game-variants/game-variants.component';
 
 @NgModule({
     declarations: [
@@ -33,7 +34,8 @@ import { BoardPlayerComponent } from './board-player/board-player.component';
         DicesComponent,
         BoardMenuComponent,
         BoardButtonsComponent,
-        BoardPlayerComponent
+        BoardPlayerComponent,
+        GameVariantsComponent
     ],
     imports: [
         CommonModule,
@@ -55,7 +57,8 @@ import { BoardPlayerComponent } from './board-player/board-player.component';
         DicesComponent,
         BoardMenuComponent,
         BoardButtonsComponent,
-        BoardPlayerComponent
+        BoardPlayerComponent,
+        GameVariantsComponent
     ]
 })
 export class GameBoardsModule { }

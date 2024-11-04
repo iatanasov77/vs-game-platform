@@ -80,8 +80,9 @@ div.playAiQuestion p {
 }
 
 .dices {
-    display: inline-block;
-    position: absolute;
+    display: inline-block !important;
+    position: absolute !important;
+    width: 100px !important;
 }
 
 .game-id {
@@ -103,6 +104,7 @@ div.playAiQuestion p {
     width: calc(10% - 8px);
     overflow: hidden;
     margin-left: 8px;
+    margin-top: 80px;
     
     &.rotated {
         right: 0;

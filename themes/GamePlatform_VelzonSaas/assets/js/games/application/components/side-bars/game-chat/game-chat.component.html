@@ -1,16 +1,19 @@
 <div *ngIf="isLoggedIn()" class="app-chat float-end">
+    <caption class="font-weight-bold text-nowrap">{{ 'side-bars.chat.title' | translate }}</caption>
     <div class="grid">
         <textarea
             class="conversation"
             readonly
             [textContent]="chatMessages$ | async"
             tabindex="-1"
+            rows="15"
         ></textarea>
         <textarea
             class="users"
             readonly
             [textContent]="users$ | async"
             tabindex="-1"
+            rows="15"
         ></textarea>
         <form
             [formGroup]="formGroup"

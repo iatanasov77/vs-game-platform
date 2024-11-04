@@ -21,7 +21,8 @@ final class WebsocketZmqClient extends AbstractWebsocketClient
         $socket = $context->getSocket( \ZMQ::SOCKET_PUSH, 'my publisher' );
         $socket->connect( $this->websocketUrl );
         
-        $json   = $json = $this->serializer->serialize( $msg, JsonEncoder::FORMAT, [JsonEncode::OPTIONS => JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT] );
+        // , [JsonEncode::OPTIONS => JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT]
+        $json   = $this->serializer->serialize( $msg, JsonEncoder::FORMAT );
         $socket->send( $json );
     }
     

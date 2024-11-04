@@ -468,10 +468,10 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
         if ( ! this.timeLeft || this.timeLeft < 0 ) return;
         
         cx.beginPath();
-        const x = this.whiteHome.x + this.whiteHome.width / 2 + this.borderWidth;
+        const x = this.whiteHome.x + this.whiteHome.width / 2 + this.borderWidth - 5;
         const y = this.height / 2;
         const a = ( ( this.timeLeft ?? 0 ) / 40 ) * 2;
-        const s = this.height * 0.06;
+        const s = this.height * 0.04;
         cx.fillStyle = 'green';
         cx.moveTo( x, y );
         if ( this.rotated ) {

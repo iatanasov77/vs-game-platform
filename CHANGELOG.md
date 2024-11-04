@@ -1,3 +1,13 @@
+0.10.5	|	Release date: **04.11.2024**
+============================================
+* Bug-Fixes and Improvements:
+  - Move Backgammon Variants From Side Bar Component to Game Board Top Menu.
+  - Fix Backgammon Dices Positioning and Styling.
+  - Fixing Backend PlayerDto Class.
+  - Resolving Players Avatars From Liip Imagine Cache in Angular Frontend.
+  - Improve BoardPlayer Component Template.
+
+
 0.10.4	|	Release date: **03.11.2024**
 ============================================
 * New Features:

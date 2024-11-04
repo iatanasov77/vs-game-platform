@@ -129,6 +129,7 @@ class DefaultController extends AbstractController
             'statusmessage.youmustselectroom'               => 'You must select a Room',
             'statusmessage.gamenotstarted'                  => 'Game is NOT Started',
             
+            'side-bars.chat.title'                          => 'Game Chat',
             'chat.entermessage'                             => 'Chat here',
             
             // Game Global Messages
@@ -229,6 +230,7 @@ class DefaultController extends AbstractController
             'statusmessage.youmustselectroom'               => 'You must select a Room',
             'statusmessage.gamenotstarted'                  => 'Game is NOT Started',
             
+            'side-bars.chat.title'                          => 'Game Chat',
             'chat.entermessage'                             => 'Chat here',
             
             // Game Global Messages

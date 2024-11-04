@@ -20,10 +20,8 @@ final class WebsocketRatchetConnectionClient extends AbstractWebsocketClient
     
     public function send( object $msg ): void
     {
-        // Here Use: Ratchet\Client\WebSocket
-        
         // , [JsonEncode::OPTIONS => JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT]
-        $json   = $json = $this->serializer->serialize( $msg, JsonEncoder::FORMAT );
+        $json   = $this->serializer->serialize( $msg, JsonEncoder::FORMAT );
         $this->connection->send( $json );
     }
     

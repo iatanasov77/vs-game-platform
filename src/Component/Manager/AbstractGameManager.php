@@ -274,6 +274,8 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     public function Send( ?WebsocketClientInterface $socket, object $obj ): void
     {
+        //$this->logger->info( 'MyDebug: Game ' . print_r( $obj, true ) );
+        
         $sendObject = \get_class( $obj );
         $this->logger->info( "MyDebug: Sending {$sendObject}." );
         
@@ -297,9 +299,11 @@ abstract class AbstractGameManager implements GameManagerInterface
     {
         //$this->logger->info( 'MyDebug: Game ' . print_r( $this->Game, true ) );
         $gameDto = Mapper::GameToDto( $this->Game );
+        //$this->logger->info( 'MyDebug: Game ' . print_r( $gameDto, true ) );
         
         $action = new GameCreatedActionDto();
         $action->game       = $gameDto;
+        //$this->logger->info( 'MyDebug: Game ' . print_r( $action, true ) );
         
         $action->myColor    = PlayerColor::Black;
         $this->Send( $this->Client1, $action );

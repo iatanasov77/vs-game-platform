@@ -7,4 +7,7 @@ class PlayerDto
     public string $name;
     public ?PlayerColor $playerColor;
     public int $pointsLeft;
+    public $photoUrl;
+    public $gold;
+    public $elo;
 }

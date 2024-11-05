@@ -13,7 +13,7 @@ use Vankosoft\UsersBundle\Security\SecurityBridge;
 
 use App\Component\Manager\GameManagerInterface;
 use App\Component\Manager\GameManagerFactory;
-use App\Component\Ai\Backgammon\Engine as AiEngine;
+use App\Component\Rules\Backgammon\AiEngine;
 use App\Component\System\Guid;
 
 // DTO Objects

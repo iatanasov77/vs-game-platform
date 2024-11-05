@@ -1,6 +1,6 @@
-<?php namespace App\Component\Ai\Backgammon;
+<?php namespace App\Component\Rules\Backgammon;
 
-class Config
+class AiConfig
 {
     /// <summary>
     /// Blots are hitables checkers. Below this threshold does not reduce score.
@@ -47,9 +47,9 @@ class Config
     //         return "BF: {$this->BlotsFactor}  BFP: {$this->BlotsFactorPassed}  BT: {$this->BlotsThreshold}  CB: {$this->ConnectedBlocksFactor}  BP: {$this->BlockedPointScore}  RB: {$this->RunOrBlockFactor}";
     //     }
         
-    public static function Untrained(): Config
+    public static function Untrained(): AiConfig
     {
-        $config = new Config();
+        $config = new AiConfig();
         $config->BlotsFactor = 1;
         $config->BlotsFactorPassed = 1;
         $config->BlotsThreshold = 0;
@@ -61,9 +61,9 @@ class Config
         return $config;
     }
     
-    public static function Trained(): Config
+    public static function Trained(): AiConfig
     {
-        $config = new Config();
+        $config = new AiConfig();
         $config->BlotsFactor = 1.225;
         $config->BlotsFactorPassed = 1.925;
         $config->BlotsThreshold = 3;
@@ -75,9 +75,9 @@ class Config
         return $config;
     }
     
-    public static function NoDoubles41Epochs(): Config
+    public static function NoDoubles41Epochs(): AiConfig
     {
-        $config = new Config();
+        $config = new AiConfig();
         $config->BlotsFactor = 1.747286362;
         $config->BlotsThreshold = 14;
         $config->BlockedPointScore = 1.145912;
@@ -88,9 +88,9 @@ class Config
         return $config;
     }
     
-    public static function NoDoubles20Epochs(): Config
+    public static function NoDoubles20Epochs(): AiConfig
     {
-        $config = new Config();
+        $config = new AiConfig();
         $config->BlotsFactor = 1.699189048;
         $config->BlotsThreshold = 6;
         $config->BlockedPointScore = 1.145912;
@@ -101,9 +101,9 @@ class Config
         return $config;
     }
     
-    public static function NoDoubles8Epochs(): Config
+    public static function NoDoubles8Epochs(): AiConfig
     {
-        $config = new Config();
+        $config = new AiConfig();
         $config->BlotsFactor = 1.27486242;
         $config->BlotsThreshold = 3;
         $config->BlockedPointScore = 0;

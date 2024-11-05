@@ -18,7 +18,7 @@ use App\EventListener\WebsocketEvent\MessageEvent;
 
 use App\Component\System\Guid;
 use App\Component\Rules\Backgammon\Game;
-use App\Component\Ai\Backgammon\Engine as AiEngine;
+use App\Component\Rules\Backgammon\AiEngine;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Websocket\WebSocketState;
 

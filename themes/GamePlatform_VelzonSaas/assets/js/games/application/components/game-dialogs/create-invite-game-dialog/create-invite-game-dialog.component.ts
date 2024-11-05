@@ -28,14 +28,14 @@ export class CreateInviteGameDialogComponent
     @ViewChild( 'linkText', { static: false } ) linkText: ElementRef | undefined;
     
     gameId?: string;
-    gameUrl: URL;
+    gameUrl: string;
     link: string;
     
     constructor( @Inject( CookieService ) private cookieService: CookieService )
     {
         // https://stackoverflow.com/a/75840412/12693473
         let url         = new URL( window.location.href );
-        this.gameUrl    = { ...url };
+        this.gameUrl    = url.href;
         
         let gameCookie  = this.cookieService.get( Keys.gameIdKey );
         if ( gameCookie ) {
@@ -50,8 +50,10 @@ export class CreateInviteGameDialogComponent
     startClick(): void
     {
         if ( this.gameId ) {
-            this.gameUrl.searchParams.append( 'gameId', this.gameId );
-            document.location = this.gameUrl.href;
+            let url = new URL( this.gameUrl );
+            url.searchParams.append( 'gameId', this.gameId );
+            
+            document.location = url.href;
         }
     }
     

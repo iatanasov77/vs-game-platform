@@ -8,6 +8,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
+use App\Component\Rules\Backgammon\GameFactory as BackgammonRulesFactory;
 
 final class GameManagerFactory
 {
@@ -25,6 +26,9 @@ final class GameManagerFactory
     
     /** @var ManagerRegistry */
     private $doctrine;
+    
+    /** @var BackgammonRulesFactory */
+    private $backgammonRulesFactory;
     
     /** @var RepositoryInterface */
     private $gameRepository;
@@ -53,6 +57,7 @@ final class GameManagerFactory
         LiipImagineCacheManager $imagineCacheManager,
         EventDispatcherInterface $eventDispatcher,
         ManagerRegistry $doctrine,
+        BackgammonRulesFactory $backgammonRulesFactory,
         RepositoryInterface $gameRepository,
         RepositoryInterface $gamePlayRepository,
         FactoryInterface $gamePlayFactory,
@@ -66,6 +71,7 @@ final class GameManagerFactory
         $this->imagineCacheManager      = $imagineCacheManager;
         $this->eventDispatcher          = $eventDispatcher;
         $this->doctrine                 = $doctrine;
+        $this->backgammonRulesFactory   = $backgammonRulesFactory;
         $this->gameRepository           = $gameRepository;
         $this->gamePlayRepository       = $gamePlayRepository;
         $this->gamePlayFactory          = $gamePlayFactory;
@@ -83,6 +89,7 @@ final class GameManagerFactory
             $this->imagineCacheManager,
             $this->eventDispatcher,
             $this->doctrine,
+            $this->backgammonRulesFactory,
             $this->gameRepository,
             $this->gamePlayRepository,
             $this->gamePlayFactory,
@@ -101,6 +108,7 @@ final class GameManagerFactory
             $this->imagineCacheManager,
             $this->eventDispatcher,
             $this->doctrine,
+            $this->backgammonRulesFactory,
             $this->gameRepository,
             $this->gamePlayRepository,
             $this->gamePlayFactory,
@@ -119,6 +127,7 @@ final class GameManagerFactory
             $this->imagineCacheManager,
             $this->eventDispatcher,
             $this->doctrine,
+            $this->backgammonRulesFactory,
             $this->gameRepository,
             $this->gamePlayRepository,
             $this->gamePlayFactory,

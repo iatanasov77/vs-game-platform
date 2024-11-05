@@ -10,6 +10,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
+use App\Component\Rules\Backgammon\GameFactory as BackgammonRulesFactory;
 
 // Game Events
 use App\EventListener\WebsocketEvent\GameEndedEvent;
@@ -63,6 +64,9 @@ abstract class AbstractGameManager implements GameManagerInterface
     /** @var ManagerRegistry */
     protected $doctrine;
     
+    /** @var BackgammonRulesFactory */
+    protected $backgammonRulesFactory;
+    
     /** @var RepositoryInterface */
     protected $gameRepository;
     
@@ -114,6 +118,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         LiipImagineCacheManager $imagineCacheManager,
         EventDispatcherInterface $eventDispatcher,
         ManagerRegistry $doctrine,
+        BackgammonRulesFactory $backgammonRulesFactory,
         RepositoryInterface $gameRepository,
         RepositoryInterface $gamePlayRepository,
         FactoryInterface $gamePlayFactory,
@@ -127,6 +132,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         $this->imagineCacheManager      = $imagineCacheManager;
         $this->eventDispatcher          = $eventDispatcher;
         $this->doctrine                 = $doctrine;
+        $this->backgammonRulesFactory   = $backgammonRulesFactory;
         $this->gameRepository           = $gameRepository;
         $this->gamePlayRepository       = $gamePlayRepository;
         $this->gamePlayFactory          = $gamePlayFactory;
@@ -170,7 +176,7 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     public function InitializeGame(): void
     {
-        $this->Game     = Game::Create( $this->ForGold );
+        $this->Game     = $this->backgammonRulesFactory->createBackgammonNormalGame( $this->ForGold );
         $this->Created  = new \DateTime( 'now' );
         $this->Game->ThinkStart = new \DateTime( 'now' );
     }
@@ -342,8 +348,6 @@ abstract class AbstractGameManager implements GameManagerInterface
         // todo: visa på clienten även när det blir samma
         
         while ( $this->Game->PlayState == GameState::FirstThrow ) {
-            //$this->logger->info( 'MyDebug: Entering GameState::FirstThrow Loop' );
-            
             $this->Game->RollDice();
             $rollAction = new DicesRolledActionDto();
             $rollAction->dices = $this->Game->Roll->map(
@@ -362,7 +366,6 @@ abstract class AbstractGameManager implements GameManagerInterface
             $this->Send( $this->Client1, $rollAction );
             $this->Send( $this->Client2, $rollAction );
         }
-        //$this->logger->info( 'MyDebug: Exited From GameState::FirstThrow Loop With State: ' . $this->Game->PlayState );
         
         /*  
         $this->moveTimeOut = new DeferredCancellation();

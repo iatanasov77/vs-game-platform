@@ -13,7 +13,6 @@ final class WebsocketGameManager extends AbstractGameManager
     public function ConnectAndListen( WebsocketClientInterface $webSocket, PlayerColor $color, GamePlayer $dbUser, bool $playAi ): void
     {
         $this->logger->info( "MyDebug: Connecting Game Manager ..." );
-        $this->logger->info( "MyDebug: DB User ID " . $dbUser->getId() );
         
         if ( $color == PlayerColor::Black ) {
             $this->Client1 = $webSocket;

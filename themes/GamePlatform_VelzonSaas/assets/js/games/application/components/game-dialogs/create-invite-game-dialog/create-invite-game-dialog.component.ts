@@ -25,17 +25,17 @@ export class CreateInviteGameDialogComponent
 {
     @Output() closeModal: EventEmitter<any> = new EventEmitter();
     @Output() cancel = new EventEmitter<string>();
-    @Output() started = new EventEmitter<string>();
     @ViewChild( 'linkText', { static: false } ) linkText: ElementRef | undefined;
     
     gameId?: string;
+    gameUrl: URL;
     link: string;
     
     constructor( @Inject( CookieService ) private cookieService: CookieService )
     {
         // https://stackoverflow.com/a/75840412/12693473
-        let url = new URL( window.location.href );
-        //alert( url.search );
+        let url         = new URL( window.location.href );
+        this.gameUrl    = { ...url };
         
         let gameCookie  = this.cookieService.get( Keys.gameIdKey );
         if ( gameCookie ) {
@@ -50,7 +50,8 @@ export class CreateInviteGameDialogComponent
     startClick(): void
     {
         if ( this.gameId ) {
-            this.started.emit( this.gameId );
+            this.gameUrl.searchParams.append( 'gameId', this.gameId );
+            document.location = this.gameUrl.href;
         }
     }
     

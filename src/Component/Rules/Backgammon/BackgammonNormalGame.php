@@ -131,48 +131,6 @@ class BackgammonNormalGame extends Game
         }
     }
     
-    public function FakeRoll( int $v1, int $v2 ): void
-    {
-        $this->Roll = new ArrayCollection( Dice::GetDices( $v1, $v2 )->toArray() );
-        $this->SetFirstRollWinner();
-    }
-    
-    public function SetFirstRollWinner(): void
-    {
-        if ( $this->PlayState == GameState::FirstThrow ) {
-            if ( $this->Roll[0]->Value > $this->Roll[1]->Value ) {
-                $this->CurrentPlayer = PlayerColor::Black;
-            } else if ( $this->Roll[0]->Value < $this->Roll[1]->Value ) {
-                $this->CurrentPlayer = PlayerColor::White;
-            }
-            
-            if ( $this->Roll[0]->Value != $this->Roll[1]->Value ) {
-                $this->PlayState = GameState::Playing;
-            }
-        }
-    }
-    
-    public function RollDice(): void
-    {
-        $this->Roll = new ArrayCollection( Dice::Roll()->toArray() );
-        $this->SetFirstRollWinner();
-        
-        $this->ClearMoves( $this->ValidMoves );
-        $this->GenerateMoves( $this->ValidMoves );
-    }
-    
-    protected function ClearMoves( Collection &$moves ): void
-    {
-        // This will probably make it a lot easier for GC, and might even prevent memory leaks
-        foreach ( $moves as $move ) {
-            if ( $move->NextMoves != null && ! empty( $move->NextMoves ) ) {
-                $this->ClearMoves( $move->NextMoves );
-                $move->NextMoves->clear();
-            }
-        }
-        $moves->clear();
-    }
-    
     public function GenerateMoves(): array
     {
         $moves = new ArrayCollection();
@@ -184,7 +142,7 @@ class BackgammonNormalGame extends Game
                 function( $entry ) {
                     return $entry->NextMoves->count() > 0;
                 }
-                )->toArray();
+            )->toArray();
         } else if ( $moves->count() ) {
             // All moves have zero next move in this block
             // Only one dice can be use and it must be the one with highest value
@@ -194,7 +152,7 @@ class BackgammonNormalGame extends Game
                 function( $entry ) use ( $currentPlayer ) {
                     return $entry->To->GetNumber( $currentPlayer ) - $entry->From->GetNumber( $currentPlayer );
                 }
-                );
+            );
             $first = $moves->getMovesOrderByDescending( $moves )->first();
             $moves->clear();
             $moves[]    = $first;

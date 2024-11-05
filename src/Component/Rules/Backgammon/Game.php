@@ -9,7 +9,7 @@ use App\Component\Type\GameState;
 use App\Component\Type\PlayerColor;
 use App\Entity\GamePlayer;
 
-class Game
+abstract class Game
 {
     /** @var LoggerInterface */
     protected  $logger;
@@ -93,6 +93,8 @@ class Game
         }
     }
     
+    abstract public function GenerateMoves(): array;
+    
     public function SetStartPosition(): void
     {
         foreach ( $this->Points as $point ) {
@@ -119,5 +121,49 @@ class Game
         // AtHomeAndOtherAtBar2();
         // Test();
         // LegalMove();
+    }
+    
+    public function FakeRoll( int $v1, int $v2 ): void
+    {
+        $this->Roll = new ArrayCollection( Dice::GetDices( $v1, $v2 )->toArray() );
+        $this->SetFirstRollWinner();
+    }
+    
+    public function SetFirstRollWinner(): void
+    {
+        $this->logger->info( 'MyDebug Existing Rolls: ' . \print_r( $this->Roll, true ) );
+        
+        if ( $this->PlayState == GameState::FirstThrow ) {
+            if ( $this->Roll[0]->Value > $this->Roll[1]->Value ) {
+                $this->CurrentPlayer = PlayerColor::Black;
+            } else if ( $this->Roll[0]->Value < $this->Roll[1]->Value ) {
+                $this->CurrentPlayer = PlayerColor::White;
+            }
+            
+            if ( $this->Roll[0]->Value != $this->Roll[1]->Value ) {
+                $this->PlayState = GameState::Playing;
+            }
+        }
+    }
+    
+    public function RollDice(): void
+    {
+        $this->Roll = new ArrayCollection( Dice::Roll()->toArray() );
+        $this->SetFirstRollWinner();
+        
+        $this->ClearMoves( $this->ValidMoves );
+        $this->GenerateMoves( $this->ValidMoves );
+    }
+    
+    protected function ClearMoves( Collection &$moves ): void
+    {
+        // This will probably make it a lot easier for GC, and might even prevent memory leaks
+        foreach ( $moves as $move ) {
+            if ( $move->NextMoves != null && ! empty( $move->NextMoves ) ) {
+                $this->ClearMoves( $move->NextMoves );
+                $move->NextMoves->clear();
+            }
+        }
+        $moves->clear();
     }
 }

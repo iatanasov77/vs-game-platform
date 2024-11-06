@@ -13,6 +13,7 @@ use Vankosoft\ApplicationBundle\Command\ContainerAwareCommand;
 use Ratchet\Server\IoServer;
 use Ratchet\Http\HttpServer;
 use Ratchet\WebSocket\WsServer;
+use Ratchet\MessageComponentInterface;
 use React\EventLoop\Factory as EventLoopFactory;
 use React\Socket\Server as SocketServer;
 use App\Component\Websocket\Server\WebsocketGamesHandler;
@@ -31,12 +32,43 @@ use App\Component\Websocket\Server\WebsocketGamesHandler;
 )]
 final class WebsocketGameCommand extends ContainerAwareCommand
 {
+    /** @var string */
+    private $logFile;
+    
+    /** @var MessageComponentInterface */
+    private $gamesHandler;
+    
     public function __construct(
         ContainerInterface $container,
         ManagerRegistry $doctrine,
         ValidatorInterface $validator
     ) {
         parent::__construct( $container, $doctrine, $validator );
+        
+        $this->logFile  = '/var/log/websocket/game-patform-game.log';
+    }
+    
+    /**
+     * possix signal handler function
+     */
+    public function sigHandler( $signo )
+    {
+        /**
+         * @NOTE POSSIX SIGNAL CODES: https://www.php.net/manual/en/pcntl.constants.php#115603
+         */
+        //$this->log( "Possix Signal: " . $signo );
+        
+        switch ( $signo ) {
+            case SIGTERM:
+                $this->gamesHandler->serverWasTerminated();
+                exit;
+                break;
+            case SIGHUP:
+                // handle restart tasks
+                break;
+            default:
+                // handle all other signals
+        }
     }
     
     /**
@@ -54,9 +86,12 @@ final class WebsocketGameCommand extends ContainerAwareCommand
      */
     protected function execute( InputInterface $input, OutputInterface $output ): int
     {
-        $port           = $input->getArgument( 'port' );
+        \pcntl_signal( SIGTERM, array( $this, 'sigHandler' ) );
+        \pcntl_signal( SIGHUP, array( $this, 'sigHandler' ) );
         
-        $gamesHandler   = new WebsocketGamesHandler(
+        $port = $input->getArgument( 'port' );
+        
+        $this->gamesHandler = new WebsocketGamesHandler(
             $this->get( 'vs_users.repository.users' ),
             $this->get( 'app_websocket_client_factory' ),
             $this->get( 'app_game_service' ),
@@ -69,7 +104,7 @@ final class WebsocketGameCommand extends ContainerAwareCommand
         $websocketServer = new IoServer(
             new HttpServer(
                 new WsServer(
-                    $gamesHandler
+                    $this->gamesHandler
                 )
             ),
             $socketServer,
@@ -79,5 +114,10 @@ final class WebsocketGameCommand extends ContainerAwareCommand
         $loop->run();
         
         return Command::SUCCESS;
+    }
+    
+    private function log( $logData ): void
+    {
+        \file_put_contents( $this->logFile, $logData . "\n", FILE_APPEND | LOCK_EX );
     }
 }

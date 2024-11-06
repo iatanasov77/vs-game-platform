@@ -273,7 +273,8 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         this.fireResize();
         
         setTimeout( () => {
-            if ( ! this.isRoomSelected ) {
+            let socketConnected = this.appStateService.myConnection.getValue().connected;
+            if ( socketConnected && ! this.isRoomSelected ) {
                 //alert( this.appStateService.user );
                 this.statusMessageService.setNotRoomSelected();
                 this.appStateService.hideBusy();

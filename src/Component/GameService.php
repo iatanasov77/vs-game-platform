@@ -84,7 +84,7 @@ class GameService
         }
         
         if ( $gameGuid = $this->TryReConnect( $webSocket, $gameCookie, $dbUser ) ) {
-            $this->logger->info( 'MyDebug: Try Reconnect' );
+            $this->logger->info( 'MyDebug Reconnect Game: '. $gameGuid );
             // Game disconnected here
             return $gameGuid;
         }
@@ -222,6 +222,8 @@ class GameService
     
     protected function TryReConnect( WebsocketClientInterface $webSocket, ?string $gameCookie, ?UserInterface $dbUser ): ?string
     {
+        $this->logger->info( 'MyDebug Try Reconnect with cookie: '. $gameCookie );
+        
         // Find existing game to reconnect to.
         if ( $gameCookie ) {
             //$cookie = GameCookieDto::TryParse( $gameCookie );
@@ -230,6 +232,8 @@ class GameService
             
             if ( $cookie != null )
             {
+                $this->logger->info( 'MyDebug Try Reconnect: Cookie Parsed' );
+                
                 $gameManager = $this->AllGames->filter(
                     function( $entry ) use ( $cookie ) {
                         return $entry->Game->Id == $cookie->id && $entry->Game->PlayState == GameState::Ended;

@@ -13,7 +13,9 @@
     acceptedDoubling,
     rolled,
     requestHint,
-    hintMoves
+    hintMoves,
+    
+    serverWasTerminated
 }
 
 export default ActionNames;

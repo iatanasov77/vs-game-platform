@@ -123,6 +123,18 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         $conn->close();
     }
     
+    public function serverWasTerminated()
+    {
+        $this->log( "WebSocket Server Was Terminated" );
+        foreach ( $this->clients as $value ) {
+            $connection = $this->clients->current(); // current object
+            $assocKey = $this->clients->getInfo(); // return, if exists, associated with cur. obj. data; else NULL
+            
+            //$this->log( "Connection: " . \print_r( $connection, true ) );
+            //$this->log( "Connection Info: " . \print_r( $assocKey, true ) );
+        }
+    }
+    
     private function log( $logData ): void
     {
         \file_put_contents( $this->logFile, $logData . "\n", FILE_APPEND | LOCK_EX );

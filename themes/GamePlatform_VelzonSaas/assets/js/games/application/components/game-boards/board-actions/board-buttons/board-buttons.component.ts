@@ -14,7 +14,9 @@ import templateString from './board-buttons.component.html';
 })
 export class BoardButtonsComponent implements OnChanges
 {
+    @Input() lobbyButtonsVisible        = false;
     @Input() isRoomSelected: boolean    = false;
+    
     @Input() hasRooms: boolean          = false;
     @Input() newVisible = false;
     @Input() exitVisible = false;
@@ -25,6 +27,7 @@ export class BoardButtonsComponent implements OnChanges
     @Output() onExit = new EventEmitter<void>();
     @Output() onResign = new EventEmitter<void>();
     @Output() onInviteFriend = new EventEmitter<void>();
+    @Output() onPlayGame = new EventEmitter<void>();
     
     constructor(
         @Inject( TranslateService ) private translate: TranslateService
@@ -36,6 +39,9 @@ export class BoardButtonsComponent implements OnChanges
             const changedProp = changes[propName];
             
             switch ( propName ) {
+                case 'lobbyButtonsVisible':
+                    this.lobbyButtonsVisible = changedProp.currentValue;
+                    break;
                 case 'isRoomSelected':
                     this.isRoomSelected = changedProp.currentValue;
                     break;
@@ -75,6 +81,11 @@ export class BoardButtonsComponent implements OnChanges
     createGameRoom(): void
     {
         this.onCreateGameRoom.emit();
+    }
+    
+    playGame(): void
+    {
+        this.onPlayGame.emit();
     }
     
     inviteFriendClick(): void

@@ -6,7 +6,6 @@ use App\Component\Type\PlayerColor;
 use App\Component\Type\GameState;
 use App\Component\Rules\Backgammon\AiEngine;
 use App\Entity\GamePlayer;
-use App\EventListener\WebsocketEvent\MessageEvent;
 
 final class WebsocketGameManager extends AbstractGameManager
 {

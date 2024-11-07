@@ -68,6 +68,20 @@ class GameService
         return isset( $this->AllGames[$gameId] ) ? $this->AllGames[$gameId] : null;
     }
     
+    public function setGameRoomSelected( string $gameId ): ?GameManagerInterface
+    {
+        $this->logger->info( 'MyDebug setGameRoomSelected: ' . $gameId );
+        if ( isset( $this->AllGames[$gameId] ) ) {
+            $this->logger->info( 'MyDebug: Game ID Exists.' );
+            
+            $this->AllGames[$gameId]->RoomSelected  = true;
+            
+            return $this->AllGames[$gameId];
+        }
+        
+        return null;
+    }
+    
     public function Connect( WebsocketClientInterface $webSocket, $gameCode, $userId, $gameId, $playAi, $forGold, ?string $gameCookie ): ?string
     {
         $gameGuid   = null;

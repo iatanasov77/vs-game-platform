@@ -9,6 +9,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Container\ContainerInterface;
 use Vankosoft\ApplicationBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Serializer\SerializerInterface;
 
 use Ratchet\Server\IoServer;
 use Ratchet\Http\HttpServer;
@@ -32,6 +33,9 @@ use App\Component\Websocket\Server\WebsocketGamesHandler;
 )]
 final class WebsocketGameCommand extends ContainerAwareCommand
 {
+    /** @var SerializerInterface */
+    private $serializer;
+    
     /** @var string */
     private $logFile;
     
@@ -41,11 +45,13 @@ final class WebsocketGameCommand extends ContainerAwareCommand
     public function __construct(
         ContainerInterface $container,
         ManagerRegistry $doctrine,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        SerializerInterface $serializer
     ) {
         parent::__construct( $container, $doctrine, $validator );
         
-        $this->logFile  = '/var/log/websocket/game-patform-game.log';
+        $this->serializer   = $serializer;
+        $this->logFile      = '/var/log/websocket/game-patform-game.log';
     }
     
     /**
@@ -92,10 +98,10 @@ final class WebsocketGameCommand extends ContainerAwareCommand
         $port = $input->getArgument( 'port' );
         
         $this->gamesHandler = new WebsocketGamesHandler(
+            $this->serializer,
             $this->get( 'vs_users.repository.users' ),
             $this->get( 'app_websocket_client_factory' ),
-            $this->get( 'app_game_service' ),
-            $this->get( 'event_dispatcher' )
+            $this->get( 'app_game_service' )
         );
         
         $loop           = EventLoopFactory::create();

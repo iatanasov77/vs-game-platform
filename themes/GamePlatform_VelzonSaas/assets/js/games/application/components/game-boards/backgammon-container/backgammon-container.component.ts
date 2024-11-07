@@ -38,6 +38,7 @@ import { StatusMessageService } from '../../../services/status-message.service';
 import { SoundService } from '../../../services/sound.service';
 import { EditorService } from '../../../services/editor.service';
 import { TutorialService } from '../../../services/tutorial.service';
+import { GamePlayService } from '../../../services/game-play.service';
 
 import GameCookieDto from '_@/GamePlatform/Model/BoardGame/gameCookieDto';
 import { CookieService } from 'ngx-cookie-service';
@@ -124,7 +125,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     sendVisible = false;
     undoVisible = false;
     dicesVisible = false;
-    newVisible = true;
+    newVisible = false;
     exitVisible = false;
     acceptDoublingVisible = false;
     requestDoublingVisible = false;
@@ -134,6 +135,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     appState?: MyGameState;
     gameStarted: boolean    = false;
     
+    lobbyButtonsVisible     = true;
     isRoomSelected: boolean = false;
     hasRooms: boolean       = false;
     
@@ -154,7 +156,8 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         @Inject( SoundService ) private sound: SoundService,
         @Inject( EditorService ) private editService: EditorService,
         @Inject( TutorialService ) private tutorialService: TutorialService,
-        @Inject( CookieService ) private cookieService: CookieService
+        @Inject( CookieService ) private cookieService: CookieService,
+        @Inject( GamePlayService ) private gamePlayService: GamePlayService,
     ) {
         this.gameDto$ = this.appStateService.game.observe();
         this.dices$ = this.appStateService.dices.observe();
@@ -218,13 +221,13 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         // service.connect might need to be in a setTimeout callback.
         this.themeName = this.appStateService.user.getValue()?.theme ?? 'dark';
         
-        this.appStateService.game.observe().subscribe( this.debug.bind( this ) );
+        //this.appStateService.game.observe().subscribe( this.debug.bind( this ) );
     }
     
-    debug( dto: GameDto )
-    {
-        console.log( "Debug Game DTO: ", dto );
-    }
+//     debug( dto: GameDto )
+//     {
+//         console.log( "Debug Game DTO: ", dto );
+//     }
     
     ngOnInit(): void
     {
@@ -242,7 +245,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         
         this.actions$.pipe( ofType( selectGameRoomSuccess ) ).subscribe( () => {
             //this.newVisible = this.appStateService.game.getValue()?.playState === GameState.created;
-            this.newVisible = true;
+            this.newVisible = false;
             this.exitVisible = false;
             
             let gameCookie  = this.cookieService.get( Keys.gameIdKey );
@@ -415,7 +418,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         this.setDoublingVisible( dto );
         this.diceColor = dto?.currentPlayer;
         this.fireResize();
-        this.newVisible = dto?.playState === GameState.ended || dto?.playState === GameState.created;
+        this.newVisible = dto?.playState === GameState.ended;
         this.exitVisible =
             dto?.playState !== GameState.playing &&
             dto?.playState !== GameState.requestedDoubling;
@@ -796,5 +799,26 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     toggleMuted()
     {
         this.authService.toggleIntro();
+    }
+    
+    playGame(): void
+    {
+        const game      = this.appStateService.game.getValue();
+        const myColor   = this.appStateService.myColor.getValue();
+        //console.log( 'GameDto Object: ', game );
+        this.wsService.startGamePlay( game, myColor );
+        
+        /**
+         * @NOTE This NOT Work Here Because Game Service is Different Instance in API Application From GamePlatform Application
+         */
+//         let gameCookie  = this.cookieService.get( Keys.gameIdKey );
+//         if ( gameCookie ) {
+//             let gameCookieDto   = JSON.parse( gameCookie ) as GameCookieDto;
+//         
+//             this.gamePlayService.startPlayGame( gameCookieDto.id ).subscribe( () => {
+//                 //alert( 'Game Play is DONE.' );
+//                 this.lobbyButtonsVisible     = false;
+//             });;
+//         }
     }
 }

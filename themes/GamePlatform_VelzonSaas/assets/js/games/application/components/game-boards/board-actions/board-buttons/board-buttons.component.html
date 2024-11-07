@@ -10,6 +10,15 @@
     </ng-container>
     
     <ng-container *ngIf="isRoomSelected">
+        
+        <button (click)="playGame()" *ngIf="lobbyButtonsVisible" class="default-button">
+            {{ 'game_board.play_game' | translate }}
+        </button>
+        
+        <button (click)="inviteFriendClick()" *ngIf="lobbyButtonsVisible" class="default-button">
+            {{ 'game_board.invite_friend' | translate }}
+        </button>
+        
         <button (click)="newGame()" *ngIf="newVisible" class="default-button">
             {{ 'game_board.new_game' | translate }}
         </button>
@@ -22,8 +31,5 @@
             {{ 'game_board.resign' | translate }}
         </button>
         
-        <button (click)="inviteFriendClick()" *ngIf="newVisible" class="default-button">
-            {{ 'game_board.invite_friend' | translate }}
-        </button>
     </ng-container>
 </div>

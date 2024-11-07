@@ -36,6 +36,8 @@ import ConnectionInfoActionDto from '../dto/Actions/connectionInfoActionDto';
 import GameRestoreActionDto from '../dto/Actions/gameRestoreActionDto';
 import RolledActionDto from '../dto/Actions/rolledActionDto';
 import ServerWasTerminatedActionDto from '../dto/Actions/serverWasTerminatedActionDto';
+import StartGamePlayActionDto from '../dto/Actions/startGamePlayActionDto';
+import GamePlayStartedActionDto from '../dto/Actions/gamePlayStartedActionDto';
 
 import { Keys } from '../utils/keys';
 import { MessageLevel, StatusMessage } from '../utils/status-message';
@@ -355,6 +357,10 @@ export class WebsocketGameService
                 this.cookieService.deleteAll( Keys.gameIdKey );
                 break;
             }
+            case ActionNames.gamePlayStarted: {
+                alert ( 'gamePlayStartedActionDto Received.' );
+                break;
+            }
             
             default:
                 throw new Error( `Action not implemented ${action.actionName}` );
@@ -593,7 +599,7 @@ export class WebsocketGameService
     }
     
     //This is when this player accepts a doubling.
-    acceptDoubling()
+    acceptDoubling(): void
     {
         const action: DoublingActionDto = {
             actionName: ActionNames.acceptedDoubling,
@@ -625,7 +631,7 @@ export class WebsocketGameService
     }
     
     //This player requests doubling.
-    requestDoubling()
+    requestDoubling(): void
     {
         const game = this.appState.game.getValue();
         const otherPlyr = this.appState.getOtherPlayer();
@@ -652,6 +658,17 @@ export class WebsocketGameService
         const action: ActionDto = {
             actionName: ActionNames.requestHint
         };
+        this.sendMessage( JSON.stringify( action ) );
+    }
+    
+    startGamePlay( game: GameDto, myColor: PlayerColor ): void
+    {
+        const action: StartGamePlayActionDto = {
+            actionName: ActionNames.startGamePlay,
+            game: game,
+            myColor: myColor
+        };
+        
         this.sendMessage( JSON.stringify( action ) );
     }
 }

@@ -1,3 +1,14 @@
+0.10.6	|	Release date: **07.11.2024**
+============================================
+* New Features and Improvements:
+  - Refactoring of Backgammon Game Rules.
+  - Start Backgammon Game From Invite a Friend Dialog.
+  - Move Backgammon AI Classes into Rules Namespace.
+  - Improve WebSocket Server and Client Services.
+  - Refactoring of WebSocket Communication and Create StartGamePlay Actions.
+  - Remove Old Theme From Docs.
+
+
 0.10.5	|	Release date: **04.11.2024**
 ============================================
 * Bug-Fixes and Improvements:

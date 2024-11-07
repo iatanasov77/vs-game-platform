@@ -10,14 +10,11 @@ use Doctrine\Persistence\ManagerRegistry;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
-
-// Game Events
-use App\EventListener\WebsocketEvent\GameEndedEvent;
-use App\EventListener\WebsocketEvent\MessageEvent;
+use App\Component\Rules\Backgammon\GameFactory as BackgammonRulesFactory;
 
 use App\Component\System\Guid;
 use App\Component\Rules\Backgammon\Game;
-use App\Component\Ai\Backgammon\Engine as AiEngine;
+use App\Component\Rules\Backgammon\AiEngine;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Websocket\WebSocketState;
 
@@ -37,6 +34,8 @@ use App\Component\Dto\Actions\GameRestoreActionDto;
 use App\Component\Dto\Actions\DoublingActionDto;
 use App\Component\Dto\Actions\OpponentMoveActionDto;
 use App\Component\Dto\Actions\RolledActionDto;
+use App\Component\Dto\Actions\StartGamePlayActionDto;
+use App\Component\Dto\Actions\GamePlayStartedActionDto;
 
 use App\Entity\GamePlayer;
 
@@ -47,6 +46,9 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     /** @var \DateTime */
     public $Created;
+    
+    /** @var bool */
+    public $RoomSelected = false;
     
     /** @var LoggerInterface */
     protected $logger;
@@ -62,6 +64,9 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     /** @var ManagerRegistry */
     protected $doctrine;
+    
+    /** @var BackgammonRulesFactory */
+    protected $backgammonRulesFactory;
     
     /** @var RepositoryInterface */
     protected $gameRepository;
@@ -114,6 +119,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         LiipImagineCacheManager $imagineCacheManager,
         EventDispatcherInterface $eventDispatcher,
         ManagerRegistry $doctrine,
+        BackgammonRulesFactory $backgammonRulesFactory,
         RepositoryInterface $gameRepository,
         RepositoryInterface $gamePlayRepository,
         FactoryInterface $gamePlayFactory,
@@ -127,6 +133,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         $this->imagineCacheManager      = $imagineCacheManager;
         $this->eventDispatcher          = $eventDispatcher;
         $this->doctrine                 = $doctrine;
+        $this->backgammonRulesFactory   = $backgammonRulesFactory;
         $this->gameRepository           = $gameRepository;
         $this->gamePlayRepository       = $gamePlayRepository;
         $this->gamePlayFactory          = $gamePlayFactory;
@@ -170,14 +177,14 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     public function InitializeGame(): void
     {
-        $this->Game     = Game::Create( $this->ForGold );
+        $this->Game     = $this->backgammonRulesFactory->createBackgammonNormalGame( $this->ForGold );
         $this->Created  = new \DateTime( 'now' );
         $this->Game->ThinkStart = new \DateTime( 'now' );
     }
     
     public function dispatchGameEnded(): void
     {
-        $this->eventDispatcher->dispatch( new GameEndedEvent( Mapper::GameToDto( $this->Game ) ), GameEndedEvent::NAME );
+        //$this->eventDispatcher->dispatch( new GameEndedEvent( Mapper::GameToDto( $this->Game ) ), GameEndedEvent::NAME );
     }
     
     public function Restore( PlayerColor $color, WebsocketClientInterface $socket ): void
@@ -289,6 +296,9 @@ abstract class AbstractGameManager implements GameManagerInterface
             $this->Resign( $winner );
         } else if ( $actionName == ActionNames::exitGame ) {
             $this->CloseConnections( $socket );
+        } else if ( $actionName == ActionNames::startGamePlay ) {
+            $this->logger->info( 'MyDebug: startGamePlay action recieved from GameManager.' );
+            $this->StartGame();
         }
     }
     
@@ -315,7 +325,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         }
     }
     
-    protected function CreateGame(): void
+    public function CreateGame(): void
     {
         //$this->logger->info( 'MyDebug: Game ' . print_r( $this->Game, true ) );
         $gameDto = Mapper::GameToDto( $this->Game );
@@ -331,10 +341,12 @@ abstract class AbstractGameManager implements GameManagerInterface
         $action->myColor = PlayerColor::White;
         $this->Send( $this->Client2, $action );
         
-        $this->StartGame();
+        if ( $this->RoomSelected ) {
+            $this->StartGame();
+        }
     }
     
-    protected function StartGame(): void
+    public function StartGame(): void
     {
         $this->logger->info( 'MyDebug: Begin Start Game' );
         //$game->PlayState = GameState::OpponentConnectWaiting;
@@ -342,8 +354,6 @@ abstract class AbstractGameManager implements GameManagerInterface
         // todo: visa på clienten även när det blir samma
         
         while ( $this->Game->PlayState == GameState::FirstThrow ) {
-            //$this->logger->info( 'MyDebug: Entering GameState::FirstThrow Loop' );
-            
             $this->Game->RollDice();
             $rollAction = new DicesRolledActionDto();
             $rollAction->dices = $this->Game->Roll->map(
@@ -362,7 +372,6 @@ abstract class AbstractGameManager implements GameManagerInterface
             $this->Send( $this->Client1, $rollAction );
             $this->Send( $this->Client2, $rollAction );
         }
-        //$this->logger->info( 'MyDebug: Exited From GameState::FirstThrow Loop With State: ' . $this->Game->PlayState );
         
         /*  
         $this->moveTimeOut = new DeferredCancellation();
@@ -394,7 +403,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         
         $newScore = $this->SaveWinner( $winner );
         $this->SendWinner( $winner, $newScore );
-        $this->eventDispatcher->dispatch( new GameEndedEvent( Mapper::GameToDto( $this->Game ) ), GameEndedEvent::NAME );
+        //$this->eventDispatcher->dispatch( new GameEndedEvent( Mapper::GameToDto( $this->Game ) ), GameEndedEvent::NAME );
     }
     
     protected function SendNewRoll(): void
@@ -659,6 +668,8 @@ abstract class AbstractGameManager implements GameManagerInterface
         $this->Send( $client, $action );
         
         $moves = $this->Engine->GetBestMoves();
+        $this->logger->info( 'MyDebug EnginMoves: ' . print_r( $moves, true ) );
+        
         $noMoves = true;
         for ( $i = 0; $i < $moves->count(); $i++ ) {
             $move = $moves[$i];

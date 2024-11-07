@@ -4,16 +4,14 @@ use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Type\PlayerColor;
 use App\Component\Type\GameState;
-use App\Component\Ai\Backgammon\Engine as AiEngine;
+use App\Component\Rules\Backgammon\AiEngine;
 use App\Entity\GamePlayer;
-use App\EventListener\WebsocketEvent\MessageEvent;
 
 final class WebsocketGameManager extends AbstractGameManager
 {
     public function ConnectAndListen( WebsocketClientInterface $webSocket, PlayerColor $color, GamePlayer $dbUser, bool $playAi ): void
     {
         $this->logger->info( "MyDebug: Connecting Game Manager ..." );
-        $this->logger->info( "MyDebug: DB User ID " . $dbUser->getId() );
         
         if ( $color == PlayerColor::Black ) {
             $this->Client1 = $webSocket;

@@ -7,10 +7,9 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 
-use App\EventListener\GameEndedEvent;
 use App\Component\System\Guid;
 use App\Component\Rules\Backgammon\Game;
-use App\Component\Ai\Backgammon\Engine as AiEngine;
+use App\Component\Rules\Backgammon\AiEngine;
 use App\Component\Dto\Mapper;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Websocket\WebSocketState;

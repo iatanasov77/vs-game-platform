@@ -33,7 +33,7 @@
     <app-invite-game></app-invite-game>
     
     <div
-        *ngIf="(gameDto$ | async)?.isGoldGame"
+        *ngIf="(gameDto$ | async)?.isGoldGame && ! lobbyButtonsVisible"
         class="players"
         [ngStyle]="{ height: height + 'px' }"
         [ngClass]="{ rotated: rotated, flipped: flipped }"
@@ -74,6 +74,7 @@
         [timeLeft]="timeLeft$ | async"
         [tutorialStep]="tutorialStep$ | async"
         [editing]="editing"
+        [lobbyButtonsVisible]="lobbyButtonsVisible"
         (addMove)="doMove($event)"
         (moveAnimFinished)="moveAnimFinished()"
         (addEditMove)="doEditMove($event)"
@@ -103,6 +104,7 @@
   
     <div class="board-buttons" #boardButtons>
         <app-board-buttons
+            [lobbyButtonsVisible]="lobbyButtonsVisible"
             [isRoomSelected]="isRoomSelected"
             [hasRooms]="hasRooms"
             
@@ -112,6 +114,7 @@
             (onExit)="exitGame()"
             (onResign)="resignGame()"
             (onInviteFriend)="inviteFriend()"
+            (onPlayGame)="playGame()"
             
             (onSelectGameRoom)="selectGameRoom()"
             (onCreateGameRoom)="createGameRoom()"

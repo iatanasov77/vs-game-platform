@@ -13,7 +13,7 @@ use Vankosoft\UsersBundle\Security\SecurityBridge;
 
 use App\Component\Manager\GameManagerInterface;
 use App\Component\Manager\GameManagerFactory;
-use App\Component\Ai\Backgammon\Engine as AiEngine;
+use App\Component\Rules\Backgammon\AiEngine;
 use App\Component\System\Guid;
 
 // DTO Objects
@@ -68,6 +68,20 @@ class GameService
         return isset( $this->AllGames[$gameId] ) ? $this->AllGames[$gameId] : null;
     }
     
+    public function setGameRoomSelected( string $gameId ): ?GameManagerInterface
+    {
+        $this->logger->info( 'MyDebug setGameRoomSelected: ' . $gameId );
+        if ( isset( $this->AllGames[$gameId] ) ) {
+            $this->logger->info( 'MyDebug: Game ID Exists.' );
+            
+            $this->AllGames[$gameId]->RoomSelected  = true;
+            
+            return $this->AllGames[$gameId];
+        }
+        
+        return null;
+    }
+    
     public function Connect( WebsocketClientInterface $webSocket, $gameCode, $userId, $gameId, $playAi, $forGold, ?string $gameCookie ): ?string
     {
         $gameGuid   = null;
@@ -84,7 +98,7 @@ class GameService
         }
         
         if ( $gameGuid = $this->TryReConnect( $webSocket, $gameCookie, $dbUser ) ) {
-            $this->logger->info( 'MyDebug: Try Reconnect' );
+            $this->logger->info( 'MyDebug Reconnect Game: '. $gameGuid );
             // Game disconnected here
             return $gameGuid;
         }
@@ -222,6 +236,8 @@ class GameService
     
     protected function TryReConnect( WebsocketClientInterface $webSocket, ?string $gameCookie, ?UserInterface $dbUser ): ?string
     {
+        $this->logger->info( 'MyDebug Try Reconnect with cookie: '. $gameCookie );
+        
         // Find existing game to reconnect to.
         if ( $gameCookie ) {
             //$cookie = GameCookieDto::TryParse( $gameCookie );
@@ -230,6 +246,8 @@ class GameService
             
             if ( $cookie != null )
             {
+                $this->logger->info( 'MyDebug Try Reconnect: Cookie Parsed' );
+                
                 $gameManager = $this->AllGames->filter(
                     function( $entry ) use ( $cookie ) {
                         return $entry->Game->Id == $cookie->id && $entry->Game->PlayState == GameState::Ended;

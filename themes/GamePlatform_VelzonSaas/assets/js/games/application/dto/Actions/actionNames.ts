@@ -13,7 +13,11 @@
     acceptedDoubling,
     rolled,
     requestHint,
-    hintMoves
+    hintMoves,
+    
+    serverWasTerminated,
+    startGamePlay,
+    gamePlayStarted
 }
 
 export default ActionNames;

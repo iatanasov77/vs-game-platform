@@ -1,14 +1,17 @@
 <?php namespace App\Component\Websocket\Server;
 
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use SplObjectStorage as SplObjectStorageAlias;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use App\Component\Websocket\WebsocketClientFactory;
 use App\Component\Websocket\WebSocketState;
 use App\Component\GameService;
-use App\EventListener\WebsocketEvent\MessageEvent;
+
+use App\Component\Dto\Actions\ActionDto;
+use App\Component\Dto\Actions\ActionNames;
 
 /**
  * See Logs:        sudo tail -f /var/log/websocket/game-patform-game.log
@@ -22,6 +25,9 @@ use App\EventListener\WebsocketEvent\MessageEvent;
  */
 final class WebsocketGamesHandler implements MessageComponentInterface
 {
+    /** @var SerializerInterface */
+    private $serializer;
+    
     /** @var RepositoryInterface */
     private $usersRepository;
     
@@ -30,9 +36,6 @@ final class WebsocketGamesHandler implements MessageComponentInterface
     
     /** @var GameService */
     private $gameService;
-    
-    /** @var EventDispatcherInterface */
-    private $eventDispatcher;
     
     /** @var \SplObjectStorage */
     private $clients;
@@ -50,15 +53,15 @@ final class WebsocketGamesHandler implements MessageComponentInterface
     private $logFile;
     
     public function __construct(
+        SerializerInterface $serializer,
         RepositoryInterface $usersRepository,
         WebsocketClientFactory $wsClientFactory,
-        GameService $gameService,
-        EventDispatcherInterface $eventDispatcher,
+        GameService $gameService
     ) {
+        $this->serializer       = $serializer;
         $this->usersRepository  = $usersRepository;
         $this->wsClientFactory  = $wsClientFactory;
         $this->gameService      = $gameService;
-        $this->eventDispatcher  = $eventDispatcher;
         
         $this->clients  = new SplObjectStorageAlias();
         $this->names    = [];
@@ -81,12 +84,13 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         $this->ConnectGame( $conn );
         
         // broadcast new user
-        $this->onMessage( $conn, "New Connection: " . $this->connectionSequenceId );
+        //$this->onMessage( $conn, "New Connection: " . $this->connectionSequenceId );
     }
     
     public function onMessage( ConnectionInterface $from, $msg )
     {
         $this->log( "New message from ({$from->resourceId}): " . $msg );
+        //$this->debugGameManager( $from->resourceId );
         
         if ( ! isset( $this->games[$from->resourceId] ) ) {
             return;
@@ -96,7 +100,13 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         $socket         = $gameManager->getClient( $from->resourceId );
         
         if ( $gameManager ) {
-            $this->eventDispatcher->dispatch( new MessageEvent( $gameManager, $socket, $msg ) );
+            $action         = $this->serializer->deserialize( $msg, ActionDto::class, JsonEncoder::FORMAT );
+            
+            /*
+            $otherClient    = $socket == $gameManager->Client1 ? $gameManager->Client2 : $gameManager->Client1;
+            $gameManager->DoAction( ActionNames::from( $action->actionName ), $msg, $socket, $otherClient );
+            */
+            $gameManager->DoAction( ActionNames::from( $action->actionName ), $msg, $socket, $socket );
         }
     }
     
@@ -123,6 +133,18 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         $conn->close();
     }
     
+    public function serverWasTerminated()
+    {
+        $this->log( "WebSocket Server Was Terminated" );
+        foreach ( $this->clients as $value ) {
+            $connection = $this->clients->current(); // current object
+            $assocKey = $this->clients->getInfo(); // return, if exists, associated with cur. obj. data; else NULL
+            
+            //$this->log( "Connection: " . \print_r( $connection, true ) );
+            //$this->log( "Connection Info: " . \print_r( $assocKey, true ) );
+        }
+    }
+    
     private function log( $logData ): void
     {
         \file_put_contents( $this->logFile, $logData . "\n", FILE_APPEND | LOCK_EX );
@@ -137,11 +159,13 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         
         $user   = $this->usersRepository->findOneBy( ['apiVerifySiganature' => $queryParameters['token']] );
         if ( ! $user ) {
+            $this->log( "User Not Found When Connecting Game." );
             return;
         }
         
         $gameCode   = isset( $queryParameters['gameCode'] ) ? $queryParameters['gameCode'] : null;
         if ( ! $gameCode ) {
+            $this->log( "Game Code Missing When Connecting Game." );
             return;
         }
         
@@ -177,5 +201,10 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         if ( $gameGuid ) {
             $this->games[$conn->resourceId]  = $gameGuid;
         }
+    }
+    
+    private function debugGameManager( int $resourceId ): void
+    {
+        $this->log( 'Game Manager Found: ' . isset( $this->games[$resourceId] ) );
     }
 }

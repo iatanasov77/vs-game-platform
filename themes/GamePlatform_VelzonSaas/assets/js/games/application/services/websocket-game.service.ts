@@ -35,6 +35,9 @@ import UndoActionDto from '../dto/Actions/undoActionDto';
 import ConnectionInfoActionDto from '../dto/Actions/connectionInfoActionDto';
 import GameRestoreActionDto from '../dto/Actions/gameRestoreActionDto';
 import RolledActionDto from '../dto/Actions/rolledActionDto';
+import ServerWasTerminatedActionDto from '../dto/Actions/serverWasTerminatedActionDto';
+import StartGamePlayActionDto from '../dto/Actions/startGamePlayActionDto';
+import GamePlayStartedActionDto from '../dto/Actions/gamePlayStartedActionDto';
 
 import { Keys } from '../utils/keys';
 import { MessageLevel, StatusMessage } from '../utils/status-message';
@@ -150,7 +153,7 @@ export class WebsocketGameService
     {
         console.error( 'Error', { event } );
         const cnn = this.appState.myConnection.getValue();
-        this.appState.myConnection.setValue({ ...cnn, connected: false });
+        this.appState.myConnection.setValue( { ...cnn, connected: false } );
         this.statusMessageService.setMyConnectionLost( '' );
     }
     
@@ -158,8 +161,13 @@ export class WebsocketGameService
     {
         //alert( event.code );
         console.log( 'Close', { event } );
+        
+        // Remove Cookie ( May be WebSocket Server was Terminated)
+        this.cookieService.deleteAll( Keys.gameIdKey );
+        
+        // Set Status Message
         const cnn = this.appState.myConnection.getValue();
-        this.appState.myConnection.setValue({ ...cnn, connected: false });
+        this.appState.myConnection.setValue( { ...cnn, connected: false } );
         this.statusMessageService.setMyConnectionLost( event.reason );
     }
     
@@ -343,6 +351,14 @@ export class WebsocketGameService
                     clone.push( hint );
                     this.appState.moveAnimations.setValue( clone );
                 });
+                break;
+            }
+            case ActionNames.serverWasTerminated: {
+                this.cookieService.deleteAll( Keys.gameIdKey );
+                break;
+            }
+            case ActionNames.gamePlayStarted: {
+                alert ( 'gamePlayStartedActionDto Received.' );
                 break;
             }
             
@@ -583,7 +599,7 @@ export class WebsocketGameService
     }
     
     //This is when this player accepts a doubling.
-    acceptDoubling()
+    acceptDoubling(): void
     {
         const action: DoublingActionDto = {
             actionName: ActionNames.acceptedDoubling,
@@ -615,7 +631,7 @@ export class WebsocketGameService
     }
     
     //This player requests doubling.
-    requestDoubling()
+    requestDoubling(): void
     {
         const game = this.appState.game.getValue();
         const otherPlyr = this.appState.getOtherPlayer();
@@ -642,6 +658,17 @@ export class WebsocketGameService
         const action: ActionDto = {
             actionName: ActionNames.requestHint
         };
+        this.sendMessage( JSON.stringify( action ) );
+    }
+    
+    startGamePlay( game: GameDto, myColor: PlayerColor ): void
+    {
+        const action: StartGamePlayActionDto = {
+            actionName: ActionNames.startGamePlay,
+            game: game,
+            myColor: myColor
+        };
+        
         this.sendMessage( JSON.stringify( action ) );
     }
 }

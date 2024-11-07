@@ -1,13 +1,10 @@
-<?php namespace App\Component\Ai\Backgammon;
+<?php namespace App\Component\Rules\Backgammon;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-
 use App\Component\Type\PlayerColor;
-use App\Component\Rules\Backgammon\Game;
-use App\Component\Rules\Backgammon\Move;
 
-class Engine
+class AiEngine
 {
     /** @var Game */
     private $EngineGame;
@@ -21,7 +18,7 @@ class Engine
     public function __construct( Game $game )
     {
         $this->EngineGame = $game;
-        $this->Configuration = Config::Trained();
+        $this->Configuration = AiConfig::Trained();
     }
 
     public function GetBestMoves(): Collection

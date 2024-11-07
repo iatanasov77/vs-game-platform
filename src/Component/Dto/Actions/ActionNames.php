@@ -17,4 +17,8 @@ enum ActionNames: int
     case rolled             = 12;
     case requestHint        = 13;
     case hintMoves          = 14;
+    
+    case serverWasTerminated    = 15;
+    case startGamePlay          = 16;
+    case gamePlayStarted        = 17;
 }

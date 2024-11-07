@@ -60,6 +60,7 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
     @Input() timeLeft: number | null = 0;
     @Input() tutorialStep: number | null = 0;
     @Input() editing: boolean = false;
+    @Input() lobbyButtonsVisible: boolean = false;
     
     @Output() addMove = new EventEmitter<MoveDto>();
     @Output() addEditMove = new EventEmitter<MoveDto>();
@@ -178,6 +179,7 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
         if ( changes['width'] || changes['height'] || changes['flipped'] || changes['rotated'] ) {
             this.recalculateGeometry();
         }
+        //alert( this.lobbyButtonsVisible );
         
         //this.debugGame();
         this.requestDraw();
@@ -298,7 +300,9 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
         canvasEl.height = this.height;
         const cx = this.cx;
         this.drawBoard( cx );
-        this.drawCheckers( cx );
+        if ( ! this.lobbyButtonsVisible ) {
+            this.drawCheckers( cx );
+        }
         if ( this.animatedMove ) {
             this.animatedMove.draw(cx, this.getCheckerWidth());
         }
@@ -991,10 +995,12 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
             cx.translate( -this.blackHome.height, 0 );
         }
         
-        //alert( this.blacksName );
-        //cx.fillStyle = this.theme.textColor;
-        cx.fillStyle = '#000';
-        cx.fillText( this.blacksName, 0, -this.blackHome.width - 11 );
+        if ( ! this.lobbyButtonsVisible ) {
+            //alert( this.blacksName );
+            //cx.fillStyle = this.theme.textColor;
+            cx.fillStyle = '#000';
+            cx.fillText( this.blacksName, 0, -this.blackHome.width - 11 );
+        }
         cx.fillStyle = this.theme.border;
         cx.font = homeFntSize;
         cx.fillText(
@@ -1013,9 +1019,11 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
             cx.translate( -this.whiteHome.height, 0 );
         }
         cx.font = '18px Arial';
-        //cx.fillStyle = this.theme.textColor;
-        cx.fillStyle = '#000';
-        cx.fillText( this.whitesName, 0, -this.whiteHome.width - 11 );
+        if ( ! this.lobbyButtonsVisible ) {
+            //cx.fillStyle = this.theme.textColor;
+            cx.fillStyle = '#000';
+            cx.fillText( this.whitesName, 0, -this.whiteHome.width - 11 );
+        }
         cx.fillStyle = this.theme.border;
         cx.font = homeFntSize;
         

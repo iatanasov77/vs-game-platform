@@ -3,7 +3,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { Observable, map, of } from 'rxjs';
 import { AuthService } from './auth.service';
 import { AppConstants } from "../constants";
+import { Keys } from '../utils/keys';
 
+import GameCookieDto from '_@/GamePlatform/Model/BoardGame/gameCookieDto';
 import IGamePlay from '_@/GamePlatform/Model/GamePlayInterface';
 import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
 import IGame from '_@/GamePlatform/Model/GameInterface';
@@ -16,8 +18,16 @@ export class GamePlayService
 {
     constructor(
         @Inject( HttpClient ) private httpClient: HttpClient,
-        @Inject( AuthService ) private authService: AuthService
+        @Inject( AuthService ) private authService: AuthService,
     ) { }
+    
+    startPlayGame( gameId: string ): Observable<IGamePlay>
+    {
+        const headers = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
+        return this.httpClient.get<IGamePlay>( 'select-game-room/' + gameId, {headers} ).pipe(
+            map( ( response: any ) => this.mapGamePlay( response ) )
+        );
+    }
     
     selectGameRoom( inputProps: any ): Observable<IGame>
     {
@@ -69,8 +79,9 @@ export class GamePlayService
         );
     }
     
-    private mapGamePlay( response: any )
+    private mapGamePlay( response: any ): any
     {
+        console.log( 'GamePlay Response: ', response );
         if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
             let gamePlay: IGamePlay = {
                 id: response.data.id,

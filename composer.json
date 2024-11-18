@@ -26,8 +26,8 @@
         "symfony/runtime": "6.4.*",
         "symfony/http-client": "6.4.*",
         
-        "vankosoft/application": "1.10.*",
-        "vankosoft/application-themes": "^1.0",
+        "vankosoft/application": "1.11.*",
+        "vankosoft/application-themes": "^1.1",
         "vankosoft/api-bundle": "^3.0",
         
         "vankosoft/thruway-bundle": "^1.0",

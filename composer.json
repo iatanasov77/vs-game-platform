@@ -30,11 +30,9 @@
         "vankosoft/application-themes": "^1.1",
         "vankosoft/api-bundle": "^3.0",
         
-        "vankosoft/thruway-bundle": "^1.0",
         "cboden/ratchet": "^0.4",
         "react/react": "^1.4",
         "react/partial": "^3.0",
-        "react/zmq": "^0.4",
         
         "knpuniversity/oauth2-client-bundle": "^2.18",
         "league/oauth2-facebook": "^2.2",

@@ -44,7 +44,6 @@ return [
 //     Vankosoft\PaymentBundle\VSPaymentBundle::class => ['all' => true],
 //     Vankosoft\CatalogBundle\VSCatalogBundle::class => ['all' => true],
 	
-    Vankosoft\ThruwayBundle\VSThruwayBundle::class => ['all' => true],
     Symfony\Bundle\MercureBundle\MercureBundle::class => ['all' => true],
     
     KnpU\OAuth2ClientBundle\KnpUOAuth2ClientBundle::class => ['all' => true],

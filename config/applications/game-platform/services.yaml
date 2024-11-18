@@ -7,7 +7,6 @@ imports:
     - { resource: services/uploader.yaml }
     - { resource: services/widgets.yaml }
     - { resource: services/games.yaml }
-    - { resource: services/wamp.yaml }
     
 parameters:
     locale: 'en_US'

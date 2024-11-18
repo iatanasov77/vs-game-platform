@@ -57,10 +57,10 @@ services:
             - '@vs_users.factory.avatar_image'
             - '@vs_cms.profile_uploader'
             - '@vs_agent.agent'
-#             - '@vs_payment_payment'
-#             - '@vs_catalog.repository.pricing_plan'
-#             - '@vs_catalog.repository.pricing_plan_category'
-#             - '@vs_catalog.repository.pricing_plan_subscription'
+            - '@vs_payment_payment'
+            - '@vs_catalog.repository.pricing_plan'
+            - '@vs_catalog.repository.pricing_plan_category'
+            - '@vs_catalog.repository.pricing_plan_subscription'
             
     App\Controller\GamePlatform\RegisterController:
         public: true
@@ -123,55 +123,55 @@ services:
             - '@twig'
             - '@vsapp.repository.game_categories'
     
-#     App\Controller\GamePlatform\CreditCardController:
-#         tags: ['controller.service_arguments']
-#         autowire: false
-#         arguments:
-#             - '@doctrine'
-#             - '@vs_payment.repository.order'
-#         calls:
-#             - [ setContainer, [ '@service_container' ] ]
-#             
-#     App\Controller\GamePlatform\ShoppingCartCheckoutController:
-#         tags: ['controller.service_arguments']
-#         autowire: false
-#         arguments:
-#             - '@doctrine'
-#             - '@vs_payment.repository.order'
-#             - '@vs_payment_payment'
-#         calls:
-#             - [ setContainer, [ '@service_container' ] ]
-#             
-#     App\Controller\GamePlatform\PricingPlanCheckoutController:
-#         tags: ['controller.service_arguments']
-#         autowire: true
-#         arguments:
-#             - '@doctrine'
-#             - '@event_dispatcher'
-#             - '@vs_users.security_bridge'
-#             - '@vs_payment.factory.order'
-#             - '@vs_payment.repository.order'
-#             - '@vs_payment.factory.order_item'
-#             - '@vs_payment.repository.payment_method'
-#             - '@vs_payment_payment'
-#             - '@vs_payment.order_factory'
-#             - '@vs_payment.repository.gateway_config'
-#             - '@vs_catalog.repository.pricing_plan_category'
-#             - '@vs_catalog.repository.pricing_plan'
-#             - '@vs_catalog.repository.pricing_plan_subscription'
-#         calls:
-#             - [ setContainer, [ '@service_container' ] ]
-#             
-#     App\Controller\GamePlatform\CatalogController:
-#         tags: ['controller.service_arguments']
-#         autowire: true
-#         arguments:
-#             - '@vs_catalog.repository.product_category'
-#             - '@vs_catalog.repository.product'
-#             - '%vs_catalog.latest_products_limit%'
-#             - '@doctrine'
-#         calls:
-#             - [ setContainer, [ '@service_container' ] ]
+    App\Controller\GamePlatform\CreditCardController:
+        tags: ['controller.service_arguments']
+        autowire: false
+        arguments:
+            - '@doctrine'
+            - '@vs_payment.repository.order'
+        calls:
+            - [ setContainer, [ '@service_container' ] ]
+            
+    App\Controller\GamePlatform\ShoppingCartCheckoutController:
+        tags: ['controller.service_arguments']
+        autowire: false
+        arguments:
+            - '@doctrine'
+            - '@vs_payment.repository.order'
+            - '@vs_payment_payment'
+        calls:
+            - [ setContainer, [ '@service_container' ] ]
+            
+    App\Controller\GamePlatform\PricingPlanCheckoutController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@doctrine'
+            - '@event_dispatcher'
+            - '@vs_users.security_bridge'
+            - '@vs_payment.factory.order'
+            - '@vs_payment.repository.order'
+            - '@vs_payment.factory.order_item'
+            - '@vs_payment.repository.payment_method'
+            - '@vs_payment_payment'
+            - '@vs_payment.order_factory'
+            - '@vs_payment.repository.gateway_config'
+            - '@vs_catalog.repository.pricing_plan_category'
+            - '@vs_catalog.repository.pricing_plan'
+            - '@vs_catalog.repository.pricing_plan_subscription'
+        calls:
+            - [ setContainer, [ '@service_container' ] ]
+            
+    App\Controller\GamePlatform\CatalogController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@vs_catalog.repository.product_category'
+            - '@vs_catalog.repository.product'
+            - '%vs_catalog.latest_products_limit%'
+            - '@doctrine'
+        calls:
+            - [ setContainer, [ '@service_container' ] ]
             
     App\Controller\GamePlatform\GamesController:
         tags: ['controller.service_arguments']

@@ -24,17 +24,17 @@ use App\Entity\MercureConnection;
 #[ORM\Entity]
 #[ORM\Table(name: "VSUM_Users")]
 class User extends BaseUser implements
-//     SubscribedUserInterface,
-//     UserPaymentAwareInterface,
-//     CustomerInterface,
-//     UserSubscriptionAwareInterface,
+    SubscribedUserInterface,
+    UserPaymentAwareInterface,
+    CustomerInterface,
+    UserSubscriptionAwareInterface,
     ApiUserInterface,
     TwoFactorInterface
 {
-//     use SubscribedUserEntity;
-//     use UserPaymentAwareEntity;
-//     use CustomerEntity;
-//     use UserSubscriptionAwareEntity;
+    use SubscribedUserEntity;
+    use UserPaymentAwareEntity;
+    use CustomerEntity;
+    use UserSubscriptionAwareEntity;
     use ApiUserEntity;
     
     /** @var GamePlayer */

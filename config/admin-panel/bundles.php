@@ -44,11 +44,11 @@ return [
     Vankosoft\CmsBundle\VSCmsBundle::class => ['all' => true],
     Vankosoft\UsersBundle\VSUsersBundle::class => ['all' => true],
     
-//     Payum\Bundle\PayumBundle\PayumBundle::class => ['all' => true],
-//     Vankosoft\UsersSubscriptionsBundle\VSUsersSubscriptionsBundle::class => ['all' => true],
-//     Vankosoft\PaymentBundle\VSPaymentBundle::class => ['all' => true],
-//     Vankosoft\BoricaBundle\VSBoricaBundle::class => ['all' => true],
-//     Vankosoft\CatalogBundle\VSCatalogBundle::class => ['all' => true],
+    Payum\Bundle\PayumBundle\PayumBundle::class => ['all' => true],
+    Vankosoft\UsersSubscriptionsBundle\VSUsersSubscriptionsBundle::class => ['all' => true],
+    Vankosoft\PaymentBundle\VSPaymentBundle::class => ['all' => true],
+    Vankosoft\BoricaBundle\VSBoricaBundle::class => ['all' => true],
+    Vankosoft\CatalogBundle\VSCatalogBundle::class => ['all' => true],
     
     Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle::class => ['all' => true],
     Gesdinet\JWTRefreshTokenBundle\GesdinetJWTRefreshTokenBundle::class => ['all' => true],

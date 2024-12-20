@@ -46,6 +46,10 @@
         "remixicon": "^3.5",
 		"velocity-animate": "^1.5.2",
 
+        "scrolling-tabs-bootstrap-5": "^1.1",
+        "bootstrap-icons": "^1.11",
+        "move-js": "^0.5",
+        
 		"particles.js": "^2.0",
         "jsvectormap": "^1.5",
         "swiper": "^11.0",
@@ -79,12 +83,7 @@
         "sweetalert2": "^11.12",
         "ngx-chess-board": "2.2.3",
         "ngx-cookie-service": "^17.1.0",
-        "ngx-webstorage-service": "^5.0.0",
-        
-        "ws": "^8.18",
-        "stream": "^0.0.3",
-        "autobahn": "^22.11",
-        "autobahn-browser": "^22.11"
+        "ngx-webstorage-service": "^5.0.0"
     },
     "devDependencies": {
         "@angular-devkit/build-angular": "^17.3.9",

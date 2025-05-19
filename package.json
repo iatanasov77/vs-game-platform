@@ -22,7 +22,12 @@
         "@popperjs/core": "^2.11.6",
         "bazinga-translator": "^5.0.0",
         "bootstrap": "^5.2.3",
-        "ckeditor4": "^4.20.1",
+        
+        "ckeditor4": "4.22.1",
+        "@ckeditor/ckeditor5-theme-lark": "^43.0.0",
+        "ckeditor5": "^43.0.0",
+        "ckeditor5-premium-features": "^43.0.0",
+        
         "glyphicons-only-bootstrap": "^1.0.1",
         "highlight.js": "^11.0.1",
         "intl-messageformat": "^9.11.3",
@@ -58,9 +63,20 @@
         "simplebar": "^6.2",
         "choices.js": "^10.2",
         "ad-rotator": "^5.8",
+        "apexcharts": "^4.3",
  		"@analytics/google-analytics": "^1.0.5",
         "analytics": "^0.8.1",
 
+        "dragula": "^3.7",
+        "dom-autoscroller": "^2.3",
+        "@lordicon/helpers": "^1.10",
+        "@lordicon/element": "^1.10",
+        "lottie-web": "^5.12",
+        "flatpickr": "^4.6",
+        
+        "code-prettify-google": "^1.0.1",
+        "@stripe/stripe-js": "^2.1",
+        
         "rxjs": "~7.8.0",
         "rxjs-compat": "^6.6.7",
         "rxjs-observable": "0.0.7",
@@ -103,6 +119,8 @@
         "@types/node": "^18.16.7",
         "@types/webpack": "^5.28.0",
         "compression-webpack-plugin": "^10.0.0",
+        
+        "@ckeditor/ckeditor5-dev-utils": "^43.0",
         "core-js": "^3.26.1",
         "file-loader": "^6.0.0",
         "raw-loader": "^4.0.2",

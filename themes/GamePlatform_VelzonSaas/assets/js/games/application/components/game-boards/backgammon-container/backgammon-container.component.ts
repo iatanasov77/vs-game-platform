@@ -32,7 +32,7 @@ import { CreateInviteGameDialogComponent } from '../../game-dialogs/create-invit
 
 // Services
 import { AuthService } from '../../../services/auth.service';
-import { ZmqGameService } from '../../../services/zmq-game.service';
+//import { ZmqGameService } from '../../../services/zmq-game.service';
 import { WebsocketGameService } from '../../../services/websocket-game.service';
 import { StatusMessageService } from '../../../services/status-message.service';
 import { SoundService } from '../../../services/sound.service';
@@ -149,7 +149,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         @Inject( ChangeDetectorRef ) private changeDetector: ChangeDetectorRef,
         
         @Inject( AuthService ) private authService: AuthService,
-        @Inject( ZmqGameService ) private zmqService: ZmqGameService,
+        //@Inject( ZmqGameService ) private zmqService: ZmqGameService,
         @Inject( WebsocketGameService ) private wsService: WebsocketGameService,
         @Inject( StatusMessageService ) private statusMessageService: StatusMessageService,
         @Inject( AppStateService ) private appStateService: AppStateService,

@@ -7,10 +7,16 @@ const applicationAssetsPath         = './vendor/vankosoft/application/src/Vankos
 const usersSubscriptionsAssetsPath  = './vendor/vankosoft/users-subscriptions-bundle/lib/Resources/themes/default/assets';
 const paymentAssetsPath             = './vendor/vankosoft/payment-bundle/lib/Resources/themes/default/assets';
 const catalogAssetsPath             = './vendor/vankosoft/catalog-bundle/lib/Resources/themes/default/assets';
+const issueTrackingAssetsPath       = './vendor/vankosoft/issue-tracking-bundle/lib/Resources/themes/default/assets';
 
 const defaultThemePath         		= '../../vendor/vankosoft/application/src/Vankosoft/ApplicationBundle/Resources/themes/default/assets';
 const artgrisAssetsPath 			= '../../vendor/artgris/filemanager-bundle/Resources/public';
 const baseThemePath 				= '../../vendor/vankosoft/application-themes/AdminPanel_VelzonDefault/assets';
+
+const addCKEditor = require( '../../vendor/daddl3/symfony-ckeditor-5-webpack/assets/js/ckeditor-webpack-entry' );
+
+/** Encore, sourceMap **/
+addCKEditor( Encore, true );
 
 Encore
     .setOutputPath( 'public/admin-panel/build/velzon-theme/' )
@@ -78,7 +84,22 @@ Encore
         {from: path.resolve( __dirname, baseThemePath + '/vendor/Velzon_v4.2.0/images/users' ), to: 'images/users/[path][name].[ext]'},
         {from: path.resolve( __dirname, baseThemePath + '/vendor/Velzon_v4.2.0/images/svg' ), to: 'images/svg/[path][name].[ext]'},
     ])
-     
+    
+    // Add an entry for CKEditor 5
+    .addEntry( 'ckeditor5', './vendor/daddl3/symfony-ckeditor-5-webpack/assets/js/ckeditor5.js' )
+    .configureSplitChunks( splitChunks => {
+        splitChunks.chunks = 'all';
+        splitChunks.name = false;
+        splitChunks.cacheGroups = {
+            styles: {
+                name: false,
+                test: /\.css$/,
+                chunks: 'all',
+                enforce: true,
+            }
+        };
+    })
+    
     // Global Assets
     .addStyleEntry( 'css/app', './themes/AdminPanel_VelzonChild/assets/css/app.scss' )
     .addEntry( 'js/layout', './themes/AdminPanel_VelzonChild/assets/layout.js' )
@@ -96,6 +117,7 @@ Encore
     
     .addEntry( 'js/resource-delete', applicationAssetsPath + '/js/pages/resource-delete.js' )
     
+    .addEntry( 'js/dashboard', applicationAssetsPath + '/js/pages/dashboard.js' )
     .addEntry( 'js/settings', applicationAssetsPath + '/js/pages/settings.js' )
     .addEntry( 'js/applications', applicationAssetsPath + '/js/pages/applications.js' )
     .addEntry( 'js/profile', applicationAssetsPath + '/js/pages/profile.js' )
@@ -144,9 +166,6 @@ Encore
     .addEntry( 'js/banners-edit', applicationAssetsPath + '/js/pages/banners-edit.js' )
     .addEntry( 'js/banner-modal', applicationAssetsPath + '/js/pages/banner-modal.js' )
     
-    .addEntry( 'js/project-issues', applicationAssetsPath + '/js/pages/project-issues.js' )
-    .addEntry( 'js/project-issues-edit', applicationAssetsPath + '/js/pages/project-issues-edit.js' )
-    
     // Custom Entries
     /////////////////////////////////////////////////////////////////////////////////////////////////
     .addEntry( 'js/game-platform-settings', './themes/AdminPanel_VelzonChild/assets/js/pages/game-platform-settings.js' )
@@ -181,7 +200,6 @@ if ( pathExists.sync( paymentAssetsPath ) ) {
         .addEntry( 'js/exchange-rates', paymentAssetsPath + '/js/pages/exchange-rates.js' )
         .addEntry( 'js/recieved-payments', paymentAssetsPath + '/js/pages/recieved-payments.js' )
         .addEntry( 'js/orders', paymentAssetsPath + '/js/pages/orders.js' )
-        .addEntry( 'js/stripe-webhook-endpoint', paymentAssetsPath + '/js/pages/stripe-webhook-endpoint.js' )
         .addEntry( 'js/coupon-objects', paymentAssetsPath + '/js/pages/coupon-objects.js' )
         .addEntry( 'js/coupons-index', paymentAssetsPath + '/js/pages/coupons-index.js' )
         .addEntry( 'js/coupons-edit', paymentAssetsPath + '/js/pages/coupons-edit.js' )
@@ -192,6 +210,7 @@ if ( pathExists.sync( paymentAssetsPath ) ) {
         .addEntry( 'js/customer-groups', paymentAssetsPath + '/js/pages/customer-groups.js' )
         .addEntry( 'js/customer-groups-edit', paymentAssetsPath + '/js/pages/customer-groups-edit.js' )
         .addEntry( 'js/stripe-objects', paymentAssetsPath + '/js/pages/stripe-objects.js' )
+        .addEntry( 'js/stripe-object-form', paymentAssetsPath + '/js/pages/stripe-object-form.js' )
     ;
 }
     
@@ -211,6 +230,20 @@ if ( pathExists.sync( catalogAssetsPath ) ) {
         .addEntry( 'js/pricing-plan-subscriptions', catalogAssetsPath + '/js/pages/pricing-plan-subscriptions.js' )
         .addEntry( 'js/pricing-plan-subscription-payments', catalogAssetsPath + '/js/pages/pricing-plan-subscription-payments.js' )
         .addEntry( 'js/association-types-index', catalogAssetsPath + '/js/pages/association-types-index.js' )
+    ;
+}
+
+//////////////////////////////////////////////////////////////////
+// Issue Tracking Pages
+//////////////////////////////////////////////////////////////////
+if ( pathExists.sync( issueTrackingAssetsPath ) ) {
+    Encore
+        .addEntry( 'js/project-issues', issueTrackingAssetsPath + '/js/pages/project-issues.js' )
+        .addEntry( 'js/project-issues-edit', issueTrackingAssetsPath + '/js/pages/project-issues-edit.js' )
+        .addEntry( 'js/project-issue-comments-edit', issueTrackingAssetsPath + '/js/pages/project-issue-comments-edit.js' )
+        .addEntry( 'js/project-issue-tasks-edit', issueTrackingAssetsPath + '/js/pages/project-issue-tasks-edit.js' )
+        .addEntry( 'js/project-issues-board', issueTrackingAssetsPath + '/js/pages/project-issues-board.js' )
+        .addEntry( 'js/project-issues-board-task', issueTrackingAssetsPath + '/js/pages/project-issues-board-task.js' )
     ;
 }
 

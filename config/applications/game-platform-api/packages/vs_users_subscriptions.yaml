@@ -1,4 +1,4 @@
- vs_users_subscriptions:
+vs_users_subscriptions:
     #mailchimp_api_key: '%env(MAILCHIMP_API_KEY)%'
     mailchimp_api_key: 'NOT_DEFINED'
     

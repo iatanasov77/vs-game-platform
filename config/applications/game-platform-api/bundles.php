@@ -19,10 +19,10 @@ return [
     Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle::class => ['all' => true],
     
     FOS\CKEditorBundle\FOSCKEditorBundle::class => ['all' => true],
+    
     Knp\Bundle\MenuBundle\KnpMenuBundle::class => ['all' => true],
     Knp\Bundle\PaginatorBundle\KnpPaginatorBundle::class => ['all' => true],
 	Knp\Bundle\TimeBundle\KnpTimeBundle::class => ['all' => true],
-	Knp\Bundle\GaufretteBundle\KnpGaufretteBundle::class => ['all' => true],
 	Artgris\Bundle\FileManagerBundle\ArtgrisFileManagerBundle::class => ['all' => true],
 	Liip\ImagineBundle\LiipImagineBundle::class => ['all' => true],
 	
@@ -39,8 +39,12 @@ return [
     Bazinga\Bundle\JsTranslationBundle\BazingaJsTranslationBundle::class => ['all' => true],
 	Hackzilla\Bundle\PasswordGeneratorBundle\HackzillaPasswordGeneratorBundle::class => ['all' => true],
 
+    Oneup\UploaderBundle\OneupUploaderBundle::class => ['all' => true],
+    Oneup\FlysystemBundle\OneupFlysystemBundle::class => ['all' => true],
+    
     Payum\Bundle\PayumBundle\PayumBundle::class => ['all' => true],
     Vankosoft\UsersSubscriptionsBundle\VSUsersSubscriptionsBundle::class => ['all' => true],
+    Vankosoft\PaymentBundle\VSPaymentBundle::class => ['all' => true],
     Vankosoft\CatalogBundle\VSCatalogBundle::class => ['all' => true],
     
     ApiPlatform\Symfony\Bundle\ApiPlatformBundle::class => ['all' => true],

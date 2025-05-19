@@ -10,8 +10,9 @@ twig:
         hasTopSearch: '%hasTopSearch%'
         formCreateAccount: '%vs_users.form_create_account%'
         installedBundles: '%kernel.bundles%'
-        picturesPath: '%vs_application.filemanager_shared_media_gaufrette.app_pictures%'
+        picturesPath: '%vs_cms.filemanager_shared_media_gaufrette.app_pictures%'
         analyticsMeasurementId: '%env(GOOGLE_MEASUREMENT_ID)%'
+        useCkEditor: '%env(resolve:USE_CKEDITOR)%'
         
     form_themes:
         - '@FOSCKEditor/Form/ckeditor_widget.html.twig'

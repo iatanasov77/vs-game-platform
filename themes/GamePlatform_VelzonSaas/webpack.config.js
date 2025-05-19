@@ -93,7 +93,7 @@ Encore
     
     // Test
     .addEntry( 'js/test-websocket', './themes/GamePlatform_VelzonSaas/assets/js/pages/test-websocket.js' )
-    .addEntry( 'js/test-wamp', './themes/GamePlatform_VelzonSaas/assets/js/pages/test-wamp.js' )
+    //.addEntry( 'js/test-wamp', './themes/GamePlatform_VelzonSaas/assets/js/pages/test-wamp.js' )
 ;
 
 Encore.configureDefinePlugin( ( options ) => {

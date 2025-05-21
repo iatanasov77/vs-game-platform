@@ -1,3 +1,13 @@
+0.11.0	|	Release date: **21.05.2025**
+============================================
+* New Features:
+  - Update Frontend WebPack Encore Version and Dependencies.
+  - Update to VankoSoft Application 1.11
+  - Remove All Tests with Thruway WAMP and ZMQ.
+  - Add Catalog, Payment and Subscriptions Extensions.
+  - Update to Vankosoft 1.12  Core and Extensions.
+
+
 0.10.6	|	Release date: **07.11.2024**
 ============================================
 * New Features and Improvements:

@@ -22,7 +22,12 @@
         "@popperjs/core": "^2.11.6",
         "bazinga-translator": "^5.0.0",
         "bootstrap": "^5.2.3",
-        "ckeditor4": "^4.20.1",
+        
+        "ckeditor4": "4.22.1",
+        "@ckeditor/ckeditor5-theme-lark": "^43.0.0",
+        "ckeditor5": "^43.0.0",
+        "ckeditor5-premium-features": "^43.0.0",
+        
         "glyphicons-only-bootstrap": "^1.0.1",
         "highlight.js": "^11.0.1",
         "intl-messageformat": "^9.11.3",
@@ -46,6 +51,10 @@
         "remixicon": "^3.5",
 		"velocity-animate": "^1.5.2",
 
+        "scrolling-tabs-bootstrap-5": "^1.1",
+        "bootstrap-icons": "^1.11",
+        "move-js": "^0.5",
+        
 		"particles.js": "^2.0",
         "jsvectormap": "^1.5",
         "swiper": "^11.0",
@@ -53,9 +62,21 @@
         "node-waves": "^0.7",
         "simplebar": "^6.2",
         "choices.js": "^10.2",
+        "ad-rotator": "^5.8",
+        "apexcharts": "^4.3",
  		"@analytics/google-analytics": "^1.0.5",
         "analytics": "^0.8.1",
 
+        "dragula": "^3.7",
+        "dom-autoscroller": "^2.3",
+        "@lordicon/helpers": "^1.10",
+        "@lordicon/element": "^1.10",
+        "lottie-web": "^5.12",
+        "flatpickr": "^4.6",
+        
+        "code-prettify-google": "^1.0.1",
+        "@stripe/stripe-js": "^2.1",
+        
         "rxjs": "~7.8.0",
         "rxjs-compat": "^6.6.7",
         "rxjs-observable": "0.0.7",
@@ -78,40 +99,42 @@
         "sweetalert2": "^11.12",
         "ngx-chess-board": "2.2.3",
         "ngx-cookie-service": "^17.1.0",
-        "ngx-webstorage-service": "^5.0.0",
-        
-        "ws": "^8.18",
-        "stream": "^0.0.3",
-        "autobahn": "^22.11",
-        "autobahn-browser": "^22.11"
+        "ngx-webstorage-service": "^5.0.0"
     },
     "devDependencies": {
         "@angular-devkit/build-angular": "^17.3.9",
         "@angular/cli": "~17.2.3",
         "@angular/compiler-cli": "^17.2.9",
-        "@babel/core": "^7.17.0",
-        "@babel/preset-env": "^7.16.0",
-        "@babel/preset-react": "^7.0.0",
         "@hotwired/stimulus": "^3.0.0",
         "@ngtools/webpack": "^17.2.3",
         "@symfony/stimulus-bridge": "^2.0.0",
-        "@symfony/webpack-encore": "^4.7",
+        
+        "@babel/core": "^7.17.0",
+        "@babel/eslint-parser": "^7.17.0",
+        "@babel/preset-env": "^7.16.0",
+        "@babel/preset-react": "^7.0.0",
+        "@symfony/webpack-encore": "^5.0",
+        
         "@types/jasmine": "~4.3.0",
         "@types/node": "^18.16.7",
         "@types/webpack": "^5.28.0",
         "compression-webpack-plugin": "^10.0.0",
+        
+        "@ckeditor/ckeditor5-dev-utils": "^43.0",
         "core-js": "^3.26.1",
         "file-loader": "^6.0.0",
         "raw-loader": "^4.0.2",
         "regenerator-runtime": "^0.13.2",
         "resolve-url-loader": "2",
-        "sass": "^1.78",
-        "sass-loader": "^14.0",
+        "sass": "^1.17.0",
+        "sass-loader": "^16.0.1",
         "stimulus": "^2.0.0",
         "ts-loader": "^9.0.0",
         "typescript": "~5.2.2",
-        "webpack": "^5.74.0",
-        "webpack-cli": "^4.10.0",
+        
+        "eslint": "^8.0.0",
+        "webpack": "^5.72",
+        "webpack-cli": "^5.1.4",
         "webpack-notifier": "^1.15.0"
     },
     "resolutions": {

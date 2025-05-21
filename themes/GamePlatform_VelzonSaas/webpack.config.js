@@ -1,6 +1,7 @@
 const Encore    = require('@symfony/webpack-encore');
 const webpack   = require('webpack');
 const path      = require('path');
+
 const AngularCompilerPlugin = require('@ngtools/webpack').AngularWebpackPlugin;
 
 Encore
@@ -93,12 +94,13 @@ Encore
     
     // Test
     .addEntry( 'js/test-websocket', './themes/GamePlatform_VelzonSaas/assets/js/pages/test-websocket.js' )
-    .addEntry( 'js/test-wamp', './themes/GamePlatform_VelzonSaas/assets/js/pages/test-wamp.js' )
 ;
 
 Encore.configureDefinePlugin( ( options ) => {
     options.IS_PRODUCTION       = JSON.stringify( Encore.isProduction() );
     options.THEME_BUILD_PATH    = JSON.stringify( '/build/gameplatform-velzonsaas-theme' );
+    options.PROD_API_URL        = process.env.PROD_API_URL;
+    options.DEV_API_URL         = process.env.DEV_API_URL;
 });
 
 const config = Encore.getWebpackConfig();

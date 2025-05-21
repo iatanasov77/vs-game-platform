@@ -3,7 +3,10 @@
     "keywords": [
         "symfony",
         "vankosoft",
-        "application"
+        "application",
+        "api",
+        "api-platform",
+        "game-platform"
     ],
     "homepage": "http://vankosoft.org",
     "license": "proprietary",
@@ -26,15 +29,14 @@
         "symfony/runtime": "6.4.*",
         "symfony/http-client": "6.4.*",
         
-        "vankosoft/application": "1.10.*",
-        "vankosoft/application-themes": "^1.0",
+        "vankosoft/application": "1.12.*",
+        "vankosoft/application-themes": "^1.5",
+        "vankosoft/catalog-bundle": "^2.3",
         "vankosoft/api-bundle": "^3.0",
         
-        "vankosoft/thruway-bundle": "^1.0",
         "cboden/ratchet": "^0.4",
         "react/react": "^1.4",
         "react/partial": "^3.0",
-        "react/zmq": "^0.4",
         
         "knpuniversity/oauth2-client-bundle": "^2.18",
         "league/oauth2-facebook": "^2.2",

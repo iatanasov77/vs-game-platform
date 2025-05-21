@@ -62,10 +62,6 @@
 
             <div class="d-flex align-items-center">
 
-                {% if app_environment == 'dev' %}
-                    {% include 'Layout/test-menu.html.twig' %}
-                {% endif %}
-
                 <div class="ms-1 header-item">
                     <a class="btn top-menu-button" href="{{ path( 'app_about_application' ) }}">
                         <span>{{ 'game_platform.template.menu.about_application' | trans( {},'GamePlatform' ) }}</span>

@@ -20,7 +20,7 @@ class SelectGameRoomController extends AbstractController
     }
     
     /**
-     * @NOTE This NOT Work Here Because Game Service is Different Instance in API Application From GamePlatform Application
+     * This NOT Work Here Because Game Service is Different Instance in API Application From GamePlatform Application
      * 
      * @param string $gameId
      * @param Request $request

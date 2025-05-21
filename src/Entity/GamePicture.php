@@ -19,7 +19,7 @@ class GamePicture extends File
     
     public function setGame( Game $game ): self
     {
-        $this->setOwner( $game);
+        $this->setOwner( $game );
         
         return $this;
     }

@@ -33,10 +33,10 @@ class ProfileController extends BaseProfileController
         FactoryInterface $avatarImageFactory,
         FileUploaderInterface $imageUploader,
         VankosoftAgent $vankosoftAgent,
-//         Payment $vsPayment,
-//         RepositoryInterface $pricingPlanRepository,
-//         RepositoryInterface $pricingPlanCategoryRepository,
-//         RepositoryInterface $pricingPlanSubscriptionRepository
+        Payment $vsPayment,
+        RepositoryInterface $pricingPlanRepository,
+        RepositoryInterface $pricingPlanCategoryRepository,
+        RepositoryInterface $pricingPlanSubscriptionRepository
     ) {
         parent::__construct(
             $doctrine,
@@ -47,10 +47,10 @@ class ProfileController extends BaseProfileController
             $vankosoftAgent
         );
         
-// 		$this->vsPayment                        	= $vsPayment;
-//         $this->pricingPlanRepository                = $pricingPlanRepository;
-//         $this->pricingPlanCategoryRepository        = $pricingPlanCategoryRepository;
-//         $this->pricingPlanSubscriptionRepository    = $pricingPlanSubscriptionRepository;
+		$this->vsPayment                        	= $vsPayment;
+        $this->pricingPlanRepository                = $pricingPlanRepository;
+        $this->pricingPlanCategoryRepository        = $pricingPlanCategoryRepository;
+        $this->pricingPlanSubscriptionRepository    = $pricingPlanSubscriptionRepository;
     }
     
     public function indexAction( Request $request ) : Response
@@ -86,8 +86,8 @@ class ProfileController extends BaseProfileController
     {
         $params = [
             'locales'                       => $this->doctrine->getRepository( 'App\Entity\Application\Locale' )->findAll(),
-            //'subscriptions'                 => $activeSubscriptions,
-            //'subscriptionsRoutes'           => $subscriptionsRoutes,
+            'subscriptions'                 => $activeSubscriptions,
+            'subscriptionsRoutes'           => $subscriptionsRoutes,
         ];
         
         return $this->render( '@VSUsers/Profile/edit.html.twig', \array_merge( $params, $this->templateParams( $this->getProfileEditForm() ) ) );

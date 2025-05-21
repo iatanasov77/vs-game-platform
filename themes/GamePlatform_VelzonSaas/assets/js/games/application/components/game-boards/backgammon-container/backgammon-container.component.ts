@@ -32,7 +32,6 @@ import { CreateInviteGameDialogComponent } from '../../game-dialogs/create-invit
 
 // Services
 import { AuthService } from '../../../services/auth.service';
-//import { ZmqGameService } from '../../../services/zmq-game.service';
 import { WebsocketGameService } from '../../../services/websocket-game.service';
 import { StatusMessageService } from '../../../services/status-message.service';
 import { SoundService } from '../../../services/sound.service';

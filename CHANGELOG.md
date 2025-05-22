@@ -1,3 +1,9 @@
+0.11.1	|	Release date: **22.05.2025**
+============================================
+* New Features:
+  - Create Binary Commands That Starts Websocket Servers for Production.
+
+
 0.11.0	|	Release date: **21.05.2025**
 ============================================
 * New Features:

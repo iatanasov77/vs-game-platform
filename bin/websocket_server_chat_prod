@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd /opt/VankosoftProjects/GamePlatform/production
+/usr/bin/php8.2 bin/game-platform vgp:websocket:chat $1

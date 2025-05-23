@@ -132,7 +132,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     dicesDto: DiceDto[] | undefined;
     
     appState?: MyGameState;
-    gameStarted: boolean    = false;
+    gameStarted: boolean        = false;
     
     lobbyButtonsVisible     = true;
     isRoomSelected: boolean = false;
@@ -148,7 +148,6 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         @Inject( ChangeDetectorRef ) private changeDetector: ChangeDetectorRef,
         
         @Inject( AuthService ) private authService: AuthService,
-        //@Inject( ZmqGameService ) private zmqService: ZmqGameService,
         @Inject( WebsocketGameService ) private wsService: WebsocketGameService,
         @Inject( StatusMessageService ) private statusMessageService: StatusMessageService,
         @Inject( AppStateService ) private appStateService: AppStateService,
@@ -204,7 +203,6 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
                 this.tutorialService.start();
             }, 1 );
         } else if ( ! this.editing ) {
-            //this.zmqService.connect( gameId, playAi, forGold );
             this.wsService.connect( gameId, playAi, forGold );
         }
         
@@ -274,14 +272,16 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         //if ( ! this.playAiFlag && ! this.editing ) this.waitForOpponent();
         this.fireResize();
         
-        setTimeout( () => {
-            let socketConnected = this.appStateService.myConnection.getValue().connected;
-            if ( socketConnected && ! this.isRoomSelected ) {
-                //alert( this.appStateService.user );
-                this.statusMessageService.setNotRoomSelected();
-                this.appStateService.hideBusy();
-            }
-        }, 11000 );
+//         setTimeout( () => {
+//             console.log( this.appStateService.myConnection.getValue() );
+//             console.log( this.appStateService.myConnection );
+//             let socketConnected = this.appStateService.myConnection.getValue().connected;
+//             if ( socketConnected && ! this.isRoomSelected ) {
+//                 //alert( this.appStateService.user );
+//                 this.statusMessageService.setNotRoomSelected();
+//                 this.appStateService.hideBusy();
+//             }
+//         }, 11000 );
     }
     
     ngOnDestroy(): void
@@ -354,8 +354,6 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     
     doMove( move: MoveDto ): void
     {
-//         this.zmqService.doMove( move );
-//         this.zmqService.sendMove( move );
         this.wsService.doMove( move );
         this.wsService.sendMove( move );
     }
@@ -368,8 +366,6 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     
     undoMove(): void
     {
-//         this.zmqService.undoMove();
-//         this.zmqService.sendUndo();
         this.wsService.undoMove();
         this.wsService.sendUndo();
     }
@@ -493,7 +489,6 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     
     moveAnimFinished(): void
     {
-//         this.zmqService.shiftMoveAnimationsQueue();
         this.wsService.shiftMoveAnimationsQueue();
     }
     
@@ -607,7 +602,6 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     
     resignGame(): void
     {
-//         this.zmqService.resignGame();
         this.wsService.resignGame();
     }
     
@@ -617,8 +611,6 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         this.started = false;
         this.rollButtonClicked = false;
         
-//         this.zmqService.resetGame();
-//         this.zmqService.connect( '', this.playAiFlag, this.forGoldFlag );
         this.wsService.resetGame();
         this.wsService.connect( '', this.playAiFlag, this.forGoldFlag );
         this.waitForOpponent();
@@ -626,7 +618,6 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     
     exitGame(): void
     {
-//         this.zmqService.exitGame();
         this.wsService.exitGame();
         this.appStateService.hideBusy();
         //this.router.navigateByUrl( '/lobby' );

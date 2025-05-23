@@ -7,7 +7,6 @@ import { AppConstants } from "../constants";
 import IGame from '_@/GamePlatform/Model/GameInterface';
 import IPlayer from '_@/GamePlatform/Model/PlayerInterface';
 import IGameRoom from '_@/GamePlatform/Model/GameRoomInterface';
-import IWampAction  from '../interfaces/wamp-action';
 
 @Injectable({
     providedIn: 'root'
@@ -80,21 +79,6 @@ export class GameService
                 }
             })
         );
-    }
-    
-    sendMessage( message: string ): void
-    {
-        const headers = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
-        let wampAction: IWampAction = {
-            topic: "game",
-            action: message,
-        };
-        
-        this.httpClient.post<IWampAction>( 'zmq-message', wampAction, {headers} ).pipe(
-            map( ( data: any ) => { return data; } )
-        ).subscribe( ( response: IWampAction ) => {
-            alert( 'Game Action Response: ' + response.topic );
-        });
     }
     
     private mapGame( response: any )

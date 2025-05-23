@@ -91,16 +91,19 @@ Encore
     .addEntry( 'js/backgammon-normal', './themes/GamePlatform_VelzonSaas/assets/js/games/backgammon-normal/index.js' )
     .addEntry( 'js/backgammon-gulbara', './themes/GamePlatform_VelzonSaas/assets/js/games/backgammon-gulbara/index.js' )
     .addEntry( 'js/backgammon-tapa', './themes/GamePlatform_VelzonSaas/assets/js/games/backgammon-tapa/index.js' )
-    
-    // Test
-    .addEntry( 'js/test-websocket', './themes/GamePlatform_VelzonSaas/assets/js/pages/test-websocket.js' )
 ;
+
+if ( Encore.isDev() ) {
+    require( 'dotenv' ).config( {path: '.env.dev'} );
+} else {
+    require( 'dotenv' ).config();
+}
 
 Encore.configureDefinePlugin( ( options ) => {
     options.IS_PRODUCTION       = JSON.stringify( Encore.isProduction() );
     options.THEME_BUILD_PATH    = JSON.stringify( '/build/gameplatform-velzonsaas-theme' );
-    options.PROD_API_URL        = process.env.PROD_API_URL;
-    options.DEV_API_URL         = process.env.DEV_API_URL;
+    options.PROD_API_URL        = JSON.stringify( process.env.PROD_API_URL );
+    options.DEV_API_URL         = JSON.stringify( process.env.DEV_API_URL );
 });
 
 const config = Encore.getWebpackConfig();

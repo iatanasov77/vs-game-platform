@@ -2,7 +2,6 @@
 
 use Symfony\Component\Serializer\SerializerInterface;
 use App\Component\Websocket\Client\WebsocketServerClient;
-use App\Component\Websocket\Client\WebsocketZmqClient;
 use App\Component\Websocket\Client\WebsocketThruwayClient;
 use App\Component\Websocket\Client\WebsocketRatchetConnectionClient;
 
@@ -17,24 +16,14 @@ final class WebsocketClientFactory
     /** @var string */
     private $websocketGameUrl;
     
-    /** @var string */
-    private $websocketPublisherUrl;
-    
-    /** @var string */
-    private $zmqServerUrl;
-    
     public function __construct(
         SerializerInterface $serializer,
         string $websocketChatUrl,
-        string $websocketGameUrl,
-        string $websocketPublisherUrl,
-        string $zmqServerUrl
+        string $websocketGameUrl
     ) {
         $this->serializer               = $serializer;
         $this->websocketChatUrl         = $websocketChatUrl;
         $this->websocketGameUrl         = $websocketGameUrl;
-        $this->websocketPublisherUrl    = $websocketPublisherUrl;
-        $this->zmqServerUrl             = $zmqServerUrl;
     }
     
     /**
@@ -53,24 +42,6 @@ final class WebsocketClientFactory
     public function createServerGameClient()
     {
         return new WebsocketServerClient( $this->websocketGameUrl, $this->serializer );
-    }
-    
-    /**
-     * Using: ZMQSocket
-     *        https://www.php.net/manual/en/class.zmqsocket.php
-     */
-    public function createZmqClient()
-    {
-        return new WebsocketZmqClient( $this->zmqServerUrl, $this->serializer );
-    }
-    
-    /**
-     * Using: Thruway\Connection
-     *        https://github.com/voryx/Thruway.git
-     */
-    public function createThruwayClient()
-    {
-        return new WebsocketThruwayClient( $this->websocketPublisherUrl, $this->serializer );
     }
     
     /**

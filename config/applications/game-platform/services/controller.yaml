@@ -182,18 +182,6 @@ services:
     App\Controller\Application\TestMercureController:
         tags: ['controller.service_arguments']
         autowire: true
-    
-    App\Controller\Application\TestWebSocketController:
-        tags: ['controller.service_arguments']
-        autowire: true
-        arguments:
-            - '@app_websocket_client_factory'
-    
-    App\Controller\Application\TestWampController:
-        tags: ['controller.service_arguments']
-        autowire: true
-        arguments:
-            - '@app_websocket_client_factory'
         
     App\Controller\GamePlatform\AjaxController:
         tags: ['controller.service_arguments']

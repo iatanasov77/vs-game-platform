@@ -103,16 +103,6 @@ node ( label: 'php-host' ) {
     }
     
     stage( 'Build Application' ) {
-        sh """
-            export COMPOSER_HOME='/home/vagrant/.composer';
-            export COMPOSER_ALLOW_SUPERUSER=1;
-            
-            # https://www.makeuseof.com/javascript-heap-out-of-memory-error-fix/
-            export NODE_OPTIONS='--max-old-space-size=4096';
-            
-            /usr/local/bin/phing install-${BUILD_ENVIRONMENT} -verbose -debug
-        """
-        
         CONFIG_TEMPLATE = readFile( 'ftp_deploy.ini.template' )
         writeFile file: 'ftp_deploy.ini',
                 text: vankosoftJob.renderTemplate( CONFIG_TEMPLATE, [
@@ -128,6 +118,16 @@ node ( label: 'php-host' ) {
                     'database_url': APP_DATABASE_URL,
                     'app_host': APP_HOST,
                 ])
+        
+        sh """
+            export COMPOSER_HOME='/home/vagrant/.composer';
+            export COMPOSER_ALLOW_SUPERUSER=1;
+            
+            # https://www.makeuseof.com/javascript-heap-out-of-memory-error-fix/
+            export NODE_OPTIONS='--max-old-space-size=3072';
+            
+            /usr/local/bin/phing install-${BUILD_ENVIRONMENT} -verbose -debug
+        """
     }
     
     stage( 'Before Deploy (Create Backup on Hosting, Set Maintenance Mode etc.)' ) {

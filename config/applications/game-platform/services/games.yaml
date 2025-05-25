@@ -1,6 +1,4 @@
 parameters:
-    app_zmqsocket_url: '%env(ZMQSOCKET_URL)%'
-    app_websocket_publisher_url: '%env(WEBSOCKET_PUBLISHER_URL)%'
     app_websocket_chat_url: '%env(WEBSOCKET_CHAT_URL)%'
     app_websocket_game_url: '%env(WEBSOCKET_GAME_URL)%'
     app_game_for_gold: '%env(bool:GAME_FOR_GOLD)%'
@@ -16,6 +14,10 @@ services:
             - '@service_container'
             - '@doctrine'
             - '@validator'
+            - {
+                sslCertificateKey: '%env(SSL_CERTIFICATE_KEY)%',
+                sslCertificateCert: '%env(SSL_CERTIFICATE_CERT)%'
+            }
         tags:
             - 'console.command'
     
@@ -26,6 +28,10 @@ services:
             - '@doctrine'
             - '@validator'
             - '@serializer'
+            - {
+                sslCertificateKey: '%env(SSL_CERTIFICATE_KEY)%',
+                sslCertificateCert: '%env(SSL_CERTIFICATE_CERT)%'
+            }
         tags:
             - 'console.command'
             
@@ -36,8 +42,6 @@ services:
             - '@serializer'
             - '%app_websocket_chat_url%'
             - '%app_websocket_game_url%'
-            - '%app_websocket_publisher_url%'
-            - '%app_zmqsocket_url%'
             
     app_game_service:
         class: App\Component\GameService

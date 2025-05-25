@@ -13,23 +13,3 @@ vs_api_test_mercure_index:
 vs_api_test_mercure_publish:
     path: /test-mercure/publish
     controller: App\Controller\Application\TestMercureController::publish
-
-vs_api_test_websocket_client_1:
-    path: /test-websocket/client-1
-    controller: App\Controller\Application\TestWebSocketController::client1
-
-vs_api_test_websocket_client_2:
-    path: /test-websocket/client-2
-    controller: App\Controller\Application\TestWebSocketController::client2
-
-vs_api_test_wamp_client_1:
-    path: /test-wamp/client-1
-    controller: App\Controller\Application\TestWampController::client1
-
-vs_api_test_wamp_client_2:
-    path: /test-wamp/client-2
-    controller: App\Controller\Application\TestWampController::client2
-
-vs_api_test_wamp_publish:
-    path: /test-wamp/publish
-    controller: App\Controller\Application\TestWampController::publish

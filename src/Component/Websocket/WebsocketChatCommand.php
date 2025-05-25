@@ -14,7 +14,8 @@ use Ratchet\Server\IoServer;
 use Ratchet\Http\HttpServer;
 use Ratchet\WebSocket\WsServer;
 use React\EventLoop\Factory as EventLoopFactory;
-use React\Socket\Server as SocketServer;
+//use React\Socket\Server as SocketServer;
+use React\Socket\SocketServer;
 use App\Component\Websocket\Server\WebsocketMessageHandler;
 
 /**
@@ -31,12 +32,41 @@ use App\Component\Websocket\Server\WebsocketMessageHandler;
 )]
 final class WebsocketChatCommand extends ContainerAwareCommand
 {
+    /** @var array */
+    private $parrameters;
+    
     public function __construct(
         ContainerInterface $container,
         ManagerRegistry $doctrine,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        array $parrameters
     ) {
         parent::__construct( $container, $doctrine, $validator );
+        
+        $this->parrameters  = $parrameters;
+    }
+    
+    /**
+     * possix signal handler function
+     */
+    public function sigHandler( $signo )
+    {
+        /**
+         * @NOTE POSSIX SIGNAL CODES: https://www.php.net/manual/en/pcntl.constants.php#115603
+         */
+        //$this->log( "Possix Signal: " . $signo );
+        
+        switch ( $signo ) {
+            case SIGTERM:
+                //$this->gamesHandler->serverWasTerminated();
+                exit;
+                break;
+            case SIGHUP:
+                // handle restart tasks
+                break;
+            default:
+                // handle all other signals
+        }
     }
     
     /**
@@ -54,11 +84,19 @@ final class WebsocketChatCommand extends ContainerAwareCommand
      */
     protected function execute( InputInterface $input, OutputInterface $output ): int
     {
+        \pcntl_signal( SIGTERM, array( $this, 'sigHandler' ) );
+        \pcntl_signal( SIGHUP, array( $this, 'sigHandler' ) );
+        
         $port   = $input->getArgument( 'port' );
         
         $messageHandler = new WebsocketMessageHandler();
         $loop           = EventLoopFactory::create();
-        $socketServer   = new SocketServer( '0.0.0.0:' . $port, $loop );
+        $socketServer   = new SocketServer( '0.0.0.0:' . $port, [
+            'local_cert'        => $this->parrameters['sslCertificateCert'],
+            'local_pk'          => $this->parrameters['sslCertificateKey'],
+            'allow_self_signed' => true,
+            'verify_peer'       => false
+        ], $loop );
         
         $websocketServer = new IoServer(
             new HttpServer(

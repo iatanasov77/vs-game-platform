@@ -16,7 +16,8 @@ use Ratchet\Http\HttpServer;
 use Ratchet\WebSocket\WsServer;
 use Ratchet\MessageComponentInterface;
 use React\EventLoop\Factory as EventLoopFactory;
-use React\Socket\Server as SocketServer;
+//use React\Socket\Server as SocketServer;
+use React\Socket\SocketServer;
 use App\Component\Websocket\Server\WebsocketGamesHandler;
 
 /**
@@ -28,7 +29,7 @@ use App\Component\Websocket\Server\WebsocketGamesHandler;
  */
 #[AsCommand(
     name: 'vgp:websocket:game',
-    description: 'Start WebSocket Game',
+    description: 'Start WebSocket for Game',
     hidden: false
 )]
 final class WebsocketGameCommand extends ContainerAwareCommand
@@ -42,16 +43,21 @@ final class WebsocketGameCommand extends ContainerAwareCommand
     /** @var MessageComponentInterface */
     private $gamesHandler;
     
+    /** @var array */
+    private $parrameters;
+    
     public function __construct(
         ContainerInterface $container,
         ManagerRegistry $doctrine,
         ValidatorInterface $validator,
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
+        array $parrameters
     ) {
         parent::__construct( $container, $doctrine, $validator );
         
         $this->serializer   = $serializer;
         $this->logFile      = '/var/log/websocket/game-patform-game.log';
+        $this->parrameters  = $parrameters;
     }
     
     /**
@@ -105,7 +111,12 @@ final class WebsocketGameCommand extends ContainerAwareCommand
         );
         
         $loop           = EventLoopFactory::create();
-        $socketServer   = new SocketServer( '0.0.0.0:' . $port, $loop );
+        $socketServer   = new SocketServer( '0.0.0.0:' . $port, [
+            'local_cert'        => $this->parrameters['sslCertificateCert'],
+            'local_pk'          => $this->parrameters['sslCertificateKey'],
+            'allow_self_signed' => true,
+            'verify_peer'       => false
+        ], $loop );
         
         $websocketServer = new IoServer(
             new HttpServer(

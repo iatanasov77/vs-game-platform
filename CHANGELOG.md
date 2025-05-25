@@ -1,3 +1,12 @@
+0.11.2	|	Release date: **25.05.2025**
+============================================
+* Bug-Fixes and Improvements:
+  - Fix Jenkins file to create env files before to start phing build.
+  - Fix ENV Files Api and Websocket Url's Vars.
+  - Remove All Tests with Websockets.
+  - Create Games to Use SSL Websockets.
+
+
 0.11.1	|	Release date: **22.05.2025**
 ============================================
 * New Features:

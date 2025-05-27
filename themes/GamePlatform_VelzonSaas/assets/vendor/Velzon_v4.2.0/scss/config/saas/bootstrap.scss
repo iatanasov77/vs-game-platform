@@ -7,12 +7,11 @@ Contact: Themesbrand@gmail.com
 File: Custom Bootstrap Css File
 */
 
-
 //Core files
 // @import "./node_modules/bootstrap/scss/functions";
 // @import "./node_modules/bootstrap/scss/variables";
-@import "~bootstrap/scss/bootstrap.scss";
+@import '~bootstrap/scss/bootstrap.scss';
+
 @import "variables";
 @import "variables-dark";
 @import "../../components/utilities";
-@import '~bootstrap/scss/bootstrap.scss';

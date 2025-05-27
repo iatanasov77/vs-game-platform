@@ -1,3 +1,10 @@
+0.11.3	|	Release date: **27.05.2025**
+============================================
+* Bug-Fixes and Improvements:
+  - Fix Many SASS Warnings.
+  - Fix Display Play AI Question Dialog.
+
+
 0.11.2	|	Release date: **25.05.2025**
 ============================================
 * Bug-Fixes and Improvements:

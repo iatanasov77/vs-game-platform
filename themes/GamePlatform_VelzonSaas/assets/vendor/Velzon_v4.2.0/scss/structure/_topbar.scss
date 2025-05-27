@@ -346,6 +346,8 @@
     }
 
     .page-content {
+        padding: calc(45px + #{$grid-gutter-width}) calc(#{$grid-gutter-width} * 0.5) $footer-height calc(#{$grid-gutter-width} * 0.5);
+        
         @media (min-width: 1024.1px) {
             margin-top: $header-height;
         }
@@ -353,8 +355,6 @@
         @media (max-width: 1024.1px) {
             padding: calc(45px + #{$grid-gutter-width} * 1.8) calc(#{$grid-gutter-width} * 0.5) $footer-height calc(#{$grid-gutter-width} * 0.5);
         }
-
-        padding: calc(45px + #{$grid-gutter-width}) calc(#{$grid-gutter-width} * 0.5) $footer-height calc(#{$grid-gutter-width} * 0.5);
     }
 
     &[data-layout-width="boxed"] {

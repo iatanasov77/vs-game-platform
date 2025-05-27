@@ -269,7 +269,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         this.playAiQuestion = false;
         this.lokalStake = 0;
     
-        //if ( ! this.playAiFlag && ! this.editing ) this.waitForOpponent();
+        if ( ! this.playAiFlag && ! this.editing ) this.waitForOpponent();
         this.fireResize();
         
 //         setTimeout( () => {
@@ -394,10 +394,9 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         
         //alert( dto?.playState );
         if ( ! this.started && dto ) {
-            clearTimeout( this.startedHandle );
-            
             if ( dto.playState === GameState.playing ) {
                 //alert( dto.playState );
+                clearTimeout( this.startedHandle );
                 this.started = true;
                 this.playAiQuestion = false;
             }
@@ -618,6 +617,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     
     exitGame(): void
     {
+        clearTimeout( this.startedHandle );
         this.wsService.exitGame();
         this.appStateService.hideBusy();
         //this.router.navigateByUrl( '/lobby' );

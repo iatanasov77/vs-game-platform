@@ -4,10 +4,10 @@
     }}
 </p>
 <div class="buttons">
-    <app-button (click)="playAi()">
+    <app-button (click)="playAi( $event )">
         {{ 'playaiquestion.playai' | translate }} </app-button
     >&nbsp;
-    <app-button (click)="continueWait()">
+    <app-button (click)="continueWait( $event )">
         {{ 'playaiquestion.keepwaiting' | translate }}
     </app-button>
 </div>

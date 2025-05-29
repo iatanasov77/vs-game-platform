@@ -11,7 +11,7 @@ final class WebsocketGameManager extends AbstractGameManager
 {
     public function ConnectAndListen( WebsocketClientInterface $webSocket, PlayerColor $color, GamePlayer $dbUser, bool $playAi ): void
     {
-        $this->logger->info( "MyDebug: Connecting Game Manager ..." );
+        $this->log( "MyDebug: Connecting Game Manager ..." );
         
         if ( $color == PlayerColor::Black ) {
             $this->Client1 = $webSocket;
@@ -45,7 +45,7 @@ final class WebsocketGameManager extends AbstractGameManager
                 $this->CreateGame();
                 
                 if ( $this->Game->CurrentPlayer == PlayerColor::White ) {
-                    $this->logger->info( "MyDebug CurrentPlayer: White" );
+                    $this->log( "MyDebug CurrentPlayer: White" );
                     
                     $this->EnginMoves( $this->Client1 );
                 }

@@ -14,12 +14,11 @@ use Ratchet\Server\IoServer;
 use Ratchet\Http\HttpServer;
 use Ratchet\WebSocket\WsServer;
 use React\EventLoop\Factory as EventLoopFactory;
-//use React\Socket\Server as SocketServer;
 use React\Socket\SocketServer;
 use App\Component\Websocket\Server\WebsocketMessageHandler;
 
 /**
- * See Logs:        sudo tail -f /var/log/websocket/game-patform-server.log
+ * See Logs:        sudo tail -f /dev/shm/game-platform.lh/game-platform/log/websocket.log
  * Start Service:   sudo service websocket_game_platform_chat restart
  *
  * Manual:  https://stackoverflow.com/questions/64292868/how-to-send-a-message-to-specific-websocket-clients-with-symfony-ratchet
@@ -30,8 +29,11 @@ use App\Component\Websocket\Server\WebsocketMessageHandler;
     description: 'Start WebSocket Chat',
     hidden: false
 )]
-final class WebsocketChatCommand extends ContainerAwareCommand
+final class WebsocketChatServer extends ContainerAwareCommand
 {
+    /** @var LoggerInterface */
+    private $logger;
+    
     /** @var array */
     private $parrameters;
     
@@ -39,10 +41,12 @@ final class WebsocketChatCommand extends ContainerAwareCommand
         ContainerInterface $container,
         ManagerRegistry $doctrine,
         ValidatorInterface $validator,
+        LoggerInterface $logger,
         array $parrameters
     ) {
         parent::__construct( $container, $doctrine, $validator );
         
+        $this->logger       = $logger;
         $this->parrameters  = $parrameters;
     }
     
@@ -111,5 +115,11 @@ final class WebsocketChatCommand extends ContainerAwareCommand
         $loop->run();
         
         return Command::SUCCESS;
+    }
+    
+    private function log( $logData ): void
+    {
+        //\file_put_contents( $this->logFile, $logData . "\n", FILE_APPEND | LOCK_EX );
+        $this->logger->info( $logData );
     }
 }

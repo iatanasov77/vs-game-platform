@@ -33,7 +33,7 @@ class ZmqGameManager extends AbstractGameManager
     public function Send( WebsocketClientInterface $socket, object $obj ): void
     {
         if ( $socket == null || $socket->State != WebSocketState::Open ) {
-            $this->logger->info( "Cannot send to socket, connection was lost" );
+            $this->log( "Cannot send to socket, connection was lost" );
             return;
         }
         
@@ -42,12 +42,12 @@ class ZmqGameManager extends AbstractGameManager
         $socketObject->data     = $obj;
         
         $json = \json_encode( $obj );
-        $this->logger->info( "Sending to client {$json}" );
+        $this->log( "Sending to client {$json}" );
         
         try {
             $socket->send( $socketObject );
         } catch ( \Exception $exc ) {
-            $this->logger->error( "Failed to send socket data. Exception: {$exc->getMessage()}" );
+            $this->log( "Failed to send socket data. Exception: {$exc->getMessage()}" );
         }
     }
     
@@ -124,7 +124,7 @@ class ZmqGameManager extends AbstractGameManager
         ) {
             $text = $this->ReceiveText( $socket );
             if ( $text != null && ! empty( $text ) ) {
-                $this->logger->info( "Received: {$text}" );
+                $this->log( "Received: {$text}" );
             
                 try {
                     $action = \json_decode( $text );
@@ -138,7 +138,7 @@ class ZmqGameManager extends AbstractGameManager
                         $otherClient
                     ])->await();
                 } catch ( \Exception $e ) {
-                    $this->logger->error( "Failed to parse Action text {$e->getMessage()}" );
+                    $this->log( "Failed to parse Action text {$e->getMessage()}" );
                 }
             }
         }

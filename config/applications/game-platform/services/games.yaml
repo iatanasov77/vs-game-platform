@@ -8,12 +8,16 @@ services:
         autowire: true
         autoconfigure: true
 
+    ##############################################################
+    # Websocket Servers
+    ##############################################################
     app_websocket_chat_command:
-        class: App\Component\Websocket\WebsocketChatCommand
+        class: App\Component\Websocket\WebsocketChatServer
         arguments:
             - '@service_container'
             - '@doctrine'
             - '@validator'
+            - '@logger'
             - {
                 sslCertificateKey: '%env(SSL_CERTIFICATE_KEY)%',
                 sslCertificateCert: '%env(SSL_CERTIFICATE_CERT)%'
@@ -22,12 +26,13 @@ services:
             - 'console.command'
     
     app_websocket_game_command:
-        class: App\Component\Websocket\WebsocketGameCommand
+        class: App\Component\Websocket\WebsocketGameServer
         arguments:
             - '@service_container'
             - '@doctrine'
             - '@validator'
             - '@serializer'
+            - '@logger'
             - {
                 sslCertificateKey: '%env(SSL_CERTIFICATE_KEY)%',
                 sslCertificateCert: '%env(SSL_CERTIFICATE_CERT)%'

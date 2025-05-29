@@ -29,12 +29,12 @@ export class PlayAiQuestionComponent
         @Inject( TranslateService ) private translateService: TranslateService
     ) {}
     
-    continueWait(): void
+    continueWait( event: any ): void
     {
         this.onKeepWaiting.emit();
     }
     
-    playAi(): void
+    playAi( event: any ): void
     {
         this.onPlayAi.emit();
     }

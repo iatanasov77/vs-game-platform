@@ -2,6 +2,7 @@ import { Injectable, Inject } from '@angular/core';
 
 // Services
 import { CookieService } from 'ngx-cookie-service';
+import { Router, UrlSerializer } from '@angular/router';
 import { StatusMessageService } from './status-message.service';
 import { SoundService } from './sound.service';
 import { AppStateService } from '../state/app-state.service';
@@ -67,6 +68,8 @@ export class WebsocketGameService
     constructor(
         @Inject( CookieService ) private cookieService: CookieService,
         @Inject( StatusMessageService ) private statusMessageService: StatusMessageService,
+        @Inject( Router ) private router: Router,
+        @Inject( UrlSerializer ) private serializer: UrlSerializer,
         @Inject( SoundService ) private sound: SoundService,
         @Inject( AppStateService ) private appState: AppStateService,
         @Inject( GameService ) private gameService: GameService,
@@ -120,9 +123,27 @@ export class WebsocketGameService
         if ( this.socket ) {
             this.socket.close();
         }
-                        
-        this.url    = this.websocketUrl();
-        this.socket = new WebSocket( this.url );
+        
+        //this.url        = this.websocketUrl();
+        this.url        = window.gamePlatformSettings.socketGameUrl;
+        
+        const user      = this.appState.user.getValue();
+        const userId    = user ? user.id : '';
+        const tree      = this.router.createUrlTree([], {
+            queryParams: {
+                gameCode: 'backgammon',
+                token: window.gamePlatformSettings.apiVerifySiganature,
+                
+                userId: userId,
+                gameId: gameId,
+                playAi: playAi,
+                forGold: forGold
+            }
+        });
+        const url = this.url + this.serializer.serialize( tree );
+        
+        //alert( gameId );
+        this.socket = new WebSocket( url );
         this.socket.onmessage   = this.onMessage.bind( this );
         this.socket.onerror     = this.onError.bind( this );
         this.socket.onopen      = this.onOpen.bind( this );
@@ -587,6 +608,8 @@ export class WebsocketGameService
             actionName: ActionNames.exitGame
         };
         this.sendMessage( JSON.stringify( action ) );
+        clearTimeout( this.timerId );
+        this.timerStarted = false;
     }
     
     resetGame(): void

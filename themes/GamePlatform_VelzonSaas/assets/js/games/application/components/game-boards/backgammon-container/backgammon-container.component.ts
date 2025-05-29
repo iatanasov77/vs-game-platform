@@ -655,9 +655,11 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         this.playAiQuestion = false;
         this.wsService.exitGame();
         
+        alert( 'EHO 1' );
         while ( this.appStateService.myConnection.getValue().connected ) {
             await this.delay( 500 );
         }
+        alert( 'EHO 2' );
         
         this.wsService.connect( '', true, this.forGoldFlag );
     }

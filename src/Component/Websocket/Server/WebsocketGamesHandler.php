@@ -101,19 +101,17 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         $gameManager    = $this->gameService->getGameManager( $this->games[$from->resourceId] );
         $socket         = $gameManager->getClient( $from->resourceId );
         
-        if ( $gameManager ) {
-            $action         = $this->serializer->deserialize( $msg, ActionDto::class, JsonEncoder::FORMAT );
-            $this->log( "Rcieved Action: " . $action->actionName );
-            
-            try {
-                /*
-                $otherClient    = $socket == $gameManager->Client1 ? $gameManager->Client2 : $gameManager->Client1;
-                $gameManager->DoAction( ActionNames::from( $action->actionName ), $msg, $socket, $otherClient );
-                */
-                $gameManager->DoAction( ActionNames::from( $action->actionName ), $msg, $socket, $socket );
-            } catch ( \Exception ) {
-                $this->log( "Game Manager Do Action Error !!!" );
-            }
+        $action         = $this->serializer->deserialize( $msg, ActionDto::class, JsonEncoder::FORMAT );
+        $this->log( "Rcieved Action: " . $action->actionName );
+        
+        try {
+            /*
+            $otherClient    = $socket == $gameManager->Client1 ? $gameManager->Client2 : $gameManager->Client1;
+            $gameManager->DoAction( ActionNames::from( $action->actionName ), $msg, $socket, $otherClient );
+            */
+            $gameManager->DoAction( ActionNames::from( $action->actionName ), $msg, $socket, $socket );
+        } catch ( \Exception ) {
+            $this->log( "Game Manager Do Action Error !!!" );
         }
     }
     

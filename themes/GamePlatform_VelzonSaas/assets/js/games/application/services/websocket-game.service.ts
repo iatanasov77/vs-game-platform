@@ -142,7 +142,7 @@ export class WebsocketGameService
         });
         const url = this.url + this.serializer.serialize( tree );
         
-        //alert( gameId );
+        //alert( url );
         this.socket = new WebSocket( url );
         this.socket.onmessage   = this.onMessage.bind( this );
         this.socket.onerror     = this.onError.bind( this );

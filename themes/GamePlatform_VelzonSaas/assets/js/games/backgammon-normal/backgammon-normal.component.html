@@ -12,17 +12,16 @@
     </div>
     
     <div class="col-8">
-    
-        <app-game-variants></app-game-variants>
+        <app-game-variants [lobbyButtonsVisible]="lobbyButtonsVisible"></app-game-variants>
         
         <app-backgammon-container
+            [lobbyButtonsVisible]="lobbyButtonsVisible"
             [isLoggedIn]="isLoggedIn"
             [introPlaying]="introPlaying"
             [isLoggedIn]="isLoggedIn"
             [hasPlayer]="hasPlayer"
             [game]="game"
         ></app-backgammon-container>
-        
     </div>
     
     <div class="col-2">

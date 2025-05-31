@@ -31,8 +31,6 @@ const actionTypes = {
     startGameFailure:           'START_GAME_FAILURE',
     
     playGame:                   'PLAY_GAME',
-    playGameSuccess:            'PLAY_GAME_SUCCESS',
-    playGameFailure:            'PLAY_GAME_FAILURE',
     
     playerAnnounce:             'PLAYER_ANNOUNCE',
     playerAnnounceSuccess:      'PLAYER_ANNOUNCE_SUCCESS',
@@ -61,8 +59,6 @@ export const startGameSuccess           = createAction( actionTypes.startGameSuc
 export const startGameFailure           = createAction( actionTypes.startGameFailure, props<{ error: any }>() );
 
 export const playGame                   = createAction( actionTypes.playGame );
-export const playGameSuccess            = createAction( actionTypes.playGameSuccess );
-export const playGameFailure            = createAction( actionTypes.playGameFailure, props<{ error: any }>() );
 
 export const playerAnnounce             = createAction( actionTypes.playerAnnounce );
 export const playerAnnounceSuccess      = createAction( actionTypes.playerAnnounceSuccess, props<{ announce: ICardGameAnnounce }>() );

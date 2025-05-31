@@ -10,7 +10,12 @@ import { GameService } from './game.service';
 
 // NGRX Store
 import { Store } from '@ngrx/store';
-import { selectGameRoom, loadGameRooms } from '../+store/game.actions';
+import {
+    selectGameRoom,
+    loadGameRooms,
+    startGame,
+    playGame
+} from '../+store/game.actions';
 import IGameRoom from '_@/GamePlatform/Model/GameRoomInterface';
 
 // Board Interfaces
@@ -379,7 +384,8 @@ export class WebsocketGameService
                 break;
             }
             case ActionNames.gamePlayStarted: {
-                alert ( 'gamePlayStartedActionDto Received.' );
+                console.log( 'WebSocket Action Game Play Started', action.actionName );
+                this.store.dispatch( playGame() );
                 break;
             }
             

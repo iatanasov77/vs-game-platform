@@ -102,15 +102,15 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         $socket         = $gameManager->getClient( $from->resourceId );
         
         $action         = $this->serializer->deserialize( $msg, ActionDto::class, JsonEncoder::FORMAT );
-        $this->log( "Rcieved Action: " . $action->actionName );
+        $this->log( "Recieved Action: " . $action->actionName );
         
         try {
-            /*
-            $otherClient    = $socket == $gameManager->Client1 ? $gameManager->Client2 : $gameManager->Client1;
-            $gameManager->DoAction( ActionNames::from( $action->actionName ), $msg, $socket, $otherClient );
-            */
+//             $otherClient    = $socket == $gameManager->Client1 ? $gameManager->Client2 : $gameManager->Client1;
+//             $gameManager->DoAction( ActionNames::from( $action->actionName ), $msg, $socket, $otherClient );
+
             $gameManager->DoAction( ActionNames::from( $action->actionName ), $msg, $socket, $socket );
-        } catch ( \Exception ) {
+            
+        } catch ( \Exception $e ) {
             $this->log( "Game Manager Do Action Error !!!" );
         }
     }

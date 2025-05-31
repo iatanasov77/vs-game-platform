@@ -27,6 +27,9 @@ use App\Component\Type\GameState;
 use App\Component\Dto\Mapper;
 use App\Component\Dto\Actions\ActionNames;
 use App\Component\Dto\Actions\ActionDto;
+use App\Component\Dto\Actions\MovesMadeActionDto;
+use App\Component\Dto\Actions\UndoActionDto;
+use App\Component\Dto\Actions\ConnectionInfoActionDto;
 use App\Component\Dto\toplist\NewScoreDto;
 use App\Component\Dto\Actions\GameCreatedActionDto;
 use App\Component\Dto\Actions\DicesRolledActionDto;
@@ -155,12 +158,12 @@ abstract class AbstractGameManager implements GameManagerInterface
     public function getClient( $clientId ): mixed
     {
         if ( $this->Client1->getClientId() == $clientId ) {
-            $this->log( 'GameManager Websocket Client Found !!!' );
+            $this->log( 'GameManager Websocket Client 1 Found !!!' );
             return $this->Client1;
         }
         
         if ( $this->Client2->getClientId() == $clientId ) {
-            $this->log( 'GameManager Websocket Client Found !!!' );
+            $this->log( 'GameManager Websocket Client 2 Found !!!' );
             return $this->Client2;
         }
         
@@ -224,13 +227,13 @@ abstract class AbstractGameManager implements GameManagerInterface
         }
     }
     
-    public function DoAction( ActionNames $actionName, string $actionText, WebsocketClientInterface $socket, ?WebsocketClientInterface $otherSocket )
+    public function DoAction( ActionNames $actionName, string $actionText, WebsocketClientInterface $socket, WebsocketClientInterface $otherSocket )
     {
-        $this->log( "MyDebug Doing action: {$actionName}" );
+        $this->log( "MyDebug Doing action: {$actionName->value}" );
         
         if ( $actionName == ActionNames::movesMade ) {
             $this->Game->ThinkStart = new \DateTime( 'now' );
-            $action = \json_decode( $actionText );
+            $action = $this->serializer->deserialize( $actionText, MovesMadeActionDto::class, JsonEncoder::FORMAT );
             
             if ( $socket == $this->Client1 ) {
                 $this->Game->BlackPlayer->FirstMoveMade = true;
@@ -242,20 +245,20 @@ abstract class AbstractGameManager implements GameManagerInterface
             $this->NewTurn( $socket );
                     
         } else if ( $actionName == ActionNames::opponentMove ) {
-            $action = \json_decode( $actionText );
+            $action = $this->serializer->deserialize( $actionText, OpponentMoveActionDto::class, JsonEncoder::FORMAT );
             $this->Send( $otherSocket, $action );
         } else if ( $actionName == ActionNames::undoMove ) {
-            $action = \json_decode( $actionText );
+            $action = $this->serializer->deserialize( $actionText, UndoActionDto::class, JsonEncoder::FORMAT );
             $this->Send( $otherSocket, $action );
         } else if ( $actionName == ActionNames::rolled ) {
-            $action = \json_decode( $actionText );
+            $action = $this->serializer->deserialize( $actionText, ActionDto::class, JsonEncoder::FORMAT );
             $this->Send( $otherSocket, $action );
         } else if ( $actionName == ActionNames::requestedDoubling ) {
             if ( ! $this->Game->IsGoldGame ) {
                 throw new \Exception( "requestedDoubling should not be possible in a non gold game" );
             }
             
-            $action = \json_decode( $actionText );
+            $action = $this->serializer->deserialize( $actionText, DoublingActionDto::class, JsonEncoder::FORMAT );
             $action->moveTimer = Game::ClientCountDown;
             
             $this->Game->ThinkStart = new \DateTime( 'now' );
@@ -265,14 +268,14 @@ abstract class AbstractGameManager implements GameManagerInterface
                     $this->DoDoubling();
                     $this->Game->SwitchPlayer();
                     
-                    yield delay( 2000 );
+                    sleep( 2 );
                     $doublingAction = new DoublingActionDto();
                     $doublingAction->actionName = ActionNames::acceptedDoubling->value;
                     $doublingAction->moveTimer = Game::ClientCountDown;
                     
                     $this->Send( $socket, $doublingAction );
                 } else {
-                    yield delay( 2000 );
+                    sleep( 2 );
                     $this->Resign( $this->Game->OtherPlayer() );
                 }
             } else {
@@ -283,7 +286,7 @@ abstract class AbstractGameManager implements GameManagerInterface
                 throw new \Exception( "acceptedDoubling should not be possible in a non gold game" );
             }
             
-            $action = \json_decode( $actionText );
+            $action = $this->serializer->deserialize( $actionText, DoublingActionDto::class, JsonEncoder::FORMAT );
             $action->moveTimer = Game::ClientCountDown;
             $this->Game->ThinkStart = new \DateTime( 'now' );
             $this->DoDoubling();
@@ -296,7 +299,7 @@ abstract class AbstractGameManager implements GameManagerInterface
                 $this->Send( $socket, $action );
             }
         } else if ( $actionName == ActionNames::connectionInfo ) {
-            $action = \json_decode( $actionText );
+            $action = $this->serializer->deserialize( $actionText, ConnectionInfoActionDto::class, JsonEncoder::FORMAT );
             $this->Send( $otherSocket, $action );
         } else if ( $actionName == ActionNames::resign ) {
             $winner = $this->Client1 == $otherSocket ? PlayerColor::Black : PlayerColor::White;
@@ -306,7 +309,7 @@ abstract class AbstractGameManager implements GameManagerInterface
             $this->CloseConnections( $socket );
         } else if ( $actionName == ActionNames::startGamePlay ) {
             $this->log( 'MyDebug: startGamePlay action recieved from GameManager.' );
-            $this->StartGame();
+            $this->StartGamePlay();
         }
     }
     
@@ -388,6 +391,12 @@ abstract class AbstractGameManager implements GameManagerInterface
             TimeTick();
         }, $this->moveTimeOut );
         */
+    }
+    
+    public function StartGamePlay(): void
+    {
+        $action = new GamePlayStartedActionDto();
+        $this->Send( $this->Client1, $action );
     }
     
     protected function TimeTick(): void
@@ -637,8 +646,8 @@ abstract class AbstractGameManager implements GameManagerInterface
             $this->log( "MyDebug: Closing client" );
             //await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Game aborted by client", CancellationToken.None);
             
-            //$socket->close( Frame::CLOSE_NORMAL );
-            $socket->close( Frame::CLOSE_GOING_AWAY );
+            $socket->close( Frame::CLOSE_NORMAL );
+            //$socket->close( Frame::CLOSE_GOING_AWAY );
         }
     }
     

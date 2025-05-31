@@ -25,6 +25,10 @@ import {
     startGameFailure,
     startGameSuccess,
     
+    playGame,
+    playGameFailure,
+    playGameSuccess,
+    
     playerAnnounce,
     playerAnnounceFailure,
     playerAnnounceSuccess

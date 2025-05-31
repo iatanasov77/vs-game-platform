@@ -1,6 +1,13 @@
 monolog:
+    channels: [event,doctrine,console,websocket]
     handlers:
         file_log:
             type: stream
             path: "%kernel.logs_dir%/%kernel.environment%.log"
             level: error
+            channels: ["!websocket"]
+        websocket:
+            type: stream
+            path: '%kernel.logs_dir%/websocket.log' 
+            level: info
+            channels: ["websocket"]

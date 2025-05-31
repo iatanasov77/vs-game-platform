@@ -9,6 +9,7 @@ use Symfony\Component\Mercure\Update;
 use Doctrine\Persistence\ManagerRegistry;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
+use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Vankosoft\UsersBundle\Security\SecurityBridge;
 use Vankosoft\ApplicationBundle\Component\Status;
 use App\Entity\GamePlay;
@@ -30,32 +31,46 @@ class AccountController extends AbstractController
     /** @var HubInterface */
     private $hub;
     
+    /** @var CacheManager */
+    private $imagineCacheManager;
+    
     public function __construct(
         ManagerRegistry $doctrine,
         SecurityBridge $vsSecurityBridge,
         RepositoryInterface $usersRepository,
         FactoryInterface $gamePlayFactory,
-        HubInterface $hub
+        HubInterface $hub,
+        CacheManager $imagineCacheManager
     ) {
-        $this->doctrine         = $doctrine;
-        $this->vsSecurityBridge = $vsSecurityBridge;
-        $this->usersRepository  = $usersRepository;
-        $this->gamePlayFactory  = $gamePlayFactory;
-        $this->hub              = $hub;
+        $this->doctrine             = $doctrine;
+        $this->vsSecurityBridge     = $vsSecurityBridge;
+        $this->usersRepository      = $usersRepository;
+        $this->gamePlayFactory      = $gamePlayFactory;
+        $this->hub                  = $hub;
+        $this->imagineCacheManager  = $imagineCacheManager;
     }
     
     public function signinAction( Request $request ): JsonResponse
     {
+        $user       = $this->vsSecurityBridge->getUser();
+        $player     = $user->getPlayer();
+        
+        if ( $player->getPhotoUrl() ) {
+            $photoPath  = $player->getPhotoUrl();
+        } else {
+            $photoPath  = $this->imagineCacheManager->resolve( $user->getInfo()->getAvatar()->getPath(), 'users_crud_index_thumb' );
+        }
+        
         $userDto    = \json_decode( $request->getContent() );
         
-        $userDto->photoUrl          = '';
-        $userDto->showPhoto         = true;
+        $userDto->photoUrl          = $photoPath;
+        $userDto->showPhoto         = $player->getShowPhoto();
         
         $userDto->preferredLanguage = "en";
         $userDto->theme             = "dark";
         $userDto->emailNotification = true;
-        $userDto->gold              = 150;
-        $userDto->Elo               = 1200;
+        $userDto->gold              = $player->getGold();
+        $userDto->Elo               = $player->getElo();
         
         return new JsonResponse( $userDto );
     }

@@ -20,6 +20,7 @@ import {
     selectGameRoom,
     selectGameRoomSuccess,
     startGameSuccess,
+    playGameSuccess,
     loadGameRooms
 } from '../../../+store/game.actions';
 import { GameState as MyGameState } from '../../../+store/game.reducers';
@@ -246,6 +247,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             this.exitVisible = false;
             
             let gameCookie  = this.cookieService.get( Keys.gameIdKey );
+            //alert( gameCookie );
             if ( gameCookie ) {
                 let gameCookieDto   = JSON.parse( gameCookie ) as GameCookieDto;
                 
@@ -262,6 +264,10 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             this.store.dispatch( loadGameRooms() );
             this.game.startGame();
         });
+        
+        this.actions$.pipe( ofType( playGameSuccess ) ).subscribe( () => {
+            this.lobbyButtonsVisible = false;
+        });
     }
     
     ngAfterViewInit(): void
@@ -269,7 +275,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         this.playAiQuestion = false;
         this.lokalStake = 0;
     
-        if ( ! this.playAiFlag && ! this.editing ) this.waitForOpponent();
+        //if ( ! this.playAiFlag && ! this.editing ) this.waitForOpponent();
         this.fireResize();
         
 //         setTimeout( () => {
@@ -405,6 +411,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         }
         // console.log( dto?.id );
         // console.log( 'Debug GameDto: ', dto );
+        // alert( this.lobbyButtonsVisible );
         
         this.setRollButtonVisible();
         this.setSendVisible();
@@ -612,7 +619,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         
         this.wsService.resetGame();
         this.wsService.connect( '', this.playAiFlag, this.forGoldFlag );
-        this.waitForOpponent();
+        //this.waitForOpponent();
     }
     
     exitGame(): void

@@ -45,5 +45,6 @@ export const gameReducer = createReducer( initialState,
     
     on( selectGameRoomSuccess, ( state, { game } ) => ( { ...state, game } ) ),
     on( startGameSuccess, ( state, { gamePlay } ) => ( { ...state, gamePlay } ) ),
+    //on( playGameSuccess, ( state, { game } ) => ( { ...state, game } ) ),
     on( playerAnnounceSuccess, ( state, { announce } ) => ( { ...state, announce } ) ),
 );

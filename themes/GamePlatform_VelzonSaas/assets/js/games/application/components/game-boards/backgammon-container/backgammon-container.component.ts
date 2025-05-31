@@ -20,6 +20,7 @@ import {
     selectGameRoom,
     selectGameRoomSuccess,
     startGameSuccess,
+    playGame,
     playGameSuccess,
     loadGameRooms
 } from '../../../+store/game.actions';
@@ -265,7 +266,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             this.game.startGame();
         });
         
-        this.actions$.pipe( ofType( playGameSuccess ) ).subscribe( () => {
+        this.actions$.pipe( ofType( playGame ) ).subscribe( () => {
             this.lobbyButtonsVisible = false;
         });
     }
@@ -275,7 +276,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         this.playAiQuestion = false;
         this.lokalStake = 0;
     
-        //if ( ! this.playAiFlag && ! this.editing ) this.waitForOpponent();
+        if ( ! this.playAiFlag && ! this.editing ) this.waitForOpponent();
         this.fireResize();
         
 //         setTimeout( () => {
@@ -619,7 +620,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         
         this.wsService.resetGame();
         this.wsService.connect( '', this.playAiFlag, this.forGoldFlag );
-        //this.waitForOpponent();
+        this.waitForOpponent();
     }
     
     exitGame(): void

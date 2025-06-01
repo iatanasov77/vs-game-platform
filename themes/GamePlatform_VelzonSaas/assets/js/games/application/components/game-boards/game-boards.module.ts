@@ -19,7 +19,7 @@ import { DicesComponent } from './dices/dices.component';
 import { BoardMenuComponent } from './board-actions/board-menu/board-menu.component';
 import { BoardButtonsComponent } from './board-actions/board-buttons/board-buttons.component';
 import { BoardPlayerComponent } from './board-player/board-player.component';
-import { GameVariantsComponent } from './game-variants/game-variants.component';
+import { BackgammonVariantsComponent } from './game-variants/backgammon/backgammon-variants.component';
 
 @NgModule({
     declarations: [
@@ -35,7 +35,7 @@ import { GameVariantsComponent } from './game-variants/game-variants.component';
         BoardMenuComponent,
         BoardButtonsComponent,
         BoardPlayerComponent,
-        GameVariantsComponent
+        BackgammonVariantsComponent
     ],
     imports: [
         CommonModule,
@@ -58,7 +58,7 @@ import { GameVariantsComponent } from './game-variants/game-variants.component';
         BoardMenuComponent,
         BoardButtonsComponent,
         BoardPlayerComponent,
-        GameVariantsComponent
+        BackgammonVariantsComponent
     ]
 })
 export class GameBoardsModule { }

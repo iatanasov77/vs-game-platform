@@ -269,8 +269,6 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         this.actions$.pipe( ofType( startGameSuccess ) ).subscribe( () => {
             this.store.dispatch( loadGameRooms() );
         });
-        
-        this.waitForOpponent();
     }
     
     ngAfterViewInit(): void
@@ -278,7 +276,9 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         this.playAiQuestion = false;
         this.lokalStake = 0;
     
-        if ( ! this.playAiFlag && ! this.editing ) this.waitForOpponent();
+        if ( ! this.lobbyButtonsVisible && ! this.playAiFlag && ! this.editing ) {
+            this.waitForOpponent();
+        }
         this.fireResize();
         
 //         setTimeout( () => {
@@ -316,11 +316,6 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
             const changedProp = changes[propName];
             
             switch ( propName ) {
-                case 'lobbyButtonsVisible':
-                    if ( ! changedProp.currentValue ) {
-                        this.waitForOpponent();
-                    }
-                    break;
                 case 'isLoggedIn':
                     this.isLoggedIn = changedProp.currentValue;
                     break;
@@ -632,7 +627,9 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         clearTimeout( this.startedHandle );
         this.wsService.exitGame();
         this.appStateService.hideBusy();
+        
         //this.router.navigateByUrl( '/lobby' );
+        this.lobbyButtonsVisible = true;
     }
     
     requestDoubling(): void

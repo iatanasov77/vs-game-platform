@@ -1,10 +1,14 @@
 <div id="GameBoardContainer">
+    
     <div class="messages" #messages>
         <app-messages
             [initial]="width"
             [shown]="messageCenter"
             [message]="message$ | async"
             [timeLeft]="timeLeft$ | async"
+            
+            [lobbyButtonsVisible]="lobbyButtonsVisible"
+            [isLoggedIn]="isLoggedIn"
         ></app-messages>
     </div>
     

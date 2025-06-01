@@ -62,14 +62,6 @@ export class BackgammonNormalComponent extends GameBaseComponent implements OnIn
     {
         super.ngOnInit();
         
-//         this.actions$.pipe( ofType( loginBySignatureSuccess ) ).subscribe( ( auth: IAuth ) => {
-//             console.log( auth );
-//         });
-        
-        this.actions$.pipe( ofType( selectGameRoomSuccess ) ).subscribe( () => {
-            // Not Needed Nothing
-        });
-        
         this.actions$.pipe( ofType( playGame ) ).subscribe( () => {
             this.lobbyButtonsVisible = false;
         });

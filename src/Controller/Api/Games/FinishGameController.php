@@ -41,7 +41,7 @@ class FinishGameController extends AbstractController
         $em->persist( $gamePlay );
         $em->flush();
         
-        //$this->publishGamePlay( $gamePlay );
+        $this->publishGamePlay( $gamePlay );
         
         return new JsonResponse([
             'status'    => Status::STATUS_OK,
@@ -53,6 +53,10 @@ class FinishGameController extends AbstractController
     
     private function publishGamePlay( GamePlay $gamePlay ): void
     {
+        if ( $gamePlay->getGame()->getSlug() == 'backgammon' ) {
+            return;
+        }
+        
         $publishData    = json_encode([
             'type'      => 'GamePlayRoomUpdate',
             'action'    => 'FinishGame',

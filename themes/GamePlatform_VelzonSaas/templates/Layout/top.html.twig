@@ -2,8 +2,7 @@
     <div class="layout-width">
         <div class="navbar-header">
             <div class="d-flex">
-            
-            	{#
+                
                 <!-- LOGO -->
                 <div class="navbar-brand-box horizontal-logo">
                     <a href="{{ path( 'app_home' ) }}" class="logo logo-dark">
@@ -36,14 +35,9 @@
                         </span>
                     </a>
                 </div>
-                #}
                 
-                <div class="d-flex align-items-center ms-4" style="padding-top: 8px;">
-                    <h1 style="color: white; font-size: 26px;">
-                    	<a href="{{ path( 'app_home' ) }}" class="top-menu-button">
-                            {{ applicationCompany }} {{ applicationTitle }}
-                        </a>
-                    </h1>
+                <div class="d-flex align-items-center" style="padding-top: 8px;">
+                    <h1 style="color: white; font-size: 26px;">{{ applicationCompany }} {{ applicationTitle }}</h1>
                 </div>
 
                 <button type="button" class="btn btn-sm px-3 fs-16 header-item vertical-menu-btn topnav-hamburger" id="topnav-hamburger-icon">

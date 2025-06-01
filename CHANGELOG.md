@@ -1,3 +1,15 @@
+0.12.0	|	Release date: **01.06.2025**
+============================================
+* Bug-Fixes and Improvements:
+  - Improve Logging of Websocket Communication.
+  - Fixing GameManager::DoAction Method.
+  - Hide Lobby Buttons on Play Game.
+  - Set What to Show When is in Lobby of Backgammon.
+  - Fix Display Backgamon Board Players.
+  - Improve Backgammon Game CSS Styles.
+  - Create Some More Improvements.
+
+
 0.11.3	|	Release date: **27.05.2025**
 ============================================
 * Bug-Fixes and Improvements:

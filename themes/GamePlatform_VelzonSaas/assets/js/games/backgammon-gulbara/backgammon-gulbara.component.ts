@@ -33,8 +33,6 @@ import templateString from './backgammon-gulbara.component.html'
 })
 export class BackgammonGulbaraComponent extends GameBaseComponent implements OnInit
 {
-    //game: BeloteCardGame;
-    
     title   = 'Backgammon';
     busy$: Observable<Busy>;
     errors$: Observable<ErrorState>;

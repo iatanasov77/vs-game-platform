@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import {Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import PlayerDto from '_@/GamePlatform/Model/BoardGame/playerDto';
 
 import cssString from './board-player.component.scss';
@@ -11,9 +11,8 @@ import templateString from './board-player.component.html';
     styles: [
         cssString || 'CSS Not Loaded !!!',
     ],
-    changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BoardPlayerComponent
+export class BoardPlayerComponent implements OnChanges
 {
     @Input() playerDto?: PlayerDto;
     @Input() doubling: number | null = null;
@@ -21,6 +20,20 @@ export class BoardPlayerComponent
     ainaUrl = '/assets/images/aina.png';
     
     constructor() {}
+    
+    ngOnChanges( changes: SimpleChanges ): void
+    {
+        //console.log( changes );
+        for ( const propName in changes ) {
+            const changedProp = changes[propName];
+            
+            switch ( propName ) {
+                case 'playerDto':
+                    this.playerDto = changedProp.currentValue;
+                    break;
+            }
+        }
+    }
     
     getPhotoUrl(): string
     {

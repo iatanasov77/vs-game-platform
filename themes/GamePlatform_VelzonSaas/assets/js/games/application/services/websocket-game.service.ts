@@ -162,15 +162,15 @@ export class WebsocketGameService
         
         //console.log( 'User in State', this.appState.user );
         if ( this.appState.user.getValue() ) {
-            //this.statusMessageService.setWaitingForConnect();
-            this.statusMessageService.setNotGameStarted();
-            this.appState.hideBusy();
+            this.statusMessageService.setWaitingForConnect();
+            //this.statusMessageService.setNotGameStarted();
+            //this.appState.hideBusy();
         } else {
             this.statusMessageService.setNotLoggedIn();
             this.appState.hideBusy();
         }
-        this.appState.myConnection.setValue( { connected: true, pingMs: ping } );
         
+        this.appState.myConnection.setValue( { connected: true, pingMs: ping } );
         this.appState.game.clearValue();
         this.appState.dices.clearValue();
     }

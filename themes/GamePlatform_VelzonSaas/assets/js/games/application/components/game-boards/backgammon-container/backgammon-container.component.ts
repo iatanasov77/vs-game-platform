@@ -73,13 +73,12 @@ declare var $: any;
         cssGameString || 'Game CSS Not Loaded !!!',
     ]
 })
-export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges
+export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, OnChanges, OnInit
 {
     @Input() lobbyButtonsVisible: boolean   = false;
     @Input() isLoggedIn: boolean            = false;
     @Input() introPlaying: boolean          = false;
     @Input() hasPlayer: boolean             = false;
-    @Input() game: any;
     
     @ViewChild( 'dices' ) dices: ElementRef | undefined;
     @ViewChild( 'backgammonBoardButtons' ) backgammonBoardButtons: ElementRef | undefined;
@@ -131,6 +130,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     requestDoublingVisible = false;
     requestHintVisible = false;
     dicesDto: DiceDto[] | undefined;
+    gameDto: GameDto | undefined;
     
     appState?: MyGameState;
     gameStarted: boolean        = false;
@@ -228,6 +228,11 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     
     ngOnInit(): void
     {
+        this.gameDto$.subscribe( res => {
+            //console.log( res );
+            this.gameDto = res;
+        });
+        
         this.store.subscribe( ( state: any ) => {
             //console.log( state.app.main );
             
@@ -261,7 +266,6 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         
         this.actions$.pipe( ofType( startGameSuccess ) ).subscribe( () => {
             this.store.dispatch( loadGameRooms() );
-            this.game.startGame();
         });
         
         this.waitForOpponent();
@@ -323,9 +327,6 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
                     break;
                 case 'hasPlayer':
                     this.hasPlayer = changedProp.currentValue;
-                    break;
-                case 'game':
-                    this.game = changedProp.currentValue;
                     break;
             }
         }

@@ -33,8 +33,6 @@ import templateString from './backgammon-normal.component.html'
 })
 export class BackgammonNormalComponent extends GameBaseComponent implements OnInit
 {
-    //game: BeloteCardGame;
-    
     title   = 'Backgammon';
     busy$: Observable<Busy>;
     errors$: Observable<ErrorState>;

@@ -97,3 +97,4 @@ services:
             - '@vs_users.repository.users'
             - '@vsapp.factory.game_sessions'
             - '@mercure.hub.default'
+            - '@liip_imagine.cache.manager'

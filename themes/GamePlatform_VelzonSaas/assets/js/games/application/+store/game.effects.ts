@@ -25,6 +25,8 @@ import {
     startGameFailure,
     startGameSuccess,
     
+    playGame,
+    
     playerAnnounce,
     playerAnnounceFailure,
     playerAnnounceSuccess
@@ -133,6 +135,16 @@ export class GameEffects
             )
         )
     );
+    
+    /*
+    playGame = createEffect( (): any =>
+        this.actions$.pipe(
+            ofType( playGame ),
+            map( () => playGameSuccess() ),
+            catchError( error => [playGameFailure( { error } )] )
+        )
+    );
+    */
     
     playerAnnounce = createEffect( (): any =>
         this.actions$.pipe(

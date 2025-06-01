@@ -40,7 +40,7 @@
     >
         
         <app-board-player
-            [playerDto]="(gameDto$ | async)?.whitePlayer"
+            [playerDto]="gameDto.whitePlayer"
             [doubling]="getDoubling(PlayerColor.white) | async"
         >
         </app-board-player>
@@ -53,7 +53,7 @@
         </div>
         
         <app-board-player
-            [playerDto]="(gameDto$ | async)?.blackPlayer"
+            [playerDto]="gameDto.blackPlayer"
             [doubling]="getDoubling(PlayerColor.black) | async"
         >
         </app-board-player>

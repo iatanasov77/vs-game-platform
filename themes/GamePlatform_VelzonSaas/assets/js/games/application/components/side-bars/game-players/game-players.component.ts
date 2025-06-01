@@ -64,8 +64,13 @@ export class GamePlayersComponent implements OnInit, OnDestroy
     
     ngOnInit(): void
     {
+        let mercureEventSource  = $( '#GameContainer' ).attr( 'data-mercureEventSource' );
+        if( ! mercureEventSource ) {
+            return;
+        }
+        
         this.eventSourceSubscription = this.eventSourceService.connectToServerSentEvents(
-            $( '#GameContainer' ).attr( 'data-mercureEventSource' ),
+            mercureEventSource,
             { withCredentials: false },
             ['activeConnectionUpdate']
         ).subscribe({
@@ -81,8 +86,10 @@ export class GamePlayersComponent implements OnInit, OnDestroy
     
     ngOnDestroy(): void
     {
-        this.eventSourceSubscription.unsubscribe();
-        this.eventSourceService.close();
+        if ( this.eventSourceSubscription ) {
+            this.eventSourceSubscription.unsubscribe();
+            this.eventSourceService.close();
+        }
     }
     
     updatePlayers( action: IMercureAction ): void

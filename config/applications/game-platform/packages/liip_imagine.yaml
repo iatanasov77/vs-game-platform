@@ -33,22 +33,22 @@ liip_imagine:
             quality: 75
             filters:
                 thumbnail: { size: [50, 50], mode: outbound }
-                background: { size: [50, 50], position: center, color: '#000000' }
+                background: { size: [54, 54], position: center, color: '#000000' }
                 
         file_manager_files_thumb:
             quality: 75
             filters:
                 thumbnail: { size: [50, 50], mode: outbound }
-                background: { size: [50, 50], position: center, color: '#000000' }
+                background: { size: [54, 54], position: center, color: '#000000' }
                 
         users_crud_index_profile_thumb:
             quality: 75
             filters:
                 thumbnail: { size: [90, 90], mode: outbound }
-                background: { size: [90, 90], position: center, color: '#000000' }
+                background: { size: [94, 94], position: center, color: '#000000' }
                 
         game_picture_thumb:
             quality: 75
             filters:
                 thumbnail: { size: [400, 300], mode: outbound }
-                background: { size: [400, 300], position: center, color: '#000000' }
+                background: { size: [404, 304], position: center, color: '#000000' }

@@ -6,29 +6,24 @@
 
 <div class="row">
     <div class="col-2">
-        <div class="mt-4">
+        <div>
             <game-chat></game-chat>
         </div>
     </div>
     
     <div class="col-8">
-    
-        <app-game-variants></app-game-variants>
+        <app-game-variants [lobbyButtonsVisible]="lobbyButtonsVisible"></app-game-variants>
         
         <app-backgammon-container
+            [lobbyButtonsVisible]="lobbyButtonsVisible"
             [isLoggedIn]="isLoggedIn"
             [introPlaying]="introPlaying"
             [isLoggedIn]="isLoggedIn"
             [hasPlayer]="hasPlayer"
-            [game]="game"
         ></app-backgammon-container>
-        
     </div>
     
     <div class="col-2">
         <game-players></game-players>
-        <div class="mt-4">
-            <game-rooms></game-rooms>
-        </div>
     </div>
 </div>

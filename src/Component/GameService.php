@@ -70,9 +70,9 @@ class GameService
     
     public function setGameRoomSelected( string $gameId ): ?GameManagerInterface
     {
-        $this->logger->info( 'MyDebug setGameRoomSelected: ' . $gameId );
+        $this->log( 'MyDebug setGameRoomSelected: ' . $gameId );
         if ( isset( $this->AllGames[$gameId] ) ) {
-            $this->logger->info( 'MyDebug: Game ID Exists.' );
+            $this->log( 'MyDebug: Game ID Exists.' );
             
             $this->AllGames[$gameId]->RoomSelected  = true;
             
@@ -87,24 +87,24 @@ class GameService
         $gameGuid   = null;
         $dbUser = $this->GetDbUser( $userId );
         if ( ! $dbUser ) {
-            $this->logger->info( 'MyDebug: Missing DB User' );
+            $this->log( 'MyDebug: Missing DB User' );
             return $gameGuid;
         }
         
         $gamePlayer = $dbUser->getPlayer();
         if ( ! $gamePlayer ) {
-            $this->logger->info( 'MyDebug: Missing Game Player' );
+            $this->log( 'MyDebug: Missing Game Player' );
             return $gameGuid;
         }
         
         if ( $gameGuid = $this->TryReConnect( $webSocket, $gameCookie, $dbUser ) ) {
-            $this->logger->info( 'MyDebug Reconnect Game: '. $gameGuid );
+            $this->log( 'MyDebug Reconnect Game: '. $gameGuid );
             // Game disconnected here
             return $gameGuid;
         }
         
         if ( ! empty ( $gameId ) ) {
-            $this->logger->info( 'MyDebug: Invite to Game' );
+            $this->log( 'MyDebug: Invite to Game' );
             $this->ConnectInvite( $webSocket, $dbUser, $gameId );
             
             // Game disconnected here.
@@ -122,7 +122,7 @@ class GameService
         
         if ( self::GameAlreadyStarted( $managers, $userId ) ) {
             $warning = "MyDebug: The user {$userId} has already started a game";
-            $this->logger->warning( $warning );
+            $this->log( $warning );
             throw new \Exception( $warning );
         }
         
@@ -141,7 +141,7 @@ class GameService
             $manager    = $this->managerFactory->createWebsocketGameManager();
             
             if ( ! $manager->Game ) {
-                $this->logger->info( "MyDebug: Creting New Game Manager." );
+                $this->log( "MyDebug: Creting New Game Manager." );
                 $manager->Client1   = $webSocket;
                 $manager->InitializeGame();
             }
@@ -153,7 +153,7 @@ class GameService
             
             $gameGuid                   =  $manager->Game->Id;
             $this->AllGames->set( $gameGuid, $manager );
-            $this->logger->info( "MyDebug: Added a new game and waiting for opponent. Game id {$manager->Game->Id}" );
+            $this->log( "MyDebug: Added a new game and waiting for opponent. Game id {$manager->Game->Id}" );
             
             // entering socket loop
             $manager->ConnectAndListen( $webSocket, PlayerColor::Black, $gamePlayer, $playAi );
@@ -166,13 +166,13 @@ class GameService
             $manager->SearchingOpponent = false;
             $manager->GameCode          = $gameCode;
             
-            $this->logger->info( "MyDebug: Found a game and added a second player. Game id {$manager->Game->Id}" );
+            $this->log( "MyDebug: Found a game and added a second player. Game id {$manager->Game->Id}" );
             $color = $manager->Client1 == null ? PlayerColor::Black : PlayerColor::White;
             
             /*  */
             // entering socket loop
             $manager->ConnectAndListen( $webSocket, $color, $gamePlayer, false );
-            $this->logger->info( "{$color} player disconnected.");
+            $this->log( "{$color} player disconnected.");
             $this->SendConnectionLost( PlayerColor::Black, $manager );
             //This is the end of the connection
             
@@ -236,7 +236,7 @@ class GameService
     
     protected function TryReConnect( WebsocketClientInterface $webSocket, ?string $gameCookie, ?UserInterface $dbUser ): ?string
     {
-        $this->logger->info( 'MyDebug Try Reconnect with cookie: '. $gameCookie );
+        $this->log( 'MyDebug Try Reconnect with cookie: '. $gameCookie );
         
         // Find existing game to reconnect to.
         if ( $gameCookie ) {
@@ -246,7 +246,7 @@ class GameService
             
             if ( $cookie != null )
             {
-                $this->logger->info( 'MyDebug Try Reconnect: Cookie Parsed' );
+                $this->log( 'MyDebug Try Reconnect: Cookie Parsed' );
                 
                 $gameManager = $this->AllGames->filter(
                     function( $entry ) use ( $cookie ) {
@@ -257,7 +257,7 @@ class GameService
                 if ( $gameManager != null && self::MyColor( $gameManager, $dbUser, $color ) )
                 {
                     $gameManager->Engine = new AiEngine( $gameManager->Game );
-                    $this->logger->info( "Restoring game {$cookie->id} for {$color}" );
+                    $this->log( "Restoring game {$cookie->id} for {$color}" );
                     
                     // entering socket loop
                     $gameManager->Restore( $color, $webSocket );
@@ -285,7 +285,7 @@ class GameService
                 $m->Game>WhitePlayer->Id == $userId &&
                 $userId != Guid::Empty
                 ) {
-                    $this->logger->info( "MyDebug: Game Already Started" );
+                    $this->log( "MyDebug: Game Already Started" );
                     return true;
                 }
         }
@@ -300,7 +300,7 @@ class GameService
             ( $manager->Client2 == null || $manager->Client2->State != WebSocketState::Open )
         ) {
             $this->AllGames->removeElement( $manager );
-            $this->logger->info( "MyDebug: Removing game {$manager->Game->Id} which is not used." );
+            $this->log( "MyDebug: Removing game {$manager->Game->Id} which is not used." );
         }
     }
     
@@ -387,5 +387,10 @@ class GameService
         
         // Test WebSocket Send
         $manager->Send( $manager->Client1, $data );
+    }
+    
+    private function log( $logData ): void
+    {
+        $this->logger->info( $logData );
     }
 }

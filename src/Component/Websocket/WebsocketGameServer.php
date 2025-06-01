@@ -6,22 +6,22 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 use Vankosoft\ApplicationBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Serializer\SerializerInterface;
 
 use Ratchet\Server\IoServer;
 use Ratchet\Http\HttpServer;
 use Ratchet\WebSocket\WsServer;
 use Ratchet\MessageComponentInterface;
 use React\EventLoop\Factory as EventLoopFactory;
-//use React\Socket\Server as SocketServer;
 use React\Socket\SocketServer;
 use App\Component\Websocket\Server\WebsocketGamesHandler;
 
 /**
- * See Logs:        sudo tail -f /var/log/websocket/game-patform-game.log
+ * See Logs:        sudo tail -f /dev/shm/game-platform.lh/game-platform/log/websocket.log
  * Start Service:   sudo service websocket_game_platform_game restart
  *
  * Manual:  https://stackoverflow.com/questions/64292868/how-to-send-a-message-to-specific-websocket-clients-with-symfony-ratchet
@@ -32,13 +32,13 @@ use App\Component\Websocket\Server\WebsocketGamesHandler;
     description: 'Start WebSocket for Game',
     hidden: false
 )]
-final class WebsocketGameCommand extends ContainerAwareCommand
+final class WebsocketGameServer extends ContainerAwareCommand
 {
     /** @var SerializerInterface */
     private $serializer;
     
-    /** @var string */
-    private $logFile;
+    /** @var LoggerInterface */
+    private $logger;
     
     /** @var MessageComponentInterface */
     private $gamesHandler;
@@ -51,12 +51,13 @@ final class WebsocketGameCommand extends ContainerAwareCommand
         ManagerRegistry $doctrine,
         ValidatorInterface $validator,
         SerializerInterface $serializer,
+        LoggerInterface $logger,
         array $parrameters
     ) {
         parent::__construct( $container, $doctrine, $validator );
         
         $this->serializer   = $serializer;
-        $this->logFile      = '/var/log/websocket/game-patform-game.log';
+        $this->logger       = $logger;
         $this->parrameters  = $parrameters;
     }
     
@@ -105,6 +106,7 @@ final class WebsocketGameCommand extends ContainerAwareCommand
         
         $this->gamesHandler = new WebsocketGamesHandler(
             $this->serializer,
+            $this->logger,
             $this->get( 'vs_users.repository.users' ),
             $this->get( 'app_websocket_client_factory' ),
             $this->get( 'app_game_service' )
@@ -135,6 +137,6 @@ final class WebsocketGameCommand extends ContainerAwareCommand
     
     private function log( $logData ): void
     {
-        \file_put_contents( $this->logFile, $logData . "\n", FILE_APPEND | LOCK_EX );
+        $this->logger->info( $logData );
     }
 }

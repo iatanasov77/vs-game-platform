@@ -30,9 +30,9 @@ final class WebsocketRatchetConnectionClient extends AbstractWebsocketClient
         return '';
     }
     
-    public function close(): void
+    public function close( int $code ): void
     {
-        $this->connection->close();
+        $this->connection->close( $code );
     }
     
     public function subscribe( string $realm, string $topic, \Closure $callback ): void

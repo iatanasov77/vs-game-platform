@@ -7,6 +7,7 @@ use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
 use Doctrine\Persistence\ManagerRegistry;
 use Vankosoft\ApplicationBundle\Component\Status;
+use App\Entity\GamePlay;
 
 class MercureController extends AbstractController
 {
@@ -31,6 +32,10 @@ class MercureController extends AbstractController
     
     private function publish( GamePlay $gamePlay ): void
     {
+        if ( $gamePlay->getGame()->getSlug() == 'backgammon' ) {
+            return;    
+        }
+        
         $publishData    = json_encode([
             'type'      => 'GamePlayRoomUpdate',
             'action'    => 'StartGame',

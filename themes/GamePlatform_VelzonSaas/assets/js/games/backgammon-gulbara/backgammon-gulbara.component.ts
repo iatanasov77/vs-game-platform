@@ -4,7 +4,7 @@ import { switchMap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
 import { loginBySignatureSuccess } from '../application/+store/login.actions';
-import { selectGameRoomSuccess } from '../application/+store/game.actions';
+import { playGame, selectGameRoomSuccess } from '../application/+store/game.actions';
 
 import { IAuth } from '../application/interfaces/auth';
 import { Busy } from '../application/state/busy';
@@ -33,14 +33,13 @@ import templateString from './backgammon-gulbara.component.html'
 })
 export class BackgammonGulbaraComponent extends GameBaseComponent implements OnInit
 {
-    //game: BeloteCardGame;
-    
     title   = 'Backgammon';
     busy$: Observable<Busy>;
     errors$: Observable<ErrorState>;
     
-    playAi = false;
-    forGold = false;
+    lobbyButtonsVisible = true;
+    playAi              = false;
+    forGold             = false;
   
     constructor(
         @Inject( AuthService ) authService: AuthService,
@@ -63,12 +62,8 @@ export class BackgammonGulbaraComponent extends GameBaseComponent implements OnI
     {
         super.ngOnInit();
         
-//         this.actions$.pipe( ofType( loginBySignatureSuccess ) ).subscribe( ( auth: IAuth ) => {
-//             console.log( auth );
-//         });
-        
-        this.actions$.pipe( ofType( selectGameRoomSuccess ) ).subscribe( () => {
-            // Not Needed Nothing
+        this.actions$.pipe( ofType( playGame ) ).subscribe( () => {
+            this.lobbyButtonsVisible = false;
         });
     }
     

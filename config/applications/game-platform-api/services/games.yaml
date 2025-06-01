@@ -18,7 +18,7 @@ services:
     app_game_manager_factory:
         class: App\Component\Manager\GameManagerFactory
         arguments:
-            - '@logger'
+            - '@monolog.logger.websocket'
             - '@serializer'
             - '@liip_imagine.cache.manager'
             - '@event_dispatcher'
@@ -36,7 +36,7 @@ services:
         class: App\Component\GameService
         public: true
         arguments:
-            - '@logger'
+            - '@monolog.logger.websocket'
             - '@serializer'
             - '@vs_users.repository.users'
             - '@vs_users.security_bridge'
@@ -48,4 +48,4 @@ services:
     app_backgammon_game_factory:
         class: App\Component\Rules\Backgammon\GameFactory
         arguments:
-            - '@logger'
+            - '@monolog.logger.websocket'

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import templateString from './game-variants.component.html'
@@ -14,6 +14,8 @@ declare var $: any;
 })
 export class GameVariantsComponent implements OnInit, OnDestroy
 {
+    @Input() lobbyButtonsVisible: boolean   = false;
+    
     constructor(
         @Inject( TranslateService ) private translate: TranslateService
     ) {

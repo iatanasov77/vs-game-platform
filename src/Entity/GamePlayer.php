@@ -221,6 +221,6 @@ class GamePlayer implements ResourceInterface
     
     public function getName(): ?string
     {
-        return $this->user ? $this->user->getUsername() : 'AI';
+        return $this->user ? $this->user->getUsername() : 'Aina';
     }
 }

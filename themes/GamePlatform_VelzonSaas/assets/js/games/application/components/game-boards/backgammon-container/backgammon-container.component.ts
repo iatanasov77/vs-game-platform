@@ -73,12 +73,12 @@ declare var $: any;
         cssGameString || 'Game CSS Not Loaded !!!',
     ]
 })
-export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges
+export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, OnChanges, OnInit
 {
-    @Input() isLoggedIn: boolean        = false;
-    @Input() introPlaying: boolean      = false;
-    @Input() hasPlayer: boolean         = false;
-    @Input() game: any;
+    @Input() lobbyButtonsVisible: boolean   = false;
+    @Input() isLoggedIn: boolean            = false;
+    @Input() introPlaying: boolean          = false;
+    @Input() hasPlayer: boolean             = false;
     
     @ViewChild( 'dices' ) dices: ElementRef | undefined;
     @ViewChild( 'backgammonBoardButtons' ) backgammonBoardButtons: ElementRef | undefined;
@@ -130,11 +130,11 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     requestDoublingVisible = false;
     requestHintVisible = false;
     dicesDto: DiceDto[] | undefined;
+    gameDto: GameDto | undefined;
     
     appState?: MyGameState;
     gameStarted: boolean        = false;
     
-    lobbyButtonsVisible     = true;
     isRoomSelected: boolean = false;
     hasRooms: boolean       = false;
     
@@ -228,6 +228,11 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     
     ngOnInit(): void
     {
+        this.gameDto$.subscribe( res => {
+            //console.log( res );
+            this.gameDto = res;
+        });
+        
         this.store.subscribe( ( state: any ) => {
             //console.log( state.app.main );
             
@@ -240,12 +245,16 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             }
         });
         
+        /**
+         * Cannot Remove Game Rooms from Board Games Because Game Room is a Game Session for Now.
+         */
         this.actions$.pipe( ofType( selectGameRoomSuccess ) ).subscribe( () => {
             //this.newVisible = this.appStateService.game.getValue()?.playState === GameState.created;
             this.newVisible = false;
             this.exitVisible = false;
             
             let gameCookie  = this.cookieService.get( Keys.gameIdKey );
+            //alert( gameCookie );
             if ( gameCookie ) {
                 let gameCookieDto   = JSON.parse( gameCookie ) as GameCookieDto;
                 
@@ -254,14 +263,14 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             }
             
             this.isRoomSelected = true;
-            this.statusMessageService.setNotGameStarted();
             this.appStateService.hideBusy();
         });
         
         this.actions$.pipe( ofType( startGameSuccess ) ).subscribe( () => {
             this.store.dispatch( loadGameRooms() );
-            this.game.startGame();
         });
+        
+        this.waitForOpponent();
     }
     
     ngAfterViewInit(): void
@@ -307,6 +316,11 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
             const changedProp = changes[propName];
             
             switch ( propName ) {
+                case 'lobbyButtonsVisible':
+                    if ( ! changedProp.currentValue ) {
+                        this.waitForOpponent();
+                    }
+                    break;
                 case 'isLoggedIn':
                     this.isLoggedIn = changedProp.currentValue;
                     break;
@@ -316,9 +330,6 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
                 case 'hasPlayer':
                     this.hasPlayer = changedProp.currentValue;
                     break;
-                case 'game':
-                    this.game = changedProp.currentValue;
-                    break;
             }
         }
     }
@@ -327,7 +338,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
     {
         this.sound.playPianoIntro();
         this.startedHandle = setTimeout( () => {
-            if ( ! this.started ) {
+            if ( ! this.started && ! this.lobbyButtonsVisible ) {
                 //alert( this.appStateService.user );
                 if ( this.appStateService.user?.getValue() ) {
                     this.playAiQuestion = true;
@@ -405,6 +416,7 @@ export class BackgammonContainerComponent implements OnInit, OnDestroy, AfterVie
         }
         // console.log( dto?.id );
         // console.log( 'Debug GameDto: ', dto );
+        // alert( this.lobbyButtonsVisible );
         
         this.setRollButtonVisible();
         this.setSendVisible();

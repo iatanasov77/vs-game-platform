@@ -21,7 +21,7 @@ use React\Socket\SocketServer;
 use App\Component\Websocket\Server\WebsocketGamesHandler;
 
 /**
- * See Logs:        sudo tail -f /dev/shm/game-platform.lh/game-platform/log/websocket.log
+ * See Logs:        sudo tail -f /dev/shm/game-platform.lh/game-platform/log/websocket_game.log
  * Start Service:   sudo service websocket_game_platform_game restart
  *
  * Manual:  https://stackoverflow.com/questions/64292868/how-to-send-a-message-to-specific-websocket-clients-with-symfony-ratchet

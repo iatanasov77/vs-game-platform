@@ -807,17 +807,8 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         //console.log( 'GameDto Object: ', game );
         this.wsService.startGamePlay( game, myColor );
         
-        /**
-         * @NOTE This NOT Work Here Because Game Service is Different Instance in API Application From GamePlatform Application
-         */
-//         let gameCookie  = this.cookieService.get( Keys.gameIdKey );
-//         if ( gameCookie ) {
-//             let gameCookieDto   = JSON.parse( gameCookie ) as GameCookieDto;
-//         
-//             this.gamePlayService.startPlayGame( gameCookieDto.id ).subscribe( () => {
-//                 //alert( 'Game Play is DONE.' );
-//                 this.lobbyButtonsVisible     = false;
-//             });;
-//         }
+        this.exitVisible = true;
+        this.appStateService.showBusy();
+        this.waitForOpponent();
     }
 }

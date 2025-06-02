@@ -198,8 +198,7 @@ export class WebsocketGameService
     }
     
     // Messages received from server.
-    //onMessage( message: MessageEvent<string> ): void
-    onMessage( message: MessageEvent ): void
+    onMessage( message: MessageEvent<string> ): void
     {
         if ( ! message.data.length  ) {
             return;

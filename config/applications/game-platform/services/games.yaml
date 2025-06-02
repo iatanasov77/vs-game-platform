@@ -17,7 +17,8 @@ services:
             - '@service_container'
             - '@doctrine'
             - '@validator'
-            - '@monolog.logger.websocket'
+            - '@serializer'
+            - '@monolog.logger.websocket_chat'
             - {
                 sslCertificateKey: '%env(SSL_CERTIFICATE_KEY)%',
                 sslCertificateCert: '%env(SSL_CERTIFICATE_CERT)%'
@@ -32,7 +33,7 @@ services:
             - '@doctrine'
             - '@validator'
             - '@serializer'
-            - '@monolog.logger.websocket'
+            - '@monolog.logger.websocket_game'
             - {
                 sslCertificateKey: '%env(SSL_CERTIFICATE_KEY)%',
                 sslCertificateCert: '%env(SSL_CERTIFICATE_CERT)%'
@@ -52,7 +53,7 @@ services:
         class: App\Component\GameService
         public: true
         arguments:
-            - '@monolog.logger.websocket'
+            - '@monolog.logger.websocket_game'
             - '@serializer'
             - '@vs_users.repository.users'
             - '@vs_users.security_bridge'
@@ -64,7 +65,7 @@ services:
     app_game_manager_factory:
         class: App\Component\Manager\GameManagerFactory
         arguments:
-            - '@monolog.logger.websocket'
+            - '@monolog.logger.websocket_game'
             - '@serializer'
             - '@liip_imagine.cache.manager'
             - '@event_dispatcher'
@@ -84,7 +85,7 @@ services:
     app_backgammon_game_factory:
         class: App\Component\Rules\Backgammon\GameFactory
         arguments:
-            - '@monolog.logger.websocket'
+            - '@monolog.logger.websocket_game'
     
     
     ##############################################################

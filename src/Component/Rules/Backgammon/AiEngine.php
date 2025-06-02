@@ -73,7 +73,7 @@ class AiEngine
             
             $bestMoveSequenceIterator  = $bestMoveSequence->getIterator();
             $bestMoveSequenceIterator->uasort( function ( $a, $b ) {
-                return $a->From->BlackNumber < $b->From->BlackNumber;
+                return $b->From->BlackNumber <=> $a->From->BlackNumber;
             });
             
             return \iterator_to_array( $bestMoveSequence );
@@ -87,7 +87,7 @@ class AiEngine
         
         $bestMoveSequenceIterator  = $bestMoveSequence->getIterator();
         $bestMoveSequenceIterator->uasort( function ( $a, $b ) {
-            return $a->From->WhiteNumber < $b->From->WhiteNumber;
+            return $b->From->WhiteNumber <=> $a->From->WhiteNumber;
         });
             
         return \iterator_to_array( $bestMoveSequence );
@@ -463,7 +463,7 @@ class AiEngine
     {
         $pointsIterator  = $playerPoints->getIterator();
         $pointsIterator->uasort( function ( $a, $b ) use ( $game ) {
-            return $a->GetNumber( $game->CurrentPlayer ) < $b->GetNumber( $game->CurrentPlayer );
+            return $b->GetNumber( $game->CurrentPlayer ) <=> $a->GetNumber( $game->CurrentPlayer );
         });
             
         return new ArrayCollection( \iterator_to_array( $pointsIterator ) );

@@ -138,6 +138,7 @@ class GameService
         
         $manager = $managers->first();
         if ( $manager == null || $playAi ) {
+            $this->log( "MyDebug: Possibly Play AI !!!" );
             $manager    = $this->managerFactory->createWebsocketGameManager( $forGold );
             
             if ( ! $manager->Game ) {
@@ -285,12 +286,12 @@ class GameService
             // Guest vs guest must be allowed. When guest games are enabled.
             if (
                 $m->Game->BlackPlayer->Id == $userId ||
-                $m->Game>WhitePlayer->Id == $userId &&
+                $m->Game->WhitePlayer->Id == $userId &&
                 $userId != Guid::Empty
-                ) {
-                    $this->log( "MyDebug: Game Already Started" );
-                    return true;
-                }
+            ) {
+                $this->log( "MyDebug: Game Already Started" );
+                return true;
+            }
         }
         
         return false;
@@ -377,7 +378,7 @@ class GameService
     {
         $gamesIterator  = $this->AllGames->getIterator();
         $gamesIterator->uasort( function ( $a, $b ) {
-            return $a->Created > $b->Created;
+            return $a->Created <=> $b->Created;
         });
             
         return new ArrayCollection( \iterator_to_array( $gamesIterator ) );

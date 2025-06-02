@@ -315,7 +315,7 @@ class BackgammonNormalGame extends Game
         return $hit;
     }
     
-    public function UndoMove( Move $move, Checker $hitChecker ): void
+    public function UndoMove( Move $move, ?Checker $hitChecker ): void
     {
         $checker = $move->To->Checkers->filter(
             function( $entry ) use ( $move ) {
@@ -351,7 +351,7 @@ class BackgammonNormalGame extends Game
     {
         $dicesIterator  = $this->Roll->getIterator();
         $dicesIterator->uasort( function ( $a, $b ) {
-            return $a->Value > $b->Value;
+            return $a->Value <=> $b->Value;
         });
             
         return new ArrayCollection( \iterator_to_array( $dicesIterator ) );
@@ -361,7 +361,7 @@ class BackgammonNormalGame extends Game
     {
         $movesIterator  = $moves->getIterator();
         $movesIterator->uasort( function ( $a, $b ) {
-            return $a->Value > $b->Value;
+            return $a->Value <=> $b->Value;
         });
             
         return new ArrayCollection( \iterator_to_array( $movesIterator ) );
@@ -381,7 +381,7 @@ class BackgammonNormalGame extends Game
         
         $pointsIterator  = $points->getIterator();
         $pointsIterator->uasort( function ( $a, $b ) use ( $currentPlayer ) {
-            return $a->GetNumber( $currentPlayer ) < $b->GetNumber( $currentPlayer );
+            return $b->GetNumber( $currentPlayer ) <=> $a->GetNumber( $currentPlayer );
         });
             
         return new ArrayCollection( \iterator_to_array( $pointsIterator ) );
@@ -401,7 +401,7 @@ class BackgammonNormalGame extends Game
         
         $pointsIterator  = $points->getIterator();
         $pointsIterator->uasort( function ( $a, $b ) use ( $currentPlayer ) {
-            return $a->GetNumber( $currentPlayer ) < $b->GetNumber( $currentPlayer );
+            return $b->GetNumber( $currentPlayer ) <=> $a->GetNumber( $currentPlayer );
         });
             
         return ( new ArrayCollection( \iterator_to_array( $pointsIterator ) ) )->first()->GetNumber( $currentPlayer );

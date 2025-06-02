@@ -48,9 +48,6 @@ final class GameManagerFactory
     /** @var FactoryInterface */
     private $tempPlayersFactory;
     
-    /** @var bool */
-    private $forGold;
-    
     public function __construct(
         LoggerInterface $logger,
         SerializerInterface $serializer,
@@ -63,8 +60,7 @@ final class GameManagerFactory
         FactoryInterface $gamePlayFactory,
         RepositoryInterface $playersRepository,
         RepositoryInterface $tempPlayersRepository,
-        FactoryInterface $tempPlayersFactory,
-        bool $forGold
+        FactoryInterface $tempPlayersFactory
     ) {
         $this->logger                   = $logger;
         $this->serializer               = $serializer;
@@ -78,10 +74,9 @@ final class GameManagerFactory
         $this->playersRepository        = $playersRepository;
         $this->tempPlayersRepository    = $tempPlayersRepository;
         $this->tempPlayersFactory       = $tempPlayersFactory;
-        $this->forGold                  = $forGold;
     }
     
-    public function createWebsocketGameManager(): GameManagerInterface
+    public function createWebsocketGameManager( bool $forGold ): GameManagerInterface
     {
         return new WebsocketGameManager(
             $this->logger,
@@ -96,11 +91,11 @@ final class GameManagerFactory
             $this->playersRepository,
             $this->tempPlayersRepository,
             $this->tempPlayersFactory,
-            $this->forGold
+            $forGold
         );
     }
     
-    public function createThruwayGameManager(): GameManagerInterface
+    public function createThruwayGameManager( bool $forGold ): GameManagerInterface
     {
         return new ThruwayGameManager(
             $this->logger,
@@ -115,11 +110,11 @@ final class GameManagerFactory
             $this->playersRepository,
             $this->tempPlayersRepository,
             $this->tempPlayersFactory,
-            $this->forGold
+            $forGold
         );
     }
     
-    public function createZmqGameManager(): GameManagerInterface
+    public function createZmqGameManager( bool $forGold ): GameManagerInterface
     {
         return new ZmqGameManager(
             $this->logger,
@@ -134,7 +129,7 @@ final class GameManagerFactory
             $this->playersRepository,
             $this->tempPlayersRepository,
             $this->tempPlayersFactory,
-            $this->forGold
+            $forGold
         );
     }
 }

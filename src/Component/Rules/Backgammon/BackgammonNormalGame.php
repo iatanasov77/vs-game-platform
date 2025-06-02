@@ -270,8 +270,6 @@ class BackgammonNormalGame extends Game
     public function MakeMove( Move $move ): ?Checker
     {
         $this->logger->info( "\n\nMyDebug MakeMove: " . print_r( $move, true ) . "\n\n" );
-        $backtrace = debug_backtrace();
-        \file_put_contents( '/projects/VS_GamePlatform/var/backtrace.txt', "\n\nMyDebug MakeMove: " . print_r( $backtrace, true ) . "\n\n" );
         
         $checker = $move->From->Checkers->filter(
             function( $entry ) use ( $move ) {

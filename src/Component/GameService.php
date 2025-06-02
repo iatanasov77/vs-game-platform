@@ -82,7 +82,7 @@ class GameService
         return null;
     }
     
-    public function Connect( WebsocketClientInterface $webSocket, $gameCode, $userId, $gameId, $playAi, $forGold, ?string $gameCookie ): ?string
+    public function Connect( WebsocketClientInterface $webSocket, $gameCode, int $userId, ?string $gameId, bool $playAi, bool $forGold, ?string $gameCookie ): ?string
     {
         $gameGuid   = null;
         $dbUser = $this->GetDbUser( $userId );
@@ -138,7 +138,7 @@ class GameService
         
         $manager = $managers->first();
         if ( $manager == null || $playAi ) {
-            $manager    = $this->managerFactory->createWebsocketGameManager();
+            $manager    = $this->managerFactory->createWebsocketGameManager( $forGold );
             
             if ( ! $manager->Game ) {
                 $this->log( "MyDebug: Creting New Game Manager." );
@@ -225,7 +225,7 @@ class GameService
             $this->AllGames->removeElement( $existing[$i] );
         }
             
-        $manager    = $this->managerFactory->createWebsocketGameManager();
+        $manager    = $this->managerFactory->createWebsocketGameManager( true );
         //$manager.Ended += Game_Ended;
         $manager->Inviter = $userId;
         $manager->SearchingOpponent = false;
@@ -247,6 +247,9 @@ class GameService
             if ( $cookie != null )
             {
                 $this->log( 'MyDebug Try Reconnect: Cookie Parsed' );
+                
+                $json = $this->serializer->serialize( $this->AllGames, JsonEncoder::FORMAT );
+                $this->log( "MyDebug: ReConnect GmeManagers: {$json}" );
                 
                 $gameManager = $this->AllGames->filter(
                     function( $entry ) use ( $cookie ) {

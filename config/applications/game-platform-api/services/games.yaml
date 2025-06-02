@@ -1,7 +1,6 @@
 parameters:
     app_websocket_chat_url: '%env(WEBSOCKET_CHAT_URL)%'
     app_websocket_game_url: '%env(WEBSOCKET_GAME_URL)%'
-    app_game_for_gold: '%env(bool:GAME_FOR_GOLD)%'
 
 services:
     _defaults:
@@ -30,7 +29,6 @@ services:
             - '@vsapp.repository.game_players'
             - '@vsapp.repository.temp_players'
             - '@vsapp.factory.temp_players'
-            - '%app_game_for_gold%'
     
     app_game_service:
         class: App\Component\GameService

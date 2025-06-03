@@ -122,7 +122,7 @@ export class WebsocketGameService
         const userId    = user ? user.id : '';
         const tree      = this.router.createUrlTree([], {
             queryParams: {
-                gameCode: 'backgammon',
+                gameCode: window.gamePlatformSettings.gameSlug,
                 token: window.gamePlatformSettings.apiVerifySiganature,
                 gameCookie: b64Cookie,
                 

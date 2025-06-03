@@ -4,6 +4,7 @@ use Vankosoft\ApplicationBundle\Form\AbstractForm;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -63,6 +64,21 @@ class GameForm extends AbstractForm
                     //return $category ? $category->getTaxon()->getId() : 0;
                     return $category ? $category->getId() : 0;
                 },
+            ])
+            
+            ->add( 'parentGame', EntityType::class, [
+                'label'                 => 'game_platform.form.game.parent_game',
+                'placeholder'           => 'game_platform.form.game.parent_game_placeholder',
+                'translation_domain'    => 'GamePlatform',
+                'required'              => false,
+                'mapped'                => true,
+                'class'                 => Game::class,
+                'choice_label'          => 'title',
+                'query_builder' => function( EntityRepository $repository ) {
+                    return $repository->createQueryBuilder( 'g' )
+                            ->where( 'g.parentGame is NULL' )
+                    ;
+                }
             ])
             
             ->add( 'title', TextType::class, [

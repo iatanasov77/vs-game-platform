@@ -22,6 +22,7 @@ use App\Component\Websocket\WebSocketState;
 // Types
 use App\Component\Type\PlayerColor;
 use App\Component\Type\GameState;
+use App\Component\Utils\Keys;
 
 // DTO Actions
 use App\Component\Dto\Mapper;
@@ -185,11 +186,24 @@ abstract class AbstractGameManager implements GameManagerInterface
         }
     }
     
-    public function InitializeGame(): void
+    public function InitializeGame( string $gameCode ): void
     {
-        $this->Game     = $this->backgammonRulesFactory->createBackgammonNormalGame( $this->ForGold );
-        $this->Created  = new \DateTime( 'now' );
+        switch ( $gameCode ) {
+            case Keys::BACKGAMMON_NORMAL_KEY:
+                $this->Game = $this->backgammonRulesFactory->createBackgammonNormalGame( $this->ForGold );
+                break;
+            case Keys::BACKGAMMON_TAPA_KEY:
+                $this->Game = $this->backgammonRulesFactory->createBackgammonTapaGame( $this->ForGold );
+                break;
+            case Keys::BACKGAMMON_GULBARA_KEY:
+                $this->Game = $this->backgammonRulesFactory->createBackgammonGulBaraGame( $this->ForGold );
+                break;
+            default:
+                throw new \RuntimeException( 'Unknown Game Code !!!' );
+        }
+        
         $this->Game->ThinkStart = new \DateTime( 'now' );
+        $this->Created          = new \DateTime( 'now' );
     }
     
     public function dispatchGameEnded(): void
@@ -376,7 +390,11 @@ abstract class AbstractGameManager implements GameManagerInterface
             $this->Send( $this->Client2, $rollAction );
         }
         
-        /* Create This on Frontend 
+        /* Create This on Frontend
+         * =========================
+         * https://stackoverflow.com/questions/33185302/how-to-make-a-php-function-loop-every-5-seconds
+         */
+        /*
         $this->moveTimeOut = new CancellationTokenSource();
         Utils::RepeatEvery( 500, () =>
         {

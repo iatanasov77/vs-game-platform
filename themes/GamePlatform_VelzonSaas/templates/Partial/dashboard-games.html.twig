@@ -14,25 +14,27 @@
                 <!-- Portfolio Grid Items-->
                 <div class="row justify-content-center">
                     {% for game in cat.games %}
-                        <!-- Portfolio Item {{ loop.index }}-->
-                        <div class="col-md-6 col-lg-4 mb-5 mb-lg-0">
-                            <div class="portfolio-item mx-auto btnGame"
-                                data-bs-toggle="modal" data-bs-target="#portfolioModal4"
-                                {# data-url="http://{{ game.slug }}.{{ platformUrl }}" #}
-                                data-url="{{ game.gameUrl }}"
-                            >
-                                <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
-                                    <div class="portfolio-item-caption-content text-center text-white"><i class="fas fa-plus fa-3x"></i></div>
+                        {% if not game.parentGame %}
+                            <!-- Portfolio Item {{ loop.index }}-->
+                            <div class="col-md-6 col-lg-4 mb-5 mb-lg-0">
+                                <div class="portfolio-item mx-auto btnGame"
+                                    data-bs-toggle="modal" data-bs-target="#portfolioModal4"
+                                    {# data-url="http://{{ game.slug }}.{{ platformUrl }}" #}
+                                    data-url="{{ game.gameUrl }}"
+                                >
+                                    <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
+                                        <div class="portfolio-item-caption-content text-center text-white"><i class="fas fa-plus fa-3x"></i></div>
+                                    </div>
+                                {% if game.picture %}
+                                    <img class="img-fluid" src="{{ game.picture.path | imagine_filter( 'game_picture_thumb' ) }}" alt="{{ game.title }}" />
+                                {% else %}
+                                    <img class="img-fluid" src="{{ asset('/build/game-platform-spa/images/portfolio/game.png') }}" alt="{{ game.title }}" />
+                                {% endif %}
+                                
+                                    <div style="text-align:center; margin-top: 10px; font-size: 1rem; font-weight: bold;">{{ game.title }}</div>
                                 </div>
-                            {% if game.picture %}
-                                <img class="img-fluid" src="{{ game.picture.path | imagine_filter( 'game_picture_thumb' ) }}" alt="{{ game.title }}" />
-                            {% else %}
-                                <img class="img-fluid" src="{{ asset('/build/game-platform-spa/images/portfolio/game.png') }}" alt="{{ game.title }}" />
-                            {% endif %}
-                            
-                                <div style="text-align:center; margin-top: 10px; font-size: 1rem; font-weight: bold;">{{ game.title }}</div>
                             </div>
-                        </div>
+                        {% endif %}
                     {% endfor %}
                 </div>
                 

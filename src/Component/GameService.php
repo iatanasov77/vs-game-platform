@@ -82,7 +82,7 @@ class GameService
         return null;
     }
     
-    public function Connect( WebsocketClientInterface $webSocket, $gameCode, int $userId, ?string $gameId, bool $playAi, bool $forGold, ?string $gameCookie ): ?string
+    public function Connect( WebsocketClientInterface $webSocket, string $gameCode, int $userId, ?string $gameId, bool $playAi, bool $forGold, ?string $gameCookie ): ?string
     {
         $gameGuid   = null;
         $dbUser = $this->GetDbUser( $userId );
@@ -144,7 +144,7 @@ class GameService
             if ( ! $manager->Game ) {
                 $this->log( "MyDebug: Creting New Game Manager." );
                 $manager->Client1   = $webSocket;
-                $manager->InitializeGame();
+                $manager->InitializeGame( $gameCode );
             }
             
             $manager->dispatchGameEnded();

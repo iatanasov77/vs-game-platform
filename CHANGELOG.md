@@ -1,3 +1,10 @@
+0.12.2	|	Release date: **03.06.2025**
+============================================
+* Bug-Fixes:
+  - Fix Websocket Servers.
+  - Fix Monolog Configuration in API Application.
+
+
 0.12.1	|	Release date: **03.06.2025**
 ============================================
 * Bug-Fixes and Improvements:

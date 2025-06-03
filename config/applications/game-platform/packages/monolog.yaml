@@ -5,7 +5,7 @@ monolog:
             type: stream
             path: "%kernel.logs_dir%/%kernel.environment%.log"
             level: error
-            channels: ["!websocket"]
+            channels: ["!websocket_game", "!websocket_chat"]
         websocket_game:
             type: stream
             path: '%kernel.logs_dir%/websocket_game.log' 

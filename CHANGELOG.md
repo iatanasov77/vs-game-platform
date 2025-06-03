@@ -1,3 +1,19 @@
+0.12.1	|	Release date: **03.06.2025**
+============================================
+* Bug-Fixes and Improvements:
+  - Refactoring of Game Variants Components.
+  - Improve Top of Application Layout.
+  - Improve Board Games Message Component.
+  - Fix Websocket Chat Server.
+  - Fix GameManager When it Create and Start Games.
+  - Fix Some Deprecations in Backgammon Rules Classes.
+  - Create Games to Have Child Games (Variants)
+  - Use Backgammon Game Variants in Websocket Game Service.
+  - Fix Backgamon Game to Achieve Rolling Dices.
+  - Add Some Buttons into Backgammon Board Buttons.
+  - Improve Websocket Components to Add to Log Only in DEV Environement.
+
+
 0.12.0	|	Release date: **01.06.2025**
 ============================================
 * Bug-Fixes and Improvements:

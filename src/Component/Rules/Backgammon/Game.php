@@ -11,6 +11,9 @@ use App\Entity\GamePlayer;
 
 abstract class Game
 {
+    /** @var string */
+    protected $environement;
+    
     /** @var LoggerInterface */
     protected  $logger;
     
@@ -65,9 +68,10 @@ abstract class Game
     /** @var int */
     const TotalThinkTime = 48;
     
-    public function __construct( LoggerInterface $logger )
+    public function __construct( string $environement, LoggerInterface $logger )
     {
-        $this->logger   = $logger;
+        $this->environement = $environement;
+        $this->logger       = $logger;
     }
     
     public static function CalcPointsLeft( Game &$game ): void
@@ -131,7 +135,7 @@ abstract class Game
     
     public function SetFirstRollWinner(): void
     {
-        $this->logger->info( 'MyDebug Existing Rolls: ' . \print_r( $this->Roll, true ) );
+        $this->log( 'MyDebug Existing Rolls: ' . \print_r( $this->Roll, true ) );
         
         if ( $this->PlayState == GameState::FirstThrow ) {
             if ( $this->Roll[0]->Value > $this->Roll[1]->Value ) {
@@ -165,5 +169,12 @@ abstract class Game
             }
         }
         $moves->clear();
+    }
+    
+    protected function log( $logData ): void
+    {
+        if ( $this->environement == 'dev' ) {
+            $this->logger->info( $logData );
+        }
     }
 }

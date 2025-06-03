@@ -12,6 +12,9 @@ use App\Component\Rules\Backgammon\GameFactory as BackgammonRulesFactory;
 
 final class GameManagerFactory
 {
+    /** @var string */
+    private $environement;
+    
     /** @var LoggerInterface */
     private $logger;
     
@@ -49,6 +52,7 @@ final class GameManagerFactory
     private $tempPlayersFactory;
     
     public function __construct(
+        string $environement,
         LoggerInterface $logger,
         SerializerInterface $serializer,
         LiipImagineCacheManager $imagineCacheManager,
@@ -62,6 +66,7 @@ final class GameManagerFactory
         RepositoryInterface $tempPlayersRepository,
         FactoryInterface $tempPlayersFactory
     ) {
+        $this->environement             = $environement;
         $this->logger                   = $logger;
         $this->serializer               = $serializer;
         $this->imagineCacheManager      = $imagineCacheManager;
@@ -79,6 +84,7 @@ final class GameManagerFactory
     public function createWebsocketGameManager( bool $forGold ): GameManagerInterface
     {
         return new WebsocketGameManager(
+            $this->environement,
             $this->logger,
             $this->serializer,
             $this->imagineCacheManager,
@@ -98,6 +104,7 @@ final class GameManagerFactory
     public function createThruwayGameManager( bool $forGold ): GameManagerInterface
     {
         return new ThruwayGameManager(
+            $this->environement,
             $this->logger,
             $this->serializer,
             $this->imagineCacheManager,
@@ -117,6 +124,7 @@ final class GameManagerFactory
     public function createZmqGameManager( bool $forGold ): GameManagerInterface
     {
         return new ZmqGameManager(
+            $this->environement,
             $this->logger,
             $this->serializer,
             $this->imagineCacheManager,

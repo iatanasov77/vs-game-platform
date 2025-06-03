@@ -58,6 +58,9 @@ abstract class AbstractGameManager implements GameManagerInterface
     /** @var bool */
     public $RoomSelected = false;
     
+    /** @var string */
+    protected $environement;
+    
     /** @var LoggerInterface */
     protected $logger;
     
@@ -122,6 +125,7 @@ abstract class AbstractGameManager implements GameManagerInterface
     public $ForGold;
     
     public function __construct(
+        string $environement,
         LoggerInterface $logger,
         SerializerInterface $serializer,
         LiipImagineCacheManager $imagineCacheManager,
@@ -136,6 +140,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         FactoryInterface $tempPlayersFactory,
         bool $forGold
     ) {
+        $this->environement             = $environement;
         $this->logger                   = $logger;
         $this->serializer               = $serializer;
         $this->imagineCacheManager      = $imagineCacheManager;
@@ -763,6 +768,8 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     protected function log( $logData ): void
     {
-        $this->logger->info( $logData );
+        if ( $this->environement == 'dev' ) {
+            $this->logger->info( $logData );
+        }
     }
 }

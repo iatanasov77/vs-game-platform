@@ -148,7 +148,7 @@ class BackgammonNormalGame extends Game
             // Only one dice can be use and it must be the one with highest value
             
             $currentPlayer  = $this->CurrentPlayer;
-            $this->logger->info( 'MyDebug CurrentPlayer: ' . \print_r( $currentPlayer, true ) );
+            $this->log( 'MyDebug CurrentPlayer: ' . \print_r( $currentPlayer, true ) );
             $moves = $moves->filter(
                 function( $entry ) use ( $currentPlayer ) {
                     return $entry->To->GetNumber( $currentPlayer ) - $entry->From->GetNumber( $currentPlayer );
@@ -269,7 +269,7 @@ class BackgammonNormalGame extends Game
     
     public function MakeMove( Move $move ): ?Checker
     {
-        $this->logger->info( "\n\nMyDebug MakeMove: " . print_r( $move, true ) . "\n\n" );
+        $this->log( "\n\nMyDebug MakeMove: " . print_r( $move, true ) . "\n\n" );
         
         $checker = $move->From->Checkers->filter(
             function( $entry ) use ( $move ) {

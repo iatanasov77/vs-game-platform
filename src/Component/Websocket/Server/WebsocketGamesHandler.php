@@ -28,6 +28,9 @@ use App\Component\Dto\Actions\ActionNames;
  */
 final class WebsocketGamesHandler implements MessageComponentInterface
 {
+    /** @var string */
+    private $environement;
+    
     /** @var SerializerInterface */
     private $serializer;
     
@@ -56,12 +59,14 @@ final class WebsocketGamesHandler implements MessageComponentInterface
     private $games;
     
     public function __construct(
+        string $environement,
         SerializerInterface $serializer,
         LoggerInterface $logger,
         RepositoryInterface $usersRepository,
         WebsocketClientFactory $wsClientFactory,
         GameService $gameService
     ) {
+        $this->environement     = $environement;
         $this->serializer       = $serializer;
         $this->logger           = $logger;
         $this->usersRepository  = $usersRepository;
@@ -228,6 +233,8 @@ final class WebsocketGamesHandler implements MessageComponentInterface
     
     private function log( $logData ): void
     {
-        $this->logger->info( $logData );
+        if ( $this->environement == 'dev' ) {
+            $this->logger->info( $logData );
+        }
     }
 }

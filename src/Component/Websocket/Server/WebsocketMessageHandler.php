@@ -17,6 +17,9 @@ use Ratchet\MessageComponentInterface;
  */
 class WebsocketMessageHandler implements MessageComponentInterface
 {
+    /** @var string */
+    private $environement;
+    
     /** @var SerializerInterface */
     private $serializer;
     
@@ -36,10 +39,12 @@ class WebsocketMessageHandler implements MessageComponentInterface
     private $names;
     
     public function __construct(
+        string $environement,
         SerializerInterface $serializer,
         LoggerInterface $logger,
         RepositoryInterface $usersRepository
     ) {
+        $this->environement     = $environement;
         $this->serializer       = $serializer;
         $this->logger           = $logger;
         $this->usersRepository  = $usersRepository;
@@ -128,6 +133,8 @@ class WebsocketMessageHandler implements MessageComponentInterface
     
     private function log( $logData ): void
     {
-        $this->logger->info( $logData );
+        if ( $this->environement == 'dev' ) {
+            $this->logger->info( $logData );
+        }
     }
 }

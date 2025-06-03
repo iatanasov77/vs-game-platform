@@ -34,6 +34,9 @@ use App\Component\Websocket\Server\WebsocketGamesHandler;
 )]
 final class WebsocketGameServer extends ContainerAwareCommand
 {
+    /** @var string */
+    private $environement;
+    
     /** @var SerializerInterface */
     private $serializer;
     
@@ -50,12 +53,14 @@ final class WebsocketGameServer extends ContainerAwareCommand
         ContainerInterface $container,
         ManagerRegistry $doctrine,
         ValidatorInterface $validator,
+        string $environement,
         SerializerInterface $serializer,
         LoggerInterface $logger,
         array $parrameters
     ) {
         parent::__construct( $container, $doctrine, $validator );
         
+        $this->environement = $environement;
         $this->serializer   = $serializer;
         $this->logger       = $logger;
         $this->parrameters  = $parrameters;
@@ -137,6 +142,8 @@ final class WebsocketGameServer extends ContainerAwareCommand
     
     private function log( $logData ): void
     {
-        $this->logger->info( $logData );
+        if ( $this->environement == 'dev' ) {
+            $this->logger->info( $logData );
+        }
     }
 }

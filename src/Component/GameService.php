@@ -29,6 +29,9 @@ use App\Component\Websocket\WebSocketState;
 
 class GameService
 {
+    /** @var string */
+    protected $environement;
+    
     /** @var LoggerInterface */
     protected $logger;
     
@@ -48,12 +51,14 @@ class GameService
     protected $AllGames;
     
     public function __construct(
+        string $environement,
         LoggerInterface $logger,
         SerializerInterface $serializer,
         RepositoryInterface $usersRepository,
         SecurityBridge $securityBridge,
         GameManagerFactory $managerFactory
     ) {
+        $this->environement     = $environement;
         $this->logger           = $logger;
         $this->serializer       = $serializer;
         $this->usersRepository  = $usersRepository;
@@ -395,6 +400,8 @@ class GameService
     
     private function log( $logData ): void
     {
-        $this->logger->info( $logData );
+        if ( $this->environement == 'dev' ) {
+            $this->logger->info( $logData );
+        }
     }
 }

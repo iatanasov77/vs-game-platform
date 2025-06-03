@@ -16,6 +16,7 @@ services:
             - '@service_container'
             - '@doctrine'
             - '@validator'
+            - '%env(APP_ENV)%'
             - '@serializer'
             - '@monolog.logger.websocket_chat'
             - {
@@ -31,6 +32,7 @@ services:
             - '@service_container'
             - '@doctrine'
             - '@validator'
+            - '%env(APP_ENV)%'
             - '@serializer'
             - '@monolog.logger.websocket_game'
             - {
@@ -52,6 +54,7 @@ services:
         class: App\Component\GameService
         public: true
         arguments:
+            - '%env(APP_ENV)%'
             - '@monolog.logger.websocket_game'
             - '@serializer'
             - '@vs_users.repository.users'
@@ -64,6 +67,7 @@ services:
     app_game_manager_factory:
         class: App\Component\Manager\GameManagerFactory
         arguments:
+            - '%env(APP_ENV)%'
             - '@monolog.logger.websocket_game'
             - '@serializer'
             - '@liip_imagine.cache.manager'
@@ -83,6 +87,7 @@ services:
     app_backgammon_game_factory:
         class: App\Component\Rules\Backgammon\GameFactory
         arguments:
+            - '%env(APP_ENV)%'
             - '@monolog.logger.websocket_game'
     
     

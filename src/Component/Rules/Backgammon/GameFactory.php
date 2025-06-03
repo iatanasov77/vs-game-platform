@@ -8,17 +8,21 @@ use App\Component\Type\PlayerColor;
 
 final class GameFactory
 {
+    /** @var string */
+    private $environement;
+    
     /** @var LoggerInterface */
     private $logger;
     
-    public function __construct( LoggerInterface $logger )
+    public function __construct( string $environement, LoggerInterface $logger )
     {
-        $this->logger   = $logger;
+        $this->environement = $environement;
+        $this->logger       = $logger;
     }
     
     public function createBackgammonNormalGame( bool $forGold ): Game
     {
-        $game = new BackgammonNormalGame( $this->logger );
+        $game = new BackgammonNormalGame( $this->environement, $this->logger );
         
         $game->Id           = Guid::NewGuid();
         $game->Points       = new ArrayCollection();
@@ -65,7 +69,7 @@ final class GameFactory
     
     public function createBackgammonGulBaraGame( bool $forGold ): Game
     {
-        $game = new BackgammonGulBaraGame( $this->logger );
+        $game = new BackgammonGulBaraGame( $this->environement, $this->logger );
         
         $game->Id           = Guid::NewGuid();
         $game->Points       = new ArrayCollection();
@@ -112,7 +116,7 @@ final class GameFactory
     
     public function createBackgammonTapaGame( bool $forGold ): Game
     {
-        $game = new BackgammonTapaGame( $this->logger );
+        $game = new BackgammonTapaGame( $this->environement, $this->logger );
         
         $game->Id           = Guid::NewGuid();
         $game->Points       = new ArrayCollection();

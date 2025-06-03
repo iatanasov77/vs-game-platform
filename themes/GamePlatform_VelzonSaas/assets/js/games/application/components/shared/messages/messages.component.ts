@@ -63,12 +63,28 @@ export class MessagesComponent implements OnChanges, AfterViewInit
     @Input() initial = 0;
     @Input() shown = 0;
     @Input() timeLeft: number | null = 0;
+    
+    @Input() lobbyButtonsVisible: boolean   = false;
+    @Input() isLoggedIn: boolean            = false;
+    
     state = 'initial';
     
     ngOnChanges( changes: SimpleChanges ): void
     {
-        if ( changes['message'] ) {
-            this.animate();
+        for ( const propName in changes ) {
+            const changedProp = changes[propName];
+            
+            switch ( propName ) {
+                case 'message':
+                    this.animate();
+                    break;
+                case 'lobbyButtonsVisible':
+                    this.lobbyButtonsVisible = changedProp.currentValue;
+                    break;
+                case 'isLoggedIn':
+                    this.isLoggedIn = changedProp.currentValue;
+                    break;
+            }
         }
     }
     

@@ -75,7 +75,7 @@ class ZmqGameManager extends AbstractGameManager
                 $this->Game->WhitePlayer->Id = $aiUser->getId();
                 $this->Game->WhitePlayer->Name = $aiUser->getName();
                 $this->Game->WhitePlayer->PlayerColor = PlayerColor::White;
-                // TODO: AI image
+                /** @TODO: AI image */
                 $this->Game->WhitePlayer->Photo = "";
                 $this->Game->WhitePlayer->Elo = $aiUser->getElo();
                 if ( $this->Game->IsGoldGame ) {

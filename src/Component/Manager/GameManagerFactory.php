@@ -12,6 +12,9 @@ use App\Component\Rules\Backgammon\GameFactory as BackgammonRulesFactory;
 
 final class GameManagerFactory
 {
+    /** @var string */
+    private $environement;
+    
     /** @var LoggerInterface */
     private $logger;
     
@@ -48,10 +51,8 @@ final class GameManagerFactory
     /** @var FactoryInterface */
     private $tempPlayersFactory;
     
-    /** @var bool */
-    private $forGold;
-    
     public function __construct(
+        string $environement,
         LoggerInterface $logger,
         SerializerInterface $serializer,
         LiipImagineCacheManager $imagineCacheManager,
@@ -63,9 +64,9 @@ final class GameManagerFactory
         FactoryInterface $gamePlayFactory,
         RepositoryInterface $playersRepository,
         RepositoryInterface $tempPlayersRepository,
-        FactoryInterface $tempPlayersFactory,
-        bool $forGold
+        FactoryInterface $tempPlayersFactory
     ) {
+        $this->environement             = $environement;
         $this->logger                   = $logger;
         $this->serializer               = $serializer;
         $this->imagineCacheManager      = $imagineCacheManager;
@@ -78,12 +79,12 @@ final class GameManagerFactory
         $this->playersRepository        = $playersRepository;
         $this->tempPlayersRepository    = $tempPlayersRepository;
         $this->tempPlayersFactory       = $tempPlayersFactory;
-        $this->forGold                  = $forGold;
     }
     
-    public function createWebsocketGameManager(): GameManagerInterface
+    public function createWebsocketGameManager( bool $forGold ): GameManagerInterface
     {
         return new WebsocketGameManager(
+            $this->environement,
             $this->logger,
             $this->serializer,
             $this->imagineCacheManager,
@@ -96,13 +97,14 @@ final class GameManagerFactory
             $this->playersRepository,
             $this->tempPlayersRepository,
             $this->tempPlayersFactory,
-            $this->forGold
+            $forGold
         );
     }
     
-    public function createThruwayGameManager(): GameManagerInterface
+    public function createThruwayGameManager( bool $forGold ): GameManagerInterface
     {
         return new ThruwayGameManager(
+            $this->environement,
             $this->logger,
             $this->serializer,
             $this->imagineCacheManager,
@@ -115,13 +117,14 @@ final class GameManagerFactory
             $this->playersRepository,
             $this->tempPlayersRepository,
             $this->tempPlayersFactory,
-            $this->forGold
+            $forGold
         );
     }
     
-    public function createZmqGameManager(): GameManagerInterface
+    public function createZmqGameManager( bool $forGold ): GameManagerInterface
     {
         return new ZmqGameManager(
+            $this->environement,
             $this->logger,
             $this->serializer,
             $this->imagineCacheManager,
@@ -134,7 +137,7 @@ final class GameManagerFactory
             $this->playersRepository,
             $this->tempPlayersRepository,
             $this->tempPlayersFactory,
-            $this->forGold
+            $forGold
         );
     }
 }

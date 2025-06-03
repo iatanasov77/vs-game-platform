@@ -1,10 +1,14 @@
 <div id="GameBoardContainer">
+    
     <div class="messages" #messages>
         <app-messages
             [initial]="width"
             [shown]="messageCenter"
             [message]="message$ | async"
             [timeLeft]="timeLeft$ | async"
+            
+            [lobbyButtonsVisible]="lobbyButtonsVisible"
+            [isLoggedIn]="isLoggedIn"
         ></app-messages>
     </div>
     
@@ -90,20 +94,26 @@
     
     <div *ngIf="!tutorial" class="backgammon-board-buttons" #backgammonBoardButtons>
         <backgammon-board-buttons
-          [undoVisible]="undoVisible"
-          [sendVisible]="sendVisible"
-          [rollButtonVisible]="rollButtonVisible"
-          [requestHintVisible]="requestHintVisible"
-          (onUndoMove)="undoMove()"
-          (onSendMoves)="sendMoves()"
-          (onRoll)="rollButtonClick()"
-          (onRequestHint)="requestHint()"
+            [undoVisible]="undoVisible"
+            [sendVisible]="sendVisible"
+            [rollButtonVisible]="rollButtonVisible"
+            [requestHintVisible]="requestHintVisible"
+            [acceptDoublingVisible]="acceptDoublingVisible"
+            [requestDoublingVisible]="requestDoublingVisible"
+            (onUndoMove)="undoMove()"
+            (onSendMoves)="sendMoves()"
+            (onRoll)="rollButtonClick()"
+            (onRequestHint)="requestHint()"
+            (onAcceptDoubling)="acceptDoubling()"
+            (onAcceptDoubling)="acceptDoubling()"
+            (onRequestDoubling)="requestDoubling()"
         >
         </backgammon-board-buttons>
     </div>
   
     <div class="board-buttons" #boardButtons>
         <app-board-buttons
+            [isLoggedIn]="isLoggedIn"
             [lobbyButtonsVisible]="lobbyButtonsVisible"
             [isRoomSelected]="isRoomSelected"
             [hasRooms]="hasRooms"

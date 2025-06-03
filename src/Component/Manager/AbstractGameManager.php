@@ -22,6 +22,7 @@ use App\Component\Websocket\WebSocketState;
 // Types
 use App\Component\Type\PlayerColor;
 use App\Component\Type\GameState;
+use App\Component\Utils\Keys;
 
 // DTO Actions
 use App\Component\Dto\Mapper;
@@ -56,6 +57,9 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     /** @var bool */
     public $RoomSelected = false;
+    
+    /** @var string */
+    protected $environement;
     
     /** @var LoggerInterface */
     protected $logger;
@@ -121,6 +125,7 @@ abstract class AbstractGameManager implements GameManagerInterface
     public $ForGold;
     
     public function __construct(
+        string $environement,
         LoggerInterface $logger,
         SerializerInterface $serializer,
         LiipImagineCacheManager $imagineCacheManager,
@@ -135,6 +140,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         FactoryInterface $tempPlayersFactory,
         bool $forGold
     ) {
+        $this->environement             = $environement;
         $this->logger                   = $logger;
         $this->serializer               = $serializer;
         $this->imagineCacheManager      = $imagineCacheManager;
@@ -185,11 +191,24 @@ abstract class AbstractGameManager implements GameManagerInterface
         }
     }
     
-    public function InitializeGame(): void
+    public function InitializeGame( string $gameCode ): void
     {
-        $this->Game     = $this->backgammonRulesFactory->createBackgammonNormalGame( $this->ForGold );
-        $this->Created  = new \DateTime( 'now' );
+        switch ( $gameCode ) {
+            case Keys::BACKGAMMON_NORMAL_KEY:
+                $this->Game = $this->backgammonRulesFactory->createBackgammonNormalGame( $this->ForGold );
+                break;
+            case Keys::BACKGAMMON_TAPA_KEY:
+                $this->Game = $this->backgammonRulesFactory->createBackgammonTapaGame( $this->ForGold );
+                break;
+            case Keys::BACKGAMMON_GULBARA_KEY:
+                $this->Game = $this->backgammonRulesFactory->createBackgammonGulBaraGame( $this->ForGold );
+                break;
+            default:
+                throw new \RuntimeException( 'Unknown Game Code !!!' );
+        }
+        
         $this->Game->ThinkStart = new \DateTime( 'now' );
+        $this->Created          = new \DateTime( 'now' );
     }
     
     public function dispatchGameEnded(): void
@@ -227,7 +246,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         }
     }
     
-    public function DoAction( ActionNames $actionName, string $actionText, WebsocketClientInterface $socket, WebsocketClientInterface $otherSocket )
+    public function DoAction( ActionNames $actionName, string $actionText, WebsocketClientInterface $socket, ?WebsocketClientInterface $otherSocket )
     {
         $this->log( "MyDebug Doing action: {$actionName->value}" );
         
@@ -336,15 +355,15 @@ abstract class AbstractGameManager implements GameManagerInterface
         }
     }
     
-    public function CreateGame(): void
+    public function StartGame(): void
     {
-        //$this->log( 'MyDebug: Game ' . print_r( $this->Game, true ) );
+        $this->log( 'MyDebug: Begin Start Game' );
+        
+        $this->Game->ThinkStart = new \DateTime( 'now' );
         $gameDto = Mapper::GameToDto( $this->Game );
-        //$this->log( 'MyDebug: Game ' . print_r( $gameDto, true ) );
         
         $action = new GameCreatedActionDto();
         $action->game       = $gameDto;
-        //$this->log( 'MyDebug: Game ' . print_r( $action, true ) );
         
         $action->myColor    = PlayerColor::Black;
         $this->Send( $this->Client1, $action );
@@ -352,14 +371,6 @@ abstract class AbstractGameManager implements GameManagerInterface
         $action->myColor = PlayerColor::White;
         $this->Send( $this->Client2, $action );
         
-        if ( $this->RoomSelected ) {
-            $this->StartGame();
-        }
-    }
-    
-    public function StartGame(): void
-    {
-        $this->log( 'MyDebug: Begin Start Game' );
         //$game->PlayState = GameState::OpponentConnectWaiting;
         $this->Game->PlayState = GameState::FirstThrow;
         // todo: visa på clienten även när det blir samma
@@ -384,8 +395,12 @@ abstract class AbstractGameManager implements GameManagerInterface
             $this->Send( $this->Client2, $rollAction );
         }
         
-        /*  
-        $this->moveTimeOut = new DeferredCancellation();
+        /* Create This on Frontend
+         * =========================
+         * https://stackoverflow.com/questions/33185302/how-to-make-a-php-function-loop-every-5-seconds
+         */
+        /*
+        $this->moveTimeOut = new CancellationTokenSource();
         Utils::RepeatEvery( 500, () =>
         {
             TimeTick();
@@ -396,7 +411,13 @@ abstract class AbstractGameManager implements GameManagerInterface
     public function StartGamePlay(): void
     {
         $action = new GamePlayStartedActionDto();
-        $this->Send( $this->Client1, $action );
+        if ( $this->Client1 && ! $this->Game->BlackPlayer->IsAi() ) {
+            $this->Send( $this->Client1, $action );
+        }
+        
+        if ( $this->Client2 && ! $this->Game->WhitePlayer->IsAi() ) {
+            $this->Send( $this->Client2, $action );
+        }
     }
     
     protected function TimeTick(): void
@@ -414,9 +435,9 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     protected function EndGame( PlayerColor $winner )
     {
-        $this->moveTimeOut->cancel();
+        //$this->moveTimeOut->cancel();
         $this->Game->PlayState = GameState::Ended;
-        $this->Log( "The winner is {$winner}" );
+        $this->Log( "The winner is {$winner->value}" );
         
         $newScore = $this->SaveWinner( $winner );
         $this->SendWinner( $winner, $newScore );
@@ -747,6 +768,8 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     protected function log( $logData ): void
     {
-        $this->logger->info( $logData );
+        if ( $this->environement == 'dev' ) {
+            $this->logger->info( $logData );
+        }
     }
 }

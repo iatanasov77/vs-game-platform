@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
 import DiceDto from '_@/GamePlatform/Model/BoardGame/diceDto';
@@ -12,7 +12,7 @@ import styleString from './dices.component.scss';
     template: templateString || 'Template Not Loaded !!!',
     styles: [styleString || 'CSS Not Loaded !!!']
 })
-export class DicesComponent
+export class DicesComponent implements OnChanges
 {
     @Input() dices: DiceDto[] | null = [];
     @Input() color: PlayerColor | null = PlayerColor.neither;
@@ -27,4 +27,20 @@ export class DicesComponent
         'fas fa-dice-five',
         'fas fa-dice-six'
     ];
+    
+    ngOnChanges( changes: SimpleChanges ): void
+    {
+        for ( const propName in changes ) {
+            const changedProp = changes[propName];
+            
+            switch ( propName ) {
+                case 'dices':
+                    this.dices = changedProp.currentValue;
+                    break;
+                case 'color':
+                    this.color = changedProp.currentValue;
+                    break;
+            }
+        }
+    }
 }

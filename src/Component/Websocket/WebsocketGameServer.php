@@ -21,7 +21,7 @@ use React\Socket\SocketServer;
 use App\Component\Websocket\Server\WebsocketGamesHandler;
 
 /**
- * See Logs:        sudo tail -f /dev/shm/game-platform.lh/game-platform/log/websocket.log
+ * See Logs:        sudo tail -f /dev/shm/game-platform.lh/game-platform/log/websocket_game.log
  * Start Service:   sudo service websocket_game_platform_game restart
  *
  * Manual:  https://stackoverflow.com/questions/64292868/how-to-send-a-message-to-specific-websocket-clients-with-symfony-ratchet
@@ -34,6 +34,9 @@ use App\Component\Websocket\Server\WebsocketGamesHandler;
 )]
 final class WebsocketGameServer extends ContainerAwareCommand
 {
+    /** @var string */
+    private $environement;
+    
     /** @var SerializerInterface */
     private $serializer;
     
@@ -50,12 +53,14 @@ final class WebsocketGameServer extends ContainerAwareCommand
         ContainerInterface $container,
         ManagerRegistry $doctrine,
         ValidatorInterface $validator,
+        string $environement,
         SerializerInterface $serializer,
         LoggerInterface $logger,
         array $parrameters
     ) {
         parent::__construct( $container, $doctrine, $validator );
         
+        $this->environement = $environement;
         $this->serializer   = $serializer;
         $this->logger       = $logger;
         $this->parrameters  = $parrameters;
@@ -137,6 +142,8 @@ final class WebsocketGameServer extends ContainerAwareCommand
     
     private function log( $logData ): void
     {
-        $this->logger->info( $logData );
+        if ( $this->environement == 'dev' ) {
+            $this->logger->info( $logData );
+        }
     }
 }

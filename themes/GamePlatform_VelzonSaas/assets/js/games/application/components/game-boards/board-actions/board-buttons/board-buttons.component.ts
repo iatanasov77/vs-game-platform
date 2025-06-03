@@ -14,6 +14,7 @@ import templateString from './board-buttons.component.html';
 })
 export class BoardButtonsComponent implements OnChanges
 {
+    @Input() isLoggedIn: boolean        = false;
     @Input() lobbyButtonsVisible        = false;
     @Input() isRoomSelected: boolean    = false;
     
@@ -39,6 +40,9 @@ export class BoardButtonsComponent implements OnChanges
             const changedProp = changes[propName];
             
             switch ( propName ) {
+                case 'isLoggedIn':
+                    this.isLoggedIn = changedProp.currentValue;
+                    break;
                 case 'lobbyButtonsVisible':
                     this.lobbyButtonsVisible = changedProp.currentValue;
                     break;

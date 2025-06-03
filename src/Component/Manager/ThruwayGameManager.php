@@ -29,7 +29,7 @@ final class ThruwayGameManager extends AbstractGameManager
                 
                 $this->Game->WhitePlayer->Id = $aiUser->getId();
                 $this->Game->WhitePlayer->Name = $aiUser->getName();
-                // TODO: AI image
+                /** @TODO: AI image */
                 $this->Game->WhitePlayer->Photo = $aiUser->getPhotoUrl();
                 $this->Game->WhitePlayer->Elo = $aiUser->getElo();
                 

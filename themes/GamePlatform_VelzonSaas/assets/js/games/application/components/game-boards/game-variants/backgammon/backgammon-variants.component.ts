@@ -1,18 +1,18 @@
 import { Component, OnInit, OnDestroy, Inject, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import templateString from './game-variants.component.html'
-import cssString from './game-variants.component.scss'
+import templateString from './backgammon-variants.component.html'
+import cssString from './backgammon-variants.component.scss'
 
 declare var $: any;
 
 @Component({
-    selector: 'app-game-variants',
+    selector: 'app-backgammon-variants',
     
     template: templateString || 'Template Not Loaded !!!',
     styles: [cssString || 'CSS Not Loaded !!!']
 })
-export class GameVariantsComponent implements OnInit, OnDestroy
+export class BackgammonVariantsComponent implements OnInit, OnDestroy
 {
     @Input() lobbyButtonsVisible: boolean   = false;
     

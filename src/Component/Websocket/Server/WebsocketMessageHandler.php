@@ -1,5 +1,10 @@
 <?php namespace App\Component\Websocket\Server;
 
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Psr\Log\LoggerInterface;
+
+use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 
@@ -12,43 +17,58 @@ use Ratchet\MessageComponentInterface;
  */
 class WebsocketMessageHandler implements MessageComponentInterface
 {
+    /** @var string */
+    private $environement;
+    
+    /** @var SerializerInterface */
+    private $serializer;
+    
+    /** @var LoggerInterface */
+    private $logger;
+    
+    /** @var RepositoryInterface */
+    private $usersRepository;
+    
     /** @var \SplObjectStorage */
-    protected $clients;
+    private $clients;
     
     /** @var int */
-    protected $connectionSequenceId = 0;
+    private $connectionSequenceId = 0;
     
     /** @var array */
-    protected $names;
+    private $names;
     
-    /** @var string */
-    protected $logFile;
-    
-    public function __construct()
-    {
-        $this->clients  = new \SplObjectStorage;
-        $this->names    = [];
+    public function __construct(
+        string $environement,
+        SerializerInterface $serializer,
+        LoggerInterface $logger,
+        RepositoryInterface $usersRepository
+    ) {
+        $this->environement     = $environement;
+        $this->serializer       = $serializer;
+        $this->logger           = $logger;
+        $this->usersRepository  = $usersRepository;
         
-        $this->logFile  = '/var/log/websocket/game-patform-chat.log';
+        $this->clients  = new \SplObjectStorage();
+        $this->names    = [];
     }
     
     public function onOpen( ConnectionInterface $conn )
     {
+        $this->log( "New connection ({$conn->resourceId})" . date( 'Y/m/d h:i:sa' ) );
         $this->connectionSequenceId++;
         
         // Store the new connection to send messages to later
         $this->clients->attach( $conn, $this->connectionSequenceId );
         
-        $this->log( " \n" );
-        $this->log( "New connection ({$conn->resourceId})" . date( 'Y/m/d h:i:sa' ) );
-        $this->log( " \n" );
+        $this->names[$this->connectionSequenceId] = "Guest {$this->connectionSequenceId}";
     }
     
     public function onMessage( ConnectionInterface $from, $msg )
     {
         /** @var int $sequenceId */
         $sequenceId = $this->clients[$from];
-        $data       = \json_decode( $msg );
+        $data       = $this->serializer->deserialize( $msg, ActionDto::class, JsonEncoder::FORMAT );
         
         // The following line is for debugging purposes only
         $this->log( "Incoming message: " . $msg . PHP_EOL );
@@ -95,9 +115,14 @@ class WebsocketMessageHandler implements MessageComponentInterface
     public function onClose( ConnectionInterface $conn )
     {
         // The connection is closed, remove it, as we can no longer send it messages
-        //$this->clients->detach( $conn );
-        unset( $this->clients[$conn->resourceId] );
-        $this->log( "Connection {$conn->resourceId} has disconnected\n" );
+        $this->log( "Connection {$conn->resourceId} has disconnected" );
+        
+        /** @var int $sequenceId */
+        $sequenceId = $this->clients[$conn];
+        $this->clients->detach( $conn );
+        
+        // cleanup
+        unset( $this->names[$sequenceId] );
     }
     
     public function onError( ConnectionInterface $conn, \Exception $e )
@@ -108,6 +133,8 @@ class WebsocketMessageHandler implements MessageComponentInterface
     
     private function log( $logData ): void
     {
-        \file_put_contents( $this->logFile, $logData, FILE_APPEND | LOCK_EX );
+        if ( $this->environement == 'dev' ) {
+            $this->logger->info( $logData );
+        }
     }
 }

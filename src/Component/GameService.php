@@ -29,6 +29,9 @@ use App\Component\Websocket\WebSocketState;
 
 class GameService
 {
+    /** @var string */
+    protected $environement;
+    
     /** @var LoggerInterface */
     protected $logger;
     
@@ -48,12 +51,14 @@ class GameService
     protected $AllGames;
     
     public function __construct(
+        string $environement,
         LoggerInterface $logger,
         SerializerInterface $serializer,
         RepositoryInterface $usersRepository,
         SecurityBridge $securityBridge,
         GameManagerFactory $managerFactory
     ) {
+        $this->environement     = $environement;
         $this->logger           = $logger;
         $this->serializer       = $serializer;
         $this->usersRepository  = $usersRepository;
@@ -82,7 +87,7 @@ class GameService
         return null;
     }
     
-    public function Connect( WebsocketClientInterface $webSocket, $gameCode, $userId, $gameId, $playAi, $forGold, ?string $gameCookie ): ?string
+    public function Connect( WebsocketClientInterface $webSocket, string $gameCode, int $userId, ?string $gameId, bool $playAi, bool $forGold, ?string $gameCookie ): ?string
     {
         $gameGuid   = null;
         $dbUser = $this->GetDbUser( $userId );
@@ -138,12 +143,13 @@ class GameService
         
         $manager = $managers->first();
         if ( $manager == null || $playAi ) {
-            $manager    = $this->managerFactory->createWebsocketGameManager();
+            $this->log( "MyDebug: Possibly Play AI !!!" );
+            $manager    = $this->managerFactory->createWebsocketGameManager( $forGold );
             
             if ( ! $manager->Game ) {
                 $this->log( "MyDebug: Creting New Game Manager." );
                 $manager->Client1   = $webSocket;
-                $manager->InitializeGame();
+                $manager->InitializeGame( $gameCode );
             }
             
             $manager->dispatchGameEnded();
@@ -225,7 +231,7 @@ class GameService
             $this->AllGames->removeElement( $existing[$i] );
         }
             
-        $manager    = $this->managerFactory->createWebsocketGameManager();
+        $manager    = $this->managerFactory->createWebsocketGameManager( true );
         //$manager.Ended += Game_Ended;
         $manager->Inviter = $userId;
         $manager->SearchingOpponent = false;
@@ -247,6 +253,9 @@ class GameService
             if ( $cookie != null )
             {
                 $this->log( 'MyDebug Try Reconnect: Cookie Parsed' );
+                
+                $json = $this->serializer->serialize( $this->AllGames, JsonEncoder::FORMAT );
+                $this->log( "MyDebug: ReConnect GmeManagers: {$json}" );
                 
                 $gameManager = $this->AllGames->filter(
                     function( $entry ) use ( $cookie ) {
@@ -282,12 +291,12 @@ class GameService
             // Guest vs guest must be allowed. When guest games are enabled.
             if (
                 $m->Game->BlackPlayer->Id == $userId ||
-                $m->Game>WhitePlayer->Id == $userId &&
+                $m->Game->WhitePlayer->Id == $userId &&
                 $userId != Guid::Empty
-                ) {
-                    $this->log( "MyDebug: Game Already Started" );
-                    return true;
-                }
+            ) {
+                $this->log( "MyDebug: Game Already Started" );
+                return true;
+            }
         }
         
         return false;
@@ -374,7 +383,7 @@ class GameService
     {
         $gamesIterator  = $this->AllGames->getIterator();
         $gamesIterator->uasort( function ( $a, $b ) {
-            return $a->Created > $b->Created;
+            return $a->Created <=> $b->Created;
         });
             
         return new ArrayCollection( \iterator_to_array( $gamesIterator ) );
@@ -391,6 +400,8 @@ class GameService
     
     private function log( $logData ): void
     {
-        $this->logger->info( $logData );
+        if ( $this->environement == 'dev' ) {
+            $this->logger->info( $logData );
+        }
     }
 }

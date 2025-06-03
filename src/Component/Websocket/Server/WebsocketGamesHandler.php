@@ -28,6 +28,9 @@ use App\Component\Dto\Actions\ActionNames;
  */
 final class WebsocketGamesHandler implements MessageComponentInterface
 {
+    /** @var string */
+    private $environement;
+    
     /** @var SerializerInterface */
     private $serializer;
     
@@ -56,12 +59,14 @@ final class WebsocketGamesHandler implements MessageComponentInterface
     private $games;
     
     public function __construct(
+        string $environement,
         SerializerInterface $serializer,
         LoggerInterface $logger,
         RepositoryInterface $usersRepository,
         WebsocketClientFactory $wsClientFactory,
         GameService $gameService
     ) {
+        $this->environement     = $environement;
         $this->serializer       = $serializer;
         $this->logger           = $logger;
         $this->usersRepository  = $usersRepository;
@@ -105,13 +110,13 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         $this->log( "Recieved Action: " . $action->actionName );
         
         try {
-//             $otherClient    = $socket == $gameManager->Client1 ? $gameManager->Client2 : $gameManager->Client1;
-//             $gameManager->DoAction( ActionNames::from( $action->actionName ), $msg, $socket, $otherClient );
-
-            $gameManager->DoAction( ActionNames::from( $action->actionName ), $msg, $socket, $socket );
+            // For Debugging
+            // $gameManager->DoAction( ActionNames::from( $action->actionName ), $msg, $socket, $socket );
             
+            $otherClient    = $socket == $gameManager->Client1 ? $gameManager->Client2 : $gameManager->Client1;
+            $gameManager->DoAction( ActionNames::from( $action->actionName ), $msg, $socket, $otherClient );
         } catch ( \Exception $e ) {
-            $this->log( "Game Manager Do Action Error !!!" );
+            $this->log( "Game Manager Do Action Error: '{$e->getMessage()}'" );
         }
     }
     
@@ -135,6 +140,8 @@ final class WebsocketGamesHandler implements MessageComponentInterface
     public function onError( ConnectionInterface $conn, \Exception $e )
     {
         $this->log( "An error has occurred: {$e->getMessage()}" );
+        $this->log( "Exception Trace: {$e->getTraceAsString()}" );
+        
         $conn->close();
     }
     
@@ -177,9 +184,9 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         
         $userId     = $user->getId();
         $gameId     = isset( $queryParameters['gameId'] ) ? $queryParameters['gameId'] : null;
-        $gameCookie = isset( $queryParameters['gameCookie'] ) ? $queryParameters['gameCookie'] : null;
-        $playAi     = isset( $queryParameters['playAi'] ) ? $queryParameters['playAi'] : "true";
+        $playAi     = isset( $queryParameters['playAi'] ) ? $queryParameters['playAi'] : "false";
         $forGold    = isset( $queryParameters['forGold'] ) ? $queryParameters['forGold'] : "true";
+        $gameCookie = isset( $queryParameters['gameCookie'] ) ? $queryParameters['gameCookie'] : null;
         
         if ( $gameCookie ) {
             $gameCookie = \base64_decode( $gameCookie );
@@ -188,12 +195,25 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         
         //$this->log( "Game Code: ". $gameCode );
         //$this->log( "Game Id: ". $gameId );
+        //$this->log( "Play AI: ". $playAi );
         
         $gameGuid   = null;
         try {
-            $gameGuid   = $this->gameService->Connect( $webSocket, $gameCode, $userId, $gameId, $playAi, $forGold, $gameCookie );
+            $gameGuid   = $this->gameService->Connect(
+                $webSocket,
+                $gameCode,
+                $userId,
+                $gameId,
+                $playAi === 'true',
+                $forGold === 'true',
+                $gameCookie
+            );
         } catch ( \Exception $exc ) {
             $this->log( $exc->getMessage() );
+            $this->log( $exc->getTraceAsString() );
+            $this->log( "Connect Game Error: {$exc->getMessage()}" );
+            $this->log( "Exception Trace: {$exc->getTraceAsString()}" );
+            
             //await context.Response.WriteAsync(exc.Message, CancellationToken.None);
             //context.Response.StatusCode = 400;
             
@@ -213,6 +233,8 @@ final class WebsocketGamesHandler implements MessageComponentInterface
     
     private function log( $logData ): void
     {
-        $this->logger->info( $logData );
+        if ( $this->environement == 'dev' ) {
+            $this->logger->info( $logData );
+        }
     }
 }

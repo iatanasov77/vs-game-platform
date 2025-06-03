@@ -11,4 +11,12 @@
     <button *ngIf="rollButtonVisible" (click)="rollButtonClick()" class="default-button">
         {{ 'game_board.roll' | translate }}
     </button>
+    
+    <button *ngIf="acceptDoublingVisible" (click)="acceptDoubling()"class="blue-button smaller">
+        {{ 'boardbuttons.acceptDoubling' | translate }}
+        {{ doublingFactor }}<i class="fas fa-times"></i>
+    </button>
+    <button *ngIf="requestDoublingVisible" (click)="requestDoubling()" class="blue-button">
+        {{ doublingFactor }}<i class="fas fa-times"></i>
+    </button>
 </div>

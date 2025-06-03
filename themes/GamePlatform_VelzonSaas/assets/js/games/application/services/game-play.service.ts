@@ -21,6 +21,9 @@ export class GamePlayService
         @Inject( AuthService ) private authService: AuthService,
     ) { }
     
+    /**
+     * @NOTE This NOT Work Here Because Game Service is Different Instance in API Application From GamePlatform Application
+     */
     startPlayGame( gameId: string ): Observable<IGamePlay>
     {
         const headers = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );

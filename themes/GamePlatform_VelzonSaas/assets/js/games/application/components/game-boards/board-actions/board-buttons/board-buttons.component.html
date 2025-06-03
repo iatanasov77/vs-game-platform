@@ -1,5 +1,19 @@
 <div class="p-1 float-start game-board-buttons-container">
-    <ng-container *ngIf="! isRoomSelected">
+    <a *ngIf="! isLoggedIn" href="/login" class="default-button">
+        {{ 'dialogs.login' | translate }}
+    </a>
+    
+    <ng-container *ngIf="lobbyButtonsVisible">
+        <button *ngIf="isLoggedIn" (click)="playGame()" class="default-button">
+            {{ 'game_board.play_game' | translate }}
+        </button>
+        
+        <button *ngIf="isLoggedIn" (click)="inviteFriendClick()" class="default-button">
+            {{ 'game_board.invite_friend' | translate }}
+        </button>
+    </ng-container>
+    
+    <ng-container *ngIf="! isRoomSelected && ! lobbyButtonsVisible">
         <button *ngIf="hasRooms" (click)="selectGameRoom()" class="default-button">
             {{ 'game_board.select_room' | translate }}
         </button>
@@ -10,15 +24,6 @@
     </ng-container>
     
     <ng-container *ngIf="isRoomSelected">
-        
-        <button (click)="playGame()" *ngIf="lobbyButtonsVisible" class="default-button">
-            {{ 'game_board.play_game' | translate }}
-        </button>
-        
-        <button (click)="inviteFriendClick()" *ngIf="lobbyButtonsVisible" class="default-button">
-            {{ 'game_board.invite_friend' | translate }}
-        </button>
-        
         <button (click)="newGame()" *ngIf="newVisible" class="default-button">
             {{ 'game_board.new_game' | translate }}
         </button>
@@ -30,6 +35,5 @@
         <button (click)="resign()" *ngIf="acceptDoublingVisible" class="red-button smaller">
             {{ 'game_board.resign' | translate }}
         </button>
-        
     </ng-container>
 </div>

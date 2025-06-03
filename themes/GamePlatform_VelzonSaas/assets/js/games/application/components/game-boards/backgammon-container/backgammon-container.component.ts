@@ -269,8 +269,6 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         this.actions$.pipe( ofType( startGameSuccess ) ).subscribe( () => {
             this.store.dispatch( loadGameRooms() );
         });
-        
-        this.waitForOpponent();
     }
     
     ngAfterViewInit(): void
@@ -278,7 +276,9 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         this.playAiQuestion = false;
         this.lokalStake = 0;
     
-        if ( ! this.playAiFlag && ! this.editing ) this.waitForOpponent();
+        if ( ! this.lobbyButtonsVisible && ! this.playAiFlag && ! this.editing ) {
+            this.waitForOpponent();
+        }
         this.fireResize();
         
 //         setTimeout( () => {
@@ -316,11 +316,6 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
             const changedProp = changes[propName];
             
             switch ( propName ) {
-                case 'lobbyButtonsVisible':
-                    if ( ! changedProp.currentValue ) {
-                        this.waitForOpponent();
-                    }
-                    break;
                 case 'isLoggedIn':
                     this.isLoggedIn = changedProp.currentValue;
                     break;
@@ -517,7 +512,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         this.height = Math.min( window.innerHeight - 40, this.width * 0.6 );
         
         const buttons = this.backgammonBoardButtons?.nativeElement as HTMLElement;
-        const btnsOffset = 68; //Cheating. Could not get the height.
+        const btnsOffset = 15; //Cheating. Could not get the height.
         if ( buttons ) {
             buttons.style.top = `${this.height / 2 + btnsOffset}px`;
             buttons.style.right = `${this.width * 0.12}px`;
@@ -632,7 +627,9 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         clearTimeout( this.startedHandle );
         this.wsService.exitGame();
         this.appStateService.hideBusy();
+        
         //this.router.navigateByUrl( '/lobby' );
+        this.lobbyButtonsVisible = true;
     }
     
     requestDoubling(): void
@@ -808,19 +805,10 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         const game      = this.appStateService.game.getValue();
         const myColor   = this.appStateService.myColor.getValue();
         //console.log( 'GameDto Object: ', game );
-        this.wsService.startGamePlay( game, myColor );
         
-        /**
-         * @NOTE This NOT Work Here Because Game Service is Different Instance in API Application From GamePlatform Application
-         */
-//         let gameCookie  = this.cookieService.get( Keys.gameIdKey );
-//         if ( gameCookie ) {
-//             let gameCookieDto   = JSON.parse( gameCookie ) as GameCookieDto;
-//         
-//             this.gamePlayService.startPlayGame( gameCookieDto.id ).subscribe( () => {
-//                 //alert( 'Game Play is DONE.' );
-//                 this.lobbyButtonsVisible     = false;
-//             });;
-//         }
+        this.wsService.startGamePlay( game, myColor );
+        this.exitVisible = true;
+        this.appStateService.showBusy();
+        this.waitForOpponent();
     }
 }

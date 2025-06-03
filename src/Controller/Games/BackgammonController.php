@@ -12,13 +12,12 @@ class BackgammonController extends GameController
 {
     public function normal( Request $request ): Response
     {
-        $gameSlug   = 'backgammon';
-        $game       = $this->gamesRepository->findOneBy( ['slug' => $gameSlug] );
+        $game       = $this->gamesRepository->findOneBy( ['slug' => Keys::BACKGAMMON_NORMAL_KEY] );
         $signature  = $this->getUser() ? $this->getUser()->getApiVerifySiganature() : '';
         
         $gamePlatformSettings   = $this->applicationContext->getApplication()->getGamePlatformApplication()->getSettings();
         $gameSettings           = [
-            'gameSlug'              => $gameSlug,
+            'gameSlug'              => Keys::BACKGAMMON_NORMAL_KEY,
             'socketChatUrl'         => $this->getParameter( 'app_websocket_chat_url' ),
             'socketGameUrl'         => $this->getParameter( 'app_websocket_game_url' ),
             'apiVerifySiganature'   => $signature,
@@ -35,7 +34,7 @@ class BackgammonController extends GameController
         ];
         
         return new Response(
-            $this->templatingEngine->render( $this->getTemplate( $gameSlug , 'Pages/Games/Backgammon/normal.html.twig' ), [
+            $this->templatingEngine->render( $this->getTemplate( Keys::BACKGAMMON_NORMAL_KEY, 'Pages/Games/Backgammon/normal.html.twig' ), [
                 'game'          => $game,
                 'gameSettings'  => $gameSettings,
             ])
@@ -44,13 +43,12 @@ class BackgammonController extends GameController
     
     public function gulbara( Request $request ): Response
     {
-        $gameSlug   = 'backgammon';
-        $game       = $this->gamesRepository->findOneBy( ['slug' => $gameSlug] );
+        $game       = $this->gamesRepository->findOneBy( ['slug' => Keys::BACKGAMMON_GULBARA_KEY] );
         $signature  = $this->getUser() ? $this->getUser()->getApiVerifySiganature() : '';
         
         $gamePlatformSettings   = $this->applicationContext->getApplication()->getGamePlatformApplication()->getSettings();
         $gameSettings           = [
-            'gameSlug'              => $gameSlug,
+            'gameSlug'              => Keys::BACKGAMMON_GULBARA_KEY,
             'socketChatUrl'         => $this->getParameter( 'app_websocket_chat_url' ),
             'socketGameUrl'         => $this->getParameter( 'app_websocket_game_url' ),
             'apiVerifySiganature'   => $signature,
@@ -67,7 +65,7 @@ class BackgammonController extends GameController
         ];
         
         return new Response(
-            $this->templatingEngine->render( $this->getTemplate( $gameSlug , 'Pages/Games/Backgammon/gulbara.html.twig' ), [
+            $this->templatingEngine->render( $this->getTemplate( Keys::BACKGAMMON_GULBARA_KEY, 'Pages/Games/Backgammon/gulbara.html.twig' ), [
                 'game'          => $game,
                 'gameSettings'  => $gameSettings,
             ])
@@ -76,13 +74,12 @@ class BackgammonController extends GameController
     
     public function tapa( Request $request ): Response
     {
-        $gameSlug   = 'backgammon';
-        $game       = $this->gamesRepository->findOneBy( ['slug' => $gameSlug] );
+        $game       = $this->gamesRepository->findOneBy( ['slug' => Keys::BACKGAMMON_TAPA_KEY] );
         $signature  = $this->getUser() ? $this->getUser()->getApiVerifySiganature() : '';
         
         $gamePlatformSettings   = $this->applicationContext->getApplication()->getGamePlatformApplication()->getSettings();
         $gameSettings           = [
-            'gameSlug'              => $gameSlug,
+            'gameSlug'              => Keys::BACKGAMMON_TAPA_KEY,
             'socketChatUrl'         => $this->getParameter( 'app_websocket_chat_url' ),
             'socketGameUrl'         => $this->getParameter( 'app_websocket_game_url' ),
             'apiVerifySiganature'   => $signature,
@@ -99,7 +96,7 @@ class BackgammonController extends GameController
         ];
         
         return new Response(
-            $this->templatingEngine->render( $this->getTemplate( $gameSlug , 'Pages/Games/Backgammon/tapa.html.twig' ), [
+            $this->templatingEngine->render( $this->getTemplate( Keys::BACKGAMMON_TAPA_KEY, 'Pages/Games/Backgammon/tapa.html.twig' ), [
                 'game'          => $game,
                 'gameSettings'  => $gameSettings,
             ])

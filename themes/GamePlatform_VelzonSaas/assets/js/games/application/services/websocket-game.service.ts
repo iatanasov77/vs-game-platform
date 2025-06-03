@@ -88,25 +88,6 @@ export class WebsocketGameService
         });
     }
     
-    websocketUrl(): string
-    {
-        let gameCookie  = this.cookieService.get( Keys.gameIdKey );
-        let b64Cookie;
-        if ( gameCookie ) {
-            b64Cookie   = window.btoa( gameCookie );
-        }
-        
-        let url = new URL( window.gamePlatformSettings.socketGameUrl );
-        
-        url.searchParams.append( 'gameCode', 'backgammon' );
-        url.searchParams.append( 'token', window.gamePlatformSettings.apiVerifySiganature );
-        if ( b64Cookie ) {
-            url.searchParams.append( 'gameCookie', b64Cookie );
-        }
-        
-        return url.href;
-    }
-    
     selectGameRoomFromCookie( rooms: IGameRoom[] ): void
     {
         //console.log( 'Rooms in Game State: ', rooms );
@@ -129,15 +110,21 @@ export class WebsocketGameService
             this.socket.close();
         }
         
-        //this.url        = this.websocketUrl();
+        let gameCookie  = this.cookieService.get( Keys.gameIdKey );
+        let b64Cookie;
+        if ( gameCookie ) {
+            b64Cookie   = window.btoa( gameCookie );
+        }
+        
         this.url        = window.gamePlatformSettings.socketGameUrl;
         
         const user      = this.appState.user.getValue();
         const userId    = user ? user.id : '';
         const tree      = this.router.createUrlTree([], {
             queryParams: {
-                gameCode: 'backgammon',
+                gameCode: window.gamePlatformSettings.gameSlug,
                 token: window.gamePlatformSettings.apiVerifySiganature,
+                gameCookie: b64Cookie,
                 
                 userId: userId,
                 gameId: gameId,
@@ -188,9 +175,6 @@ export class WebsocketGameService
         //alert( event.code );
         console.log( 'Close', { event } );
         
-        // Remove Cookie ( May be WebSocket Server was Terminated)
-        this.cookieService.deleteAll( Keys.gameIdKey );
-        
         // Set Status Message
         const cnn = this.appState.myConnection.getValue();
         this.appState.myConnection.setValue( { ...cnn, connected: false } );
@@ -198,8 +182,7 @@ export class WebsocketGameService
     }
     
     // Messages received from server.
-    //onMessage( message: MessageEvent<string> ): void
-    onMessage( message: MessageEvent ): void
+    onMessage( message: MessageEvent<string> ): void
     {
         if ( ! message.data.length  ) {
             return;

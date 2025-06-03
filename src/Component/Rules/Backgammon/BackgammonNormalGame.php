@@ -148,7 +148,7 @@ class BackgammonNormalGame extends Game
             // Only one dice can be use and it must be the one with highest value
             
             $currentPlayer  = $this->CurrentPlayer;
-            $this->logger->info( 'MyDebug CurrentPlayer: ' . \print_r( $currentPlayer, true ) );
+            $this->log( 'MyDebug CurrentPlayer: ' . \print_r( $currentPlayer, true ) );
             $moves = $moves->filter(
                 function( $entry ) use ( $currentPlayer ) {
                     return $entry->To->GetNumber( $currentPlayer ) - $entry->From->GetNumber( $currentPlayer );
@@ -269,9 +269,7 @@ class BackgammonNormalGame extends Game
     
     public function MakeMove( Move $move ): ?Checker
     {
-        $this->logger->info( "\n\nMyDebug MakeMove: " . print_r( $move, true ) . "\n\n" );
-        $backtrace = debug_backtrace();
-        \file_put_contents( '/projects/VS_GamePlatform/var/backtrace.txt', "\n\nMyDebug MakeMove: " . print_r( $backtrace, true ) . "\n\n" );
+        $this->log( "\n\nMyDebug MakeMove: " . print_r( $move, true ) . "\n\n" );
         
         $checker = $move->From->Checkers->filter(
             function( $entry ) use ( $move ) {
@@ -317,7 +315,7 @@ class BackgammonNormalGame extends Game
         return $hit;
     }
     
-    public function UndoMove( Move $move, Checker $hitChecker ): void
+    public function UndoMove( Move $move, ?Checker $hitChecker ): void
     {
         $checker = $move->To->Checkers->filter(
             function( $entry ) use ( $move ) {
@@ -353,7 +351,7 @@ class BackgammonNormalGame extends Game
     {
         $dicesIterator  = $this->Roll->getIterator();
         $dicesIterator->uasort( function ( $a, $b ) {
-            return $a->Value > $b->Value;
+            return $a->Value <=> $b->Value;
         });
             
         return new ArrayCollection( \iterator_to_array( $dicesIterator ) );
@@ -363,7 +361,7 @@ class BackgammonNormalGame extends Game
     {
         $movesIterator  = $moves->getIterator();
         $movesIterator->uasort( function ( $a, $b ) {
-            return $a->Value > $b->Value;
+            return $a->Value <=> $b->Value;
         });
             
         return new ArrayCollection( \iterator_to_array( $movesIterator ) );
@@ -383,7 +381,7 @@ class BackgammonNormalGame extends Game
         
         $pointsIterator  = $points->getIterator();
         $pointsIterator->uasort( function ( $a, $b ) use ( $currentPlayer ) {
-            return $a->GetNumber( $currentPlayer ) < $b->GetNumber( $currentPlayer );
+            return $b->GetNumber( $currentPlayer ) <=> $a->GetNumber( $currentPlayer );
         });
             
         return new ArrayCollection( \iterator_to_array( $pointsIterator ) );
@@ -403,7 +401,7 @@ class BackgammonNormalGame extends Game
         
         $pointsIterator  = $points->getIterator();
         $pointsIterator->uasort( function ( $a, $b ) use ( $currentPlayer ) {
-            return $a->GetNumber( $currentPlayer ) < $b->GetNumber( $currentPlayer );
+            return $b->GetNumber( $currentPlayer ) <=> $a->GetNumber( $currentPlayer );
         });
             
         return ( new ArrayCollection( \iterator_to_array( $pointsIterator ) ) )->first()->GetNumber( $currentPlayer );

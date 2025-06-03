@@ -16,6 +16,7 @@ final class WebsocketGameManager extends AbstractGameManager
         if ( $color == PlayerColor::Black ) {
             $this->Client1 = $webSocket;
             
+            $this->Game->CurrentPlayer  = PlayerColor::Black;
             $this->Game->BlackPlayer->Id = $dbUser != null ? $dbUser->getId() : Guid::Empty();
             $this->Game->BlackPlayer->Name = $dbUser != null ? $dbUser->getName() : "Guest";
             $this->Game->BlackPlayer->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $this->getPlayerPhotoUrl( $dbUser ) : "";
@@ -57,6 +58,7 @@ final class WebsocketGameManager extends AbstractGameManager
             }
             $this->Client2 = $webSocket;
             
+            $this->Game->CurrentPlayer  = PlayerColor::White;
             $this->Game->WhitePlayer->Id = $dbUser != null ? $dbUser->getId() : Guid::Empty();
             $this->Game->WhitePlayer->Name = $dbUser != null ? $dbUser->getName() : "Guest";
             $this->Game->WhitePlayer->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $this->getPlayerPhotoUrl( $dbUser ) : "";

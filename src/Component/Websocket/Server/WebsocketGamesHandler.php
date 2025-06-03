@@ -135,6 +135,8 @@ final class WebsocketGamesHandler implements MessageComponentInterface
     public function onError( ConnectionInterface $conn, \Exception $e )
     {
         $this->log( "An error has occurred: {$e->getMessage()}" );
+        $this->log( "Exception Trace: {$e->getTraceAsString()}" );
+        
         $conn->close();
     }
     
@@ -203,6 +205,10 @@ final class WebsocketGamesHandler implements MessageComponentInterface
             );
         } catch ( \Exception $exc ) {
             $this->log( $exc->getMessage() );
+            $this->log( $exc->getTraceAsString() );
+            $this->log( "Connect Game Error: {$exc->getMessage()}" );
+            $this->log( "Exception Trace: {$exc->getTraceAsString()}" );
+            
             //await context.Response.WriteAsync(exc.Message, CancellationToken.None);
             //context.Response.StatusCode = 400;
             

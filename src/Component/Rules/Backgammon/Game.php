@@ -152,7 +152,7 @@ abstract class Game
         $this->SetFirstRollWinner();
         
         $this->ClearMoves( $this->ValidMoves );
-        $this->GenerateMoves( $this->ValidMoves );
+        $this->_GenerateMoves( $this->ValidMoves );
     }
     
     protected function ClearMoves( Collection &$moves ): void

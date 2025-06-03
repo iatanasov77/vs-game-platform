@@ -110,6 +110,7 @@ final class WebsocketGameServer extends ContainerAwareCommand
         $port = $input->getArgument( 'port' );
         
         $this->gamesHandler = new WebsocketGamesHandler(
+            $this->environement,
             $this->serializer,
             $this->logger,
             $this->get( 'vs_users.repository.users' ),

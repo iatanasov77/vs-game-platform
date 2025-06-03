@@ -110,6 +110,7 @@ final class WebsocketChatServer extends ContainerAwareCommand
         $port   = $input->getArgument( 'port' );
         
         $this->messageHandler = new WebsocketMessageHandler(
+            $this->environement,
             $this->serializer,
             $this->logger,
             $this->get( 'vs_users.repository.users' ),

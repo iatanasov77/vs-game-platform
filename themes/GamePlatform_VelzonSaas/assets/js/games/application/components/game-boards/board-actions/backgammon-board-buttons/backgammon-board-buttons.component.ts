@@ -18,11 +18,15 @@ export class BackgammonBoardButtonsComponent
     @Input() sendVisible = false;
     @Input() rollButtonVisible = false;
     @Input() requestHintVisible = false;
+    @Input() acceptDoublingVisible = false;
+    @Input() requestDoublingVisible = false;
     
     @Output() onUndoMove = new EventEmitter<void>();
     @Output() onSendMoves = new EventEmitter<void>();
     @Output() onRoll = new EventEmitter<void>();
     @Output() onRequestHint = new EventEmitter<void>();
+    @Output() onAcceptDoubling = new EventEmitter<void>();
+    @Output() onRequestDoubling = new EventEmitter<void>();
     
     constructor(
         @Inject( TranslateService ) private translate: TranslateService
@@ -46,5 +50,15 @@ export class BackgammonBoardButtonsComponent
     requestHint(): void
     {
         this.onRequestHint.emit();
+    }
+    
+    acceptDoubling(): void
+    {
+        this.onAcceptDoubling.emit();
+    }
+    
+    requestDoubling(): void
+    {
+        this.onRequestDoubling.emit();
     }
 }

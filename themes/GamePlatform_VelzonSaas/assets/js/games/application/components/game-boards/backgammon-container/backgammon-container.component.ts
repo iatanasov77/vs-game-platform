@@ -512,7 +512,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         this.height = Math.min( window.innerHeight - 40, this.width * 0.6 );
         
         const buttons = this.backgammonBoardButtons?.nativeElement as HTMLElement;
-        const btnsOffset = 68; //Cheating. Could not get the height.
+        const btnsOffset = 15; //Cheating. Could not get the height.
         if ( buttons ) {
             buttons.style.top = `${this.height / 2 + btnsOffset}px`;
             buttons.style.right = `${this.width * 0.12}px`;

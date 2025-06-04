@@ -269,7 +269,7 @@ class BackgammonNormalGame extends Game
     
     public function MakeMove( Move $move ): ?Checker
     {
-        $this->log( "\n\nMyDebug MakeMove: " . print_r( $move, true ) . "\n\n" );
+        $this->log( "MyDebug MakeMove: " . print_r( $move, true ) );
         
         $checker = $move->From->Checkers->filter(
             function( $entry ) use ( $move ) {

@@ -1,6 +1,14 @@
 parameters:
     app_websocket_chat_url: '%env(WEBSOCKET_CHAT_URL)%'
     app_websocket_game_url: '%env(WEBSOCKET_GAME_URL)%'
+    
+    ###########################################################
+    # If need to have Exception Trace In Log
+    # Set this ENV Variable in .env File With Value True
+    # ----------------------------------------------------
+    # For Example: WEBSOCKET_EXCEPTION_TRACE=true
+    ###########################################################
+    env(WEBSOCKET_EXCEPTION_TRACE): 'false'
 
 services:
     _defaults:
@@ -37,7 +45,8 @@ services:
             - '@monolog.logger.websocket_game'
             - {
                 sslCertificateKey: '%env(SSL_CERTIFICATE_KEY)%',
-                sslCertificateCert: '%env(SSL_CERTIFICATE_CERT)%'
+                sslCertificateCert: '%env(SSL_CERTIFICATE_CERT)%',
+                logExceptionTrace: '%env(bool:WEBSOCKET_EXCEPTION_TRACE)%'
             }
         tags:
             - 'console.command'

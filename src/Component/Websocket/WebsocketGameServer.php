@@ -115,7 +115,8 @@ final class WebsocketGameServer extends ContainerAwareCommand
             $this->logger,
             $this->get( 'vs_users.repository.users' ),
             $this->get( 'app_websocket_client_factory' ),
-            $this->get( 'app_game_service' )
+            $this->get( 'app_game_service' ),
+            $this->parrameters['logExceptionTrace']
         );
         
         $loop           = EventLoopFactory::create();

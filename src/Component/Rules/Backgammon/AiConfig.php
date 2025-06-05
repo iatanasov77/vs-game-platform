@@ -2,41 +2,47 @@
 
 class AiConfig
 {
-    /// <summary>
-    /// Blots are hitables checkers. Below this threshold does not reduce score.
-    /// </summary>
-    /** @var int */
+    /**
+     * Blots are hitables checkers. Below this threshold does not reduce score.
+     * 
+     * @var int
+     */
     public $BlotsThreshold;
     
-    /// <summary>
-    /// The point divided by this factor reduces score for blots.
-    /// </summary>
-    /** @var float */
+    /**
+     * The point divided by this factor reduces score for blots.
+     * 
+     * @var float
+     */
     public $BlotsFactor;
     
-    /// <summary>
-    /// The point divided by this factor reduces score for blots. When opponent has passes this point with all checker.
-    /// </summary>
-    /** @var float */
+    /**
+     * The point divided by this factor reduces score for blots. When opponent has passes this point with all checker.
+     * 
+     * @var float
+     */
     public $BlotsFactorPassed;
     
-    /// <summary>
-    /// Score received for one point blocked.
-    /// </summary>
-    /** @var float */
+    /**
+     * Score received for one point blocked.
+     * 
+     * @var float
+     */
     public $BlockedPointScore;
     
-    /// <summary>
-    /// Score from number of consecutive blocks raised to this value.
-    /// </summary>
-    /** @var float */
+    /**
+     * Score from number of consecutive blocks raised to this value.
+     * 
+     * @var float
+     */
     public $ConnectedBlocksFactor;
     
-    /// <summary>
-    /// When all checkers have passed each other, the leading side gets a score bonus
-    /// this factor multiplied by the lead.
-    /// </summary>
-    /** @var float */
+    /**
+     * When all checkers have passed each other, the leading side gets a score bonus
+     * this factor multiplied by the lead.
+     * 
+     * @var float
+     */
     public $RunOrBlockFactor;
     
     /** @var bool */

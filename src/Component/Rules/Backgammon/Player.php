@@ -24,19 +24,31 @@ class Player
     /** @var int */
     public $Elo;
     
-    /// <summary>
-    /// Do not map this to the dto. Opponnents id should never be revealed to anyone else.
-    /// </summary>
-    /** @var Guid */
+    /**
+     * Do not map this to the dto. Opponnents id should never be revealed to anyone else.
+     * 
+     * @var Guid
+     */
     public $Id;
     
     /** @var bool */
     public $FirstMoveMade;
     
-    //     public function __toString(): string
-    //     {
-    //         return $this->PlayerColor->value . " player";
-    //     }
+    public function __toString(): string
+    {
+        $playerColor;
+        switch ( $this->PlayerColor->value ) {
+            case 0:
+                $playerColor = 'Black';
+                break;
+            case 1:
+                $playerColor = 'White';
+                break;
+            default:
+                $playerColor = 'Neither';   
+        }
+        return $playerColor . " player";
+    }
         
     public function IsGuest(): bool
     {

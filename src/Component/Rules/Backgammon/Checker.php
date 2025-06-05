@@ -9,6 +9,18 @@ class Checker
     
     public function __toString(): string
     {
-        return $this->Color;
+        $playerColor;
+        switch ( $this->PlayerColor->value ) {
+            case 0:
+                $playerColor = 'Black';
+                break;
+            case 1:
+                $playerColor = 'White';
+                break;
+            default:
+                $playerColor = 'Neither';
+        }
+        
+        return $playerColor;
     }
 }

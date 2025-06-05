@@ -92,6 +92,53 @@ class AiEngine
             
         return \iterator_to_array( $bestMoveSequence );
     }
+    
+    public static function GenerateMovesSequence( Game $game ): array
+    {
+        $sequences = [];
+        $moves = new ArrayCollection();
+        $sequences[]    = $moves;
+        self::_GenerateMovesSequence( $sequences, $moves, 0, $game );
+        
+        // Special case. Sometimes the first dice is blocked, but can be moved after next dice
+        if ( \count( $sequences ) == 1 && $sequences[0] == null ) {
+            $temp = $game->Roll[0];
+            $game->Roll[0] = $game->Roll[1];
+            $game->Roll[1] = $temp;
+            self::_GenerateMovesSequence( $sequences, $moves, 0, $game );
+        }
+        
+        // If there are move sequences with all moves not null, remove sequences that has some moves null.
+        // (rule of backgammon that you have to use all dice if you can)
+        $emptyMoves = \array_filter( $sequences, function( $item ) {
+            return $item == null || $item->isEmpty();
+        });
+        
+        if ( \count( $emptyMoves ) ) {
+            $sequences = \array_values( \array_diff( $sequences, $emptyMoves ) );
+        }
+        
+        return $sequences;
+    }
+    
+    public function AcceptDoubling(): bool
+    {
+        if ( ! $this->EngineGame->PlayersPassed() ) {
+            return true;
+        }
+            
+        $myScore = $this->Evaluate( $this->EngineGame->CurrentPlayer, $this->EngineGame );
+        $oponent = $this->EngineGame->CurrentPlayer == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
+        $otherScore = $this->Evaluate( $oponent, $this->EngineGame );
+        
+        $oppPips = $this->EngineGame->CurrentPlayer == PlayerColor::White ?
+        $this->EngineGame->BlackPlayer->PointsLeft :
+        $this->EngineGame->WhitePlayer->PointsLeft;
+        
+        $k = ( $myScore - $otherScore ) / $oppPips;
+        
+        return $k > -0.25; // Just my best guess
+    }
 
     private function ToLocalSequence( Collection $sequence, Game $game ): Collection
     {
@@ -164,7 +211,7 @@ class AiEngine
         $opponentColorNumber = $game->Points->filter(
             function( $entry ) use ( $other ) {
                 return $entry->Checkers->exists(
-                    function( $entry ) use ( $other ) {
+                    function( $key, $entry ) use ( $other ) {
                         return $entry->Color == $other;
                     }
                 );
@@ -175,7 +222,7 @@ class AiEngine
         $myColorNumber = $game->Points->filter(
             function( $entry ) use ( $myColor ) {
                 return $entry->Checkers->exists(
-                    function( $entry ) use ( $myColor ) {
+                    function( $key, $entry ) use ( $myColor ) {
                         return $entry->Color == $myColor;
                     }
                 );
@@ -290,34 +337,6 @@ class AiEngine
         return self::$_allRolls;
     }
 
-    public static function GenerateMovesSequence( Game $game ): array
-    {
-        $sequences = [];
-        $moves = new ArrayCollection();
-        $sequences[]    = $moves;
-        self::_GenerateMovesSequence( $sequences, $moves, 0, $game );
-
-        // Special case. Sometimes the first dice is blocked, but can be moved after next dice
-        if ( \count( $sequences ) == 1 && $sequences[0] == null )
-        {
-            $temp = $game->Roll[0];
-            $game->Roll[0] = $game->Roll[1];
-            $game->Roll[1] = $temp;
-            self::_GenerateMovesSequence( $sequences, $moves, 0, $game );
-        }
-
-        // If there are move sequences with all moves not null, remove sequences that has some moves null.
-        // (rule of backgammon that you have to use all dice if you can)
-        $emptyMoves = \array_filter( $sequences, function( $item ) {
-            return $item == null || $item->isEmpty();
-        });
-        if ( \count( $emptyMoves ) ) {
-            $sequences = \array_values( \array_diff( $sequences, $emptyMoves ) );
-        }
-        
-        return $sequences;
-    }
-
     private static function _GenerateMovesSequence( array &$sequences, Collection $moves, int $diceIndex, Game $game ): void
     {
         $current = $game->CurrentPlayer;
@@ -332,7 +351,7 @@ class AiEngine
         $points = $barHasCheckers ? [ $bar ] : $game->Points->filter(
             function( $entry ) use ( $current ) {
                 return $entry->Checkers->exists(
-                    function( $entry ) use ( $current ) {
+                    function( $key, $entry ) use ( $current ) {
                         return $entry == $current;
                     }
                 );
@@ -439,24 +458,6 @@ class AiEngine
     {
         $score = self::EvaluatePoints( $color, $game ) + self::EvaluateCheckers( $color, $game );
         return $score;
-    }
-
-    public function AcceptDoubling(): bool
-    {
-        if ( ! $this->EngineGame->PlayersPassed() )
-            return true;
-
-        $myScore = $this->Evaluate( $this->EngineGame->CurrentPlayer, $this->EngineGame );
-        $oponent = $this->EngineGame->CurrentPlayer == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
-        $otherScore = $this->Evaluate( $oponent, $this->EngineGame );
-
-        $oppPips = $this->EngineGame->CurrentPlayer == PlayerColor::White ?
-            $this->EngineGame->BlackPlayer->PointsLeft :
-            $this->EngineGame->WhitePlayer->PointsLeft;
-
-        $k = ( $myScore - $otherScore ) / $oppPips;
-
-        return $k > -0.25; // Just my best guess
     }
     
     private static function orderPlayerPoints( Collection $playerPoints, $game ): Collection

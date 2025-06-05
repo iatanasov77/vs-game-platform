@@ -1,3 +1,11 @@
+0.12.3	|	Release date: **05.06.2025**
+============================================
+* Bug-Fixes and Improvements:
+  - Make Adding Exception Trace in Websocket Server Logs Conditional.
+  - Many Fixes on Backgammon Rules and DTO Classes to Achieve to Roll Dices.
+  - Add Missing Method in GameManager .
+
+
 0.12.2	|	Release date: **03.06.2025**
 ============================================
 * Bug-Fixes:

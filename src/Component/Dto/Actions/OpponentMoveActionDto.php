@@ -1,6 +1,5 @@
-﻿<?php namespace App\Component\Dto\Actions;
+<?php namespace App\Component\Dto\Actions;
 
-use Doctrine\Common\Collections\Collection;
 use App\Component\Dto\MoveDto;
 
 class OpponentMoveActionDto extends ActionDto

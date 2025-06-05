@@ -147,7 +147,7 @@ class GameService
             $manager    = $this->managerFactory->createWebsocketGameManager( $forGold );
             
             if ( ! $manager->Game ) {
-                $this->log( "MyDebug: Creting New Game Manager." );
+                $this->log( "MyDebug: Creating New Game Manager." );
                 $manager->Client1   = $webSocket;
                 $manager->InitializeGame( $gameCode );
             }

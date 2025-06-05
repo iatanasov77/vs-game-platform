@@ -1,4 +1,4 @@
-﻿<?php namespace App\Component\Dto\Actions;
+<?php namespace App\Component\Dto\Actions;
 
 use Doctrine\Common\Collections\Collection;
 
@@ -8,6 +8,6 @@ class MovesMadeActionDto extends ActionDto
     {
         $this->actionName = ActionNames::movesMade->value;
     }
-
+    
     public Collection $moves; // MoveDto[]
 }

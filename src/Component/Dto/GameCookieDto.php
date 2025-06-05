@@ -2,9 +2,9 @@
 
 use App\Component\Type\PlayerColor;
 
-/// <summary>
-/// Stored as a cookie on the client to enable reconnects.
-/// </summary>
+/**
+ * Stored as a cookie on the client to enable reconnects.
+ */
 class GameCookieDto
 {
     /** @var string */

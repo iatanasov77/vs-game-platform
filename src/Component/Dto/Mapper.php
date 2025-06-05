@@ -95,12 +95,13 @@ final class Mapper
         $moveDto->color = $move->Color;
         $moveDto->from = $move->From->GetNumber( $move->Color );
         $moveDto->to = $move->To->GetNumber( $move->Color );
+        
         // recursing up in move tree
         $moveDto->nextMoves = $move->NextMoves->map(
             function( $entry ) {
                 return self::MoveToDto( $entry );
             }
-        )->toArray();
+        ); // ->toArray();
         
         return $moveDto;
     }

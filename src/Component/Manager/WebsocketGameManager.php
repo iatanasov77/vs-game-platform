@@ -32,6 +32,7 @@ final class WebsocketGameManager extends AbstractGameManager
                 
                 $aiUser = $this->playersRepository->findOneBy( ['guid' => GamePlayer::AiUser] );
                 
+                $this->Game->CurrentPlayer  = PlayerColor::White;
                 $this->Game->WhitePlayer->Id = $aiUser->getId();
                 $this->Game->WhitePlayer->Name = $aiUser->getName();
                 /** @TODO: AI image */
@@ -47,7 +48,7 @@ final class WebsocketGameManager extends AbstractGameManager
                 $this->StartGame();
                 
                 if ( $this->Game->CurrentPlayer == PlayerColor::White ) {
-                    $this->log( "MyDebug CurrentPlayer: White" );
+                    $this->log( "GameManager CurrentPlayer: White" );
                     
                     $this->EnginMoves( $this->Client1 );
                 }

@@ -36,6 +36,7 @@ export class DicesComponent implements OnChanges
             switch ( propName ) {
                 case 'dices':
                     this.dices = changedProp.currentValue;
+                    console.log( 'Dices', this.dices );
                     break;
                 case 'color':
                     this.color = changedProp.currentValue;

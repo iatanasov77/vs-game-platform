@@ -124,6 +124,9 @@ final class WebsocketGamesHandler implements MessageComponentInterface
             $gameManager->DoAction( ActionNames::from( $action->actionName ), $msg, $socket, $otherClient );
         } catch ( \Exception $e ) {
             $this->log( "Game Manager Do Action Error: '{$e->getMessage()}'" );
+            if ( $this->logExceptionTrace ) {
+                $this->log( "Exception Trace: {$e->getTraceAsString()}" );
+            }
         }
     }
     

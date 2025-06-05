@@ -1,6 +1,5 @@
 <?php namespace App\Component\Dto\Actions;
 
-use Doctrine\Common\Collections\Collection;
 use App\Component\Type\PlayerColor;
 
 class DicesRolledActionDto extends ActionDto
@@ -10,9 +9,9 @@ class DicesRolledActionDto extends ActionDto
         $this->actionName = ActionNames::dicesRolled->value;
     }
     
-    public Collection $dices;
+    public array $dices;
     public ?PlayerColor $playerToMove;
-    public Collection $validMoves;
+    public array $validMoves;
     public int $moveTimer;
     
     // @todo: maybe rewrite to have a relation between dice and move

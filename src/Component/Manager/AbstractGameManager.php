@@ -382,13 +382,13 @@ abstract class AbstractGameManager implements GameManagerInterface
                 function( $entry ) {
                     return Mapper::DiceToDto( $entry );
                 }
-            );
+            )->toArray();
             $rollAction->playerToMove = $this->Game->CurrentPlayer;
             $rollAction->validMoves = $this->Game->ValidMoves->map(
                 function( $entry ) {
                     return Mapper::MoveToDto( $entry );
                 }
-            );
+            )->toArray();
             $rollAction->moveTimer = Game::ClientCountDown;
                 
             $this->Send( $this->Client1, $rollAction );
@@ -452,13 +452,13 @@ abstract class AbstractGameManager implements GameManagerInterface
             function( $entry ) {
                 return Mapper::DiceToDto( $entry );
             }
-        );
+        )->toArray();
         $rollAction->playerToMove = $this->Game->CurrentPlayer;
         $rollAction->validMoves = $this->Game->ValidMoves->map(
             function( $entry ) {
                 return Mapper::MoveToDto( $entry );
             }
-        );
+        )->toArray();
         $rollAction->moveTimer = Game::ClientCountDown;
         
         if ( $this->Client1 && ! $this->Game->BlackPlayer->IsAi() ) {
@@ -622,6 +622,39 @@ abstract class AbstractGameManager implements GameManagerInterface
         }
         
         return $winner;
+    }
+    
+    protected function DoMoves( MovesMadeActionDto $action ): void
+    {
+        if ( empty( $action->moves ) ) {
+            return;
+        }
+        
+        $firstMove = Mapper::MoveToMove( $action->moves[0], $this->Game );
+        $validMove = $this->Game->ValidMoves->filter(
+            function( $entry ) use ( $firstMove ) {
+                return $entry == $firstMove;
+            }
+        );
+        
+        foreach ( $action->moves as $key => $move ) {
+            if ( $validMove == null ) {
+                // Preventing invalid moves to enter the state. Should not happen unless someones hacking the socket or serious bugs.
+                throw new \RuntimeException( "An attempt to make an invalid move was made" );
+            } else if ( $key !== \array_key_last( $action->moves ) ) {
+                $nextMove = Mapper::MoveToMove( $action->moves[$key + 1], $this->Game );
+                // Going up the valid moves tree one step for every sent move.
+                $validMove = $validMove->NextMoves->filter(
+                    function( $entry ) use ( $nextMove ) {
+                        return $entry == $nextMove;
+                    }
+                );
+            }
+            
+            $color = $action->moves->color;
+            $move = Mapper::MoveToMove( $move, $this->Game );
+            $this->Game->MakeMove( $move );
+        }
     }
     
     protected function SendWinner( PlayerColor $color, ?array $newScore ): void

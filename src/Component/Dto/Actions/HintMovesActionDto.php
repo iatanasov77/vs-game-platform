@@ -1,10 +1,8 @@
 ﻿<?php namespace App\Component\Dto\Actions;
 
-use Doctrine\Common\Collections\Collection;
-
 class HintMovesActionDto extends ActionDto
 {
-    public Collection $moves; // MoveDto[]
+    public array $moves; // MoveDto[]
     
     public function  __construct()
     {

@@ -1,3 +1,11 @@
+0.12.4	|	Release date: **06.06.2025**
+============================================
+* New Features:
+  - Improve Jenkinsfile .
+  - Some Fixes on GameManager and Backgamon AiEngine.
+  - Update Seome Composer Requirements.
+
+
 0.12.3	|	Release date: **05.06.2025**
 ============================================
 * Bug-Fixes and Improvements:

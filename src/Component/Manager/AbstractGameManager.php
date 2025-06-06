@@ -41,6 +41,7 @@ use App\Component\Dto\Actions\OpponentMoveActionDto;
 use App\Component\Dto\Actions\RolledActionDto;
 use App\Component\Dto\Actions\StartGamePlayActionDto;
 use App\Component\Dto\Actions\GamePlayStartedActionDto;
+use App\Component\Dto\Actions\HintMovesActionDto;
 
 use App\Entity\GamePlayer;
 
@@ -709,6 +710,50 @@ abstract class AbstractGameManager implements GameManagerInterface
     {
         $this->EndGame( $winner );
         $this->log( "MyDebug: {$winner} won Game {$this->Game->Id} by resignition.");
+    }
+    
+    protected function GetHintAction(): HintMovesActionDto
+    {
+        $moves              = $this->Engine->GetBestMoves();
+        $hintMovesAction    = new HintMovesActionDto();
+        
+        $hintMovesAction->moves = $moves->map(
+            function( $entry ) {
+                $entry->hint = true;
+                return $entry;
+            }
+        );
+        
+        return $hintMovesAction;
+    }
+    
+    protected function DoDoubling(): void
+    {
+        $this->Game->GoldMultiplier *= 2;
+        $this->Game->BlackPlayer->Gold -= $this->Game->Stake / 2;
+        $this->Game->WhitePlayer->Gold -= $this->Game->Stake / 2;
+        
+        if ( $this->Game->WhitePlayer->Gold < 0 || $this->Game->BlackPlayer->Gold < 0 ) {
+            throw new \RuntimeException( "Player out of gold. Should not be allowd." );
+        }
+        
+        $blackUser = $this->playersRepository->find( $this->Game->BlackPlayer->Id );
+        $whiteUser = $this->playersRepository->find( $this->Game->WhitePlayer->Id );
+        
+        $em = $this->doctrine->getManager();
+        if ( ! $this->IsAi( $blackUser->getGuid() ) ) { // gold for ai remains in the db
+            $blackUser->setGold( $this->Game->BlackPlayer->Gold ); // non gold games guarded earlier in block.
+            $em->persists( $blackUser );
+        }
+        
+        if ( ! $this->IsAi( $whiteUser->getGuid() ) ) {
+            $whiteUser->setGold( $this->Game->WhitePlayer->Gold );
+            $em->persists( $whiteUser );
+        }
+        $em->flush();
+        
+        $this->Game->Stake += $this->Game->Stake;
+        $this->Game->LastDoubler = $this->Game->CurrentPlayer;
     }
     
     protected function NewTurn( WebsocketClientInterface $socket )

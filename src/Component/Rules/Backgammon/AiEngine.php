@@ -90,7 +90,7 @@ class AiEngine
             return $b->From->WhiteNumber <=> $a->From->WhiteNumber;
         });
             
-        return \iterator_to_array( $bestMoveSequence );
+        return new ArrayCollection( \iterator_to_array( $bestMoveSequence ) );
     }
     
     public static function GenerateMovesSequence( Game $game ): array

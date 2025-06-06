@@ -187,6 +187,9 @@ ENDSSH
                             ${PHP_BIN} -d memory_limit=-1 bin/console vankosoft:install:info update
                             ${PHP_BIN} -d memory_limit=-1 bin/console vankosoft:load-widgets
                             
+                            service websocket_game_platform_chat restart
+                            service websocket_game_platform_game restart
+                            
                             exit \$migrationCode
 ENDSSH
                     """
@@ -210,6 +213,9 @@ ENDSSH
                             
                             ${PHP_BIN} -d memory_limit=-1 bin/console vankosoft:install:info update
                             ${PHP_BIN} -d memory_limit=-1 bin/console vankosoft:load-widgets
+                            
+                            service websocket_game_platform_chat restart
+                            service websocket_game_platform_game restart
                             
                             exit \$migrationCode
 ENDSSH

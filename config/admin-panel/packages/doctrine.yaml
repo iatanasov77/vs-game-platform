@@ -61,7 +61,7 @@ doctrine:
                 #type: annotation
                 type: attribute
                 prefix: Gedmo\Loggable\Entity
-                dir: "%kernel.project_dir%/vendor/gedmo/doctrine-extensions/src/Loggable/Entity"
+                dir: "%kernel.project_dir%/vendor/gedmo/doctrine-extensions/src/Loggable/Entity/MappedSuperclass"
                 alias: GedmoLoggable
                 is_bundle: false
             sortable:

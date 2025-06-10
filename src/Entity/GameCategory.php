@@ -7,6 +7,10 @@ use Doctrine\Common\Collections\Collection;
 use Vankosoft\ApplicationBundle\Model\Interfaces\TaxonDescendentInterface;
 use Vankosoft\ApplicationBundle\Model\Traits\TaxonDescendentEntity;
 
+/**
+ * @Doctrine\Common\Annotations\Annotation\IgnoreAnnotation( "ORM\MappedSuperclass" )
+ * @Doctrine\Common\Annotations\Annotation\IgnoreAnnotation("ORM\Column")
+ */
 #[ORM\Entity]
 #[ORM\Table(name: "VSGP_GamesCategories")]
 class GameCategory implements ResourceInterface, TaxonDescendentInterface

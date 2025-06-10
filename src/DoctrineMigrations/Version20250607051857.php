@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250519141358 extends AbstractMigration
+final class Version20250607051857 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -39,7 +39,7 @@ final class Version20250519141358 extends AbstractMigration
             CREATE TABLE VSGP_GameSessions (id INT AUTO_INCREMENT NOT NULL, game_id INT DEFAULT NULL, guid VARCHAR(40) DEFAULT NULL, winner VARCHAR(40) DEFAULT NULL, score JSON DEFAULT NULL, active TINYINT(1) DEFAULT 0 NOT NULL, created_at DATETIME NOT NULL, updated_at DATETIME NOT NULL, INDEX IDX_7C2EE794E48FD905 (game_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE `utf8_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
-            CREATE TABLE VSGP_Games (id INT AUTO_INCREMENT NOT NULL, category_id INT DEFAULT NULL, picture_id INT DEFAULT NULL, enabled TINYINT(1) DEFAULT 0 NOT NULL, title VARCHAR(255) NOT NULL, slug VARCHAR(255) NOT NULL, position INT NOT NULL, game_url VARCHAR(255) DEFAULT NULL, UNIQUE INDEX UNIQ_19CA8883989D9B62 (slug), INDEX IDX_19CA888312469DE2 (category_id), UNIQUE INDEX UNIQ_19CA8883EE45BDBF (picture_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE `utf8_unicode_ci` ENGINE = InnoDB
+            CREATE TABLE VSGP_Games (id INT AUTO_INCREMENT NOT NULL, category_id INT DEFAULT NULL, parent_game_id INT DEFAULT NULL, enabled TINYINT(1) DEFAULT 0 NOT NULL, title VARCHAR(255) NOT NULL, slug VARCHAR(255) NOT NULL, position INT NOT NULL, game_url VARCHAR(255) DEFAULT NULL, UNIQUE INDEX UNIQ_19CA8883989D9B62 (slug), INDEX IDX_19CA888312469DE2 (category_id), INDEX IDX_19CA888396C7AD43 (parent_game_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE `utf8_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
             CREATE TABLE VSGP_GamesCategories (id INT AUTO_INCREMENT NOT NULL, parent_id INT DEFAULT NULL, taxon_id INT DEFAULT NULL, INDEX IDX_BC31D70F727ACA70 (parent_id), UNIQUE INDEX UNIQ_BC31D70FDE13F470 (taxon_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE `utf8_unicode_ci` ENGINE = InnoDB
@@ -69,7 +69,7 @@ final class Version20250519141358 extends AbstractMigration
             ALTER TABLE VSGP_Games ADD CONSTRAINT FK_19CA888312469DE2 FOREIGN KEY (category_id) REFERENCES VSGP_GamesCategories (id)
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE VSGP_Games ADD CONSTRAINT FK_19CA8883EE45BDBF FOREIGN KEY (picture_id) REFERENCES VSGP_GamePictures (id)
+            ALTER TABLE VSGP_Games ADD CONSTRAINT FK_19CA888396C7AD43 FOREIGN KEY (parent_game_id) REFERENCES VSGP_Games (id)
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE VSGP_GamesCategories ADD CONSTRAINT FK_BC31D70F727ACA70 FOREIGN KEY (parent_id) REFERENCES VSGP_GamesCategories (id)
@@ -102,25 +102,10 @@ final class Version20250519141358 extends AbstractMigration
             CREATE INDEX IDX_4A491FD507FAB6A ON VSAPP_Settings (maintenance_page_id )
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE VSCAT_PricingPlanSubscriptions CHANGE pricing_plan_id pricing_plan_id INT NOT NULL
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE VSPAY_PromotionRules DROP FOREIGN KEY FK_9D727099139DF194
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE VSPAY_PromotionRules ADD CONSTRAINT FK_9D727099139DF194 FOREIGN KEY (promotion_id) REFERENCES VSPAY_Promotions (id) ON DELETE CASCADE
-        SQL);
-        $this->addSql(<<<'SQL'
             ALTER TABLE VSUM_Users ADD last_active_at DATETIME DEFAULT NULL, ADD google_authenticator_secret VARCHAR(255) DEFAULT NULL, ADD api_verify_siganature VARCHAR(255) DEFAULT NULL, ADD api_verify_expires_at DATETIME DEFAULT NULL
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE VSUM_UsersInfo CHANGE title title ENUM('mr', 'mrs', 'miss')
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE VSUS_PayedServiceSubscriptionPeriods CHANGE payed_service_id payed_service_id INT NOT NULL
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE VSUS_PayedServicesAttributes CHANGE payed_service_id payed_service_id INT NOT NULL
         SQL);
     }
 
@@ -146,7 +131,7 @@ final class Version20250519141358 extends AbstractMigration
             ALTER TABLE VSGP_Games DROP FOREIGN KEY FK_19CA888312469DE2
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE VSGP_Games DROP FOREIGN KEY FK_19CA8883EE45BDBF
+            ALTER TABLE VSGP_Games DROP FOREIGN KEY FK_19CA888396C7AD43
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE VSGP_GamesCategories DROP FOREIGN KEY FK_BC31D70F727ACA70
@@ -209,25 +194,10 @@ final class Version20250519141358 extends AbstractMigration
             CREATE INDEX IDX_4A491FD507FAB6A ON VSAPP_Settings (maintenance_page_id)
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE VSCAT_PricingPlanSubscriptions CHANGE pricing_plan_id pricing_plan_id INT DEFAULT NULL
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE VSPAY_PromotionRules DROP FOREIGN KEY FK_9D727099139DF194
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE VSPAY_PromotionRules ADD CONSTRAINT FK_9D727099139DF194 FOREIGN KEY (promotion_id) REFERENCES VSPAY_Promotions (id) ON UPDATE NO ACTION ON DELETE NO ACTION
-        SQL);
-        $this->addSql(<<<'SQL'
             ALTER TABLE VSUM_Users DROP last_active_at, DROP google_authenticator_secret, DROP api_verify_siganature, DROP api_verify_expires_at
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE VSUM_UsersInfo CHANGE title title VARCHAR(255) DEFAULT NULL
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE VSUS_PayedServiceSubscriptionPeriods CHANGE payed_service_id payed_service_id INT DEFAULT NULL
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE VSUS_PayedServicesAttributes CHANGE payed_service_id payed_service_id INT DEFAULT NULL
         SQL);
     }
 }

@@ -21,6 +21,10 @@ use Doctrine\Common\Collections\Collection;
 use App\Entity\GamePlayer;
 use App\Entity\MercureConnection;
 
+/**
+ * @Doctrine\Common\Annotations\Annotation\IgnoreAnnotation( "ORM\MappedSuperclass" )
+ * @Doctrine\Common\Annotations\Annotation\IgnoreAnnotation("ORM\Column")
+ */
 #[ORM\Entity]
 #[ORM\Table(name: "VSUM_Users")]
 class User extends BaseUser implements

@@ -12,6 +12,10 @@ use Sylius\Component\Resource\Model\ToggleableTrait;
  * 
  * Games Played in the Room (Example: In Bridge Belote One game finished when a team reach 151 points in Sore)
  */
+/**
+ * @Doctrine\Common\Annotations\Annotation\IgnoreAnnotation( "ORM\MappedSuperclass" )
+ * @Doctrine\Common\Annotations\Annotation\IgnoreAnnotation("ORM\Column")
+ */
 #[ORM\Entity]
 #[ORM\Table(name: "VSGP_GameSessions")]
 class GamePlay implements ResourceInterface

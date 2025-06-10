@@ -3,6 +3,10 @@
 use Doctrine\ORM\Mapping as ORM;
 use Vankosoft\CmsBundle\Model\File;
 
+/**
+ * @Doctrine\Common\Annotations\Annotation\IgnoreAnnotation( "ORM\MappedSuperclass" )
+ * @Doctrine\Common\Annotations\Annotation\IgnoreAnnotation("ORM\Column")
+ */
 #[ORM\Entity]
 #[ORM\Table(name: "VSGP_GamePictures")]
 class GamePicture extends File

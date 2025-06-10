@@ -1,3 +1,10 @@
+0.13.0	|	Release date: **10.06.2025**
+============================================
+* New Features:
+  - Fix all Entities and Doctrine Configs about Doctrine ORM 3.0
+  - Update to Vankosoft Core 1.13
+
+
 0.12.4	|	Release date: **06.06.2025**
 ============================================
 * New Features:

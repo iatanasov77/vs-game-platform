@@ -15,6 +15,9 @@ final class GameManagerFactory
     /** @var string */
     private $environement;
     
+    /** @var string */
+    private $projectDir;
+    
     /** @var LoggerInterface */
     private $logger;
     
@@ -53,6 +56,7 @@ final class GameManagerFactory
     
     public function __construct(
         string $environement,
+        string $projectDir,
         LoggerInterface $logger,
         SerializerInterface $serializer,
         LiipImagineCacheManager $imagineCacheManager,
@@ -67,6 +71,7 @@ final class GameManagerFactory
         FactoryInterface $tempPlayersFactory
     ) {
         $this->environement             = $environement;
+        $this->projectDir               = $projectDir;
         $this->logger                   = $logger;
         $this->serializer               = $serializer;
         $this->imagineCacheManager      = $imagineCacheManager;
@@ -85,6 +90,7 @@ final class GameManagerFactory
     {
         return new WebsocketGameManager(
             $this->environement,
+            $this->projectDir,
             $this->logger,
             $this->serializer,
             $this->imagineCacheManager,
@@ -105,6 +111,7 @@ final class GameManagerFactory
     {
         return new ThruwayGameManager(
             $this->environement,
+            $this->projectDir,
             $this->logger,
             $this->serializer,
             $this->imagineCacheManager,
@@ -125,6 +132,7 @@ final class GameManagerFactory
     {
         return new ZmqGameManager(
             $this->environement,
+            $this->projectDir,
             $this->logger,
             $this->serializer,
             $this->imagineCacheManager,

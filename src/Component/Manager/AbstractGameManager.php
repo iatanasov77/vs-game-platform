@@ -62,6 +62,9 @@ abstract class AbstractGameManager implements GameManagerInterface
     /** @var string */
     protected $environement;
     
+    /** @var string */
+    protected $projectDir;
+    
     /** @var LoggerInterface */
     protected $logger;
     
@@ -127,6 +130,7 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     public function __construct(
         string $environement,
+        string $projectDir,
         LoggerInterface $logger,
         SerializerInterface $serializer,
         LiipImagineCacheManager $imagineCacheManager,
@@ -142,6 +146,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         bool $forGold
     ) {
         $this->environement             = $environement;
+        $this->projectDir               = $projectDir;
         $this->logger                   = $logger;
         $this->serializer               = $serializer;
         $this->imagineCacheManager      = $imagineCacheManager;
@@ -631,6 +636,7 @@ abstract class AbstractGameManager implements GameManagerInterface
             return;
         }
         
+        $this->debug( $action->moves[0], 'MoveDto.txt' );
         $firstMove = Mapper::MoveToMove( $action->moves[0], $this->Game );
         $validMove = $this->Game->ValidMoves->filter(
             function( $entry ) use ( $firstMove ) {
@@ -848,6 +854,17 @@ abstract class AbstractGameManager implements GameManagerInterface
     {
         if ( $this->environement == 'dev' ) {
             $this->logger->info( $logData );
+        }
+    }
+    
+    protected function debug( $logData, ?string $file = null ): void
+    {
+        if ( $this->environement == 'dev' ) {
+            if ( ! $file ) {
+                $file = 'debug.txt';
+            }
+            
+            \file_put_contents( $this->projectDir . '/var/' . $file, \print_r( $logData, true ) );
         }
     }
 }

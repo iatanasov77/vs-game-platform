@@ -18,6 +18,7 @@ services:
         class: App\Component\Manager\GameManagerFactory
         arguments:
             - '%env(APP_ENV)%'
+            - '%kernel.project_dir%'
             - '@monolog.logger.websocket_game'
             - '@serializer'
             - '@liip_imagine.cache.manager'

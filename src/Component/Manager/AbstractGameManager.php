@@ -15,7 +15,7 @@ use App\Component\Rules\Backgammon\GameFactory as BackgammonRulesFactory;
 
 use App\Component\System\Guid;
 use App\Component\Rules\Backgammon\Game;
-use App\Component\Rules\Backgammon\AiEngine;
+use App\Component\AI\Backgammon\Engine as AiEngine;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Websocket\WebSocketState;
 

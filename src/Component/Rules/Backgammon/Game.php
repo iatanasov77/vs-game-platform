@@ -171,6 +171,8 @@ abstract class Game
         $moves->clear();
     }
     
+    abstract protected function _GenerateMoves( Collection &$moves ): void;
+    
     protected function log( $logData ): void
     {
         if ( $this->environement == 'dev' ) {

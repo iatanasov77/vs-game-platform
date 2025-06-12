@@ -16,7 +16,7 @@ class Dice
     
     public static function RollOne(): int
     {
-        return \rand( 1, 7 );
+        return \rand( 1, 6 );
     }
     
     public static function Roll(): Collection

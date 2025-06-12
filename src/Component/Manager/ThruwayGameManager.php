@@ -4,7 +4,7 @@ use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Type\PlayerColor;
 use App\Component\Type\GameState;
-use App\Component\Rules\Backgammon\AiEngine;
+use App\Component\AI\Backgammon\Engine as AiEngine;
 use App\Entity\GamePlayer;
 
 final class ThruwayGameManager extends AbstractGameManager

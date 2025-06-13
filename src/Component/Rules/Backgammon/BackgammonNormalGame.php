@@ -150,7 +150,7 @@ class BackgammonNormalGame extends Game
             // Only one dice can be use and it must be the one with highest value
             
             $currentPlayer  = $this->CurrentPlayer;
-            $this->log( 'MyDebug CurrentPlayer: ' . \print_r( $currentPlayer, true ) );
+            $this->logger->log( 'MyDebug CurrentPlayer: ' . \print_r( $currentPlayer, true ), 'GamePlay' );
             $moves = $moves->filter(
                 function( $entry ) use ( $currentPlayer ) {
                     return $entry->To->GetNumber( $currentPlayer ) - $entry->From->GetNumber( $currentPlayer );
@@ -170,7 +170,7 @@ class BackgammonNormalGame extends Game
             function( $entry ) use ( $color ) {
                 return $entry->GetNumber( $color ) == 25;
             }
-            )->first();
+        )->first();
     }
     
     protected function _GenerateMoves( Collection &$moves ): void
@@ -212,7 +212,7 @@ class BackgammonNormalGame extends Game
                         return $entry->GetNumber( $currentPlayer ) == $shouldPointTo;
                     }
                 )->first();
-                $this->log( "GenerateMoves toPoint: " . print_r( $toPoint, true ) );
+                $this->logger->log( "GenerateMoves toPoint: " . print_r( $toPoint, true ), 'GamePlay' );
                 
                 // no creation of bearing off moves here. See next block.
                 $canMove = $moves->exists(
@@ -232,7 +232,7 @@ class BackgammonNormalGame extends Game
                     $move->From = $fromPoint;
                     $move->To = $toPoint;
                     
-                    $this->log( "First Calling MakeMove: diceCounter: {$diceCounter} pointsCounter: {$pointsCounter}" );
+                    $this->logger->log( "First Calling MakeMove: diceCounter: {$diceCounter} pointsCounter: {$pointsCounter}", 'GamePlay' );
                     $moves[]    = $move;
                     $hit = $this->MakeMove( $move );
                     if ( $hit ) {
@@ -267,7 +267,7 @@ class BackgammonNormalGame extends Game
                         $move->From = $fromPoint;
                         $move->To = $toPoint;
                         
-                        $this->log( "Second Calling MakeMove: diceCounter: {$diceCounter} pointsCounter: {$pointsCounter}" );
+                        $this->logger->log( "Second Calling MakeMove: diceCounter: {$diceCounter} pointsCounter: {$pointsCounter}", 'GamePlay' );
                         $moves[]    = $move;
                         $hit = $this->MakeMove( $move );
                         if ( $hit ) {
@@ -289,7 +289,7 @@ class BackgammonNormalGame extends Game
             return null;
         }
         
-        $this->log( "MyDebug MakeMove: " . print_r( $move, true ) );
+        $this->logger->log( "MyDebug MakeMove: " . print_r( $move, true ), 'GamePlay' );
         
         $checker = $move->From->Checkers->filter(
             function( $entry ) use ( $move ) {
@@ -403,7 +403,7 @@ class BackgammonNormalGame extends Game
         });
         
         $orderedPoints  = new ArrayCollection( \iterator_to_array( $pointsIterator ) );
-        $this->log( 'Ordered Points: ' . \print_r( $orderedPoints, true ) );
+        $this->logger->log( 'Ordered Points: ' . \print_r( $orderedPoints, true ), 'GamePlay' );
         
         return $orderedPoints;
     }

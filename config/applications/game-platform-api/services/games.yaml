@@ -7,6 +7,21 @@ services:
         autowire: true
         autoconfigure: true
     
+    app_game_logger:
+        class: App\Component\GameLogger
+        public: true
+        arguments:
+            - '@monolog.logger.websocket_game'
+            - '%env(APP_ENV)%'
+            - '%kernel.project_dir%'
+            - [
+                'GameServer',
+                'GameService',
+                'GameManager',
+                'GamePlay',
+                'GenerateMoves'
+            ]
+    
     app_websocket_client_factory:
         class: App\Component\Websocket\WebsocketClientFactory
         arguments:
@@ -17,9 +32,7 @@ services:
     app_game_manager_factory:
         class: App\Component\Manager\GameManagerFactory
         arguments:
-            - '%env(APP_ENV)%'
-            - '%kernel.project_dir%'
-            - '@monolog.logger.websocket_game'
+            - '@app_game_logger'
             - '@serializer'
             - '@liip_imagine.cache.manager'
             - '@event_dispatcher'
@@ -36,8 +49,7 @@ services:
         class: App\Component\GameService
         public: true
         arguments:
-            - '%env(APP_ENV)%'
-            - '@monolog.logger.websocket_game'
+            - '@app_game_logger'
             - '@serializer'
             - '@vs_users.repository.users'
             - '@vs_users.security_bridge'
@@ -49,5 +61,4 @@ services:
     app_backgammon_game_factory:
         class: App\Component\Rules\Backgammon\GameFactory
         arguments:
-            - '%env(APP_ENV)%'
-            - '@monolog.logger.websocket_game'
+            - '@app_game_logger'

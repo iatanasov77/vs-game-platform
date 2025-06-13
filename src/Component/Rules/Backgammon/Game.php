@@ -1,9 +1,9 @@
 <?php namespace App\Component\Rules\Backgammon;
 
-use Psr\Log\LoggerInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
+use App\Component\GameLogger;
 use App\Component\System\Guid;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerColor;
@@ -11,10 +11,7 @@ use App\Entity\GamePlayer;
 
 abstract class Game
 {
-    /** @var string */
-    protected $environement;
-    
-    /** @var LoggerInterface */
+    /** @var GameLogger */
     protected  $logger;
     
     /** @var string */
@@ -68,10 +65,9 @@ abstract class Game
     /** @var int */
     const TotalThinkTime = 48;
     
-    public function __construct( string $environement, LoggerInterface $logger )
+    public function __construct( GameLogger $logger )
     {
-        $this->environement = $environement;
-        $this->logger       = $logger;
+        $this->logger   = $logger;
     }
     
     public static function CalcPointsLeft( Game &$game ): void
@@ -135,7 +131,7 @@ abstract class Game
     
     public function SetFirstRollWinner(): void
     {
-        $this->log( 'MyDebug Existing Rolls: ' . \print_r( $this->Roll, true ) );
+        $this->logger->log( 'MyDebug Existing Rolls: ' . \print_r( $this->Roll, true ), 'GamePlay' );
         
         if ( $this->PlayState == GameState::FirstThrow ) {
             if ( $this->Roll[0]->Value > $this->Roll[1]->Value ) {
@@ -172,11 +168,4 @@ abstract class Game
     }
     
     abstract protected function _GenerateMoves( Collection &$moves ): void;
-    
-    protected function log( $logData ): void
-    {
-        if ( $this->environement == 'dev' ) {
-            $this->logger->info( $logData );
-        }
-    }
 }

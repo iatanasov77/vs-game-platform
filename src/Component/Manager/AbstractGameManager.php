@@ -4,13 +4,13 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Psr\Log\LoggerInterface;
 use Ratchet\RFC6455\Messaging\Frame;
 use Doctrine\Persistence\ManagerRegistry;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager as LiipImagineCacheManager;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
+use App\Component\GameLogger;
 use App\Component\Rules\Backgammon\GameFactory as BackgammonRulesFactory;
 
 use App\Component\System\Guid;
@@ -59,13 +59,7 @@ abstract class AbstractGameManager implements GameManagerInterface
     /** @var bool */
     public $RoomSelected = false;
     
-    /** @var string */
-    protected $environement;
-    
-    /** @var string */
-    protected $projectDir;
-    
-    /** @var LoggerInterface */
+    /** @var GameLogger */
     protected $logger;
     
     /** @var SerializerInterface */
@@ -129,9 +123,7 @@ abstract class AbstractGameManager implements GameManagerInterface
     public $ForGold;
     
     public function __construct(
-        string $environement,
-        string $projectDir,
-        LoggerInterface $logger,
+        GameLogger $logger,
         SerializerInterface $serializer,
         LiipImagineCacheManager $imagineCacheManager,
         EventDispatcherInterface $eventDispatcher,
@@ -145,8 +137,6 @@ abstract class AbstractGameManager implements GameManagerInterface
         FactoryInterface $tempPlayersFactory,
         bool $forGold
     ) {
-        $this->environement             = $environement;
-        $this->projectDir               = $projectDir;
         $this->logger                   = $logger;
         $this->serializer               = $serializer;
         $this->imagineCacheManager      = $imagineCacheManager;
@@ -170,16 +160,16 @@ abstract class AbstractGameManager implements GameManagerInterface
     public function getClient( $clientId ): mixed
     {
         if ( $this->Client1->getClientId() == $clientId ) {
-            $this->log( 'GameManager Websocket Client 1 Found !!!' );
+            $this->logger->log( 'GameManager Websocket Client 1 Found !!!', 'GameManager' );
             return $this->Client1;
         }
         
         if ( $this->Client2->getClientId() == $clientId ) {
-            $this->log( 'GameManager Websocket Client 2 Found !!!' );
+            $this->logger->log( 'GameManager Websocket Client 2 Found !!!', 'GameManager' );
             return $this->Client2;
         }
         
-        $this->log( 'GameManager Websocket Client Not Found !!!' );
+        $this->logger->log( 'GameManager Websocket Client Not Found !!!', 'GameManager' );
         throw new \Exception( 'GameManager Websocket Client Not Found !!!' );
     }
     
@@ -248,13 +238,13 @@ abstract class AbstractGameManager implements GameManagerInterface
             $restoreAction->color = $color == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
             $this->Send( $otherSocket, $restoreAction );
         } else {
-            $this->log( "MyDebug: Failed to send restore to other client" );
+            $this->logger->log( "MyDebug: Failed to send restore to other client", 'GameManager' );
         }
     }
     
     public function DoAction( ActionNames $actionName, string $actionText, WebsocketClientInterface $socket, ?WebsocketClientInterface $otherSocket )
     {
-        $this->log( "MyDebug Doing action: {$actionName->value}" );
+        $this->logger->log( "MyDebug Doing action: {$actionName->value}", 'GameManager' );
         
         if ( $actionName == ActionNames::movesMade ) {
             $this->Game->ThinkStart = new \DateTime( 'now' );
@@ -330,40 +320,40 @@ abstract class AbstractGameManager implements GameManagerInterface
             $winner = $this->Client1 == $otherSocket ? PlayerColor::Black : PlayerColor::White;
             $this->Resign( $winner );
         } else if ( $actionName == ActionNames::exitGame ) {
-            $this->log( 'MyDebug: exitGame action recieved from GameManager.' );
+            $this->logger->log( 'MyDebug: exitGame action recieved from GameManager.', 'GameManager' );
             $this->CloseConnections( $socket );
         } else if ( $actionName == ActionNames::startGamePlay ) {
-            $this->log( 'MyDebug: startGamePlay action recieved from GameManager.' );
+            $this->logger->log( 'MyDebug: startGamePlay action recieved from GameManager.', 'GameManager' );
             $this->StartGamePlay();
         }
     }
     
     public function Send( ?WebsocketClientInterface $socket, object $obj ): void
     {
-        //$this->log( 'MyDebug: Game ' . print_r( $obj, true ) );
+        //$this->logger->log( 'MyDebug: Game ' . print_r( $obj, true ), 'GameManager' );
         
         $sendObject = \get_class( $obj );
-        $this->log( "MyDebug: Sending {$sendObject}." );
+        $this->logger->log( "MyDebug: Sending {$sendObject}.", 'GameManager' );
         
         if ( ! $socket || $socket->State != WebSocketState::Open ) {
-            $this->log( "MyDebug: Cannot send to socket, connection was lost." );
+            $this->logger->log( "MyDebug: Cannot send to socket, connection was lost.", 'GameManager' );
             return;
         }
         
         // , [JsonEncode::OPTIONS => JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT]
         $json = $this->serializer->serialize( $obj, JsonEncoder::FORMAT );
-        $this->log( "MyDebug: Sending to client {$json}" );
+        $this->logger->log( "MyDebug: Sending to client {$json}", 'GameManager' );
         
         try {
             $socket->send( $obj );
         } catch ( \Exception $exc ) {
-            $this->log( "MyDebug: Failed to send socket data. Exception: {$exc->getMessage()}" );
+            $this->logger->log( "MyDebug: Failed to send socket data. Exception: {$exc->getMessage()}", 'GameManager' );
         }
     }
     
     public function StartGame(): void
     {
-        $this->log( 'MyDebug: Begin Start Game' );
+        $this->logger->log( 'MyDebug: Begin Start Game', 'GameManager' );
         
         $this->Game->ThinkStart = new \DateTime( 'now' );
         $gameDto = Mapper::GameToDto( $this->Game );
@@ -431,7 +421,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         if ( ! $this->moveTimeOut->IsCancellationRequested ) {
             $ellapsed = ( new \DateTime( 'now' ) ) - $this->Game->ThinkStart;
             if ( $ellapsed->TotalSeconds > $this->Game->TotalThinkTime ) {
-                $this->log( "MyDebug: The time run out for {$this->Game->CurrentPlayer}" );
+                $this->logger->log( "MyDebug: The time run out for {$this->Game->CurrentPlayer}", 'GameManager' );
                 $this->moveTimeOut->cancel();
                 $winner = $this->Game->CurrentPlayer == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
                 $this->EndGame( $winner );
@@ -443,7 +433,7 @@ abstract class AbstractGameManager implements GameManagerInterface
     {
         //$this->moveTimeOut->cancel();
         $this->Game->PlayState = GameState::Ended;
-        $this->Log( "The winner is {$winner->value}" );
+        $this->Logger->log( "The winner is {$winner->value}", 'GameManager' );
         
         $newScore = $this->SaveWinner( $winner );
         $this->SendWinner( $winner, $newScore );
@@ -565,8 +555,8 @@ abstract class AbstractGameManager implements GameManagerInterface
             
             $stake = $this->Game->Stake;
             $this->Game->Stake = 0;
-            $this->log( "MyDebug: Stake" . $stake );
-            $this->log( "MyDebug Initial gold: {$black->getGold()} {$this->Game->BlackPlayer->Gold} {$white->getGold()} {$this->Game->WhitePlayer->Gold}" );
+            $this->logger->log( "MyDebug: Stake" . $stake, 'GameManager' );
+            $this->logger->log( "MyDebug Initial gold: {$black->getGold()} {$this->Game->BlackPlayer->Gold} {$white->getGold()} {$this->Game->WhitePlayer->Gold}", 'GameManager' );
             
             if ( $color == PlayerColor::Black ) {
                 if ( ! $this->IsAi( $black->getGuid() ) )
@@ -577,7 +567,7 @@ abstract class AbstractGameManager implements GameManagerInterface
                     $white->addGold( $stake );
                     $this->Game->WhitePlayer->Gold += stake;
             }
-            $this->log( "MyDebug After transfer: {$black->Gold} {$this->Game->BlackPlayer->Gold} {$white->Gold} {$this->Game->WhitePlayer->Gold}" );
+            $this->logger->log( "MyDebug After transfer: {$black->Gold} {$this->Game->BlackPlayer->Gold} {$white->Gold} {$this->Game->WhitePlayer->Gold}", 'GameManager' );
         }
         
         $em->persist( $black );
@@ -636,7 +626,7 @@ abstract class AbstractGameManager implements GameManagerInterface
             return;
         }
         
-        $this->debug( $action->moves[0], 'MoveDto.txt' );
+        $this->logger->debug( $action->moves[0], 'MoveDto.txt' );
         $firstMove = Mapper::MoveToMove( $action->moves[0], $this->Game );
         $validMove = $this->Game->ValidMoves->filter(
             function( $entry ) use ( $firstMove ) {
@@ -704,7 +694,7 @@ abstract class AbstractGameManager implements GameManagerInterface
     protected function CloseConnections( WebsocketClientInterface $socket )
     {
         if ( $socket != null ) {
-            $this->log( "MyDebug: Closing client" );
+            $this->logger->log( "MyDebug: Closing client", 'GameManager' );
             //await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Game aborted by client", CancellationToken.None);
             
             $socket->close( Frame::CLOSE_NORMAL );
@@ -715,7 +705,7 @@ abstract class AbstractGameManager implements GameManagerInterface
     protected function Resign( PlayerColor $winner ): void
     {
         $this->EndGame( $winner );
-        $this->log( "MyDebug: {$winner} won Game {$this->Game->Id} by resignition.");
+        $this->logger->log( "MyDebug: {$winner} won Game {$this->Game->Id} by resignition.", 'GameManager' );
     }
     
     protected function GetHintAction(): HintMovesActionDto
@@ -772,7 +762,7 @@ abstract class AbstractGameManager implements GameManagerInterface
             $this->SendNewRoll();
             
             if ( $this->AisTurn() ) {
-                $this->log( "MyDebug: NewTurn for AI" );
+                $this->logger->log( "MyDebug: NewTurn for AI", 'GameManager' );
                 $this->EnginMoves( $socket );
             }
         }
@@ -791,7 +781,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         $this->Send( $client, $action );
         
         $moves = $this->Engine->GetBestMoves();
-        $this->log( 'MyDebug EnginMoves: ' . print_r( $moves, true ) );
+        $this->logger->log( 'MyDebug EnginMoves: ' . print_r( $moves, true ), 'GameManager' );
         
         $noMoves = true;
         for ( $i = 0; $i < $moves->count(); $i++ ) {
@@ -847,24 +837,6 @@ abstract class AbstractGameManager implements GameManagerInterface
             default:
                 return ' - Unknown error';
                 break;
-        }
-    }
-    
-    protected function log( $logData ): void
-    {
-        if ( $this->environement == 'dev' ) {
-            $this->logger->info( $logData );
-        }
-    }
-    
-    protected function debug( $logData, ?string $file = null ): void
-    {
-        if ( $this->environement == 'dev' ) {
-            if ( ! $file ) {
-                $file = 'debug.txt';
-            }
-            
-            \file_put_contents( $this->projectDir . '/var/' . $file, \print_r( $logData, true ) );
         }
     }
 }

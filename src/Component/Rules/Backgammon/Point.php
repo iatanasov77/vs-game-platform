@@ -29,7 +29,7 @@ class Point
     public function IsOpen( PlayerColor $myColor ): bool
     {
         if ( $this->Checkers->isEmpty() ) {
-            return false;
+            return true;
         }
         
         //Opponent has less than two checkers on the point.

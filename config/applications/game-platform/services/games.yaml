@@ -26,10 +26,10 @@ services:
             - '%env(APP_ENV)%'
             - '%kernel.project_dir%'
             - [
-                'GameServer',
-                'GameService',
-                'GameManager',
-                'GamePlay',
+#                 'GameServer',
+#                 'GameService',
+#                 'GameManager',
+#                 'GamePlay',
                 'GenerateMoves'
             ]
     

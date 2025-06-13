@@ -9,6 +9,14 @@ parameters:
     # For Example: WEBSOCKET_EXCEPTION_TRACE=true
     ###########################################################
     env(WEBSOCKET_EXCEPTION_TRACE): 'false'
+    
+    ########################################################################################################################
+    # If need to have Logs for Any Contexts
+    # Set this ENV Variable in .env File With Array of Desired Log Contexts
+    # ----------------------------------------------------
+    # For Example: WEBSOCKET_GAME_LOGGER_CONTEXTS='["GameServer","GameService","GameManager","GamePlay","GenerateMoves"]'
+    #######################################################################################################################
+    env(WEBSOCKET_GAME_LOGGER_CONTEXTS): '[]'
 
 services:
     _defaults:
@@ -25,13 +33,7 @@ services:
             - '@monolog.logger.websocket_game'
             - '%env(APP_ENV)%'
             - '%kernel.project_dir%'
-            - [
-#                 'GameServer',
-#                 'GameService',
-#                 'GameManager',
-#                 'GamePlay',
-                'GenerateMoves'
-            ]
+            - '%env(json:WEBSOCKET_GAME_LOGGER_CONTEXTS)%'
     
     ##############################################################
     # Websocket Servers

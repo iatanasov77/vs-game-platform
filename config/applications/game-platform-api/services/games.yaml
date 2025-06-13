@@ -2,6 +2,14 @@ parameters:
     app_websocket_chat_url: '%env(WEBSOCKET_CHAT_URL)%'
     app_websocket_game_url: '%env(WEBSOCKET_GAME_URL)%'
 
+    ########################################################################################################################
+    # If need to have Logs for Any Contexts
+    # Set this ENV Variable in .env File With Array of Desired Log Contexts
+    # ----------------------------------------------------
+    # For Example: WEBSOCKET_GAME_LOGGER_CONTEXTS='["GameServer","GameService","GameManager","GamePlay","GenerateMoves"]'
+    #######################################################################################################################
+    env(WEBSOCKET_GAME_LOGGER_CONTEXTS): '[]'
+
 services:
     _defaults:
         autowire: true
@@ -14,13 +22,7 @@ services:
             - '@monolog.logger.websocket_game'
             - '%env(APP_ENV)%'
             - '%kernel.project_dir%'
-            - [
-                'GameServer',
-                'GameService',
-                'GameManager',
-                'GamePlay',
-                'GenerateMoves'
-            ]
+            - '%env(json:WEBSOCKET_GAME_LOGGER_CONTEXTS)%'
     
     app_websocket_client_factory:
         class: App\Component\Websocket\WebsocketClientFactory

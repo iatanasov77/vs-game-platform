@@ -6,6 +6,12 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use App\Component\Dto\Actions\MovesMadeActionDto;
 use App\Component\Dto\MoveDto;
 
+/**
+ * REFERENCES
+ * ==========
+ * https://symfony.com/doc/current/serializer.html
+ * https://stackoverflow.com/questions/70467989/how-to-deserialize-a-nested-array-of-objects-declared-on-the-constructor-via-pro
+ */
 class MovesMadeActionDtoDenormalizer implements DenormalizerInterface, DenormalizerAwareInterface
 {
     use DenormalizerAwareTrait;

@@ -1,5 +1,10 @@
 <?php namespace App\Component\Dto\Actions;
 
+use Symfony\Component\Serializer\Attribute\Context;
+use App\Serializer\Normalizer\MovesMadeActionDtoDenormalizer;
+use App\Component\Dto\MoveDto;
+
+#[Context([MovesMadeActionDtoDenormalizer::class])]
 class MovesMadeActionDto extends ActionDto
 {
     public function __construct()
@@ -7,5 +12,6 @@ class MovesMadeActionDto extends ActionDto
         $this->actionName = ActionNames::movesMade->value;
     }
     
-    public array $moves; // MoveDto[]
+    /** @var MoveDto[] $moves */
+    public array $moves;
 }

@@ -36,7 +36,7 @@ class Point
         //My own home is always open.
         return $this->Checkers->filter(
             function( $entry ) use ( $myColor ) {
-                return $entry->Color != $myColor;
+                return $entry && $entry->Color != $myColor;
             }
         )->count() < 2 || $this->GetNumber( $myColor ) == 25;
     }

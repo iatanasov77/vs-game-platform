@@ -24,8 +24,16 @@ use App\Component\Websocket\Server\WebsocketGamesHandler;
  * See Logs:        sudo tail -f /dev/shm/game-platform.lh/game-platform/log/websocket_game.log
  * Start Service:   sudo service websocket_game_platform_game restart
  *
+ * Forked From: https://www.codeproject.com/Articles/5297405/Online-Backgammon
+ * Play Original Game: https://backgammon.azurewebsites.net/
+ *
  * Manual:  https://stackoverflow.com/questions/64292868/how-to-send-a-message-to-specific-websocket-clients-with-symfony-ratchet
  *          https://stackoverflow.com/questions/30953610/how-to-send-messages-to-particular-users-ratchet-php-websocket
+ */
+
+/**
+ * Forked From: https://www.codeproject.com/Articles/5297405/Online-Backgammon
+ * Play Original Game: https://backgammon.azurewebsites.net/
  */
 #[AsCommand(
     name: 'vgp:websocket:game',

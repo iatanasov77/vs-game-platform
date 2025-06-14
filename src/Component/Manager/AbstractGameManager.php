@@ -359,19 +359,20 @@ abstract class AbstractGameManager implements GameManagerInterface
         $gameDto = Mapper::GameToDto( $this->Game );
         
         $action = new GameCreatedActionDto();
-        $action->game       = $gameDto;
+        $action->game = $gameDto;
         
-        $action->myColor    = PlayerColor::Black;
+        $action->myColor = PlayerColor::Black;
         $this->Send( $this->Client1, $action );
         
         $action->myColor = PlayerColor::White;
         $this->Send( $this->Client2, $action );
         
-        //$game->PlayState = GameState::OpponentConnectWaiting;
         $this->Game->PlayState = GameState::FirstThrow;
-        // todo: visa på clienten även när det blir samma
         
+        // todo: visa på clienten även när det blir samma
         while ( $this->Game->PlayState == GameState::FirstThrow ) {
+            $this->logger->log( 'First Throw State !!!', 'FirstThrowState' );
+            
             $this->Game->RollDice();
             $rollAction = new DicesRolledActionDto();
             $rollAction->dices = $this->Game->Roll->map(
@@ -386,7 +387,8 @@ abstract class AbstractGameManager implements GameManagerInterface
                 }
             )->toArray();
             $rollAction->moveTimer = Game::ClientCountDown;
-                
+            
+            $this->logger->log( 'First Throw Valid Moves: ' . \print_r( $rollAction->validMoves, true ), 'FirstThrowState' );
             $this->Send( $this->Client1, $rollAction );
             $this->Send( $this->Client2, $rollAction );
         }

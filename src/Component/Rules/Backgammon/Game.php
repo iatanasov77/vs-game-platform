@@ -11,8 +11,11 @@ use App\Entity\GamePlayer;
 
 abstract class Game
 {
-    /** @var GameLogger */
-    protected  $logger;
+    /** @var int */
+    const ClientCountDown = 40;
+    
+    /** @var int */
+    const TotalThinkTime = 48;
     
     /** @var string */
     public $Id;
@@ -60,10 +63,13 @@ abstract class Game
     public $Stake;
     
     /** @var int */
-    const ClientCountDown = 40;
+    public $WhiteStarts = 0;
     
     /** @var int */
-    const TotalThinkTime = 48;
+    public $BlackStarts = 0;
+    
+    /** @var GameLogger */
+    protected  $logger;
     
     public function __construct( GameLogger $logger )
     {
@@ -131,13 +137,15 @@ abstract class Game
     
     public function SetFirstRollWinner(): void
     {
-        $this->logger->log( 'MyDebug Existing Rolls: ' . \print_r( $this->Roll, true ), 'GamePlay' );
+        // $this->logger->log( 'MyDebug Existing Rolls: ' . \print_r( $this->Roll, true ), 'FirstThrowState' );
         
         if ( $this->PlayState == GameState::FirstThrow ) {
             if ( $this->Roll[0]->Value > $this->Roll[1]->Value ) {
                 $this->CurrentPlayer = PlayerColor::Black;
+                $this->BlackStarts++;
             } else if ( $this->Roll[0]->Value < $this->Roll[1]->Value ) {
                 $this->CurrentPlayer = PlayerColor::White;
+                $this->WhiteStarts++;
             }
             
             if ( $this->Roll[0]->Value != $this->Roll[1]->Value ) {
@@ -150,6 +158,7 @@ abstract class Game
     {
         $this->Roll = new ArrayCollection( Dice::Roll()->toArray() );
         $this->SetFirstRollWinner();
+        // $this->logger->log( 'CurrentPlayer: ' . $this->CurrentPlayer->value, 'FirstThrowState' );
         
         $this->ClearMoves( $this->ValidMoves );
         $this->_GenerateMoves( $this->ValidMoves );

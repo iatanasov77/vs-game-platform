@@ -224,6 +224,8 @@ export class WebsocketGameService
             }
             case ActionNames.dicesRolled: {
                 const dicesAction = JSON.parse( message.data ) as DicesRolledActionDto;
+                console.log( 'Dices Rolled Action', dicesAction );
+                
                 this.appState.dices.setValue( dicesAction.dices );
                 const cGame = {
                     ...game,
@@ -231,11 +233,12 @@ export class WebsocketGameService
                     currentPlayer: dicesAction.playerToMove,
                     playState: GameState.playing
                 };
-                // console.log(dicesAction.validMoves);
+                
                 this.appState.game.setValue( cGame );
                 this.statusMessageService.setTextMessage( cGame );
                 this.appState.moveTimer.setValue( dicesAction.moveTimer );
                 this.appState.opponentDone.setValue( true );
+                
                 break;
             }
             case ActionNames.movesMade: {

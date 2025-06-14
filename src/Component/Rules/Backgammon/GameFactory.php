@@ -1,28 +1,24 @@
 <?php namespace App\Component\Rules\Backgammon;
 
-use Psr\Log\LoggerInterface;
 use Doctrine\Common\Collections\ArrayCollection;
+use App\Component\GameLogger;
 use App\Component\System\Guid;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerColor;
 
 final class GameFactory
 {
-    /** @var string */
-    private $environement;
+    /** @var GameLogger */
+    private  $logger;
     
-    /** @var LoggerInterface */
-    private $logger;
-    
-    public function __construct( string $environement, LoggerInterface $logger )
+    public function __construct( GameLogger $logger )
     {
-        $this->environement = $environement;
-        $this->logger       = $logger;
+        $this->logger   = $logger;
     }
     
     public function createBackgammonNormalGame( bool $forGold ): Game
     {
-        $game = new BackgammonNormalGame( $this->environement, $this->logger );
+        $game = new BackgammonNormalGame( $this->logger );
         
         $game->Id           = Guid::NewGuid();
         $game->Points       = new ArrayCollection();
@@ -69,7 +65,7 @@ final class GameFactory
     
     public function createBackgammonGulBaraGame( bool $forGold ): Game
     {
-        $game = new BackgammonGulBaraGame( $this->environement, $this->logger );
+        $game = new BackgammonGulBaraGame( $this->logger );
         
         $game->Id           = Guid::NewGuid();
         $game->Points       = new ArrayCollection();
@@ -116,7 +112,7 @@ final class GameFactory
     
     public function createBackgammonTapaGame( bool $forGold ): Game
     {
-        $game = new BackgammonTapaGame( $this->environement, $this->logger );
+        $game = new BackgammonTapaGame( $this->logger );
         
         $game->Id           = Guid::NewGuid();
         $game->Points       = new ArrayCollection();

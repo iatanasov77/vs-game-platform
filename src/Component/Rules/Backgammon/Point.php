@@ -29,14 +29,14 @@ class Point
     public function IsOpen( PlayerColor $myColor ): bool
     {
         if ( $this->Checkers->isEmpty() ) {
-            return false;
+            return true;
         }
         
         //Opponent has less than two checkers on the point.
         //My own home is always open.
         return $this->Checkers->filter(
             function( $entry ) use ( $myColor ) {
-                return $entry->Color != $myColor;
+                return $entry && $entry->Color != $myColor;
             }
         )->count() < 2 || $this->GetNumber( $myColor ) == 25;
     }

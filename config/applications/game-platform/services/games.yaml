@@ -9,12 +9,44 @@ parameters:
     # For Example: WEBSOCKET_EXCEPTION_TRACE=true
     ###########################################################
     env(WEBSOCKET_EXCEPTION_TRACE): 'false'
+    
+    ########################################################################################################################
+    # If need to have Logs for Any Contexts
+    # Set this ENV Variable in .env File With Array of Desired Log Contexts
+    # ----------------------------------------------------
+    # For Example: WEBSOCKET_GAME_LOGGER_CONTEXTS='["GameServer","GameService","GameManager","GamePlay","GenerateMoves"]'
+    #######################################################################################################################
+    env(WEBSOCKET_GAME_LOGGER_CONTEXTS): '[]'
 
 services:
     _defaults:
         autowire: true
         autoconfigure: true
 
+    ##############################################################
+    # Custom Loggers
+    ##############################################################
+    app_game_logger:
+        class: App\Component\GameLogger
+        public: true
+        arguments:
+            - '@monolog.logger.websocket_game'
+            - '%env(APP_ENV)%'
+            - '%kernel.project_dir%'
+            - '%env(json:WEBSOCKET_GAME_LOGGER_CONTEXTS)%'
+    
+    ##############################################################
+    # Custom Serializer Normalizers
+    ##############################################################
+    App\Component\Serializer\Normalizer\MoveDtoDenormalizer:
+        tags:
+            # register the normalizer with a high priority (called earlier)
+            - { name: 'serializer.normalizer', priority: 500 }
+    App\Component\Serializer\Normalizer\MovesMadeActionDtoDenormalizer:
+        tags:
+            # register the normalizer with a high priority (called earlier)
+            - { name: 'serializer.normalizer', priority: 500 }
+    
     ##############################################################
     # Websocket Servers
     ##############################################################
@@ -40,9 +72,8 @@ services:
             - '@service_container'
             - '@doctrine'
             - '@validator'
-            - '%env(APP_ENV)%'
+            - '@app_game_logger'
             - '@serializer'
-            - '@monolog.logger.websocket_game'
             - {
                 sslCertificateKey: '%env(SSL_CERTIFICATE_KEY)%',
                 sslCertificateCert: '%env(SSL_CERTIFICATE_CERT)%',
@@ -63,8 +94,7 @@ services:
         class: App\Component\GameService
         public: true
         arguments:
-            - '%env(APP_ENV)%'
-            - '@monolog.logger.websocket_game'
+            - '@app_game_logger'
             - '@serializer'
             - '@vs_users.repository.users'
             - '@vs_users.security_bridge'
@@ -76,8 +106,7 @@ services:
     app_game_manager_factory:
         class: App\Component\Manager\GameManagerFactory
         arguments:
-            - '%env(APP_ENV)%'
-            - '@monolog.logger.websocket_game'
+            - '@app_game_logger'
             - '@serializer'
             - '@liip_imagine.cache.manager'
             - '@event_dispatcher'
@@ -96,8 +125,7 @@ services:
     app_backgammon_game_factory:
         class: App\Component\Rules\Backgammon\GameFactory
         arguments:
-            - '%env(APP_ENV)%'
-            - '@monolog.logger.websocket_game'
+            - '@app_game_logger'
     
     
     ##############################################################

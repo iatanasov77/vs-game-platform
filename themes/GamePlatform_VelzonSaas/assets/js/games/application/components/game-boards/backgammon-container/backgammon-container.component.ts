@@ -541,6 +541,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
     
     rollButtonClick(): void
     {
+        // alert( 'rollButtonClick()' );
         this.wsService.sendRolled();
         this.rollButtonClicked = true;
         this.setRollButtonVisible();

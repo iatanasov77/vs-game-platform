@@ -9,7 +9,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Container\ContainerInterface;
-use Psr\Log\LoggerInterface;
 use Vankosoft\ApplicationBundle\Command\ContainerAwareCommand;
 
 use Ratchet\Server\IoServer;
@@ -18,14 +17,23 @@ use Ratchet\WebSocket\WsServer;
 use Ratchet\MessageComponentInterface;
 use React\EventLoop\Factory as EventLoopFactory;
 use React\Socket\SocketServer;
+use App\Component\GameLogger;
 use App\Component\Websocket\Server\WebsocketGamesHandler;
 
 /**
  * See Logs:        sudo tail -f /dev/shm/game-platform.lh/game-platform/log/websocket_game.log
  * Start Service:   sudo service websocket_game_platform_game restart
  *
+ * Forked From: https://www.codeproject.com/Articles/5297405/Online-Backgammon
+ * Play Original Game: https://backgammon.azurewebsites.net/
+ *
  * Manual:  https://stackoverflow.com/questions/64292868/how-to-send-a-message-to-specific-websocket-clients-with-symfony-ratchet
  *          https://stackoverflow.com/questions/30953610/how-to-send-messages-to-particular-users-ratchet-php-websocket
+ */
+
+/**
+ * Forked From: https://www.codeproject.com/Articles/5297405/Online-Backgammon
+ * Play Original Game: https://backgammon.azurewebsites.net/
  */
 #[AsCommand(
     name: 'vgp:websocket:game',
@@ -34,14 +42,11 @@ use App\Component\Websocket\Server\WebsocketGamesHandler;
 )]
 final class WebsocketGameServer extends ContainerAwareCommand
 {
-    /** @var string */
-    private $environement;
+    /** @var GameLogger */
+    private $logger;
     
     /** @var SerializerInterface */
     private $serializer;
-    
-    /** @var LoggerInterface */
-    private $logger;
     
     /** @var MessageComponentInterface */
     private $gamesHandler;
@@ -53,16 +58,14 @@ final class WebsocketGameServer extends ContainerAwareCommand
         ContainerInterface $container,
         ManagerRegistry $doctrine,
         ValidatorInterface $validator,
-        string $environement,
+        GameLogger $logger,
         SerializerInterface $serializer,
-        LoggerInterface $logger,
         array $parrameters
     ) {
         parent::__construct( $container, $doctrine, $validator );
         
-        $this->environement = $environement;
-        $this->serializer   = $serializer;
         $this->logger       = $logger;
+        $this->serializer   = $serializer;
         $this->parrameters  = $parrameters;
     }
     
@@ -74,7 +77,7 @@ final class WebsocketGameServer extends ContainerAwareCommand
         /**
          * @NOTE POSSIX SIGNAL CODES: https://www.php.net/manual/en/pcntl.constants.php#115603
          */
-        //$this->log( "Possix Signal: " . $signo );
+        //$this->logger->log( "Possix Signal: " . $signo, 'GameServer' );
         
         switch ( $signo ) {
             case SIGTERM:
@@ -110,9 +113,8 @@ final class WebsocketGameServer extends ContainerAwareCommand
         $port = $input->getArgument( 'port' );
         
         $this->gamesHandler = new WebsocketGamesHandler(
-            $this->environement,
-            $this->serializer,
             $this->logger,
+            $this->serializer,
             $this->get( 'vs_users.repository.users' ),
             $this->get( 'app_websocket_client_factory' ),
             $this->get( 'app_game_service' ),
@@ -140,12 +142,5 @@ final class WebsocketGameServer extends ContainerAwareCommand
         $loop->run();
         
         return Command::SUCCESS;
-    }
-    
-    private function log( $logData ): void
-    {
-        if ( $this->environement == 'dev' ) {
-            $this->logger->info( $logData );
-        }
     }
 }

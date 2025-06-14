@@ -4,19 +4,20 @@ use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Type\PlayerColor;
 use App\Component\Type\GameState;
-use App\Component\Rules\Backgammon\AiEngine;
+use App\Component\AI\Backgammon\Engine as AiEngine;
 use App\Entity\GamePlayer;
 
 final class WebsocketGameManager extends AbstractGameManager
 {
     public function ConnectAndListen( WebsocketClientInterface $webSocket, PlayerColor $color, GamePlayer $dbUser, bool $playAi ): void
     {
-        $this->log( "MyDebug: Connecting Game Manager ..." );
+        $this->logger->log( "MyDebug: Connecting Game Manager ...", 'GameManager' );
+        $this->Game->CurrentPlayer  = $color;
         
         if ( $color == PlayerColor::Black ) {
             $this->Client1 = $webSocket;
             
-            $this->Game->CurrentPlayer  = PlayerColor::Black;
+            
             $this->Game->BlackPlayer->Id = $dbUser != null ? $dbUser->getId() : Guid::Empty();
             $this->Game->BlackPlayer->Name = $dbUser != null ? $dbUser->getName() : "Guest";
             $this->Game->BlackPlayer->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $this->getPlayerPhotoUrl( $dbUser ) : "";
@@ -28,11 +29,10 @@ final class WebsocketGameManager extends AbstractGameManager
             }
             
             if ( $playAi ) {
-                $this->log( "Play AI is TRUE !!!" );
+                $this->logger->log( "Play AI is TRUE !!!", 'GameManager' );
                 
                 $aiUser = $this->playersRepository->findOneBy( ['guid' => GamePlayer::AiUser] );
                 
-                $this->Game->CurrentPlayer  = PlayerColor::White;
                 $this->Game->WhitePlayer->Id = $aiUser->getId();
                 $this->Game->WhitePlayer->Name = $aiUser->getName();
                 /** @TODO: AI image */
@@ -48,7 +48,7 @@ final class WebsocketGameManager extends AbstractGameManager
                 $this->StartGame();
                 
                 if ( $this->Game->CurrentPlayer == PlayerColor::White ) {
-                    $this->log( "GameManager CurrentPlayer: White" );
+                    $this->logger->log( "GameManager CurrentPlayer: White", 'GameManager' );
                     
                     $this->EnginMoves( $this->Client1 );
                 }
@@ -59,7 +59,6 @@ final class WebsocketGameManager extends AbstractGameManager
             }
             $this->Client2 = $webSocket;
             
-            $this->Game->CurrentPlayer  = PlayerColor::White;
             $this->Game->WhitePlayer->Id = $dbUser != null ? $dbUser->getId() : Guid::Empty();
             $this->Game->WhitePlayer->Name = $dbUser != null ? $dbUser->getName() : "Guest";
             $this->Game->WhitePlayer->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $this->getPlayerPhotoUrl( $dbUser ) : "";

@@ -1,3 +1,19 @@
+0.13.1	|	Release date: **14.06.2025**
+============================================
+* Bug-Fixes, Improvements and Refactoring:
+  - Improve Jenkinsfile
+  - Move AI Engines at Different Namespace.
+  - Add another option for debugging GameManager .
+  - Create Serializer Denormalizers for DTO Objects.
+  - Create a Custom Logger for Games.
+  - Fix Initializing Current Player on Game Creating.
+  - Fix IsBearingOff Method of Game.
+  - Improve Configuration of Game Logger.
+  - Fixing Generate Moves on First Throw.
+  - Refactoring of Backgammon Rules Classes.
+  - Make Custom Serializer Denormalizers to works.
+
+
 0.13.0	|	Release date: **10.06.2025**
 ============================================
 * New Features:

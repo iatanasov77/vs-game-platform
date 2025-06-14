@@ -1,6 +1,5 @@
 <?php namespace App\Component\Manager;
 
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager as LiipImagineCacheManager;
@@ -8,14 +7,12 @@ use Doctrine\Persistence\ManagerRegistry;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
+use App\Component\GameLogger;
 use App\Component\Rules\Backgammon\GameFactory as BackgammonRulesFactory;
 
 final class GameManagerFactory
 {
-    /** @var string */
-    private $environement;
-    
-    /** @var LoggerInterface */
+    /** @var GameLogger */
     private $logger;
     
     /** @var SerializerInterface */
@@ -52,8 +49,7 @@ final class GameManagerFactory
     private $tempPlayersFactory;
     
     public function __construct(
-        string $environement,
-        LoggerInterface $logger,
+        GameLogger $logger,
         SerializerInterface $serializer,
         LiipImagineCacheManager $imagineCacheManager,
         EventDispatcherInterface $eventDispatcher,
@@ -66,7 +62,6 @@ final class GameManagerFactory
         RepositoryInterface $tempPlayersRepository,
         FactoryInterface $tempPlayersFactory
     ) {
-        $this->environement             = $environement;
         $this->logger                   = $logger;
         $this->serializer               = $serializer;
         $this->imagineCacheManager      = $imagineCacheManager;
@@ -84,7 +79,6 @@ final class GameManagerFactory
     public function createWebsocketGameManager( bool $forGold ): GameManagerInterface
     {
         return new WebsocketGameManager(
-            $this->environement,
             $this->logger,
             $this->serializer,
             $this->imagineCacheManager,
@@ -104,7 +98,6 @@ final class GameManagerFactory
     public function createThruwayGameManager( bool $forGold ): GameManagerInterface
     {
         return new ThruwayGameManager(
-            $this->environement,
             $this->logger,
             $this->serializer,
             $this->imagineCacheManager,
@@ -124,7 +117,6 @@ final class GameManagerFactory
     public function createZmqGameManager( bool $forGold ): GameManagerInterface
     {
         return new ZmqGameManager(
-            $this->environement,
             $this->logger,
             $this->serializer,
             $this->imagineCacheManager,

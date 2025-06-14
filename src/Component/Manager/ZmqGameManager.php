@@ -9,7 +9,7 @@ use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 
 use App\Component\System\Guid;
 use App\Component\Rules\Backgammon\Game;
-use App\Component\Rules\Backgammon\AiEngine;
+use App\Component\AI\Backgammon\Engine as AiEngine;
 use App\Component\Dto\Mapper;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Websocket\WebSocketState;

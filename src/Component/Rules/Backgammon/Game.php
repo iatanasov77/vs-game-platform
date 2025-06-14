@@ -170,12 +170,6 @@ abstract class Game
     
     abstract public function AddCheckers( int $count, PlayerColor $color, int $point ): void;
     
-    public function FakeRoll( int $v1, int $v2 ): void
-    {
-        $this->Roll = new ArrayCollection( Dice::GetDices( $v1, $v2 )->toArray() );
-        $this->SetFirstRollWinner();
-    }
-    
     public function SetFirstRollWinner(): void
     {
         // $this->logger->log( 'MyDebug Existing Rolls: ' . \print_r( $this->Roll, true ), 'FirstThrowState' );
@@ -195,12 +189,21 @@ abstract class Game
         }
     }
     
+    public function FakeRoll( int $v1, int $v2 ): void
+    {
+        $this->Roll = Dice::GetDices( $v1, $v2 );
+        $this->SetFirstRollWinner();
+    }
+    
     public function RollDice(): void
     {
-        $this->Roll = new ArrayCollection( Dice::Roll()->toArray() );
+        /* Test With Concreate Dices 
+        $this->FakeRoll( 1, 2 );
+        */
+        $this->Roll = Dice::Roll();
         $this->SetFirstRollWinner();
-        // $this->logger->log( 'CurrentPlayer: ' . $this->CurrentPlayer->value, 'FirstThrowState' );
         
+        // $this->logger->log( 'CurrentPlayer: ' . $this->CurrentPlayer->value, 'FirstThrowState' );
         $this->ClearMoves( $this->ValidMoves );
         $this->_GenerateMoves( $this->ValidMoves );
     }

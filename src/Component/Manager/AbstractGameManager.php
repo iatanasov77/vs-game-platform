@@ -653,8 +653,8 @@ abstract class AbstractGameManager implements GameManagerInterface
                 );
             }
             
-            $color = $action->moves->color;
-            $move = Mapper::MoveToMove( $move, $this->Game );
+            //$color  = $move->color;
+            $move   = Mapper::MoveToMove( $move, $this->Game );
             $this->Game->MakeMove( $move );
         }
     }

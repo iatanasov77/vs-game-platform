@@ -36,6 +36,18 @@ services:
             - '%env(json:WEBSOCKET_GAME_LOGGER_CONTEXTS)%'
     
     ##############################################################
+    # Custom Serializer Normalizers
+    ##############################################################
+    App\Component\Serializer\Normalizer\MoveDtoDenormalizer:
+        tags:
+            # register the normalizer with a high priority (called earlier)
+            - { name: 'serializer.normalizer', priority: 500 }
+    App\Component\Serializer\Normalizer\MovesMadeActionDtoDenormalizer:
+        tags:
+            # register the normalizer with a high priority (called earlier)
+            - { name: 'serializer.normalizer', priority: 500 }
+    
+    ##############################################################
     # Websocket Servers
     ##############################################################
     app_websocket_chat_command:

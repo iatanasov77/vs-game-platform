@@ -1,7 +1,7 @@
 <?php namespace App\Component\Dto\Actions;
 
 use Symfony\Component\Serializer\Attribute\Context;
-use App\Serializer\Normalizer\MovesMadeActionDtoDenormalizer;
+use App\Component\Serializer\Normalizer\MovesMadeActionDtoDenormalizer;
 use App\Component\Dto\MoveDto;
 
 #[Context([MovesMadeActionDtoDenormalizer::class])]

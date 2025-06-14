@@ -43,6 +43,9 @@ use App\Component\Dto\Actions\StartGamePlayActionDto;
 use App\Component\Dto\Actions\GamePlayStartedActionDto;
 use App\Component\Dto\Actions\HintMovesActionDto;
 
+// Serializer Denormalizers
+use App\Component\Serializer\Normalizer\MovesMadeActionDtoDenormalizer;
+
 use App\Entity\GamePlayer;
 
 /**

@@ -17,6 +17,9 @@ abstract class Game
     /** @var int */
     const TotalThinkTime = 48;
     
+    /** @var int */
+    public static $DebugValidMoves = 0;
+    
     /** @var string */
     public $Id;
     
@@ -103,6 +106,7 @@ abstract class Game
     
     public function SwitchPlayer(): void
     {
+        $this->logger->log( 'SwitchPlayer Called !!!', 'SwitchPlayer' );
         $this->CurrentPlayer = $this->OtherPlayer();
     }
     
@@ -206,6 +210,9 @@ abstract class Game
         // $this->logger->log( 'CurrentPlayer: ' . $this->CurrentPlayer->value, 'FirstThrowState' );
         $this->ClearMoves( $this->ValidMoves );
         $this->_GenerateMoves( $this->ValidMoves );
+        
+        Game::$DebugValidMoves++;
+        $this->logger->debug( $this->ValidMoves, 'ValidMoves_' . Game::$DebugValidMoves .  '.txt' );
     }
     
     public function GetHome( PlayerColor $color ): Point

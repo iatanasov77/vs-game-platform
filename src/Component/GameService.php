@@ -17,7 +17,6 @@ use App\Component\AI\Backgammon\Engine as AiEngine;
 use App\Component\System\Guid;
 
 // DTO Objects
-use App\Component\Dto\TestWebsocketDto;
 use App\Component\Dto\GameCookieDto;
 use App\Component\Dto\Actions\ConnectionInfoActionDto;
 use App\Component\Dto\ConnectionDto;
@@ -82,8 +81,15 @@ class GameService
         return null;
     }
     
-    public function Connect( WebsocketClientInterface $webSocket, string $gameCode, int $userId, ?string $gameId, bool $playAi, bool $forGold, ?string $gameCookie ): ?string
-    {
+    public function Connect(
+        WebsocketClientInterface $webSocket,
+        string $gameCode,
+        int $userId,
+        ?string $gameId,
+        bool $playAi,
+        bool $forGold,
+        ?string $gameCookie
+    ): ?string {
         $gameGuid   = null;
         $dbUser = $this->GetDbUser( $userId );
         if ( ! $dbUser ) {
@@ -139,20 +145,14 @@ class GameService
         $manager = $managers->first();
         if ( $manager == null || $playAi ) {
             $this->logger->log( "MyDebug: Possibly Play AI !!!", 'GameService' );
-            $manager    = $this->managerFactory->createWebsocketGameManager( $forGold );
-            
-            if ( ! $manager->Game ) {
-                $this->logger->log( "MyDebug: Creating New Game Manager.", 'GameService' );
-                $manager->Client1   = $webSocket;
-                $manager->InitializeGame( $gameCode );
-            }
+            $manager            = $this->managerFactory->createWebsocketGameManager( $forGold, $gameCode );
+            $manager->Client1   = $webSocket;
             
             $manager->dispatchGameEnded();
             
             $manager->SearchingOpponent = ! $playAi;
-            $manager->GameCode          = $gameCode;
-            
             $gameGuid                   =  $manager->Game->Id;
+            
             $this->AllGames->set( $gameGuid, $manager );
             $this->logger->log( "MyDebug: Added a new game and waiting for opponent. Game id {$manager->Game->Id}", 'GameService' );
             
@@ -161,11 +161,8 @@ class GameService
             $this->SendConnectionLost( PlayerColor::White, $manager );
             //This is the end of the connection
             
-            //$this->debugWebsockoket( $manager );
-            
         } else {
             $manager->SearchingOpponent = false;
-            $manager->GameCode          = $gameCode;
             
             $this->logger->log( "MyDebug: Found a game and added a second player. Game id {$manager->Game->Id}", 'GameService' );
             $color = $manager->Client1 == null ? PlayerColor::Black : PlayerColor::White;
@@ -214,7 +211,7 @@ class GameService
         }
     }
     
-    public function CreateInvite( string $userId ): string
+    public function CreateInvite( string $userId, string $gameCode ): string
     {
         $existing = $this->AllGames->filter(
             function( $entry ) use ( $userId ) {
@@ -226,7 +223,7 @@ class GameService
             $this->AllGames->removeElement( $existing[$i] );
         }
             
-        $manager    = $this->managerFactory->createWebsocketGameManager( true );
+        $manager    = $this->managerFactory->createWebsocketGameManager( true, $gameCode );
         //$manager.Ended += Game_Ended;
         $manager->Inviter = $userId;
         $manager->SearchingOpponent = false;
@@ -260,7 +257,7 @@ class GameService
                 
                 if ( $gameManager != null && self::MyColor( $gameManager, $dbUser, $color ) )
                 {
-                    $gameManager->Engine = new AiEngine( $gameManager->Game );
+                    $gameManager->Engine = new AiEngine( $this->logger, $gameManager->Game );
                     $this->logger->log( "Restoring game {$cookie->id} for {$color}", 'GameService' );
                     
                     // entering socket loop
@@ -382,14 +379,5 @@ class GameService
         });
             
         return new ArrayCollection( \iterator_to_array( $gamesIterator ) );
-    }
-    
-    protected function debugWebsockoket( GameManagerInterface $manager ): void
-    {
-        $data   = new TestWebsocketDto();
-        $data->message  = 'Test Succefull.';
-        
-        // Test WebSocket Send
-        $manager->Send( $manager->Client1, $data );
     }
 }

@@ -87,6 +87,8 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
     //theme: IThemes = new DarkTheme();
     private _theme: IThemes | undefined = undefined;
     
+    lastTouch: Point | undefined = undefined;
+    
     // translated phrases
     you = '';
     white = '';
@@ -1179,7 +1181,7 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
                     ptIdx,
                     move.color
                 );
-                // console.log( 'dragging', this.dragging );
+                console.log( 'dragging', this.dragging );
                 break;
             }
         }
@@ -1190,6 +1192,8 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
         if ( ! this.game ) {
             return false;
         }
+        
+        if ( this.editing ) return true;
         if ( this.myColor != this.game.currentPlayer ) {
             return false;
         }
@@ -1298,6 +1302,11 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
             return;
         }
         
+        if ( this.editing ) {
+            this.doEditMove( clientX, clientY );
+            return;
+        }
+
         if ( ! this.canMove() ) {
             return;
         }
@@ -1347,6 +1356,48 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
         this.dragging = null;
     }
     
+    doEditMove( clientX: number, clientY: number ): void
+    {
+        if ( ! this.dragging ) return;
+        
+        if ( ! this.game ) return;
+        
+        const { fromIdx, color } = this.dragging;
+        
+        const allRects: CheckerArea[] = [...this.checkerAreas];
+        if ( color === PlayerColor.black ) {
+            allRects.push( this.blackHome );
+        } else {
+            allRects.push( this.whiteHome );
+        }
+        
+        for ( let i = 0; i < allRects.length; i++ ) {
+            const rect = allRects[i];
+            const x = clientX - this.borderWidth;
+            const y = clientY - this.borderWidth;
+            if ( ! rect.contains( x, y ) ) {
+                continue;
+            }
+            
+            const ptIdx = rect.pointIdx;
+            
+            const move: MoveDto = {
+                color: this.dragging.color,
+                from: fromIdx,
+                nextMoves: [],
+                to: ptIdx,
+                animate: false,
+                hint: false
+            };
+            
+            this.addEditMove.emit( { ...move } );
+            break;
+        }
+        this.requestDraw();
+        // console.log('dragging null');
+        this.dragging = null;
+    }
+    
     onTouchStart( event: TouchEvent ): void
     {
         // console.log( 'touch start', event );
@@ -1379,7 +1430,6 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
         this.lastTouch = undefined;
     }
     
-    lastTouch: Point | undefined = undefined;
     onTouchMove( event: TouchEvent ): void
     {
         // console.log( 'touchmove' );

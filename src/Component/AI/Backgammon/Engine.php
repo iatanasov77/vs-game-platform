@@ -2,24 +2,29 @@
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use App\Component\GameLogger;
 use App\Component\Type\PlayerColor;
 use App\Component\Rules\Backgammon\Game;
 
 class Engine
 {
+    /** @var GameLogger */
+    protected $logger;
+    
     /** @var Game */
-    private $EngineGame;
+    protected $EngineGame;
 
     /** @var Config */
-    private $Configuration;
+    protected $Configuration;
     
     /** @var (int dice1, int dice2)[] */
-    private static $_allRolls = null;
+    protected static $_allRolls = null;
     
-    public function __construct( Game $game )
+    public function __construct( GameLogger $logger, Game $game )
     {
-        $this->EngineGame = $game;
-        $this->Configuration = Config::Trained();
+        $this->logger           = $logger;
+        $this->EngineGame       = $game;
+        $this->Configuration    = Config::Trained();
     }
 
     public function GetBestMoves(): Collection
@@ -27,7 +32,8 @@ class Engine
         $bestMoveSequence = null;
         $bestScore = - PHP_FLOAT_MAX;
         $allSequences = self::GenerateMovesSequence( $this->EngineGame );
-
+        $this->logger->log( 'Engin GetBestMoves: ' . print_r( $allSequences, true ), 'EngineGenerateMoves' );
+        
         $oponent = $this->EngineGame->OtherPlayer();
         $myColor = $this->EngineGame->CurrentPlayer;
         $inParallel = 2;
@@ -213,7 +219,7 @@ class Engine
             function( $entry ) use ( $other ) {
                 return $entry->Checkers->exists(
                     function( $key, $entry ) use ( $other ) {
-                        return $entry->Color == $other;
+                        return $entry->Color === $other;
                     }
                 );
             }
@@ -224,7 +230,7 @@ class Engine
             function( $entry ) use ( $myColor ) {
                 return $entry->Checkers->exists(
                     function( $key, $entry ) use ( $myColor ) {
-                        return $entry->Color == $myColor;
+                        return $entry->Color === $myColor;
                     }
                 );
             }
@@ -344,7 +350,7 @@ class Engine
         $bar = $game->Bars[$current->value];
         $barHasCheckers = $bar->Checkers->filter(
             function( $entry ) use ( $current ) {
-                return $entry->Color == $current;
+                return $entry && $entry->Color === $current;
             }
         )->count();
         $dice = $game->Roll[$diceIndex];
@@ -412,7 +418,7 @@ class Engine
                     function( $entry ) use ( $game ) {
                         return $entry->Checkers->filter(
                             function( $entry ) use ( $game ) {
-                                return $entry->Color == $game->CurrentPlayer;
+                                return $entry && $entry->Color === $game->CurrentPlayer;
                             }
                         );
                     }

@@ -138,7 +138,8 @@ abstract class AbstractGameManager implements GameManagerInterface
         RepositoryInterface $playersRepository,
         RepositoryInterface $tempPlayersRepository,
         FactoryInterface $tempPlayersFactory,
-        bool $forGold
+        bool $forGold,
+        string $gameCode
     ) {
         $this->logger                   = $logger;
         $this->serializer               = $serializer;
@@ -153,6 +154,9 @@ abstract class AbstractGameManager implements GameManagerInterface
         $this->tempPlayersRepository    = $tempPlayersRepository;
         $this->tempPlayersFactory       = $tempPlayersFactory;
         $this->ForGold                  = $forGold;
+        $this->GameCode                 = $gameCode;
+        
+        $this->InitializeGame( $gameCode );
     }
     
     public function setLogger( LoggerInterface $logger ): void
@@ -188,26 +192,6 @@ abstract class AbstractGameManager implements GameManagerInterface
         } else {
             return $player->getPhotoUrl();
         }
-    }
-    
-    public function InitializeGame( string $gameCode ): void
-    {
-        switch ( $gameCode ) {
-            case Keys::BACKGAMMON_NORMAL_KEY:
-                $this->Game = $this->backgammonRulesFactory->createBackgammonNormalGame( $this->ForGold );
-                break;
-            case Keys::BACKGAMMON_TAPA_KEY:
-                $this->Game = $this->backgammonRulesFactory->createBackgammonTapaGame( $this->ForGold );
-                break;
-            case Keys::BACKGAMMON_GULBARA_KEY:
-                $this->Game = $this->backgammonRulesFactory->createBackgammonGulBaraGame( $this->ForGold );
-                break;
-            default:
-                throw new \RuntimeException( 'Unknown Game Code !!!' );
-        }
-        
-        $this->Game->ThinkStart = new \DateTime( 'now' );
-        $this->Created          = new \DateTime( 'now' );
     }
     
     public function dispatchGameEnded(): void
@@ -248,6 +232,7 @@ abstract class AbstractGameManager implements GameManagerInterface
     public function DoAction( ActionNames $actionName, string $actionText, WebsocketClientInterface $socket, ?WebsocketClientInterface $otherSocket )
     {
         $this->logger->log( "MyDebug Doing action: {$actionName->value}", 'GameManager' );
+        //$this->logger->debug( $this->Game->Points, 'BeforeDoAction.txt' );
         
         if ( $actionName == ActionNames::movesMade ) {
             $this->Game->ThinkStart = new \DateTime( 'now' );
@@ -261,7 +246,6 @@ abstract class AbstractGameManager implements GameManagerInterface
             
             $this->DoMoves( $action );
             $this->NewTurn( $socket );
-                    
         } else if ( $actionName == ActionNames::opponentMove ) {
             $action = $this->serializer->deserialize( $actionText, OpponentMoveActionDto::class, JsonEncoder::FORMAT );
             $this->Send( $otherSocket, $action );
@@ -329,6 +313,8 @@ abstract class AbstractGameManager implements GameManagerInterface
             $this->logger->log( 'MyDebug: startGamePlay action recieved from GameManager.', 'GameManager' );
             $this->StartGamePlay();
         }
+        
+        //$this->logger->debug( $this->Game->Points, 'AfterDoAction.txt' );
     }
     
     public function Send( ?WebsocketClientInterface $socket, object $obj ): void
@@ -373,10 +359,13 @@ abstract class AbstractGameManager implements GameManagerInterface
         $this->Game->PlayState = GameState::FirstThrow;
         
         // todo: visa på clienten även när det blir samma
+        // English: visa for clients who are not allowed to contact them
         while ( $this->Game->PlayState == GameState::FirstThrow ) {
             $this->logger->log( 'First Throw State !!!', 'FirstThrowState' );
             
             $this->Game->RollDice();
+            //$this->logger->debug( $this->Game->Roll, 'FirstRoll.txt' );
+            
             $rollAction = new DicesRolledActionDto();
             $rollAction->dices = $this->Game->Roll->map(
                 function( $entry ) {
@@ -421,11 +410,38 @@ abstract class AbstractGameManager implements GameManagerInterface
         }
     }
     
+    public static function GetJsonError()
+    {
+        switch ( \json_last_error() ) {
+            case JSON_ERROR_NONE:
+                return ' - No errors';
+                break;
+            case JSON_ERROR_DEPTH:
+                return ' - Maximum stack depth exceeded';
+                break;
+            case JSON_ERROR_STATE_MISMATCH:
+                return ' - Underflow or the modes mismatch';
+                break;
+            case JSON_ERROR_CTRL_CHAR:
+                return ' - Unexpected control character found';
+                break;
+            case JSON_ERROR_SYNTAX:
+                return ' - Syntax error, malformed JSON';
+                break;
+            case JSON_ERROR_UTF8:
+                return ' - Malformed UTF-8 characters, possibly incorrectly encoded';
+                break;
+            default:
+                return ' - Unknown error';
+                break;
+        }
+    }
+    
     protected function TimeTick(): void
     {
         if ( ! $this->moveTimeOut->IsCancellationRequested ) {
             $ellapsed = ( new \DateTime( 'now' ) ) - $this->Game->ThinkStart;
-            if ( $ellapsed->TotalSeconds > $this->Game->TotalThinkTime ) {
+            if ( $ellapsed->TotalSeconds > Game::TotalThinkTime ) {
                 $this->logger->log( "MyDebug: The time run out for {$this->Game->CurrentPlayer}", 'GameManager' );
                 $this->moveTimeOut->cancel();
                 $winner = $this->Game->CurrentPlayer == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
@@ -631,13 +647,17 @@ abstract class AbstractGameManager implements GameManagerInterface
             return;
         }
         
-        $this->logger->debug( $action->moves[0], 'MoveDto.txt' );
+        //$this->logger->debug( $action->moves[0], 'MoveDto.txt' );
         $firstMove = Mapper::MoveToMove( $action->moves[0], $this->Game );
         $validMove = $this->Game->ValidMoves->filter(
             function( $entry ) use ( $firstMove ) {
                 return $entry == $firstMove;
             }
-        );
+        )->first();
+        
+        //$this->logger->debug( $this->Game->ValidMoves, 'GameValidMoves.txt' );
+        //$this->logger->debug( $firstMove, 'DoMoves_FirstMove.txt' );
+        //$this->debugGetCheckerFromPoint();
         
         foreach ( $action->moves as $key => $move ) {
             if ( $validMove == null ) {
@@ -645,12 +665,13 @@ abstract class AbstractGameManager implements GameManagerInterface
                 throw new \RuntimeException( "An attempt to make an invalid move was made" );
             } else if ( $key !== \array_key_last( $action->moves ) ) {
                 $nextMove = Mapper::MoveToMove( $action->moves[$key + 1], $this->Game );
+                
                 // Going up the valid moves tree one step for every sent move.
                 $validMove = $validMove->NextMoves->filter(
                     function( $entry ) use ( $nextMove ) {
                         return $entry == $nextMove;
                     }
-                );
+                )->first();
             }
             
             //$color  = $move->color;
@@ -802,7 +823,7 @@ abstract class AbstractGameManager implements GameManagerInterface
             $dto->move = $moveDto;
             $this->Game->MakeMove( $move );
             if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {
-                    $this->Game->BlackPlayer->FirstMoveMade = true;
+                $this->Game->BlackPlayer->FirstMoveMade = true;
             } else {
                 $this->Game->WhitePlayer->FirstMoveMade = true;
             }
@@ -818,30 +839,35 @@ abstract class AbstractGameManager implements GameManagerInterface
         $this->NewTurn( $client );
     }
     
-    public static function GetJsonError()
+    protected function debugGetCheckerFromPoint()
     {
-        switch ( \json_last_error() ) {
-            case JSON_ERROR_NONE:
-                return ' - No errors';
+        //$this->logger->debug( $this->Game->Points, 'GamePoints.txt' );
+        
+        $checkerFromPoint = $this->Game->Points->filter(
+            function( $entry ) {
+                return $entry->GetNumber( PlayerColor::Black ) == 1;
+            }
+        )->first();
+        //$this->logger->debug( $checkerFromPoint, 'CheckerFromPoint.txt' );
+    }
+    
+    private function InitializeGame( string $gameCode ): void
+    {
+        switch ( $gameCode ) {
+            case Keys::BACKGAMMON_NORMAL_KEY:
+                $this->Game = $this->backgammonRulesFactory->createBackgammonNormalGame( $this->ForGold );
                 break;
-            case JSON_ERROR_DEPTH:
-                return ' - Maximum stack depth exceeded';
+            case Keys::BACKGAMMON_TAPA_KEY:
+                $this->Game = $this->backgammonRulesFactory->createBackgammonTapaGame( $this->ForGold );
                 break;
-            case JSON_ERROR_STATE_MISMATCH:
-                return ' - Underflow or the modes mismatch';
-                break;
-            case JSON_ERROR_CTRL_CHAR:
-                return ' - Unexpected control character found';
-                break;
-            case JSON_ERROR_SYNTAX:
-                return ' - Syntax error, malformed JSON';
-                break;
-            case JSON_ERROR_UTF8:
-                return ' - Malformed UTF-8 characters, possibly incorrectly encoded';
+            case Keys::BACKGAMMON_GULBARA_KEY:
+                $this->Game = $this->backgammonRulesFactory->createBackgammonGulBaraGame( $this->ForGold );
                 break;
             default:
-                return ' - Unknown error';
-                break;
+                throw new \RuntimeException( 'Unknown Game Code !!!' );
         }
+        
+        $this->Game->ThinkStart = new \DateTime( 'now' );
+        $this->Created          = new \DateTime( 'now' );
     }
 }

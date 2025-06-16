@@ -22,6 +22,8 @@ class BackgammonNormalGame extends Game
                 }
             )->first()->Checkers[]  = $checker;
         }
+        
+        //$this->logger->debug( $this->Points, 'PointsAddCheckers.txt' );
     }
     
     public function GenerateMoves(): array
@@ -66,6 +68,13 @@ class BackgammonNormalGame extends Game
         )->last();
             
         if ( $checker == null ) {
+            /*
+            $this->logger->debug(
+                print_r( $move, true ),
+                $this->CurrentPlayer === PlayerColor::Black ? 'MakeMove_Black.txt' : 'MakeMove_White.txt'
+            );
+            */
+            
             throw new \RuntimeException( "There should be a checker on this point. Something is very wrong" );
         }
         
@@ -158,20 +167,22 @@ class BackgammonNormalGame extends Game
     
     public function getPointsOrdered( PlayerColor $currentPlayer ): Collection
     {
+        //$this->logger->debug( $this->Points , 'BeforeFilteringPoints.txt' );
         $points = $this->Points->filter(
             function( $entry ) use ( $currentPlayer ) {
                 return $entry->Checkers->first() &&
                 $entry->Checkers->first()->Color === $currentPlayer;
             }
-            );
+        );
+        //$this->logger->debug( $points , 'BeforeOrderingPoints.txt' );
         
         $pointsIterator  = $points->getIterator();
         $pointsIterator->uasort( function ( $a, $b ) use ( $currentPlayer ) {
             return $a->GetNumber( $currentPlayer ) <=> $b->GetNumber( $currentPlayer );
         });
-            $orderedPoints  = new ArrayCollection( \iterator_to_array( $pointsIterator ) );
-            
-            return $orderedPoints;
+        $orderedPoints  = new ArrayCollection( \iterator_to_array( $pointsIterator ) );
+        
+        return $orderedPoints;
     }
     
     public function calcMinPoint( $currentPlayer )
@@ -210,22 +221,16 @@ class BackgammonNormalGame extends Game
             }
         );
         
-        $diceCounter = 0;
         foreach ( $this->getRollOrderByDescending() as $dice ) {
-            $diceCounter++;
-            
             if ( $dice->Used ) {
                 continue;
             }
             $dice->Used = true;
             
             $points = $barHasCheckers ? $bar : $this->getPointsOrdered( $currentPlayer );
-            $this->logger->debug( \print_r( $points->toArray(), true ) , 'InitialPoints.txt' );
+            //$this->logger->debug( $points , 'OrderedPoints.txt' );
             
-            $pointsCounter = 0;
             foreach ( $points as $fromPoint ) {
-                $pointsCounter++;
-                
                 $fromPointNo = $fromPoint->GetNumber( $currentPlayer );
                 if ( $fromPointNo == 25 ) {
                     continue;
@@ -260,7 +265,6 @@ class BackgammonNormalGame extends Game
                     $move->From = $fromPoint;
                     $move->To = $toPoint;
                     
-                    // $this->logger->log( "First Calling MakeMove: diceCounter: {$diceCounter} pointsCounter: {$pointsCounter}", 'GenerateMoves' );
                     $moves[]    = $move;
                     $hit = $this->MakeMove( $move );
                     if ( $hit ) {
@@ -299,7 +303,6 @@ class BackgammonNormalGame extends Game
                         $move->From = $fromPoint;
                         $move->To = $toPoint;
                         
-                        // $this->logger->log( "Second Calling MakeMove: diceCounter: {$diceCounter} pointsCounter: {$pointsCounter}", 'GenerateMoves' );
                         $moves[]    = $move;
                         $hit = $this->MakeMove( $move );
                         if ( $hit ) {

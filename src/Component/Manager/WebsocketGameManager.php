@@ -43,7 +43,7 @@ final class WebsocketGameManager extends AbstractGameManager
                     $this->Game->WhitePlayer->Gold = $aiUser->getGold();
                 }
                 
-                $this->Engine = new AiEngine( $this->Game );
+                $this->Engine = new AiEngine( $this->logger, $this->Game );
                 $this->CreateDbGame();
                 $this->StartGame();
                 

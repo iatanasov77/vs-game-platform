@@ -76,7 +76,7 @@ final class GameManagerFactory
         $this->tempPlayersFactory       = $tempPlayersFactory;
     }
     
-    public function createWebsocketGameManager( bool $forGold ): GameManagerInterface
+    public function createWebsocketGameManager( bool $forGold, string $gameCode ): GameManagerInterface
     {
         return new WebsocketGameManager(
             $this->logger,
@@ -91,11 +91,12 @@ final class GameManagerFactory
             $this->playersRepository,
             $this->tempPlayersRepository,
             $this->tempPlayersFactory,
-            $forGold
+            $forGold,
+            $gameCode
         );
     }
     
-    public function createThruwayGameManager( bool $forGold ): GameManagerInterface
+    public function createThruwayGameManager( bool $forGold, string $gameCode ): GameManagerInterface
     {
         return new ThruwayGameManager(
             $this->logger,
@@ -110,11 +111,12 @@ final class GameManagerFactory
             $this->playersRepository,
             $this->tempPlayersRepository,
             $this->tempPlayersFactory,
-            $forGold
+            $forGold,
+            $gameCode
         );
     }
     
-    public function createZmqGameManager( bool $forGold ): GameManagerInterface
+    public function createZmqGameManager( bool $forGold, string $gameCode ): GameManagerInterface
     {
         return new ZmqGameManager(
             $this->logger,
@@ -129,7 +131,8 @@ final class GameManagerFactory
             $this->playersRepository,
             $this->tempPlayersRepository,
             $this->tempPlayersFactory,
-            $forGold
+            $forGold,
+            $gameCode
         );
     }
 }

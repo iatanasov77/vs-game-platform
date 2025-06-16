@@ -166,11 +166,11 @@ class GameService
             
             $this->logger->log( "MyDebug: Found a game and added a second player. Game id {$manager->Game->Id}", 'GameService' );
             $color = $manager->Client1 == null ? PlayerColor::Black : PlayerColor::White;
+            $colorName = $color === PlayerColor::Black ? 'Black' : 'White';
             
-            /*  */
             // entering socket loop
             $manager->ConnectAndListen( $webSocket, $color, $gamePlayer, false );
-            $this->logger->log( "{$color} player disconnected.", 'GameService' );
+            $this->logger->log( "{$colorName} player disconnected.", 'GameService' );
             $this->SendConnectionLost( PlayerColor::Black, $manager );
             //This is the end of the connection
             

@@ -125,7 +125,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
     undoVisible = false;
     dicesVisible = false;
     newVisible = false;
-    exitVisible = false;
+    exitVisible = true;
     acceptDoublingVisible = false;
     requestDoublingVisible = false;
     requestHintVisible = false;
@@ -217,14 +217,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         // For some reason i could not use an observable for theme. Maybe i'll figure out why someday
         // service.connect might need to be in a setTimeout callback.
         this.themeName = this.appStateService.user.getValue()?.theme ?? 'dark';
-        
-        //this.appStateService.game.observe().subscribe( this.debug.bind( this ) );
     }
-    
-//     debug( dto: GameDto )
-//     {
-//         console.log( "Debug Game DTO: ", dto );
-//     }
     
     ngOnInit(): void
     {
@@ -629,7 +622,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         this.wsService.exitGame();
         this.appStateService.hideBusy();
         
-        //this.router.navigateByUrl( '/lobby' );
+        this.playAiQuestion = false;
         this.lobbyButtonsVisible = true;
     }
     
@@ -807,7 +800,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         const myColor   = this.appStateService.myColor.getValue();
         //console.log( 'GameDto Object: ', game );
         
-        this.wsService.startGamePlay( game, myColor );
+        this.wsService.startGamePlay( game, myColor, this.playAiFlag, this.forGoldFlag );
         this.exitVisible = true;
         this.appStateService.showBusy();
         this.waitForOpponent();

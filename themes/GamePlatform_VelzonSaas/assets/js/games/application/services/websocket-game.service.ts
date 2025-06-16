@@ -679,8 +679,12 @@ export class WebsocketGameService
         this.sendMessage( JSON.stringify( action ) );
     }
     
-    startGamePlay( game: GameDto, myColor: PlayerColor ): void
+    startGamePlay( game: GameDto, myColor: PlayerColor, playAi: boolean, forGold: boolean ): void
     {
+        if ( ! this.socket || this.socket.readyState !== this.socket.OPEN ) {
+            this.connect( '', playAi, forGold );
+        }
+        
         const action: StartGamePlayActionDto = {
             actionName: ActionNames.startGamePlay,
             game: game,

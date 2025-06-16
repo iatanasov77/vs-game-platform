@@ -145,68 +145,6 @@ class BackgammonNormalGame extends Game
             }
     }
     
-    public function getRollOrderByDescending(): Collection
-    {
-        $dicesIterator  = $this->Roll->getIterator();
-        $dicesIterator->uasort( function ( $a, $b ) {
-            return $a->Value <=> $b->Value;
-        });
-            
-            return new ArrayCollection( \iterator_to_array( $dicesIterator ) );
-    }
-    
-    public function getMovesOrderByDescending( Collection $moves ): Collection
-    {
-        $movesIterator  = $moves->getIterator();
-        $movesIterator->uasort( function ( $a, $b ) {
-            return $a->Value <=> $b->Value;
-        });
-            
-            return new ArrayCollection( \iterator_to_array( $movesIterator ) );
-    }
-    
-    public function getPointsOrdered( PlayerColor $currentPlayer ): Collection
-    {
-        //$this->logger->debug( $this->Points , 'BeforeFilteringPoints.txt' );
-        $points = $this->Points->filter(
-            function( $entry ) use ( $currentPlayer ) {
-                return $entry->Checkers->first() &&
-                $entry->Checkers->first()->Color === $currentPlayer;
-            }
-        );
-        //$this->logger->debug( $points , 'BeforeOrderingPoints.txt' );
-        
-        $pointsIterator  = $points->getIterator();
-        $pointsIterator->uasort( function ( $a, $b ) use ( $currentPlayer ) {
-            return $a->GetNumber( $currentPlayer ) <=> $b->GetNumber( $currentPlayer );
-        });
-        $orderedPoints  = new ArrayCollection( \iterator_to_array( $pointsIterator ) );
-        
-        return $orderedPoints;
-    }
-    
-    public function calcMinPoint( $currentPlayer )
-    {
-        $points  = $this->Points->filter(
-            function( $entry ) use ( $currentPlayer ) {
-                $askedColor = false;
-                
-                foreach ( $entry->Checkers as $checker ) {
-                    $askedColor = $checker ? $checker->Color == $currentPlayer : false;
-                }
-                
-                return $askedColor;
-            }
-        );
-        
-        $pointsIterator  = $points->getIterator();
-        $pointsIterator->uasort( function ( $a, $b ) use ( $currentPlayer ) {
-            return $b->GetNumber( $currentPlayer ) <=> $a->GetNumber( $currentPlayer );
-        });
-            
-            return ( new ArrayCollection( \iterator_to_array( $pointsIterator ) ) )->first()->GetNumber( $currentPlayer );
-    }
-    
     protected function _GenerateMoves( Collection &$moves ): void
     {
         $currentPlayer  = $this->CurrentPlayer;
@@ -227,8 +165,10 @@ class BackgammonNormalGame extends Game
             }
             $dice->Used = true;
             
-            $points = $barHasCheckers ? $bar : $this->getPointsOrdered( $currentPlayer );
-            //$this->logger->debug( $points , 'OrderedPoints.txt' );
+            $points = $barHasCheckers ? $bar : $this->getPointsForPlayer( $currentPlayer );
+            
+            $debugFile  = $currentPlayer === PlayerColor::Black ? 'OrderedPoints_Black.txt' : 'OrderedPoints_White.txt';
+            $this->logger->debug( $points, $debugFile );
             
             foreach ( $points as $fromPoint ) {
                 $fromPointNo = $fromPoint->GetNumber( $currentPlayer );

@@ -353,6 +353,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
     
     doMove( move: MoveDto ): void
     {
+        if ( ! move.animate ) this.sound.playChecker();
         this.wsService.doMove( move );
         this.wsService.sendMove( move );
     }
@@ -571,7 +572,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
     
     setSendVisible(): void
     {
-        if ( ! this.myTurn() || !this.rollButtonClicked ) {
+        if ( ! this.myTurn() || ! this.rollButtonClicked ) {
             this.sendVisible = false;
             return;
         }
@@ -674,60 +675,6 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
     {
         this.sound.playBlues();
         this.playAiQuestion = false;
-    }
-  
-    selectGameRoom(): void
-    {
-        if ( ! this.isLoggedIn || ! this.hasPlayer ) {
-            this.openRequirementsDialog();
-            return;
-        }
-        
-        if ( this.appState && this.appState.game ) {
-            if ( ! this.appState.game.room ) {
-                this.openSelectGameRoomDialog();
-            }
-        }
-    }
-    
-    openSelectGameRoomDialog(): void
-    {
-        if ( this.appState && this.appState.game && this.appState.rooms ) {
-            const modalRef = this.ngbModal.open( SelectGameRoomDialogComponent );
-            
-            modalRef.componentInstance.game     = this.appState.game;
-            modalRef.componentInstance.rooms    = this.appState.rooms;
-            modalRef.componentInstance.closeModal.subscribe( () => {
-                modalRef.dismiss();
-            });
-        }
-    }
-    
-    createGameRoom(): void
-    {
-        if ( ! this.isLoggedIn || ! this.hasPlayer ) {
-            this.openRequirementsDialog();
-            return;
-        }
-        
-        if ( this.appState && this.appState.game ) {
-            if ( ! this.appState.game.room ) {
-                this.openCreateGameRoomDialog();
-            }
-        }
-    }
-    
-    openCreateGameRoomDialog(): void
-    {
-        if ( this.appState && this.appState.game && this.appState.players ) {
-            const modalRef = this.ngbModal.open( CreateGameRoomDialogComponent );
-            
-            modalRef.componentInstance.game     = this.appState.game;
-            modalRef.componentInstance.players  = this.appState.players;
-            modalRef.componentInstance.closeModal.subscribe( () => {
-                modalRef.dismiss();
-            });
-        }
     }
     
     openRequirementsDialog(): void

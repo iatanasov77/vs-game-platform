@@ -21,7 +21,6 @@ final class GameFactory
         $game = new BackgammonNormalGame( $this->logger );
         
         $game->Id           = Guid::NewGuid();
-        $game->Points       = new ArrayCollection();
         $game->Roll         = new ArrayCollection();
         $game->ValidMoves   = new ArrayCollection();
         

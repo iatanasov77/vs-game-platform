@@ -16,14 +16,10 @@ export class BoardButtonsComponent implements OnChanges
 {
     @Input() isLoggedIn: boolean        = false;
     @Input() lobbyButtonsVisible        = false;
-    @Input() isRoomSelected: boolean    = false;
     
-    @Input() hasRooms: boolean          = false;
     @Input() newVisible = false;
     @Input() exitVisible = false;
     
-    @Output() onSelectGameRoom = new EventEmitter<void>();
-    @Output() onCreateGameRoom = new EventEmitter<void>();
     @Output() onNew = new EventEmitter<void>();
     @Output() onExit = new EventEmitter<void>();
     @Output() onResign = new EventEmitter<void>();
@@ -45,12 +41,6 @@ export class BoardButtonsComponent implements OnChanges
                     break;
                 case 'lobbyButtonsVisible':
                     this.lobbyButtonsVisible = changedProp.currentValue;
-                    break;
-                case 'isRoomSelected':
-                    this.isRoomSelected = changedProp.currentValue;
-                    break;
-                case 'hasRooms':
-                    this.hasRooms = changedProp.currentValue;
                     break;
                 case 'newVisible':
                     this.newVisible = changedProp.currentValue;
@@ -75,16 +65,6 @@ export class BoardButtonsComponent implements OnChanges
     resign(): void
     {
         this.onResign.emit();
-    }
-    
-    selectGameRoom(): void
-    {
-        this.onSelectGameRoom.emit();
-    }
-    
-    createGameRoom(): void
-    {
-        this.onCreateGameRoom.emit();
     }
     
     playGame(): void

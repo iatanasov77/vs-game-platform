@@ -33,7 +33,7 @@ abstract class Game
     public $CurrentPlayer;
     
     /** @var Collection | Point[] */
-    public $Points;
+    protected $Points;
     
     /** @var Collection | Dice[] */
     public $Roll;
@@ -73,6 +73,32 @@ abstract class Game
     
     /** @var GameLogger */
     protected  $logger;
+    
+    public function __set( $name, $value )
+    {
+        switch ( $name ) {
+            case 'Points':
+                $this->Points = $value;
+                
+                $trace = debug_backtrace();
+                $this->logger->log( "Points Changed in File: {$trace[0]['file']} on line {$trace[0]['line']}", 'GenerateMoves' );
+                
+                break;
+            default:
+                throw new \RuntimeException( 'Undefined Property of Game Rules !!!' );
+        }
+    }
+    
+    public function __get( $name )
+    {
+        switch ( $name ) {
+            case 'Points':
+                return $this->Points;
+                break;
+            default:
+                throw new \RuntimeException( 'Undefined Property of Game Rules !!!' );
+        }
+    }
     
     public function __construct( GameLogger $logger )
     {
@@ -176,7 +202,7 @@ abstract class Game
     
     public function SetFirstRollWinner(): void
     {
-        // $this->logger->log( 'MyDebug Existing Rolls: ' . \print_r( $this->Roll, true ), 'FirstThrowState' );
+        // $this->logger->log( 'Existing Rolls: ' . \print_r( $this->Roll, true ), 'FirstThrowState' );
         
         if ( $this->PlayState == GameState::FirstThrow ) {
             if ( $this->Roll[0]->Value > $this->Roll[1]->Value ) {
@@ -195,7 +221,7 @@ abstract class Game
     
     public function FakeRoll( int $v1, int $v2 ): void
     {
-        $this->Roll = Dice::GetDices( $v1, $v2 );
+        $this->Roll = new ArrayCollection( Dice::GetDices( $v1, $v2 ) );
         $this->SetFirstRollWinner();
     }
     
@@ -204,7 +230,7 @@ abstract class Game
         /* Test With Concreate Dices 
         $this->FakeRoll( 1, 2 );
         */
-        $this->Roll = Dice::Roll();
+        $this->Roll = new ArrayCollection( Dice::Roll() );
         $this->SetFirstRollWinner();
         
         // $this->logger->log( 'CurrentPlayer: ' . $this->CurrentPlayer->value, 'FirstThrowState' );
@@ -347,66 +373,4 @@ abstract class Game
     }
     
     abstract protected function _GenerateMoves( Collection &$moves ): void;
-    
-    protected function getPointsForPlayer( PlayerColor $currentPlayer ): Collection
-    {
-        $this->logger->debug( $this->Points , 'BeforeFilteringPoints.txt' );
-        $points = $this->Points->filter(
-            function( $entry ) use ( $currentPlayer ) {
-                return $entry->Checkers->first() &&
-                $entry->Checkers->first()->Color === $currentPlayer;
-            }
-        );
-        $this->logger->debug( $points , 'BeforeOrderingPoints.txt' );
-        
-        $pointsIterator  = $points->getIterator();
-        $pointsIterator->uasort( function ( $a, $b ) use ( $currentPlayer ) {
-            return $a->GetNumber( $currentPlayer ) <=> $b->GetNumber( $currentPlayer );
-        });
-        $orderedPoints  = new ArrayCollection( \iterator_to_array( $pointsIterator ) );
-        
-        return $orderedPoints;
-    }
-    
-    protected function calcMinPoint( $currentPlayer )
-    {
-        $points  = $this->Points->filter(
-            function( $entry ) use ( $currentPlayer ) {
-                $askedColor = false;
-                
-                foreach ( $entry->Checkers as $checker ) {
-                    $askedColor = $checker ? $checker->Color == $currentPlayer : false;
-                }
-                
-                return $askedColor;
-            }
-        );
-        
-        $pointsIterator  = $points->getIterator();
-        $pointsIterator->uasort( function ( $a, $b ) use ( $currentPlayer ) {
-            return $b->GetNumber( $currentPlayer ) <=> $a->GetNumber( $currentPlayer );
-        });
-            
-        return ( new ArrayCollection( \iterator_to_array( $pointsIterator ) ) )->first()->GetNumber( $currentPlayer );
-    }
-    
-    protected function getMovesOrderByDescending( Collection $moves ): Collection
-    {
-        $movesIterator  = $moves->getIterator();
-        $movesIterator->uasort( function ( $a, $b ) {
-            return $a->Value <=> $b->Value;
-        });
-            
-        return new ArrayCollection( \iterator_to_array( $movesIterator ) );
-    }
-    
-    protected function getRollOrderByDescending(): Collection
-    {
-        $dicesIterator  = $this->Roll->getIterator();
-        $dicesIterator->uasort( function ( $a, $b ) {
-            return $a->Value <=> $b->Value;
-        });
-            
-        return new ArrayCollection( \iterator_to_array( $dicesIterator ) );
-    }
 }

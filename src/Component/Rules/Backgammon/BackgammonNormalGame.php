@@ -7,9 +7,12 @@ use App\Component\System\Guid;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerColor;
 use App\Entity\GamePlayer;
+use App\Component\Rules\Backgammon\Helper as GameHelper;
 
 class BackgammonNormalGame extends Game
 {   
+    use GameHelper;
+    
     public function AddCheckers( int $count, PlayerColor $color, int $point ): void
     {
         $checker        = new Checker();
@@ -43,7 +46,7 @@ class BackgammonNormalGame extends Game
             // Only one dice can be use and it must be the one with highest value
             
             $currentPlayer  = $this->CurrentPlayer;
-            $this->logger->log( 'MyDebug CurrentPlayer: ' . \print_r( $currentPlayer, true ), 'GamePlay' );
+            $this->logger->log( 'CurrentPlayer: ' . \print_r( $currentPlayer, true ), 'GamePlay' );
             $moves = $moves->filter(
                 function( $entry ) use ( $currentPlayer ) {
                     return $entry->To->GetNumber( $currentPlayer ) - $entry->From->GetNumber( $currentPlayer );
@@ -59,7 +62,7 @@ class BackgammonNormalGame extends Game
     
     public function MakeMove( Move $move ): ?Checker
     {
-        $this->logger->log( "MyDebug MakeMove: " . print_r( $move, true ), 'GamePlay' );
+        $this->logger->log( "MakeMove: " . print_r( $move, true ), 'GamePlay' );
         
         $checker = $move->From->Checkers->filter(
             function( $entry ) use ( $move ) {
@@ -165,7 +168,7 @@ class BackgammonNormalGame extends Game
             }
             $dice->Used = true;
             
-            $points = $barHasCheckers ? $bar : $this->getPointsForPlayer( $currentPlayer );
+            $points = $barHasCheckers ? $bar : $this->getPointsForPlayer( $currentPlayer, $this );
             
             $debugFile  = $currentPlayer === PlayerColor::Black ? 'OrderedPoints_Black.txt' : 'OrderedPoints_White.txt';
             $this->logger->debug( $points, $debugFile );

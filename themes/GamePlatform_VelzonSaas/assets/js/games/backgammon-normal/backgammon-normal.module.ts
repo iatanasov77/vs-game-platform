@@ -6,10 +6,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
-import { CustomTranslateLoader } from '../application/providers/i18n-provider';
-
-import { HttpClient, HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { BaseUrlInterceptor } from '../application/services/base-url-interceptor';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
 
 import { StoreModule, provideStore, ActionReducerMap } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
@@ -30,6 +28,10 @@ import { SideBarsModule } from '../application/components/side-bars/side-bars.mo
 
 export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppState>>( 'Game Reducers' );
 
+export function HttpLoaderFactory( http: HttpClient ) {
+    return new TranslateHttpLoader( http, '/build/gameplatform-velzonsaas-theme/i18n/', '.json' );
+}
+
 @NgModule({
     declarations: [
         BackgammonNormalComponent,
@@ -39,11 +41,13 @@ export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppSta
         BrowserAnimationsModule,
         MatTooltipModule,
         NgbModule,
+        
+        HttpClientModule,
         TranslateModule.forRoot({
             defaultLanguage: 'en',
             loader: {
                 provide: TranslateLoader,
-                useClass: CustomTranslateLoader,
+                useFactory: HttpLoaderFactory,
                 deps: [HttpClient]
             }
         }),
@@ -69,9 +73,6 @@ export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppSta
         //{ provide: Window, useValue: window },
         { provide: APP_BASE_HREF, useValue: window.location.pathname },
         { provide: FEATURE_REDUCER_TOKEN, useFactory: getReducers },
-        
-        provideHttpClient( withInterceptorsFromDi() ),
-        { provide: HTTP_INTERCEPTORS, useClass: BaseUrlInterceptor, multi: true },
         { provide: ErrorHandler, useClass: GlobalErrorService }
     ]
 })

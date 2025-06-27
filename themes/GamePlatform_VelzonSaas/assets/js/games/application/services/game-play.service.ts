@@ -1,5 +1,8 @@
 import { Injectable, Inject } from '@angular/core';
+
 import { HttpClient, HttpHeaders } from '@angular/common/http'
+const { context } = require( '../context' );
+
 import { Observable, map, of } from 'rxjs';
 import { AuthService } from './auth.service';
 import { AppConstants } from "../constants";
@@ -16,18 +19,24 @@ import { InviteResponseDto } from '../dto/rest/inviteResponseDto';
 })
 export class GamePlayService
 {
+    url: string;
+    
     constructor(
         @Inject( HttpClient ) private httpClient: HttpClient,
         @Inject( AuthService ) private authService: AuthService,
-    ) { }
+    ) {
+        this.url    = `${context.backendURL}`;
+    }
     
     /**
      * @NOTE This NOT Work Here Because Game Service is Different Instance in API Application From GamePlatform Application
      */
     startPlayGame( gameId: string ): Observable<IGamePlay>
     {
-        const headers = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
-        return this.httpClient.get<IGamePlay>( 'select-game-room/' + gameId, {headers} ).pipe(
+        const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
+        var url         = `${this.url}/select-game-room/${gameId}`;
+        
+        return this.httpClient.get<IGamePlay>( url, {headers} ).pipe(
             map( ( response: any ) => this.mapGamePlay( response ) )
         );
     }
@@ -47,9 +56,10 @@ export class GamePlayService
             return new Observable;
         }
         
-        const headers = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
+        const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
+        var url         = `${this.url}/start-game`;
         
-        return this.httpClient.post<IGamePlay>( 'start-game', {game_room: game.room.id}, {headers} ).pipe(
+        return this.httpClient.post<IGamePlay>( url, {game_room: game.room.id}, {headers} ).pipe(
             map( ( response: any ) => this.mapGamePlay( response ) )
         );
     }
@@ -68,16 +78,19 @@ export class GamePlayService
             return new Observable;
         }
         
-        const headers = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
+        const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
+        var url         = `${this.url}/finish-game`;
         
-        return this.httpClient.post<IGamePlay>( 'finish-game', {game_room: gamePlay.room.id}, {headers} ).pipe(
+        return this.httpClient.post<IGamePlay>( url, {game_room: gamePlay.room.id}, {headers} ).pipe(
             map( ( response: any ) => this.mapGamePlay( response ) )
         );
     }
     
     createInvite(): Observable<InviteResponseDto>
     {
-        return this.httpClient.get<InviteResponseDto>( 'invite/create' ).pipe(
+        var url = `${this.url}/invite/create`;
+        
+        return this.httpClient.get<InviteResponseDto>( url ).pipe(
             map( ( dto ) => dto as InviteResponseDto )
         );
     }

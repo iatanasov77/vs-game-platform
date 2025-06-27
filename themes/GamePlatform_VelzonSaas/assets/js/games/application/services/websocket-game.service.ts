@@ -445,11 +445,11 @@ export class WebsocketGameService
         const to = isWhite ? 25 - move.to : move.to;
         
         // remove moved checker
-//         const checker = <CheckerDto>(
-//             gameClone.points[from].checkers.find((c) => c.color === move.color)
-//         );
-//         const index = gameClone.points[from].checkers.indexOf( checker );
-//         gameClone.points[from].checkers.splice( index, 1 );
+        const checker = <CheckerDto>(
+            gameClone.points[from].checkers.find((c) => c.color === move.color)
+        );
+        const index = gameClone.points[from].checkers.indexOf( checker );
+        gameClone.points[from].checkers.splice( index, 1 );
         
         if ( move.color == PlayerColor.black ) {
             gameClone.blackPlayer.pointsLeft -= move.to - move.from;
@@ -479,7 +479,7 @@ export class WebsocketGameService
         }
         
         //push checker to new point
-//         gameClone.points[to].checkers.push( checker );
+        gameClone.points[to].checkers.push( checker );
         this.appState.game.setValue( gameClone );
         
         const dices = this.appState.dices.getValue();
@@ -495,18 +495,21 @@ export class WebsocketGameService
         
         if ( diceIdx < 0 ) {
             diceIdx = diceClone.findIndex(
-                ( d ) => move.to === 25 && move.to - move.from <= d.value
+                ( d ) => ! d.used && move.to === 25 && move.to - move.from <= d.value
             );
         }
         const dice = diceClone[diceIdx];
         dice.used = true;
         this.appState.dices.setValue( diceClone );
+        
         if ( move.animate ) {
             const clone = [...this.appState.moveAnimations.getValue()];
             // console.log('pushing next animation');
             clone.push( move );
             this.appState.moveAnimations.setValue( clone );
         }
+        
+        console.log( 'Do Move', this.userMoves );
     }
     
     undoMove(): void
@@ -546,6 +549,7 @@ export class WebsocketGameService
             moves: this.userMoves.filter( ( m ) => m.color === myColor )
         };
         this.sendMessage( JSON.stringify( action ) );
+        console.log( 'Send Moves', action );
         
         this.userMoves = [];
         this.dicesHistory = [];
@@ -676,8 +680,18 @@ export class WebsocketGameService
         this.sendMessage( JSON.stringify( action ) );
     }
     
-    startGamePlay( game: GameDto, myColor: PlayerColor ): void
+    startGamePlay( game: GameDto, myColor: PlayerColor, playAi: boolean, forGold: boolean ): void
     {
+        if ( ! this.socket || this.socket.readyState !== this.socket.OPEN ) {
+            this.connect( '', playAi, forGold );
+        }
+        
+        /**
+         * Delete Cookie on Every Browser Refresh,
+         * May be later this should on DEV Environement Only.
+         */
+        this.cookieService.deleteAll( Keys.gameIdKey );
+        
         const action: StartGamePlayActionDto = {
             actionName: ActionNames.startGamePlay,
             game: game,

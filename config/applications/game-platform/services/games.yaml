@@ -14,7 +14,7 @@ parameters:
     # If need to have Logs for Any Contexts
     # Set this ENV Variable in .env File With Array of Desired Log Contexts
     # ----------------------------------------------------
-    # For Example: WEBSOCKET_GAME_LOGGER_CONTEXTS='["GameServer","GameService","GameManager","GamePlay","GenerateMoves"]'
+    # For Example: WEBSOCKET_GAME_LOGGER_CONTEXTS='["GameServer","GameService","GameManager","GamePlay","GenerateMoves","FirstThrowState","SwitchPlayer","EngineGenerateMoves"]'
     #######################################################################################################################
     env(WEBSOCKET_GAME_LOGGER_CONTEXTS): '[]'
 

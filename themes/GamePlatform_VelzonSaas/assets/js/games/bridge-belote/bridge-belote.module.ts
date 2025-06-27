@@ -1,14 +1,12 @@
-import { NgModule, InjectionToken } from '@angular/core';
+import { NgModule, InjectionToken, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { APP_BASE_HREF, Location } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
-import { CustomTranslateLoader } from '../application/providers/i18n-provider';
-
-import { HttpClient, HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { BaseUrlInterceptor } from '../application/services/base-url-interceptor';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
 
 import { StoreModule, provideStore, ActionReducerMap } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
@@ -21,11 +19,16 @@ import { CustomSerializer } from '../application/+store/router';
 import { GameEffects } from '../application/+store/game.effects';
 import { IAppState, getReducers } from '../application/+store/state';
 
+import { GlobalErrorService } from '../application/services/global-error-service';
 import { BridgeBeloteComponent } from './bridge-belote.component';
 import { SharedModule } from '../application/components/shared/shared.module';
 import { GameBoardsModule } from '../application/components/game-boards/game-boards.module';
 
 export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppState>>( 'Game Reducers' );
+
+export function HttpLoaderFactory( http: HttpClient ) {
+    return new TranslateHttpLoader( http, '/build/gameplatform-velzonsaas-theme/i18n/', '.json' );
+}
 
 @NgModule({
     declarations: [
@@ -35,14 +38,17 @@ export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppSta
         BrowserModule,
         MatTooltipModule,
         NgbModule,
+        
+        HttpClientModule,
         TranslateModule.forRoot({
             defaultLanguage: 'en',
             loader: {
                 provide: TranslateLoader,
-                useClass: CustomTranslateLoader,
+                useFactory: HttpLoaderFactory,
                 deps: [HttpClient]
             }
         }),
+        
         SharedModule,
         GameBoardsModule,
         
@@ -63,9 +69,7 @@ export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppSta
         //{ provide: Window, useValue: window },
         { provide: APP_BASE_HREF, useValue: window.location.pathname },
         { provide: FEATURE_REDUCER_TOKEN, useFactory: getReducers },
-        
-        provideHttpClient( withInterceptorsFromDi() ),
-        { provide: HTTP_INTERCEPTORS, useClass: BaseUrlInterceptor, multi: true },
+        { provide: ErrorHandler, useClass: GlobalErrorService }
     ]
 })
 export class BridgeBeloteModule { }

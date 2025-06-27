@@ -19,9 +19,6 @@ class Move
     /** @var Collection | Move[] */
     public $NextMoves;
     
-    /** @var int */
-    public $Score;
-    
     public function __construct()
     {
         $this->NextMoves    = new ArrayCollection();

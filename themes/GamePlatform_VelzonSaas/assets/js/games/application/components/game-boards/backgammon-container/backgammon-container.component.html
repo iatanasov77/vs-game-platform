@@ -115,8 +115,6 @@
         <app-board-buttons
             [isLoggedIn]="isLoggedIn"
             [lobbyButtonsVisible]="lobbyButtonsVisible"
-            [isRoomSelected]="isRoomSelected"
-            [hasRooms]="hasRooms"
             
             [newVisible]="newVisible"
             [exitVisible]="exitVisible"
@@ -125,9 +123,6 @@
             (onResign)="resignGame()"
             (onInviteFriend)="inviteFriend()"
             (onPlayGame)="playGame()"
-            
-            (onSelectGameRoom)="selectGameRoom()"
-            (onCreateGameRoom)="createGameRoom()"
         ></app-board-buttons>
     </div>
     

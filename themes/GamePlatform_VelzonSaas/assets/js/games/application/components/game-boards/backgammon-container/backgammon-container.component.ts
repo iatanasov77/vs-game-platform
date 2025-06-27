@@ -125,7 +125,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
     undoVisible = false;
     dicesVisible = false;
     newVisible = false;
-    exitVisible = false;
+    exitVisible = true;
     acceptDoublingVisible = false;
     requestDoublingVisible = false;
     requestHintVisible = false;
@@ -217,14 +217,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         // For some reason i could not use an observable for theme. Maybe i'll figure out why someday
         // service.connect might need to be in a setTimeout callback.
         this.themeName = this.appStateService.user.getValue()?.theme ?? 'dark';
-        
-        //this.appStateService.game.observe().subscribe( this.debug.bind( this ) );
     }
-    
-//     debug( dto: GameDto )
-//     {
-//         console.log( "Debug Game DTO: ", dto );
-//     }
     
     ngOnInit(): void
     {
@@ -360,6 +353,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
     
     doMove( move: MoveDto ): void
     {
+        if ( ! move.animate ) this.sound.playChecker();
         this.wsService.doMove( move );
         this.wsService.sendMove( move );
     }
@@ -578,7 +572,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
     
     setSendVisible(): void
     {
-        if ( ! this.myTurn() || !this.rollButtonClicked ) {
+        if ( ! this.myTurn() || ! this.rollButtonClicked ) {
             this.sendVisible = false;
             return;
         }
@@ -629,7 +623,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         this.wsService.exitGame();
         this.appStateService.hideBusy();
         
-        //this.router.navigateByUrl( '/lobby' );
+        this.playAiQuestion = false;
         this.lobbyButtonsVisible = true;
     }
     
@@ -681,60 +675,6 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
     {
         this.sound.playBlues();
         this.playAiQuestion = false;
-    }
-  
-    selectGameRoom(): void
-    {
-        if ( ! this.isLoggedIn || ! this.hasPlayer ) {
-            this.openRequirementsDialog();
-            return;
-        }
-        
-        if ( this.appState && this.appState.game ) {
-            if ( ! this.appState.game.room ) {
-                this.openSelectGameRoomDialog();
-            }
-        }
-    }
-    
-    openSelectGameRoomDialog(): void
-    {
-        if ( this.appState && this.appState.game && this.appState.rooms ) {
-            const modalRef = this.ngbModal.open( SelectGameRoomDialogComponent );
-            
-            modalRef.componentInstance.game     = this.appState.game;
-            modalRef.componentInstance.rooms    = this.appState.rooms;
-            modalRef.componentInstance.closeModal.subscribe( () => {
-                modalRef.dismiss();
-            });
-        }
-    }
-    
-    createGameRoom(): void
-    {
-        if ( ! this.isLoggedIn || ! this.hasPlayer ) {
-            this.openRequirementsDialog();
-            return;
-        }
-        
-        if ( this.appState && this.appState.game ) {
-            if ( ! this.appState.game.room ) {
-                this.openCreateGameRoomDialog();
-            }
-        }
-    }
-    
-    openCreateGameRoomDialog(): void
-    {
-        if ( this.appState && this.appState.game && this.appState.players ) {
-            const modalRef = this.ngbModal.open( CreateGameRoomDialogComponent );
-            
-            modalRef.componentInstance.game     = this.appState.game;
-            modalRef.componentInstance.players  = this.appState.players;
-            modalRef.componentInstance.closeModal.subscribe( () => {
-                modalRef.dismiss();
-            });
-        }
     }
     
     openRequirementsDialog(): void
@@ -807,7 +747,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         const myColor   = this.appStateService.myColor.getValue();
         //console.log( 'GameDto Object: ', game );
         
-        this.wsService.startGamePlay( game, myColor );
+        this.wsService.startGamePlay( game, myColor, this.playAiFlag, this.forGoldFlag );
         this.exitVisible = true;
         this.appStateService.showBusy();
         this.waitForOpponent();

@@ -59,6 +59,7 @@ Encore
         {from: './assets/library/GamePlatform/Einaregilsson_Cards.Js/img', to: 'einaregilsson-cards.js/img/[path][name].[ext]'},
         {from: './themes/GamePlatform_VelzonSaas/assets/images', to: 'images/[path][name].[ext]'},
         {from: './themes/GamePlatform_VelzonSaas/assets/sound', to: 'sound/[path][name].[ext]'},
+        {from: './themes/GamePlatform_VelzonSaas/assets/i18n', to: 'i18n/[path][name].[ext]'},
      ])
      
      // Velzon Images

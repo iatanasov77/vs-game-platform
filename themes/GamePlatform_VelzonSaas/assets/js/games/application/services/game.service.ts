@@ -1,5 +1,8 @@
 import { Injectable, Inject } from '@angular/core';
+
 import { HttpClient, HttpHeaders } from '@angular/common/http'
+const { context } = require( '../context' );
+
 import { BehaviorSubject, Observable, tap, map, of } from 'rxjs';
 import { AuthService } from './auth.service';
 import { AppConstants } from "../constants";
@@ -13,12 +16,14 @@ import IGameRoom from '_@/GamePlatform/Model/GameRoomInterface';
 })
 export class GameService
 {
+    url: string;
     hasPlayer$: BehaviorSubject<boolean>;
     
     constructor(
         @Inject( HttpClient ) private httpClient: HttpClient,
         @Inject( AuthService ) private authService: AuthService
     ) {
+        this.url        = `${context.backendURL}`;
         this.hasPlayer$ = new BehaviorSubject<boolean>( false );
     }
     
@@ -29,33 +34,41 @@ export class GameService
     
     loadGame( id: number ): Observable<IGame>
     {
-        return this.httpClient.get<IGame>( 'games/' + id );
+        var url = `${this.url}/games/${id}`;
+        
+        return this.httpClient.get<IGame>( url );
     }
     
     loadGameBySlug( slug: string ): Observable<IGame>
     {
-        const headers = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
+        const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
+        var url         = `${this.url}/games-ext/${slug}`;
         
-        return this.httpClient.get<IGame>( 'games-ext/' + slug, {headers} ).pipe(
+        return this.httpClient.get<IGame>( url, {headers} ).pipe(
             map( ( response: any ) => this.mapGame( response ) )
         );
     }
     
     loadGameRooms(): Observable<IGameRoom[]>
     {
-        return this.httpClient.get<IGameRoom[]>( 'game-sessions' );
+        var url = `${this.url}/game-sessions`;
+        
+        return this.httpClient.get<IGameRoom[]>( url );
     }
     
     loadPlayers(): Observable<IPlayer[]>
     {
-        return this.httpClient.get<IPlayer[]>( 'players' );
+        var url = `${this.url}/players`;
+        
+        return this.httpClient.get<IPlayer[]>( url );
     }
     
     loadPlayerByUser( userId: number ): Observable<IPlayer>
     {
-        const headers = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
+        const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
+        var url         = `${this.url}/players-ext/${userId}`;
         
-        return this.httpClient.get<IPlayer | string>( 'players-ext/' + userId, {headers} ).pipe(
+        return this.httpClient.get<IPlayer | string>( url, {headers} ).pipe(
             map( ( response: any ) => {
                 //console.log( response );
                 if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {

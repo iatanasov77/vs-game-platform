@@ -1,0 +1,258 @@
+{
+    "backgammon": "Backgammon",
+    "invite": {
+        "copylink": "Copy this link and send it to your friend",
+        "cancelinvite": "Cancel",
+        "startgame": "Start game"
+    },
+    "loginbuttons": {
+        "signin": "Sign in with"
+    },
+    "logincontainer": {
+        "play": "Play",
+        "practice": "Practice",
+        "friend": "Invite a friend",
+        "tip": "Tip",
+        "whenyousignin": "Please Sign in to play for gold!",
+        "accept": "Accept invite",
+        "tutorial": "Rules"
+    },
+    "accountedit": {
+        "editaccount": "Edit Account",
+        "name": "Name",
+        "email": "E-mail",
+        "emailNotification": "Send e-mails to me",
+        "language": "Language",
+        "requiredname": "Name is mandatory",
+        "cancel": "Cancel",
+        "save": "Save",
+        "delete": "Delete",
+        "allyourgames": "All your games and saved data will also be deleted. You can not undo this.",
+        "sure": "Are you sure?",
+        "yesdelete": "Yes delete it",
+        "theme": "Theme",
+        "showPhoto": "Show",
+        "loginname": "Login name",
+        "issupported": "is supported"
+    },
+    "theme": {
+        "dark": "Dark",
+        "light": "Light",
+        "blue": "Blue",
+        "pink": "Pink",
+        "green": "Green"
+    },
+    "accountmenu": {
+        "edit": "Edit account",
+        "logout": "Logout",
+        "about": "About"
+    },
+    "boardbuttons": {
+        "done": "Done",
+        "undo": "Undo",
+        "roll": "Roll",
+        "exit": "Exit",
+        "new": "New",
+        "acceptDoubling": "Accept",
+        "resign": "Resign",
+        "help": "Help"
+    },
+    "gameboard": {
+        "black": "Black",
+        "white": "White",
+        "you": "You",
+        "left": "left"
+    },
+    "menu": {
+        "rotate": "Rotate",
+        "resign": "Resign",
+        "flip": "Turn"
+    },
+    "messageread": {
+        "delete": "Delete",
+        "next": "Next",
+        "from": "From",
+        "nomore": "No more messages",
+        "version2Info": "Hi!<br>I´ve just released Backgammon 2.0<br><br><strong>These are the new features.</strong><ul><li>Color themes</li><li>Support for multiple languages.</li><li>Sounds</li><li>Smarter AI</li></ul>I hope you will like them.<br><br>Kind regards<br>/Kristian",
+        "version3Info": "Hello!<br>I´ve just released Backgammon 3.0<br><br><strong>These are the new features.</strong><ul><li>Gold games</li><li>Player images</li></ul>I hope you will like the new version.<br><br>Kind regards<br>/Kristian"
+    },
+    "shareprompt": {
+        "hello": "Hello!",
+        "thissite": "This site is still very new and we need more players.",
+        "humantohuman": "Human to human game is after all the most fun.",
+        "please": "Please share on your social media."
+    },
+    "errorhandler": {
+        "sendreport": "Send report",
+        "clearerrors": "Clear errors",
+        "error": "Error"
+    },
+    "homebutton": {
+        "home": "Home"
+    },
+    "newmessages": {
+        "one": "{{count}} message",
+        "many": "{{count}} messages"
+    },
+    "toplist": {
+        "place": "Place",
+        "name": "Name",
+        "score": "Score",
+        "you": "You",
+        "alltime": "All time",
+        "thisweek": "This week"
+    },
+    "statusmessage": {
+        "yourturn": "Your turn to move.  ({{color}})",
+        "waitingfor": "Waiting for {{color}} to move.",
+        "youareblocked": "You are blocked. Click \"Done\"",
+        "noconnection": "No server connection",
+        "opponentconnectionlost": "Opponent connection lost",
+        "waitingoppcnn": "Waiting for opponent to connect",
+        "newscore": "New score {{ score }} ({{ increase }})",
+        "youwon": "Congrats! You won. {{score}}",
+        "youlost": "Sorry. You lost the game. {{score}}",
+        "movenow": "Move now or lose!",
+        "dblaccepted": "Opponent did accept. Your turn to move..",
+        "dblrequested": "Double your bet or give up.",
+        "waitfordblresponse": "Waiting for opponent to respond.",
+        
+        "youarenotloggedin": "You are NOT Logged in",
+        "youmustselectroom": "You must select a Room",
+        "gamenotstarted": "Game is NOT Started"
+    },
+    "black": "black",
+    "white": "white",
+    "pleasewait": "Please wait",
+    "about": {
+        "aboutbackgammon": "About Backgammon",
+        "thisisanopen": "This is an open, just for fun, free-time hobby-project.",
+        "andyouarewelcome": "And You are very welcome to play.",
+        "orifyouareadeveloper": "Or if you are a developer you might be interested in the links below with all the details.",
+        "ongithub": "On GitHub, you can request or vote for new features, or even contribute with pull requests."
+    },
+    "goldbutton": {
+        "getgold": "Get Gold"
+    },
+    "tolittlegold": {
+        "youdonthave": "You don't have enough gold.",
+        "youcangetmore": "You can get more gold every 24 hours.",
+        "untilthen": "Until then you can always play practice games against the AI."
+    },
+    "playaiquestion": {
+        "icantfind": "I can't find anyone else playing at the moment.",
+        "doyouwanttoplay": "Do you want to play against the AI?",
+        "playai": "Play AI",
+        "keepwaiting": "Keep waiting"
+    },
+    "password": {
+        "name": "Name",
+        "email": "E-mail",
+        "password": "Password",
+        "repeat_password": "Repeat Password",
+        "incorrect": "E-mail or password is incorrect",
+        "newplayer": "New Player",
+        "create": "Create",
+        "login": "Login",
+        "passdontmatch": "Passwords don´t match",
+        "namerequired": "Name is required",
+        "required": "Password is required",
+        "format": "Password must have atleast 8 characters",
+        "takenname": "The login name is already taken"
+    },
+    "tutorial": {
+        "1": "Backgammon rules are simple. Move any checker the number of steps the dice rolls.",
+        "2": "You play the black checkers and move them in this direction.",
+        "3": "Opponent plays white and moves in opposite direction.",
+        "4": "When all your checkers has reached inside the home board, they can begin to be removed.",
+        "5": "The player who first removes all checkers, wins the game.",
+        "6": "You can't move to a point which has two or more opponent checkers.",
+        "7": "A lonely checker is called a blot and can be hit by an opponent checker.",
+        "8": "The hit checker has to start over from the bar.",
+        "9": "And lastly, good luck and try to block your opponent!",
+        "next": "Next",
+        "back": "Back"
+    },
+    "loadUpdates": "Load update",
+    "feedback": {
+        "title": "Feedback"
+    },
+    "unsubscribe": {
+        "stopped": "You will not receive any more e-mails from Backgammon.",
+        "error": "Sorry. Something went wrong."
+    },
+    "chat": {
+        "entermessage": "Chat here"
+    },
+
+
+    "dialogs": {
+        "close": "Close",
+        "login": "Login",
+        "not_loggedin_message": "You are NOT Logged In.",
+        "have_an_account_question": "if you have an account",
+        "login_link": "login from here",
+        "not_an_account_question": "if you have not an account",
+        "create_account_link": "create from here",
+        "has_no_player_message": "You have NOT a Player",
+        "create_a_player_question": "You can create a Player",
+        "create_player_link": "from here",
+        "select_game_room": "Select Game Room",
+        "create_game_room": "Create Game Room"
+    },
+    "forms": {
+        "select_game_room": {
+            "room_label": "Room",
+            "room_placeholder": "-- Select a Game Room --",
+            "submit": "Select Room"
+        },
+        "create_game_room": {
+            "opponent_label": "Opponent",
+            "opponent_placeholder": "-- Select an Opponent --",
+            "submit": "Create Room"
+        }
+    },
+    "game_board": {
+        "statistics": {
+            "we": "We",
+            "you": "You"
+        },
+    
+        "players": {
+            "title": "Players"
+        },
+    
+        "rooms": {
+            "title": "Game Rooms"
+        },
+    
+        "backgammon_variants": {
+            "variants": "Variants",
+            "normal": "Normal",
+            "gulbara": "GulBara",
+            "tapa": "Tapa"
+        },
+        
+        "select_room": "Select Room",
+        "create_room": "Create Room",
+        "play_with_computer": "Play with Computer",
+        "play_with_friends": "Play with Friends",
+        "start_game": "Start Game",
+        "game": "Game",
+        "acceptDoubling": "Accept",
+        "resign": "Resign",
+        "help": "Help",
+        "done": "Done",
+        "undo": "Undo",
+        "roll": "Roll",
+        "new_game": "New Game",
+        "exit_game": "Exit Game",
+        "play_game": "Play",
+        "invite_friend": "Invite a friend"
+    },
+    "side-bars": {
+        "chat": {
+            "title": "Game Chat"
+        }
+    }
+}

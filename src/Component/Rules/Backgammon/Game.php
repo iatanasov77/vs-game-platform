@@ -17,6 +17,9 @@ abstract class Game
     /** @var int */
     const TotalThinkTime = 48;
     
+    /** @var int */
+    public static $DebugValidMoves = 0;
+    
     /** @var string */
     public $Id;
     
@@ -30,7 +33,7 @@ abstract class Game
     public $CurrentPlayer;
     
     /** @var Collection | Point[] */
-    public $Points;
+    protected $Points;
     
     /** @var Collection | Dice[] */
     public $Roll;
@@ -71,6 +74,32 @@ abstract class Game
     /** @var GameLogger */
     protected  $logger;
     
+    public function __set( $name, $value )
+    {
+        switch ( $name ) {
+            case 'Points':
+                $this->Points = $value;
+                
+                $trace = debug_backtrace();
+                $this->logger->log( "Points Changed in File: {$trace[0]['file']} on line {$trace[0]['line']}", 'GenerateMoves' );
+                
+                break;
+            default:
+                throw new \RuntimeException( 'Undefined Property of Game Rules !!!' );
+        }
+    }
+    
+    public function __get( $name )
+    {
+        switch ( $name ) {
+            case 'Points':
+                return $this->Points;
+                break;
+            default:
+                throw new \RuntimeException( 'Undefined Property of Game Rules !!!' );
+        }
+    }
+    
     public function __construct( GameLogger $logger )
     {
         $this->logger   = $logger;
@@ -103,6 +132,7 @@ abstract class Game
     
     public function SwitchPlayer(): void
     {
+        $this->logger->log( 'SwitchPlayer Called !!!', 'SwitchPlayer' );
         $this->CurrentPlayer = $this->OtherPlayer();
     }
     
@@ -170,15 +200,9 @@ abstract class Game
     
     abstract public function AddCheckers( int $count, PlayerColor $color, int $point ): void;
     
-    public function FakeRoll( int $v1, int $v2 ): void
-    {
-        $this->Roll = new ArrayCollection( Dice::GetDices( $v1, $v2 )->toArray() );
-        $this->SetFirstRollWinner();
-    }
-    
     public function SetFirstRollWinner(): void
     {
-        // $this->logger->log( 'MyDebug Existing Rolls: ' . \print_r( $this->Roll, true ), 'FirstThrowState' );
+        // $this->logger->log( 'Existing Rolls: ' . \print_r( $this->Roll, true ), 'FirstThrowState' );
         
         if ( $this->PlayState == GameState::FirstThrow ) {
             if ( $this->Roll[0]->Value > $this->Roll[1]->Value ) {
@@ -195,14 +219,26 @@ abstract class Game
         }
     }
     
+    public function FakeRoll( int $v1, int $v2 ): void
+    {
+        $this->Roll = new ArrayCollection( Dice::GetDices( $v1, $v2 ) );
+        $this->SetFirstRollWinner();
+    }
+    
     public function RollDice(): void
     {
-        $this->Roll = new ArrayCollection( Dice::Roll()->toArray() );
+        /* Test With Concreate Dices 
+        $this->FakeRoll( 1, 2 );
+        */
+        $this->Roll = new ArrayCollection( Dice::Roll() );
         $this->SetFirstRollWinner();
-        // $this->logger->log( 'CurrentPlayer: ' . $this->CurrentPlayer->value, 'FirstThrowState' );
         
+        // $this->logger->log( 'CurrentPlayer: ' . $this->CurrentPlayer->value, 'FirstThrowState' );
         $this->ClearMoves( $this->ValidMoves );
         $this->_GenerateMoves( $this->ValidMoves );
+        
+        Game::$DebugValidMoves++;
+        $this->logger->debug( $this->ValidMoves, 'ValidMoves_' . Game::$DebugValidMoves .  '.txt' );
     }
     
     public function GetHome( PlayerColor $color ): Point

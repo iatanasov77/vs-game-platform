@@ -13,17 +13,7 @@
         </button>
     </ng-container>
     
-    <ng-container *ngIf="! isRoomSelected && ! lobbyButtonsVisible">
-        <button *ngIf="hasRooms" (click)="selectGameRoom()" class="default-button">
-            {{ 'game_board.select_room' | translate }}
-        </button>
-        
-        <button (click)="createGameRoom()" class="default-button">
-            {{ 'game_board.create_room' | translate }}
-        </button>
-    </ng-container>
-    
-    <ng-container *ngIf="isRoomSelected">
+    <ng-container *ngIf="! lobbyButtonsVisible">
         <button (click)="newGame()" *ngIf="newVisible" class="default-button">
             {{ 'game_board.new_game' | translate }}
         </button>

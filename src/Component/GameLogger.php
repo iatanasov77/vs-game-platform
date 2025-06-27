@@ -38,7 +38,11 @@ class GameLogger
                 $file = 'debug.txt';
             }
             
-            \file_put_contents( $this->projectDir . '/var/' . $file, \print_r( $logData, true ) );
+            $now    = new \DateTime( 'now' );
+            \file_put_contents(
+                $this->projectDir . '/var/' . $file,
+                $now->format( 'Y-m-d H:i:s' ) . "\n\n" . \print_r( $logData, true )
+            );
         }
     }
 }

@@ -1,0 +1,180 @@
+{
+    "backgammon": "Backgammon",
+    "invite": {
+        "copylink": "Kopiera länken och skicka till din motspelare",
+        "cancelinvite": "Avbryt",
+        "startgame": "Starta spelet"
+    },
+    "loginbuttons": {
+        "signin": "Logga in med"
+    },
+    "logincontainer": {
+        "play": "Spela",
+        "practice": "Öva",
+        "friend": "Bjud in någon",
+        "tip": "Tips",
+        "whenyousignin": "Vänligen logga in för att spela om guld!",
+        "accept": "Godta inbjudan",
+        "tutorial": "Regler"
+    },
+    "accountedit": {
+        "editaccount": "Redigera kontot",
+        "name": "Namn",
+        "email": "E-post",
+        "emailNotification": "Skicka e-post till mig",
+        "language": "Språk",
+        "requiredname": "Namn är obligatoriskt",
+        "cancel": "Avbryt",
+        "save": "Spara",
+        "delete": "Ta bort",
+        "allyourgames": "Alla dina matcher och sparad data tas bort. Det går inte att ångra.",
+        "sure": "Är du säker?",
+        "yesdelete": "Ja tabort det",
+        "theme": "Tema",
+        "showPhoto": "Visa",
+        "loginname": "Inloggningsnamn",
+        "issupported": "stöds"
+    },
+    "theme": {
+        "dark": "Mörkt",
+        "light": "Ljust",
+        "blue": "Blå",
+        "pink": "Rosa",
+        "green": "Grön"
+    },
+    "accountmenu": {
+        "edit": "Redigera konto",
+        "logout": "Logga ut",
+        "about": "Om"
+    },
+    "boardbuttons": {
+        "done": "Klar",
+        "undo": "Ångra",
+        "roll": "Rulla",
+        "exit": "Hem",
+        "new": "Nytt",
+        "acceptDoubling": "Acceptera",
+        "resign": "Ge upp",
+        "help": "Hjälp"
+    },
+    "gameboard": {
+        "black": "Svart",
+        "white": "Vit",
+        "you": "Du",
+        "left": "kvar"
+    },
+    "menu": {
+        "rotate": "Rotera",
+        "resign": "Ge upp",
+        "flip": "Vänd"
+    },
+    "messageread": {
+        "delete": "Tabort",
+        "next": "Nästa",
+        "from": "Från",
+        "nomore": "Inga fler meddelanden",
+        "version2Info": "Hej!<br>Jag har just släppt Backgammon 2.0<br><br><strong>Det här är de nya funktionerna.</strong><ul><li>Färgteman</li><li>Stöd för flera språk.</li><li>Ljud</li><li>Smartare AI</li></ul>Jag hoppas att du kommer att tycka om dem.<br><br>Vänliga Hälsningar<br>/Kristian",
+        "version3Info": "Hej!<br>Jag har just släppt backgammon 3.0<br><br><strong>Det här är de nya funktionerna.</strong><ul><li>Guldspel</li><li>Spelarbilder</li></ul>Jag hoppas att du kommer att tycka om den nya versionen.<br><br>Vänliga Hälsningar<br>/Kristian"
+    },
+    "shareprompt": {
+        "hello": "Hej!",
+        "thissite": "Den här sidan är precis ny, och vi behöver fler spelare.",
+        "humantohuman": "Det är ju roligare att spela mot en annan människa",
+        "please": "Snälla, dela sidan på din sociala media."
+    },
+    "errorhandler": {
+        "sendreport": "Skicka rapport",
+        "clearerrors": "Ta bort felet",
+        "error": "Fel"
+    },
+    "homebutton": {
+        "home": "Hem"
+    },
+    "newmessages": {
+        "one": "{{count}} meddelande",
+        "many": "{{count}} meddelanden"
+    },
+    "toplist": {
+        "place": "Plats",
+        "name": "Namn",
+        "score": "Poäng",
+        "you": "Du",
+        "alltime": "Totalt",
+        "thisweek": "Denna vecka"
+    },
+    "statusmessage": {
+        "yourturn": "Din tur. ({{color}})",
+        "waitingfor": "Väntar på {{color}}",
+        "youareblocked": "Du är blockerad, klicka på \"Klar\"",
+        "noconnection": "Ingen serveranslutning",
+        "opponentconnectionlost": "Motståndaren tappade anslutningen",
+        "waitingoppcnn": "Väntar på motståndaren att ansluta",
+        "newscore": "Ny poäng {{ score }} ({{ increase }})",
+        "youwon": "Grattis! Du vann. {{score}}",
+        "youlost": "Ledsen. Du förlorade. {{score}}",
+        "movenow": "Om du inte flyttar nu förlorar du!",
+        "dblaccepted": "Motståndaren accepterade. Din tur att flytta.",
+        "dblrequested": "Dubblera insattsen eller ge upp.",
+        "waitfordblresponse": "Väntar på motståndarens svar."
+    },
+    "black": "svart",
+    "white": "vit",
+    "pleasewait": "Vänta",
+    "about": {
+        "aboutbackgammon": "Om Backgammon",
+        "thisisanopen": "Detta är ett öppet, bara för skojs skull, hobby-projekt.",
+        "andyouarewelcome": "Och du är mycket välkommen att spela.",
+        "orifyouareadeveloper": "Eller om du är en utvecklare kan du vara intresserad av länkarna nedan med alla detaljer.",
+        "ongithub": "På GitHub kan du begära eller rösta på nya funktioner, eller till och med bidra med pull requests."
+    },
+    "goldbutton": {
+        "getgold": "Hämta guld"
+    },
+    "tolittlegold": {
+        "youdonthave": "Du har inte tillräckligt med guld.",
+        "youcangetmore": "Du kan få mer guld var 24:e timme.",
+        "untilthen": "Fram till dess kan du alltid spela träningsspel mot AIt."
+    },
+    "playaiquestion": {
+        "icantfind": "Jag kan inte hitta någon annan som spelar för tillfället.",
+        "doyouwanttoplay": "Vill du spela mot AI?",
+        "playai": "Spela mot AIt",
+        "keepwaiting": "Fortsätt vänta"
+    },
+    "password": {
+        "name": "Namn",
+        "email": "E-post",
+        "password": "Lösenord",
+        "repeat_password": "Repetera lösenord",
+        "incorrect": "E-post eller lösenord är felaktigt",
+        "newplayer": "Ny spelare",
+        "create": "Skapa",
+        "login": "Logga in",
+        "passdontmatch": "Lösenord matchar inte",
+        "namerequired": "Namnet krävs",
+        "required": "lösenord krävs",
+        "format": "Lösenordet måste ha minst 8 tecken",
+        "takenname": "Inloggningsnamnet är redan taget"
+    },
+    "tutorial": {
+        "1": "Backgammons regler är enkla. Flytta någon bricka antalet steg tärningarna visar.",
+        "2": "Du spelar med de svarta brickorna och flyttar dem i den här riktningen.",
+        "3": "Motståndaren spelar vit och flyttar i motsatt riktning.",
+        "4": "När alla dina brickor har nått inuti hembrädet kan de börja tas bort.",
+        "5": "Den spelare som först tar bort alla brickor, vinner spelet.",
+        "6": "Du kan inte flytta till en punkt som har två eller flera motståndarbrickor.",
+        "7": "En ensam bricka kallas blot och kan slås av en motståndares drag.",
+        "8": "Den brickan måste börja om från baren.",
+        "9": "Och slutligen lycka till och försöka blockera din motståndare!",
+        "next": "Nästa",
+        "back": "Tillbaka"
+    },
+    "loadUpdates": "Ladda uppdatering",
+    "unsubscribe": {
+        "stopped": "Du kommer inte att få fler e-postmeddelanden från Backgammon.",
+        "error": "Förlåt. Något gick fel."
+    },
+    "chat": {
+        "entermessage": "Chatta här"
+    }
+}

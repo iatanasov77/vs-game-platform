@@ -1,0 +1,180 @@
+{
+    "backgammon": "Jacquet",
+    "invite": {
+        "copylink": "Copiez ce lien et envoyez-le à votre ami",
+        "cancelinvite": "Annuler",
+        "startgame": "Démarrer jeu"
+    },
+    "loginbuttons": {
+        "signin": "Se connecter avec"
+    },
+    "logincontainer": {
+        "play": "Jouer",
+        "practice": "Entraine toi",
+        "friend": "Invite un ami",
+        "tip": "Conseil",
+        "whenyousignin": "Veuillez vous connecter pour jouer à l'or!",
+        "accept": "Accepter l'invitation",
+        "tutorial": "Des règles"
+    },
+    "accountedit": {
+        "editaccount": "Modifier le compte",
+        "name": "Nom",
+        "email": "E-mail",
+        "emailNotification": "Envoyez-moi des e-mails",
+        "language": "Langue",
+        "requiredname": "Le nom est obligatoire",
+        "cancel": "Annuler",
+        "save": "Sauvegarder",
+        "delete": "Supprimer",
+        "allyourgames": "Tous vos jeux et données enregistrées seront également supprimés.Vous ne pouvez pas défaire cela.",
+        "sure": "Êtes-vous sûr?",
+        "yesdelete": "Oui supprimez-le",
+        "theme": "Thème",
+        "showPhoto": "spectacle",
+        "loginname": "Identifiant",
+        "issupported": "est pris en charge"
+    },
+    "theme": {
+        "dark": "Sombre",
+        "light": "Lumière",
+        "blue": "Bleue",
+        "pink": "Rose",
+        "green": "Verte"
+    },
+    "accountmenu": {
+        "edit": "Modifier le compte",
+        "logout": "Se déconnecter",
+        "about": "À propos"
+    },
+    "boardbuttons": {
+        "done": "Fait",
+        "undo": "Annuler",
+        "roll": "Rouleau",
+        "exit": "Sortir",
+        "new": "Nouvelle",
+        "acceptDoubling": "J'accepte",
+        "resign": "Démissionner",
+        "help": "Aider"
+    },
+    "gameboard": {
+        "black": "Noire",
+        "white": "Blanche",
+        "you": "Toi",
+        "left": "la gauche"
+    },
+    "menu": {
+        "rotate": "Tourner",
+        "resign": "Démissionner",
+        "flip": "Tourner"
+    },
+    "messageread": {
+        "delete": "Effacer",
+        "next": "Suivante",
+        "from": "De",
+        "nomore": "Pas plus de messages",
+        "version2Info": "Salut!<br>Je viens de relâcher Backgammon 2.0<br><br><strong>Ce sont les nouvelles fonctionnalités.</strong><ul><li>Thèmes de couleur</li><li>Prise en charge de plusieurs langues.</li><li>Des sons</li><li>Smarter ai</li></ul>J'espère que vous les aimerez.<br><br>Bien à vous<br>/Kristian",
+        "version3Info": "Bonjour!<br>Je viens de relâcher Backgammon 3.0<br><br><strong>Ce sont les nouvelles fonctionnalités.</strong><ul><li>Jeux d'or</li><li>Images de joueur</li></ul>J'espère que vous aimerez la nouvelle version.<br><br>Bien à vous<br>/Kristian"
+    },
+    "shareprompt": {
+        "hello": "Bonjour!",
+        "thissite": "Ce site est toujours très nouveau et nous avons besoin de plus de joueurs.",
+        "humantohuman": "L'homme au jeu humain est après tout le plus amusant.",
+        "please": "S'il vous plaît partager vos médias sociaux."
+    },
+    "errorhandler": {
+        "sendreport": "Envoyer un rapport",
+        "clearerrors": "Erreurs claires",
+        "error": "Erreur"
+    },
+    "homebutton": {
+        "home": "Domicile"
+    },
+    "newmessages": {
+        "one": "{{ count }} message",
+        "many": "{{count}} messages"
+    },
+    "toplist": {
+        "place": "Endroit",
+        "name": "Nom",
+        "score": "But",
+        "you": "Toi",
+        "alltime": "Au total",
+        "thisweek": "Cette semaine"
+    },
+    "statusmessage": {
+        "yourturn": "Votre tour de déplacement. ({{color}})",
+        "waitingfor": "En attente de {{ color }} se déplacer.",
+        "youareblocked": "Vous êtes bloqué. Cliquer sur Terminé",
+        "noconnection": "Aucun raccordeur de serveur",
+        "opponentconnectionlost": "Connexion adversaire perdue",
+        "waitingoppcnn": "En attente de l'adversaire de se connecter",
+        "newscore": "Nouveau score {{ score }} ({{ increase }})",
+        "youwon": "Félicitations!Tu as gagné. {{score}}",
+        "youlost": "Pardon.Tu as perdu le jeu. {{score}}",
+        "movenow": "Déplacer maintenant ou perdre!",
+        "dblaccepted": "Adversaire a accepté.Votre tour de déplacement.",
+        "dblrequested": "Doublez votre pari ou abandonnez.",
+        "waitfordblresponse": "En attente de l'adversaire de répondre."
+    },
+    "black": "noire",
+    "white": "blanche",
+    "pleasewait": "Attendez",
+    "about": {
+        "aboutbackgammon": "Sur le backgammon",
+        "thisisanopen": "Ceci est une open, juste pour un projet de hobby à temps libre.",
+        "andyouarewelcome": "Et vous êtes très bienvenu pour jouer.",
+        "orifyouareadeveloper": "Ou si vous êtes un développeur, vous pourriez être intéressé par les liens ci-dessous avec tous les détails.",
+        "ongithub": "Sur GitHub, vous pouvez demander ou voter pour de nouvelles fonctionnalités, voire de contribuer avec les demandes de traction."
+    },
+    "goldbutton": {
+        "getgold": "obtenir de l'or"
+    },
+    "tolittlegold": {
+        "youdonthave": "Vous n'avez pas assez d'or.",
+        "youcangetmore": "Vous pouvez obtenir plus d'or toutes les 24 heures.",
+        "untilthen": "Jusque-là, vous pouvez toujours jouer à des jeux de pratique contre l'IA."
+    },
+    "playaiquestion": {
+        "icantfind": "Je ne trouve personne d'autre jouant pour le moment.",
+        "doyouwanttoplay": "Voulez-vous jouer contre l'IA?",
+        "playai": "Jouer à",
+        "keepwaiting": "Faire attendre"
+    },
+    "password": {
+        "name": "Nom",
+        "email": "eMail",
+        "password": "Mot de passe",
+        "repeat_password": "Répéter le mot de passe",
+        "incorrect": "E-mail ou mot de passe incorrect",
+        "newplayer": "Nouveau joueur",
+        "create": "Créer",
+        "login": "Connexion",
+        "passdontmatch": "Les mots de passe ne correspondent pas",
+        "namerequired": "Le nom est requis",
+        "required": "Mot de passe requis",
+        "format": "Le mot de passe doit avoir au moins 8 caractères",
+        "takenname": "Le nom de connexion est déjà pris"
+    },
+    "tutorial": {
+        "1": "Les règles du backgammon sont simples.Déplacez tout vérificateur le nombre d'étapes des coupes de dés.",
+        "2": "Vous jouez aux dames noirs et les déplacez dans cette direction.",
+        "3": "L'adversaire joue blanche et se déplace dans une direction opposée.",
+        "4": "Lorsque tous vos dames ont atteint l'intérieur du conseil d'administration, ils peuvent être supprimés.",
+        "5": "Le joueur qui a d'abord supprime tous les dames, gagne le jeu.",
+        "6": "Vous ne pouvez pas passer à un point qui a deux ou plusieurs dames adversaires.",
+        "7": "Un vérificateur solitaire s'appelle un blot et peut être frappé par un vérificateur adversaire.",
+        "8": "Ce vérificateur doit recommencer de la barre.",
+        "9": "Et enfin, bonne chance et essayez de bloquer votre adversaire!",
+        "next": "Suivante",
+        "back": "Retour"
+    },
+    "loadUpdates": "Chargement",
+    "unsubscribe": {
+        "stopped": "Vous ne recevrez plus de courriels de Backgammon.",
+        "error": "Désolé.Quelque chose s'est mal passé."
+    },
+    "chat": {
+        "entermessage": "Discuter ici"
+    }
+}

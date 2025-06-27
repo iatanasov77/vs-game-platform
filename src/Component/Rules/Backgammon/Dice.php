@@ -1,8 +1,5 @@
 <?php namespace App\Component\Rules\Backgammon;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-
 class Dice
 {
     /** @var int */
@@ -19,7 +16,7 @@ class Dice
         return \rand( 1, 6 );
     }
     
-    public static function Roll(): Collection
+    public static function Roll(): array
     {
         $val1 = self::RollOne();
         $val2 = self::RollOne();
@@ -27,18 +24,18 @@ class Dice
         return self::GetDices( $val1, $val2 );
     }
     
-    public static function GetDices( int $val1, int $val2 ): Collection
+    public static function GetDices( int $val1, int $val2 ): array
     {
         if ( $val1 == $val2 ) {
             $dice   = new Dice();
             $dice->Value    = $val1;
             
-            return new ArrayCollection([
+            return [
                 clone $dice,
                 clone $dice,
                 clone $dice,
                 clone $dice,
-            ]);
+            ];
         }
         
         $dice1   = new Dice();
@@ -47,10 +44,10 @@ class Dice
         $dice2   = new Dice();
         $dice2->Value    = $val2;
         
-        return new ArrayCollection([
+        return [
             $dice1,
             $dice2,
-        ]);
+        ];
     }
     
     public function __toString(): string

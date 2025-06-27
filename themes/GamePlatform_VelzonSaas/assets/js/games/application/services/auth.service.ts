@@ -1,6 +1,9 @@
 import { Injectable, Inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+
 import { HttpClient, HttpHeaders } from '@angular/common/http'
+const { context } = require( '../context' );
+
 import { BehaviorSubject, Observable, tap, map, take, finalize } from 'rxjs';
 import { AppConstants } from "../constants";
 
@@ -26,6 +29,7 @@ import UserDto from '_@/GamePlatform/Model/BoardGame/userDto';
 })
 export class AuthService
 {
+    url: string;
     authKey = "auth";
     
     loggedIn: boolean;
@@ -39,6 +43,8 @@ export class AuthService
         @Inject( TranslateService ) private trans: TranslateService,
         @Inject( SoundService ) private sound: SoundService,
     ) {
+        this.url        = `${context.backendURL}`;
+        
         let auth        = this.getAuth();
         this.loggedIn   = auth && auth.apiToken ? true : false;
         this.loggedIn$  = new BehaviorSubject<boolean>( this.loggedIn );
@@ -64,7 +70,7 @@ export class AuthService
     
     loginBySignature( apiVerifySiganature: string ): Observable<IAuth>
     {
-        var url = 'login-by-signature/' + apiVerifySiganature;
+        var url = `${this.url}/login-by-signature/${apiVerifySiganature}`;
         
         return this.httpClient.get<ISignedUrlResponse>( url ).pipe(
             tap( ( response: any ) => {
@@ -159,10 +165,11 @@ export class AuthService
     
     signIn( userDto: UserDto, idToken: string ): void
     {
-        const headers = ( new HttpHeaders() ).set( "Authorization", "Bearer " + idToken );
+        const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + idToken );
+        var url         = `${this.url}/account/signin`;
         
         // Gets or creates the user in backgammon database.
-        this.httpClient.post<UserDto>( 'account/signin', userDto, {headers} ).pipe(
+        this.httpClient.post<UserDto>( url, userDto, {headers} ).pipe(
             map( ( data: any ) => { return data; } )
         ).subscribe( ( userDto: UserDto ) => {
             this.storage.set( Keys.loginKey, userDto );
@@ -185,10 +192,11 @@ export class AuthService
     
     toggleIntro(): void
     {
-        const headers = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.getApiToken() );
+        const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.getApiToken() );
+        var url         = `${this.url}/account/toggleIntro`;
         
         let mute = false;
-        this.httpClient.get<IToggleSoundMuteResponse>( 'account/toggleIntro', {headers} ).pipe(
+        this.httpClient.get<IToggleSoundMuteResponse>( url, {headers} ).pipe(
             map( ( response ) => {
                 if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.mute ) {
                     mute = response.mute;

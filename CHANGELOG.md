@@ -1,3 +1,15 @@
+0.14.0	|	Release date: **27.06.2025**
+============================================
+* New Features, Fixes and Improvements:
+  - Add a fix and Some Improvements.
+  - Start Debugging Backgammon AI Engine.
+  - Refactoring of Backgammon Game Rules
+  - Improve Backgammon Board Buttons.
+  - Create a Helper Class for Some Heper Methods that Used in Game Rules.
+  - Import zone-error ZoneJs Plugin For easier debugging in development mode.
+  - Change Angular Translations from API Call to Json Files.
+
+
 0.13.1	|	Release date: **14.06.2025**
 ============================================
 * Bug-Fixes, Improvements and Refactoring:

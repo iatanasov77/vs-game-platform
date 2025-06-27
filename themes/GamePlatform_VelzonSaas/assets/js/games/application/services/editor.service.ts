@@ -1,4 +1,6 @@
 import { HttpClient } from '@angular/common/http';
+const { context } = require( '../context' );
+
 import { Injectable, Inject } from '@angular/core';
 import { map, take } from 'rxjs/operators';
 
@@ -18,10 +20,14 @@ import { AppStateService } from '../state/app-state.service';
 })
 export class EditorService
 {
+    url: string;
+
     constructor(
         @Inject( HttpClient ) private httpClient: HttpClient,
         @Inject( AppStateService ) private appState: AppStateService
-    ) { }
+    ) {
+        this.url    = `${context.backendURL}`;
+    }
     
     doMove( move: MoveDto )
     {
@@ -317,6 +323,8 @@ export class EditorService
     
     updateGameString(): void
     {
+        var url = `${this.url}/backgamon/editor/gamestring`;
+        
         const dice: DiceDto[] = [
             { value: 5, used: false },
             { value: 6, used: false }
@@ -325,8 +333,9 @@ export class EditorService
             game: this.appState.game.getValue(),
             dice: dice
         };
+        
         this.httpClient
-            .post( 'backgamon/editor/gamestring', dto )
+            .post( url, dto )
             .pipe(
                 take( 1 ),
                 map( ( dto ) => dto as GameStringResponseDto )

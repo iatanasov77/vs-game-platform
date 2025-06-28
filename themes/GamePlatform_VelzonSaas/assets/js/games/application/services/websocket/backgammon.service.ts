@@ -37,6 +37,9 @@ import { Keys } from '../../utils/keys';
 })
 export class BackgammonService extends AbstractGameService
 {
+    userMoves: MoveDto[] = [];
+    dicesHistory: DiceDto[][] = [];
+    
     constructor(
         @Inject( Injector ) private injector: Injector,
     ) {
@@ -240,6 +243,14 @@ export class BackgammonService extends AbstractGameService
             default:
                 throw new Error( `Action not implemented ${action.actionName}` );
         }
+    }
+    
+    override resetGame(): void
+    {
+        super.resetGame();
+        
+        this.userMoves = [];
+        this.dicesHistory = [];
     }
     
     sendRolled()

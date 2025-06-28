@@ -14,10 +14,7 @@ import { selectGameRoom } from '../../+store/game.actions';
 import IGameRoom from '_@/GamePlatform/Model/GameRoomInterface';
 
 // Board Interfaces
-import CheckerDto from '_@/GamePlatform/Model/BoardGame/checkerDto';
 import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
-import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
-import DiceDto from '_@/GamePlatform/Model/BoardGame/diceDto';
 import GameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
 import GameCookieDto from '_@/GamePlatform/Model/BoardGame/gameCookieDto';
 import GameState from '_@/GamePlatform/Model/BoardGame/gameState';
@@ -53,9 +50,7 @@ export abstract class AbstractGameService
     socket: WebSocket | undefined;
     url: string = '';
     
-    userMoves: MoveDto[] = [];
     gameHistory: GameDto[] = [];
-    dicesHistory: DiceDto[][] = [];
     connectTime = new Date();
     
     timerStarted = false;
@@ -239,9 +234,7 @@ export abstract class AbstractGameService
     resetGame(): void
     {
         this.cookieService.deleteAll( Keys.gameIdKey );
-        this.userMoves = [];
         this.gameHistory = [];
-        this.dicesHistory = [];
         this.connectTime = new Date();
     }
     

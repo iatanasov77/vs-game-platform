@@ -1,3 +1,10 @@
+0.14.1	|	Release date: **28.06.2025**
+============================================
+* New Features:
+  - Refactoring Angular Websocket Services.
+  - Update Readme File.
+
+
 0.14.0	|	Release date: **27.06.2025**
 ============================================
 * New Features, Fixes and Improvements:

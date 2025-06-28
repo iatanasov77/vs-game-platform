@@ -1,22 +1,11 @@
-import { Injectable, Inject } from '@angular/core';
-
-// Services
-import { CookieService } from 'ngx-cookie-service';
-import { Router, UrlSerializer } from '@angular/router';
-import { StatusMessageService } from './status-message.service';
-import { SoundService } from './sound.service';
-import { AppStateService } from '../state/app-state.service';
-import { GameService } from './game.service';
+import { Injectable, Inject, Injector } from '@angular/core';
+import { AbstractGameService } from './abstract-game.service';
 
 // NGRX Store
-import { Store } from '@ngrx/store';
 import {
-    selectGameRoom,
     loadGameRooms,
-    startGame,
     playGame
-} from '../+store/game.actions';
-import IGameRoom from '_@/GamePlatform/Model/GameRoomInterface';
+} from '../../+store/game.actions';
 
 // Board Interfaces
 import CheckerDto from '_@/GamePlatform/Model/BoardGame/checkerDto';
@@ -28,157 +17,36 @@ import GameCookieDto from '_@/GamePlatform/Model/BoardGame/gameCookieDto';
 import GameState from '_@/GamePlatform/Model/BoardGame/gameState';
 
 // Action Interfaces
-import ActionDto from '../dto/Actions/actionDto';
-import ActionNames from '../dto/Actions/actionNames';
-import DoublingActionDto from '../dto/Actions/doublingActionDto';
-import HintMovesActionDto from '../dto/Actions/hintMovesActionDto';
-import DicesRolledActionDto from '../dto/Actions/dicesRolledActionDto';
-import GameCreatedActionDto from '../dto/Actions/gameCreatedActionDto';
-import GameEndedActionDto from '../dto/Actions/gameEndedActionDto';
-import MovesMadeActionDto from '../dto/Actions/movesMadeActionDto';
-import OpponentMoveActionDto from '../dto/Actions/opponentMoveActionDto';
-import UndoActionDto from '../dto/Actions/undoActionDto';
-import ConnectionInfoActionDto from '../dto/Actions/connectionInfoActionDto';
-import GameRestoreActionDto from '../dto/Actions/gameRestoreActionDto';
-import RolledActionDto from '../dto/Actions/rolledActionDto';
-import ServerWasTerminatedActionDto from '../dto/Actions/serverWasTerminatedActionDto';
-import StartGamePlayActionDto from '../dto/Actions/startGamePlayActionDto';
-import GamePlayStartedActionDto from '../dto/Actions/gamePlayStartedActionDto';
+import ActionDto from '../../dto/Actions/actionDto';
+import ActionNames from '../../dto/Actions/actionNames';
+import DoublingActionDto from '../../dto/Actions/doublingActionDto';
+import HintMovesActionDto from '../../dto/Actions/hintMovesActionDto';
+import DicesRolledActionDto from '../../dto/Actions/dicesRolledActionDto';
+import GameCreatedActionDto from '../../dto/Actions/gameCreatedActionDto';
+import GameEndedActionDto from '../../dto/Actions/gameEndedActionDto';
+import MovesMadeActionDto from '../../dto/Actions/movesMadeActionDto';
+import OpponentMoveActionDto from '../../dto/Actions/opponentMoveActionDto';
+import UndoActionDto from '../../dto/Actions/undoActionDto';
+import ConnectionInfoActionDto from '../../dto/Actions/connectionInfoActionDto';
+import GameRestoreActionDto from '../../dto/Actions/gameRestoreActionDto';
 
-import { Keys } from '../utils/keys';
-import { MessageLevel, StatusMessage } from '../utils/status-message';
+// Unused Actions but part of the TypeScript compilation
+import RolledActionDto from '../../dto/Actions/rolledActionDto';
 
-declare global {
-    interface Window {
-        gamePlatformSettings: any
-    }
-}
+import { Keys } from '../../utils/keys';
 
 @Injectable({
     providedIn: 'root'
 })
-export class WebsocketGameService
+export class BackgammonService extends AbstractGameService
 {
-    socket: WebSocket | undefined;
-    url: string = '';
-    
     userMoves: MoveDto[] = [];
-    gameHistory: GameDto[] = [];
     dicesHistory: DiceDto[][] = [];
-    connectTime = new Date();
-    
-    timerStarted = false;
-    timerId: any;
     
     constructor(
-        @Inject( CookieService ) private cookieService: CookieService,
-        @Inject( StatusMessageService ) private statusMessageService: StatusMessageService,
-        @Inject( Router ) private router: Router,
-        @Inject( UrlSerializer ) private serializer: UrlSerializer,
-        @Inject( SoundService ) private sound: SoundService,
-        @Inject( AppStateService ) private appState: AppStateService,
-        @Inject( GameService ) private gameService: GameService,
-        @Inject( Store ) private store: Store,
+        @Inject( Injector ) private injector: Injector,
     ) {
-        this.store.subscribe( ( state: any ) => {
-            //alert( state.app.main.rooms );
-            if ( state.app.main.rooms ) {
-                this.selectGameRoomFromCookie( state.app.main.rooms );
-            }
-        });
-    }
-    
-    selectGameRoomFromCookie( rooms: IGameRoom[] ): void
-    {
-        //console.log( 'Rooms in Game State: ', rooms );
-        let gameCookie  = this.cookieService.get( Keys.gameIdKey );
-        if ( gameCookie ) {
-            let gameCookieDto   = JSON.parse( gameCookie ) as GameCookieDto;
-            //alert( 'Game ID: ' + gameCookieDto.id );
-            
-            let gameRoom    = rooms.find( ( item: any ) => item?.name === gameCookieDto.id );
-            if ( gameRoom && ! gameCookieDto.roomSelected ) {
-                //alert( 'Game Room Found From Cookie.' );
-                this.store.dispatch( selectGameRoom( { game: gameRoom.game, room: gameRoom } ) );
-            }
-        }
-    }
-    
-    connect( gameId: string, playAi: boolean, forGold: boolean ): void
-    {
-        if ( this.socket ) {
-            this.socket.close();
-        }
-        
-        let gameCookie  = this.cookieService.get( Keys.gameIdKey );
-        let b64Cookie;
-        if ( gameCookie ) {
-            b64Cookie   = window.btoa( gameCookie );
-        }
-        
-        this.url        = window.gamePlatformSettings.socketGameUrl;
-        
-        const user      = this.appState.user.getValue();
-        const userId    = user ? user.id : '';
-        const tree      = this.router.createUrlTree([], {
-            queryParams: {
-                gameCode: window.gamePlatformSettings.gameSlug,
-                token: window.gamePlatformSettings.apiVerifySiganature,
-                gameCookie: b64Cookie,
-                
-                userId: userId,
-                gameId: gameId,
-                playAi: playAi,
-                forGold: forGold
-            }
-        });
-        const url = this.url + this.serializer.serialize( tree );
-        
-        //alert( url );
-        this.socket = new WebSocket( url );
-        this.socket.onmessage   = this.onMessage.bind( this );
-        this.socket.onerror     = this.onError.bind( this );
-        this.socket.onopen      = this.onOpen.bind( this );
-        this.socket.onclose     = this.onClose.bind( this );
-    }
-    
-    onOpen(): void
-    {
-        const now = new Date();
-        const ping = now.getTime() - this.connectTime.getTime();
-        
-        //console.log( 'User in State', this.appState.user );
-        if ( this.appState.user.getValue() ) {
-            this.statusMessageService.setWaitingForConnect();
-            //this.statusMessageService.setNotGameStarted();
-            //this.appState.hideBusy();
-        } else {
-            this.statusMessageService.setNotLoggedIn();
-            this.appState.hideBusy();
-        }
-        
-        this.appState.myConnection.setValue( { connected: true, pingMs: ping } );
-        this.appState.game.clearValue();
-        this.appState.dices.clearValue();
-    }
-    
-    onError( event: Event ): void
-    {
-        console.error( 'Error', { event } );
-        const cnn = this.appState.myConnection.getValue();
-        this.appState.myConnection.setValue( { ...cnn, connected: false } );
-        this.statusMessageService.setMyConnectionLost( '' );
-    }
-    
-    onClose( event: CloseEvent ): void
-    {
-        //alert( event.code );
-        console.log( 'Close', { event } );
-        
-        // Set Status Message
-        const cnn = this.appState.myConnection.getValue();
-        this.appState.myConnection.setValue( { ...cnn, connected: false } );
-        this.statusMessageService.setMyConnectionLost( event.reason );
+        super( injector );
     }
     
     // Messages received from server.
@@ -380,32 +248,20 @@ export class WebsocketGameService
         }
     }
     
-    startTimer(): void
+    override resetGame(): void
     {
-        if ( this.timerStarted ) {
-            return;
-        }
+        super.resetGame();
         
-        this.timerStarted = true;
-        this.timerId = setInterval( () => {
-            let time = this.appState.moveTimer.getValue();
-            time -= 0.25;
-            this.appState.moveTimer.setValue( time );
-            
-            if ( time > 0 && time < 10 ) {
-                this.sound.playTick();
-            }
-      
-            if ( time <= 0 ) {
-                const currentMes = this.appState.statusMessage.getValue();
-                if (
-                    this.appState.myTurn() &&
-                    currentMes.level !== MessageLevel.warning
-                ) {
-                    this.statusMessageService.setMoveNow();
-                }
-            }
-        }, 250 );
+        this.userMoves = [];
+        this.dicesHistory = [];
+    }
+    
+    sendRolled()
+    {
+        const action: ActionDto = {
+            actionName: ActionNames.rolled
+        };
+        this.sendMessage( JSON.stringify( action ) );
     }
     
     doOpponentMove( move: MoveDto ): void
@@ -532,13 +388,6 @@ export class WebsocketGameService
         clone.push( { ...move, from: move.to, to: move.from } );
         this.appState.moveAnimations.setValue( clone );
     }
-      
-    sendMessage( message: string ): void
-    {
-        if ( this.socket && this.socket.readyState === this.socket.OPEN ) {
-            this.socket.send( message );
-        }
-    }
   
     sendMoves(): void
     {
@@ -572,49 +421,6 @@ export class WebsocketGameService
             move: { ...move, nextMoves: [], animate: true }
         };
         this.sendMessage( JSON.stringify( action ) );
-    }
-    
-    sendUndo(): void
-    {
-        const action: UndoActionDto = {
-            actionName: ActionNames.undoMove
-        };
-        this.sendMessage( JSON.stringify( action ) );
-    }
-    
-    sendRolled()
-    {
-        const action: ActionDto = {
-            actionName: ActionNames.rolled
-        };
-        this.sendMessage( JSON.stringify( action ) );
-    }
-
-    resignGame(): void
-    {
-        const action: ActionDto = {
-            actionName: ActionNames.resign
-        };
-        this.sendMessage( JSON.stringify( action ) );
-    }
-    
-    exitGame(): void
-    {
-        const action: ActionDto = {
-            actionName: ActionNames.exitGame
-        };
-        this.sendMessage( JSON.stringify( action ) );
-        clearTimeout( this.timerId );
-        this.timerStarted = false;
-    }
-    
-    resetGame(): void
-    {
-        this.cookieService.deleteAll( Keys.gameIdKey );
-        this.userMoves = [];
-        this.gameHistory = [];
-        this.dicesHistory = [];
-        this.connectTime = new Date();
     }
     
     //This is when this player accepts a doubling.
@@ -670,34 +476,5 @@ export class WebsocketGameService
         this.appState.moveTimer.setValue( 40 );
         this.sendMessage( JSON.stringify( action ) );
         this.statusMessageService.setWaitingForDoubleResponse();
-    }
-    
-    requestHint(): void
-    {
-        const action: ActionDto = {
-            actionName: ActionNames.requestHint
-        };
-        this.sendMessage( JSON.stringify( action ) );
-    }
-    
-    startGamePlay( game: GameDto, myColor: PlayerColor, playAi: boolean, forGold: boolean ): void
-    {
-        if ( ! this.socket || this.socket.readyState !== this.socket.OPEN ) {
-            this.connect( '', playAi, forGold );
-        }
-        
-        /**
-         * Delete Cookie on Every Browser Refresh,
-         * May be later this should on DEV Environement Only.
-         */
-        this.cookieService.deleteAll( Keys.gameIdKey );
-        
-        const action: StartGamePlayActionDto = {
-            actionName: ActionNames.startGamePlay,
-            game: game,
-            myColor: myColor
-        };
-        
-        this.sendMessage( JSON.stringify( action ) );
     }
 }

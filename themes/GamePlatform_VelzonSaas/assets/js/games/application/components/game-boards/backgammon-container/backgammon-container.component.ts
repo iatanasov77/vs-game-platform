@@ -32,7 +32,7 @@ import { CreateInviteGameDialogComponent } from '../../game-dialogs/create-invit
 
 // Services
 import { AuthService } from '../../../services/auth.service';
-import { WebsocketGameService } from '../../../services/websocket-game.service';
+import { BackgammonService } from '../../../services/websocket/backgammon.service';
 import { StatusMessageService } from '../../../services/status-message.service';
 import { SoundService } from '../../../services/sound.service';
 import { EditorService } from '../../../services/editor.service';
@@ -148,7 +148,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         @Inject( ChangeDetectorRef ) private changeDetector: ChangeDetectorRef,
         
         @Inject( AuthService ) private authService: AuthService,
-        @Inject( WebsocketGameService ) private wsService: WebsocketGameService,
+        @Inject( BackgammonService ) private wsService: BackgammonService,
         @Inject( StatusMessageService ) private statusMessageService: StatusMessageService,
         @Inject( AppStateService ) private appStateService: AppStateService,
         @Inject( SoundService ) private sound: SoundService,

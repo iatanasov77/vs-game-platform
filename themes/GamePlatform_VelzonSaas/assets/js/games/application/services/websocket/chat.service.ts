@@ -1,9 +1,9 @@
 import { Injectable, Inject, OnDestroy } from '@angular/core';
 
-import ChatMessageDto from '../dto/chat/chatMessageDto';
-import ChatUsersDto from '../dto/chat/joinedChatDto';
-import LeftChatDto from '../dto/chat/leftChatDto';
-import { AppStateService } from '../state/app-state.service';
+import ChatMessageDto from '../../dto/chat/chatMessageDto';
+import ChatUsersDto from '../../dto/chat/joinedChatDto';
+import LeftChatDto from '../../dto/chat/leftChatDto';
+import { AppStateService } from '../../state/app-state.service';
 
 declare global {
     interface Window {
@@ -14,7 +14,7 @@ declare global {
 @Injectable({
     providedIn: 'root'
 })
-export class WebsocketChatService implements OnDestroy
+export class ChatService implements OnDestroy
 {
     socket: WebSocket | undefined;
     

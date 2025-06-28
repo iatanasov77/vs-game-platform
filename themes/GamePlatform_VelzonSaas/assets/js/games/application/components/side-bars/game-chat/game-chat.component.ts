@@ -12,7 +12,7 @@ import {
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { map } from 'rxjs';
-import { WebsocketChatService } from '../../../services/websocket-chat.service';
+import { ChatService } from '../../../services/websocket/chat.service';
 import { AppStateService } from '../../../state/app-state.service';
 
 import templateString from './game-chat.component.html'
@@ -60,7 +60,7 @@ export class GameChatComponent implements OnInit, OnDestroy
     constructor(
         @Inject( AppStateService ) private stateService: AppStateService,
         @Inject( FormBuilder ) private fb: FormBuilder,
-        @Inject( WebsocketChatService ) private chatService: WebsocketChatService,
+        @Inject( ChatService ) private chatService: ChatService,
         @Inject( ChangeDetectorRef ) private changeDetector: ChangeDetectorRef
     ) {
         this.formGroup = this.fb.group({

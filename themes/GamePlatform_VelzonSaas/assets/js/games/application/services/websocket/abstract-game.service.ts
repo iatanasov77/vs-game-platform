@@ -27,6 +27,10 @@ import OpponentMoveActionDto from '../../dto/Actions/opponentMoveActionDto';
 import UndoActionDto from '../../dto/Actions/undoActionDto';
 import StartGamePlayActionDto from '../../dto/Actions/startGamePlayActionDto';
 
+// Unused Actions but part of the TypeScript compilation
+import GamePlayStartedActionDto from '../../dto/Actions/gamePlayStartedActionDto';
+import ServerWasTerminatedActionDto from '../../dto/Actions/serverWasTerminatedActionDto';
+
 import { Keys } from '../../utils/keys';
 import { MessageLevel, StatusMessage } from '../../utils/status-message';
 

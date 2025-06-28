@@ -30,6 +30,9 @@ import UndoActionDto from '../../dto/Actions/undoActionDto';
 import ConnectionInfoActionDto from '../../dto/Actions/connectionInfoActionDto';
 import GameRestoreActionDto from '../../dto/Actions/gameRestoreActionDto';
 
+// Unused Actions but part of the TypeScript compilation
+import RolledActionDto from '../../dto/Actions/rolledActionDto';
+
 import { Keys } from '../../utils/keys';
 
 @Injectable({

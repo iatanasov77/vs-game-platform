@@ -12,6 +12,12 @@ yarn install --no-bin-links
 yarn run dev
 ```
 
+## Websocket Servers
+```
+sudo service websocket_game_platform_game restart
+sudo service websocket_game_platform_chat restart
+```
+
 ## Debug Websocket Communication
 ```
 sudo tail -f /dev/shm/game-platform.lh/game-platform/log/websocket_game.log

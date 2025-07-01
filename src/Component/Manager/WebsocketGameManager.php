@@ -3,9 +3,9 @@
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Type\PlayerColor;
-use App\Component\Type\GameState;
 use App\Component\AI\Backgammon\Engine as AiEngine;
 use App\Entity\GamePlayer;
+use App\Component\System\Guid;
 
 final class WebsocketGameManager extends AbstractGameManager
 {
@@ -18,7 +18,8 @@ final class WebsocketGameManager extends AbstractGameManager
             $this->Client1 = $webSocket;
             
             
-            $this->Game->BlackPlayer->Id = $dbUser != null ? $dbUser->getId() : Guid::Empty();
+            $this->Game->BlackPlayer->Id = $dbUser != null ? $dbUser->getId() : 0;
+            $this->Game->BlackPlayer->Guid = $dbUser != null ? $dbUser->getGuid() : Guid::Empty();
             $this->Game->BlackPlayer->Name = $dbUser != null ? $dbUser->getName() : "Guest";
             $this->Game->BlackPlayer->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $this->getPlayerPhotoUrl( $dbUser ) : "";
             $this->Game->BlackPlayer->Elo = $dbUser != null ? $dbUser->getElo() : 0;
@@ -34,6 +35,7 @@ final class WebsocketGameManager extends AbstractGameManager
                 $aiUser = $this->playersRepository->findOneBy( ['guid' => GamePlayer::AiUser] );
                 
                 $this->Game->WhitePlayer->Id = $aiUser->getId();
+                $this->Game->WhitePlayer->Guid = $aiUser->getGuid();
                 $this->Game->WhitePlayer->Name = $aiUser->getName();
                 /** @TODO: AI image */
                 $this->Game->WhitePlayer->Photo = $aiUser->getPhotoUrl();
@@ -59,7 +61,8 @@ final class WebsocketGameManager extends AbstractGameManager
             }
             $this->Client2 = $webSocket;
             
-            $this->Game->WhitePlayer->Id = $dbUser != null ? $dbUser->getId() : Guid::Empty();
+            $this->Game->WhitePlayer->Id = $dbUser != null ? $dbUser->getId() : 0;
+            $this->Game->BlackPlayer->Guid = $dbUser != null ? $dbUser->getGuid() : Guid::Empty();
             $this->Game->WhitePlayer->Name = $dbUser != null ? $dbUser->getName() : "Guest";
             $this->Game->WhitePlayer->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $this->getPlayerPhotoUrl( $dbUser ) : "";
             $this->Game->WhitePlayer->Elo = $dbUser != null ? $dbUser->getElo() : 0;

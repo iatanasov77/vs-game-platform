@@ -4,10 +4,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 use App\Component\GameLogger;
-use App\Component\System\Guid;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerColor;
-use App\Entity\GamePlayer;
 
 abstract class Game
 {
@@ -23,10 +21,10 @@ abstract class Game
     /** @var string */
     public $Id;
     
-    /** @var GamePlayer */
+    /** @var Player */
     public $BlackPlayer;
     
-    /** @var GamePlayer */
+    /** @var Player */
     public $WhitePlayer;
     
     /** @var PlayerColor */
@@ -189,13 +187,13 @@ abstract class Game
                 
                 return $askedColor;
             }
-            )->filter(
-                function( $entry ) use ( $color ) {
-                    return $entry->GetNumber( $color ) < 19;
-                }
-                );
-            
-            return $colorCheckers->isEmpty();
+        )->filter(
+            function( $entry ) use ( $color ) {
+                return $entry->GetNumber( $color ) >= 19;
+            }
+        );
+        
+        return ! $colorCheckers->isEmpty();
     }
     
     abstract public function AddCheckers( int $count, PlayerColor $color, int $point ): void;

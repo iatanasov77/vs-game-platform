@@ -460,7 +460,7 @@ abstract class AbstractGameManager implements GameManagerInterface
     {
         //$this->moveTimeOut->cancel();
         $this->Game->PlayState = GameState::Ended;
-        $this->Logger->log( "The winner is {$winner->value}", 'GameManager' );
+        $this->logger->log( "The winner is {$winner->value}", 'GameManager' );
         
         $newScore = $this->SaveWinner( $winner );
         $this->SendWinner( $winner, $newScore );
@@ -470,6 +470,8 @@ abstract class AbstractGameManager implements GameManagerInterface
     protected function SendNewRoll(): void
     {
         $this->Game->RollDice();
+        $this->logger->log( "NewRoll: " . \print_r( $this->Game->Roll, true ), 'NewRoll' );
+        
         $rollAction = new DicesRolledActionDto();
         $rollAction->dices = $this->Game->Roll->map(
             function( $entry ) {
@@ -485,10 +487,12 @@ abstract class AbstractGameManager implements GameManagerInterface
         $rollAction->moveTimer = Game::ClientCountDown;
         
         if ( $this->Client1 && ! $this->Game->BlackPlayer->IsAi() ) {
+            $this->logger->log( "Sending NewRoll to Client1 !!!", 'NewRoll' );
             $this->Send( $this->Client1, $rollAction );
         }
         
         if ( $this->Client2 && ! $this->Game->WhitePlayer->IsAi() ) {
+            $this->logger->log( "Sending NewRoll to Client2 !!!", 'NewRoll' );
             $this->Send( $this->Client2, $rollAction );
         }
     }
@@ -796,7 +800,7 @@ abstract class AbstractGameManager implements GameManagerInterface
             $this->SendNewRoll();
             
             if ( $this->AisTurn() ) {
-                $this->logger->log( "NewTurn for AI", 'GameManager' );
+                $this->logger->log( "NewTurn for AI", 'SwitchPlayer' );
                 $this->EnginMoves( $socket );
             }
         }
@@ -805,17 +809,19 @@ abstract class AbstractGameManager implements GameManagerInterface
     protected function AisTurn(): bool
     {
         $plyr = $this->Game->CurrentPlayer == PlayerColor::Black ? $this->Game->BlackPlayer : $this->Game->WhitePlayer;
+        $this->logger->log( "AisTurn CurrentPlayer: " . \print_r( $plyr, true ) , 'SwitchPlayer' );
+        
         return $plyr->IsAi();
     }
     
     protected function EnginMoves( WebsocketClientInterface $client )
     {
-        \usleep( \rand( 700, 1200 ) );
+        \usleep( \rand( 700, 1200 ) * 1000 );
         $action = new RolledActionDto();
         $this->Send( $client, $action );
         
         $moves = $this->Engine->GetBestMoves();
-        $this->logger->log( 'EnginMoves: ' . print_r( $moves, true ), 'GameManager' );
+        $this->logger->log( 'EnginMoves: ' . print_r( $moves->toArray(), true ), 'EnginMoves' );
         
         $noMoves = true;
         for ( $i = 0; $i < $moves->count(); $i++ ) {
@@ -824,7 +830,7 @@ abstract class AbstractGameManager implements GameManagerInterface
                 continue;
             }
             
-            \usleep( \rand( 700, 1200 ) );
+            \usleep( \rand( 700, 1200 ) * 1000 );
             $moveDto = Mapper::MoveToDto( $move );
             $moveDto->animate = true;
             $dto = new OpponentMoveActionDto();
@@ -841,7 +847,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         }
         
         if ( $noMoves ) {
-            \usleep( 2500 ); // if turn is switch right away, ui will not have time to display dice.
+            \usleep( 2500000 ); // if turn is switch right away, ui will not have time to display dice.
         }
         
         $this->NewTurn( $client );

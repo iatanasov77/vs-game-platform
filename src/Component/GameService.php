@@ -284,7 +284,7 @@ class GameService
             if (
                 $m->Game->BlackPlayer->Id == $userId ||
                 $m->Game->WhitePlayer->Id == $userId &&
-                $userId != Guid::Empty
+                $userId != Guid::Empty()
             ) {
                 $this->logger->log( "Game Already Started", 'GameService' );
                 return true;

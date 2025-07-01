@@ -36,7 +36,7 @@ class GamePlay implements ResourceInterface
     private $game;
     
     /** @var Collection | TempPlayer[] */
-    #[ORM\OneToMany(targetEntity: TempPlayer::class, mappedBy: "player", indexBy: "id")]
+    #[ORM\OneToMany(targetEntity: TempPlayer::class, mappedBy: "game", indexBy: "id")]
     private $gamePlayers;
     
     /** @var string */

@@ -6,6 +6,9 @@ use App\Entity\GamePlayer;
 
 class Player
 {
+    /** @var int */
+    public $Id;
+    
     /** @var string */
     public $Name;
     
@@ -29,7 +32,7 @@ class Player
      * 
      * @var Guid
      */
-    public $Id;
+    public $Guid;
     
     /** @var bool */
     public $FirstMoveMade;
@@ -57,6 +60,6 @@ class Player
     
     public function IsAi(): bool
     {
-        return $this->Id == GamePlayer::AiUser;
+        return $this->Guid == GamePlayer::AiUser;
     }
 }

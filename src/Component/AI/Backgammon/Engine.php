@@ -33,43 +33,26 @@ class Engine
 
     public function GetBestMoves(): Collection
     {
-        $bestMoveSequence = null;
-        $bestScore = - PHP_FLOAT_MAX;
-        $allSequences = $this->GenerateMovesSequence( $this->EngineGame );
+        $bestMoveSequence   = null;
+        $bestScore          = - PHP_FLOAT_MAX;
+        $allSequences       = $this->GenerateMovesSequence( $this->EngineGame );
         $this->logger->log( 'Engin GetBestMoves: ' . print_r( $allSequences, true ), 'EngineGenerateMoves' );
         
-        $oponent = $this->EngineGame->OtherPlayer();
-        $myColor = $this->EngineGame->CurrentPlayer;
-        $inParallel = 2;
-
-        /**
-         * PHP Manual for Parallel: https://www.php.net/manual/en/book.parallel.php
-         */
-        /*
-        $opt = new ParallelOptions { MaxDegreeOfParallelism = inParallel };
-        Parallel.ForEach( allSequences, opt, (sequence) =>
-        {
-            var g = allSequences.IndexOf(sequence) % inParallel;
-            var game = EngineGame.Clone();
-
-            var localSequence = ToLocalSequence(sequence, game);
-
-            var hits = DoSequence(localSequence, game);
-            var score = 0d;
-            if (Configuration.ProbablityScore)
-                score = -ProbabilityScore(oponent, game);
-            else
-                score = EvaluatePoints(myColor, game) + EvaluateCheckers(myColor, game);
-
-            UndoSequence(localSequence, hits, game);
-            //Console.WriteLine($"Engine search {s} of {allSequences.Count}\t{score.ToString("0.##")}\t{sequence.BuildString()}");
-            if (score > bestScore)
-            {
-                bestScore = score;
-                $bestMoveSequence = sequence;
+        $oponent    = $this->EngineGame->OtherPlayer();
+        $myColor    = $this->EngineGame->CurrentPlayer;
+        
+        foreach ( $allSequences as $sequence ) {
+            $localSequence = $this->ToLocalSequence( $sequence, $this->EngineGame );
+            
+            $hits = $this->DoSequence( $localSequence, $this->EngineGame );
+            $score = $this->EvaluatePoints( $myColor, $this->EngineGame ) + $this->EvaluateCheckers( $myColor, $this->EngineGame );
+            
+            $this->UndoSequence( $localSequence, $hits, $this->EngineGame );
+            if ( $score > $bestScore ) {
+                $bestScore = $score;
+                $bestMoveSequence = new ArrayCollection( $sequence );
             }
-        });
-        */
+        }
         
         if ( $bestMoveSequence == null ) {
             return new ArrayCollection();
@@ -157,10 +140,10 @@ class Engine
         return $k > -0.25; // Just my best guess
     }
 
-    private function ToLocalSequence( Collection $sequence, Game $game ): Collection
+    private function ToLocalSequence( array $sequence, Game $game ): Collection
     {
         $moves = new ArrayCollection();
-        for ( $i = 0; $i < $sequence->count; $i++ ) {
+        for ( $i = 0; $i < count( $sequence ); $i++ ) {
             if ( $sequence[$i] != null ) {
                 $move   = new Move();
                 $move->From = $game->Points[$sequence[$i]->From->BlackNumber];
@@ -178,8 +161,9 @@ class Engine
     {
         $hits = new ArrayCollection();
         foreach ( $sequence as $move ) {
-            if ( $move == null )
+            if ( $move == null ) {
                 continue;
+            }
             $hit = $game->MakeMove( $move );
             $hits[] = $hit;
         }
@@ -225,31 +209,25 @@ class Engine
 
         $other = $myColor == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
         // Oponents checker closest to their bar. Relative to my point numbers.
-        $opponentColorNumber = $game->Points->filter(
+        $opponentMax = $game->Points->filter(
             function( $entry ) use ( $other ) {
-                return $entry->Checkers->exists(
-                    function( $key, $entry ) use ( $other ) {
-                        return $entry->Color === $other;
-                    }
-                );
+                $checker = $entry->Checkers->first();
+                
+                return $checker && $checker->Color == $other;
             }
-        )->pluck( $myColor == PlayerColor::Black ? 'BlackNumber' : 'WhiteNumber' );
-        $opponentMax = \max( $opponentColorNumber );
+        )->last();
         
-        $myColorNumber = $game->Points->filter(
+        $myMin = $game->Points->filter(
             function( $entry ) use ( $myColor ) {
-                return $entry->Checkers->exists(
-                    function( $key, $entry ) use ( $myColor ) {
-                        return $entry->Color === $myColor;
-                    }
-                );
+                $checker = $entry->Checkers->first();
+                
+                return $checker && $checker->Color == $myColor;
             }
-        )->pluck( $myColor == PlayerColor::Black ? 'BlackNumber' : 'WhiteNumber' );
-        $myMin = \min( $myColorNumber );
-
+        )->last();
+        
         $allPassed = true;
 
-        if ( $myMin < $opponentMax ) {
+        if ( $myMin->GetNumber( $myColor ) < $opponentMax->GetNumber( $other ) ) {
             for ( $i = 1; $i < 25; $i++ ) {
                 // It is important to reverse looping for white
                 $point = $game->Points[$i];
@@ -260,7 +238,7 @@ class Engine
                 $pointNo = $point->GetNumber( $myColor );
 
                 // If all opponents checkers has passed this point, blots are not as bad
-                $allPassed = $pointNo > $opponentMax;
+                $allPassed = $pointNo > $opponentMax->GetNumber( $other );
 
                 if ( $point->Block( $myColor ) ) {
                     if ( $inBlock ) {

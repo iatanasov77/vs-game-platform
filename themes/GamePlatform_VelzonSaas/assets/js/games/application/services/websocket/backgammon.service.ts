@@ -63,7 +63,7 @@ export class BackgammonService extends AbstractGameService
         //console.log( 'Game in State', game );
         switch ( action.actionName ) {
             case ActionNames.gameCreated: {
-                console.log( 'WebSocket Action Game Created', action.actionName );
+                //console.log( 'WebSocket Action Game Created', action.actionName );
                 
                 const dto = JSON.parse( message.data ) as GameCreatedActionDto;
                 this.appState.myColor.setValue( dto.myColor );
@@ -90,7 +90,7 @@ export class BackgammonService extends AbstractGameService
             }
             case ActionNames.dicesRolled: {
                 const dicesAction = JSON.parse( message.data ) as DicesRolledActionDto;
-                //console.log( 'Dices Rolled Action', dicesAction );
+                console.log( 'Dices Rolled Action', dicesAction );
                 
                 this.appState.dices.setValue( dicesAction.dices );
                 const cGame = {
@@ -100,7 +100,6 @@ export class BackgammonService extends AbstractGameService
                     playState: GameState.playing
                 };
                 
-                console.log( dicesAction.validMoves );
                 this.appState.game.setValue( cGame );
                 this.statusMessageService.setTextMessage( cGame );
                 this.appState.moveTimer.setValue( dicesAction.moveTimer );
@@ -115,7 +114,7 @@ export class BackgammonService extends AbstractGameService
                 break;
             }
             case ActionNames.gameEnded: {
-                console.log( 'WebSocket Action Game Ended', action.actionName );
+                //console.log( 'WebSocket Action Game Ended', action.actionName );
                 
                 const endedAction = JSON.parse( message.data ) as GameEndedActionDto;
                 // console.log( 'game ended', endedAction.game.winner );
@@ -131,7 +130,7 @@ export class BackgammonService extends AbstractGameService
                 break;
             }
             case ActionNames.requestedDoubling: {
-                console.log( 'WebSocket Action Requested Doubling' ); // , action.actionName
+                //console.log( 'WebSocket Action Requested Doubling' ); // , action.actionName
                 
                 // Opponent has requested
                 const action = JSON.parse( message.data ) as DoublingActionDto;
@@ -146,7 +145,7 @@ export class BackgammonService extends AbstractGameService
                 break;
             }
             case ActionNames.acceptedDoubling: {
-                console.log( 'WebSocket Action Accepted Doubling' ); // , action.actionName
+                //console.log( 'WebSocket Action Accepted Doubling' ); // , action.actionName
                 
                 const action = JSON.parse( message.data ) as DoublingActionDto;
                 this.appState.moveTimer.setValue( action.moveTimer );
@@ -179,9 +178,8 @@ export class BackgammonService extends AbstractGameService
                 break;
             }
             case ActionNames.undoMove: {
-                console.log( 'WebSocket Action Undo Move', action.actionName );
+                //console.log( 'WebSocket Action Undo Move', action.actionName );
                 
-                // const action = JSON.parse( message.data ) as UndoActionDto;
                 this.undoMove();
                 break;
             }
@@ -193,7 +191,7 @@ export class BackgammonService extends AbstractGameService
                 break;
             }
             case ActionNames.connectionInfo: {
-                console.log( 'WebSocket Action Connection Info' ); // , action.actionName
+                //console.log( 'WebSocket Action Connection Info' ); // , action.actionName
                 
                 const action = JSON.parse( message.data ) as ConnectionInfoActionDto;
                 if ( ! action.connection.connected ) {
@@ -208,7 +206,7 @@ export class BackgammonService extends AbstractGameService
                 break;
             }
             case ActionNames.gameRestore: {
-                console.log( 'WebSocket Action Game Restore', action.actionName );
+                //console.log( 'WebSocket Action Game Restore', action.actionName );
                 
                 const dto = JSON.parse( message.data ) as GameRestoreActionDto;
                 this.appState.myColor.setValue( dto.color );
@@ -220,7 +218,7 @@ export class BackgammonService extends AbstractGameService
                 break;
             }
             case ActionNames.hintMoves: {
-                console.log( 'WebSocket Action Hint Moves', action.actionName );
+                //console.log( 'WebSocket Action Hint Moves', action.actionName );
                 
                 const dto = JSON.parse( message.data ) as HintMovesActionDto;
                 

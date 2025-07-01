@@ -58,9 +58,7 @@ export class BackgammonService extends AbstractGameService
         
         const action = JSON.parse( message.data ) as ActionDto;
         const game = this.appState.game.getValue();
-        console.log( 'Action', action );
-        //alert( action.actionName );
-        //alert( message.data );
+        //console.log( 'Action', action );
         
         //console.log( 'Game in State', game );
         switch ( action.actionName ) {
@@ -92,7 +90,7 @@ export class BackgammonService extends AbstractGameService
             }
             case ActionNames.dicesRolled: {
                 const dicesAction = JSON.parse( message.data ) as DicesRolledActionDto;
-                console.log( 'Dices Rolled Action', dicesAction );
+                //console.log( 'Dices Rolled Action', dicesAction );
                 
                 this.appState.dices.setValue( dicesAction.dices );
                 const cGame = {
@@ -102,6 +100,7 @@ export class BackgammonService extends AbstractGameService
                     playState: GameState.playing
                 };
                 
+                console.log( dicesAction.validMoves );
                 this.appState.game.setValue( cGame );
                 this.statusMessageService.setTextMessage( cGame );
                 this.appState.moveTimer.setValue( dicesAction.moveTimer );
@@ -365,7 +364,7 @@ export class BackgammonService extends AbstractGameService
             this.appState.moveAnimations.setValue( clone );
         }
         
-        console.log( 'Do Move', this.userMoves );
+        //console.log( 'Do Move', this.userMoves );
     }
     
     undoMove(): void
@@ -398,7 +397,7 @@ export class BackgammonService extends AbstractGameService
             moves: this.userMoves.filter( ( m ) => m.color === myColor )
         };
         this.sendMessage( JSON.stringify( action ) );
-        console.log( 'Send Moves', action );
+        //console.log( 'Send Moves', action );
         
         this.userMoves = [];
         this.dicesHistory = [];

@@ -81,7 +81,7 @@ abstract class Game
                 $this->Points = $value;
                 
                 $trace = debug_backtrace();
-                $this->logger->log( "Points Changed in File: {$trace[0]['file']} on line {$trace[0]['line']}", 'GenerateMoves' );
+                //$this->logger->log( "Points Changed in File: {$trace[0]['file']} on line {$trace[0]['line']}", 'GenerateMoves' );
                 
                 break;
             default:
@@ -227,9 +227,6 @@ abstract class Game
     
     public function RollDice(): void
     {
-        /* Test With Concreate Dices 
-        $this->FakeRoll( 1, 2 );
-        */
         $this->Roll = new ArrayCollection( Dice::Roll() );
         $this->SetFirstRollWinner();
         
@@ -238,7 +235,7 @@ abstract class Game
         $this->_GenerateMoves( $this->ValidMoves );
         
         Game::$DebugValidMoves++;
-        $this->logger->debug( $this->ValidMoves, 'ValidMoves_' . Game::$DebugValidMoves .  '.txt' );
+        //$this->logger->debug( $this->ValidMoves, 'ValidMoves_' . Game::$DebugValidMoves .  '.txt' );
     }
     
     public function GetHome( PlayerColor $color ): Point

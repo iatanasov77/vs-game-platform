@@ -114,7 +114,7 @@ class Engine
         $this->_GenerateMovesSequence( $sequences, $moves, 0, $game );
         
         // Special case. Sometimes the first dice is blocked, but can be moved after next dice
-        if ( $sequences.count() == 1 && $sequences[0] == null ) {
+        if ( $sequences->count() == 1 && $sequences[0] == null ) {
             $temp = $game->Roll[0];
             $game->Roll[0] = $game->Roll[1];
             $game->Roll[1] = $temp;
@@ -123,13 +123,13 @@ class Engine
         
         // If there are move sequences with all moves not null, remove sequences that has some moves null.
         // (rule of backgammon that you have to use all dice if you can)
-        $emptyMoves = $sequences.filter(
+        $emptyMoves = $sequences->filter(
             function( $item ) {
-                return $item == null || $item->isEmpty();
+                return $item == null || empty( $item );
             }
         );
         
-        if ( $emptyMoves.count() ) {
+        if ( $emptyMoves->count() ) {
             $sequences = new ArrayCollection(
                 \array_values( \array_diff( $sequences->toArray(), $emptyMoves->toArray() ) )
             );
@@ -390,16 +390,18 @@ class Engine
             ) {
                 // no creation of bearing off moves here. See next block.
                 $move = new Move();
-                $move->Color = game->CurrentPlayer;
+                $move->Color = $game->CurrentPlayer;
                 $move->From = $fromPoint;
                 $move->To = $toPoint;
                 
                 //copy and make a new list for first dice
-                if ( $moves[$diceIndex] == null ) {
+                if ( ! isset( $moves[$diceIndex] ) || $moves[$diceIndex] == null ) {
                     $moves[$diceIndex] = $move;
-                } else {
-                    // a move is already generated for this dice in this sequence. branch off a new.
-                    $newMoves = new ArrayCollection( $moves->getValues() );
+                } else { // a move is already generated for this dice in this sequence. branch off a new.
+                    $newMoves = [];
+                    for ( $i = 0; $i < $diceIndex; $i++ ) {
+                        $newMoves[] = $moves[$i];
+                    }
                     $newMoves[$diceIndex] = $move;
                     
                     // For last checker identical sequences are omitted

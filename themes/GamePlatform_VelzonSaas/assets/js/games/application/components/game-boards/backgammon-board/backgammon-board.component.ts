@@ -1181,7 +1181,7 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
                     ptIdx,
                     move.color
                 );
-                console.log( 'dragging', this.dragging );
+                //console.log( 'dragging', this.dragging );
                 break;
             }
         }

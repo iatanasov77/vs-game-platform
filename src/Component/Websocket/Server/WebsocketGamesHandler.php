@@ -112,13 +112,10 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         $this->logger->log( "Recieved Action: " . $action->actionName, 'GameServer' );
         
         try {
-            // For Debugging
-            // $gameManager->DoAction( ActionNames::from( $action->actionName ), $msg, $socket, $socket );
-            
             $otherClient    = $socket == $gameManager->Client1 ? $gameManager->Client2 : $gameManager->Client1;
             $gameManager->DoAction( ActionNames::from( $action->actionName ), $msg, $socket, $otherClient );
         } catch ( \Exception $e ) {
-            $this->logger->log( "Game Manager Do Action Error: '{$e->getMessage()}'", 'GameServer' );
+            $this->logger->log( "Game Manager Do Action Error: '{$e->getMessage()}' in file {$e->getFile()} at line {$e->getLine()}", 'GameServer' );
             if ( $this->logExceptionTrace ) {
                 $this->logger->log( "Exception Trace: {$e->getTraceAsString()}", 'GameServer' );
             }
@@ -216,7 +213,7 @@ final class WebsocketGamesHandler implements MessageComponentInterface
                 $gameCookie
             );
         } catch ( \Exception $exc ) {
-            $this->logger->log( "Connect Game Error: {$exc->getMessage()}", 'GameServer' );
+            $this->logger->log( "Connect Game Error: {$exc->getMessage()} in file {$exc->getFile()} at line {$exc->getLine()}", 'GameServer' );
             if ( $this->logExceptionTrace ) {
                 $this->logger->log( "Exception Trace: {$exc->getTraceAsString()}", 'GameServer' );
             }

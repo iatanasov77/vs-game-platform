@@ -9,6 +9,6 @@ class MoveDto
     public int $from;
     public Collection $nextMoves; // MoveDto[]
     public int $to;
-    public bool $animate;
-    public bool $hint;
+    public bool $animate    = false;
+    public bool $hint       = false;
 }

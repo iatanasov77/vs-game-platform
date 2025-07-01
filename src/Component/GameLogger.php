@@ -27,7 +27,7 @@ class GameLogger
     public function log( string $logData, string $context ): void
     {
         if ( $this->environement == 'dev' && \in_array( $context, $this->logContexts ) ) {
-            $this->logger->info( $logData );
+            $this->logger->info( \sprintf( "[%s] %s", $context, $logData ) );
         }
     }
     

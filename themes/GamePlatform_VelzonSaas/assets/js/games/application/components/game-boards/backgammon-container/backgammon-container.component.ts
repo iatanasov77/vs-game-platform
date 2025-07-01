@@ -572,7 +572,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
     
     setSendVisible(): void
     {
-        if ( ! this.myTurn() || ! this.rollButtonClicked ) {
+        if ( ! this.myTurn() || ! this.rollButtonClicked || this.doublingRequested() ) {
             this.sendVisible = false;
             return;
         }

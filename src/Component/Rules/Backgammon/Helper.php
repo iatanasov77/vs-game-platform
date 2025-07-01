@@ -3,20 +3,20 @@
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use App\Component\Type\PlayerColor;
-use App\Component\Rules\Backgammon\Game;
+use App\Component\Manager\AbstractGameManager;
 
 trait Helper
 {
     protected function getPointsForPlayer( PlayerColor $currentPlayer, Game $game ): Collection
     {
-        $this->logger->debug( $this->Points , 'BeforeFilteringPoints.txt' );
+        //$this->logger->debug( $game->Points , 'BeforeFilteringPoints.txt' );
         $points = $game->Points->filter(
             function( $entry ) use ( $currentPlayer ) {
                 return $entry->Checkers->first() &&
                 $entry->Checkers->first()->Color === $currentPlayer;
             }
         );
-        $this->logger->debug( $points , 'BeforeOrderingPoints.txt' );
+        //$this->logger->debug( $points , 'BeforeOrderingPoints.txt' );
         
         $pointsIterator  = $points->getIterator();
         $pointsIterator->uasort( function ( $a, $b ) use ( $currentPlayer ) {
@@ -59,11 +59,14 @@ trait Helper
         return new ArrayCollection( \iterator_to_array( $movesIterator ) );
     }
     
-    protected function getRollOrderByDescending(): Collection
+    protected function getRollOrdered( string $direction ): Collection
     {
         $dicesIterator  = $this->Roll->getIterator();
-        $dicesIterator->uasort( function ( $a, $b ) {
-            return $a->Value <=> $b->Value;
+        $dicesIterator->uasort( function ( $a, $b ) use ( $direction ) {
+            return $direction == AbstractGameManager::COLLECTION_ORDER_ASC ?
+                $b->Value <=> $a->Value :
+                $a->Value <=> $b->Value
+            ;
         });
             
         return new ArrayCollection( \iterator_to_array( $dicesIterator ) );

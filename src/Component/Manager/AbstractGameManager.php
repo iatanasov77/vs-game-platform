@@ -53,6 +53,12 @@ use App\Entity\GamePlayer;
  */
 abstract class AbstractGameManager implements GameManagerInterface
 {
+    /** @const string */
+    const COLLECTION_ORDER_ASC  = 'ASC';
+    
+    /** @const string */
+    const COLLECTION_ORDER_DESC = 'DESC';
+    
     /** @const int */
     const firstBet = 50;
     
@@ -331,7 +337,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         
         // , [JsonEncode::OPTIONS => JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT]
         $json = $this->serializer->serialize( $obj, JsonEncoder::FORMAT );
-        $this->logger->log( "Sending to client {$json}", 'GameManager' );
+        $this->logger->log( "Sending to client {$json}", 'WebsocketSend' );
         
         try {
             $socket->send( $obj );
@@ -342,10 +348,9 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     public function StartGame(): void
     {
-        $this->logger->log( 'Begin Start Game', 'GameManager' );
-        
         $this->Game->ThinkStart = new \DateTime( 'now' );
         $gameDto = Mapper::GameToDto( $this->Game );
+        $this->logger->log( 'Begin Start Game: ' . \print_r( $gameDto, true ), 'GameManager' );
         
         $action = new GameCreatedActionDto();
         $action->game = $gameDto;
@@ -380,7 +385,7 @@ abstract class AbstractGameManager implements GameManagerInterface
             $rollAction->moveTimer = Game::ClientCountDown;
             
             //$this->logger->log( 'First Throw Valid Moves: ' . \print_r( $rollAction->validMoves, true ), 'FirstThrowState' );
-            $this->logger->debug( $rollAction, 'FirstRoll.txt' );
+            //$this->logger->debug( $rollAction, 'FirstRoll.txt' );
             
             $this->Send( $this->Client1, $rollAction );
             $this->Send( $this->Client2, $rollAction );
@@ -652,12 +657,18 @@ abstract class AbstractGameManager implements GameManagerInterface
         $firstMove = Mapper::MoveToMove( $action->moves[0], $this->Game );
         $validMove = $this->Game->ValidMoves->filter(
             function( $entry ) use ( $firstMove ) {
-                return $entry == $firstMove;
+                //return $entry == $firstMove;
+                return
+                    $entry->From->GetNumber( $firstMove->Color ) == $firstMove->From->GetNumber( $firstMove->Color ) &&
+                    $entry->To->GetNumber( $firstMove->Color ) == $firstMove->To->GetNumber( $firstMove->Color )
+                ;
             }
         )->first();
         
-        //$this->logger->debug( $this->Game->ValidMoves, 'GameValidMoves.txt' );
-        //$this->logger->debug( $firstMove, 'DoMoves_FirstMove.txt' );
+        //$this->logger->log( \print_r( $firstMove, true ), 'DoMoves' );
+        //$this->logger->log( \print_r( $this->Game->ValidMoves, true ), 'DoMoves' );
+        $this->logger->debug( $firstMove, 'DoMoves_FirstMove.txt' );
+        $this->logger->debug( $this->Game->ValidMoves, 'GameValidMoves.txt' );
         //$this->debugGetCheckerFromPoint();
         
         foreach ( $action->moves as $key => $move ) {
@@ -689,14 +700,10 @@ abstract class AbstractGameManager implements GameManagerInterface
         $gameEndedAction->game = $game;
         
         $gameEndedAction->newScore = $newScore ? $newScore[0] : null;
-        if ( $this->Client1 ) {
-            $this->Send( $this->Client1, $gameEndedAction );
-        }
+        $this->Send( $this->Client1, $gameEndedAction );
         
         $gameEndedAction->newScore = $newScore ? $newScore[1] : null;
-        if ( $this->Client2 ) {
-            $this->Send( $this->Client2, $gameEndedAction );
-        }
+        $this->Send( $this->Client2, $gameEndedAction );
     }
     
     protected function ReturnStakes(): void

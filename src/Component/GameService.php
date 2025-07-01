@@ -333,7 +333,7 @@ class GameService
         
     }
     
-    protected function SendConnectionLost( PlayerColor $color, GameManagerInterface $manager )
+    protected function SendConnectionLost( PlayerColor $color, GameManagerInterface &$manager )
     {
         $socket = $manager->Client1;
         if ( $color == PlayerColor::White ) {

@@ -382,7 +382,6 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
     
     oponnentDone(): void
     {
-        alert( 'oponnentDone' );
         this.dicesVisible = false;
     }
     
@@ -559,7 +558,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
     {
         this.dicesVisible = true;
         this.sound.playDice();
-        alert( 'opponentRolled' );
+        //alert( 'opponentRolled' );
     }
     
     setRollButtonVisible(): void

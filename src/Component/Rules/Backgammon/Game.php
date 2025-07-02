@@ -189,11 +189,11 @@ abstract class Game
             }
         )->filter(
             function( $entry ) use ( $color ) {
-                return $entry->GetNumber( $color ) >= 19;
+                return $entry->GetNumber( $color ) < 19;
             }
         );
         
-        return ! $colorCheckers->isEmpty();
+        return $colorCheckers->isEmpty(); // all have higher number than 18
     }
     
     abstract public function AddCheckers( int $count, PlayerColor $color, int $point ): void;

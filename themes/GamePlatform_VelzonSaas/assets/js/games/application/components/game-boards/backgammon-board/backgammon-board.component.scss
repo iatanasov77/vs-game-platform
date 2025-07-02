@@ -4,6 +4,10 @@
     transition: transform .8s ease-in-out;
 }
 
+.rotated {
+    transform: rotate(180deg);
+}
+
 .flipped {
     transform: rotate(180deg);
 }

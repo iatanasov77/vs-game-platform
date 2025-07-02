@@ -76,9 +76,39 @@ trait Helper
     {
         $playerPointsIterator   = $currentPlayerPoints->getIterator();
         $playerPointsIterator->uasort( function ( $a, $b ) use ( $game ) {
-            return $b->GetNumber( $game.CurrentPlayer) ) <=> $a->GetNumber( $game.CurrentPlayer) );
+            return $b->GetNumber( $game->CurrentPlayer ) <=> $a->GetNumber( $game->CurrentPlayer );
         });
         
         return new ArrayCollection( \iterator_to_array( $playerPointsIterator ) );
+    }
+    
+    protected function ContainsEntryWithAll( Collection $listOfList, Collection $match ): bool
+    {
+        // searching for a list entry that contains all entries in match
+        foreach ( $listOfList as $list ) {
+            $hasMove = true;
+            foreach ( $match as $mv ) {
+                $moveFound = $list->filter(
+                    function( $entry ) use ( $mv  ) {
+                        return $mv != null && 
+                                $entry != null &&
+                                $entry->From == $mv->From &&
+                                $entry->To == $mv->To &&
+                                $entry->Color == $mv->Color;
+                    }
+                );
+                
+                if ( $moveFound->isEmpty() ) {
+                    $hasMove = false;
+                    break;
+                }
+            }
+            
+            if ( $hasMove ) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 }

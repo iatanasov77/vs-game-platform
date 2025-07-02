@@ -3,7 +3,7 @@
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Type\PlayerColor;
-use App\Component\AI\Backgammon\Engine as AiEngine;
+use App\Component\AI\Backgammon\EngineFactory as AiEngineFactory;
 use App\Entity\GamePlayer;
 use App\Component\System\Guid;
 
@@ -45,7 +45,11 @@ final class WebsocketGameManager extends AbstractGameManager
                     $this->Game->WhitePlayer->Gold = $aiUser->getGold();
                 }
                 
-                $this->Engine = new AiEngine( $this->logger, $this->Game );
+                $this->Engine = AiEngineFactory::CreateBackgammonEngine(
+                    $this->GameCode,
+                    $this->logger,
+                    $this->Game
+                );
                 $this->CreateDbGame();
                 $this->StartGame();
                 

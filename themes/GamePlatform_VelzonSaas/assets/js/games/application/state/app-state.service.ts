@@ -21,6 +21,8 @@ import { StateObject } from './state-object';
 import { Busy } from './busy';
 import { ErrorState } from './ErrorState';
 
+declare var $: any;
+
 @Injectable({
     providedIn: 'root'
 })
@@ -139,10 +141,10 @@ export class AppStateService
         if ( ! theme || theme.length === 0 ) theme = 'dark';
         
         AppStateService.Themes.forEach( ( v ) => {
-            document.body.classList.remove( v );
+            $( '#GameContainer' ).removeClass( v );
         });
         
-        document.body.classList.add( theme );
+        $( '#GameContainer' ).addClass( theme );
         this.theme.setValue( theme );
     }
 }

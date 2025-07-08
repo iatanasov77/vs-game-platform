@@ -854,7 +854,7 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
         let y = this.blackBar.y + this.blackBar.height - bw * 1.5;
         const chWidth = this.getCheckerWidth();
         
-        const highLightBlack = this.blackBar.hasValidMove && !draggingBlack;
+        const highLightBlack = this.blackBar.hasValidMove && ! draggingBlack;
         
         for ( let i = 0; i < blackCount; i++ ) {
             const yi = y - i * chWidth * 1.5;
@@ -1181,7 +1181,7 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
                     ptIdx,
                     move.color
                 );
-                console.log( 'dragging', this.dragging );
+                //console.log( 'dragging', this.dragging );
                 break;
             }
         }

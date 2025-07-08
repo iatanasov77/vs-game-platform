@@ -41,6 +41,16 @@ class Point
         )->count() < 2 || $this->GetNumber( $myColor ) == 25;
     }
     
+    public function Block( PlayerColor $myColor ): bool
+    {
+        // Do I have a block? Home doesnt count.
+        return $this->Checkers->filter(
+            function( $entry ) use ( $myColor ) {
+                return $entry && $entry->Color == $myColor;
+            }
+        )->count() >= 2;
+    }
+    
     public function GetNumber( PlayerColor $player ): int
     {
         return $player == PlayerColor::Black ? $this->BlackNumber : $this->WhiteNumber;
@@ -57,4 +67,12 @@ class Point
         return $this->GetNumber( $player ) == 25;
     }
     
+    public function Blot( PlayerColor $myColor ): bool
+    {
+        return $this->Checkers->filter(
+            function( $entry ) use ( $myColor ) {
+                return $entry && $entry->Color == $myColor;
+            }
+        )->count() == 1;
+    }
 }

@@ -8,7 +8,6 @@ import { playGame } from '../application/+store/game.actions';
 
 import { IAuth } from '../application/interfaces/auth';
 import { Busy } from '../application/state/busy';
-import UserDto from '_@/GamePlatform/Model/BoardGame/userDto';
 
 import { AuthService } from '../application/services/auth.service'
 import { SoundService } from '../application/services/sound.service'

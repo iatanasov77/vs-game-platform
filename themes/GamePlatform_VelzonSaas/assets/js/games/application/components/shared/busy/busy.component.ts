@@ -1,4 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Inject, Input } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
 // App State
 import { Busy } from '../../../state/busy';
@@ -14,18 +15,18 @@ import templateString from './busy.component.html';
         cssString || 'Game CSS Not Loaded !!!',
     ]
 })
-export class BusyComponent implements OnInit
+export class BusyComponent
 {
-    constructor() {}
+    @Input() lobbyButtonsVisible: boolean = false;
     
     @Input() busy: Busy | null = null;
-    @Input() text = 'Please wait.';
     @Input() overlay = true;
+    text = '';
     
-    ngOnInit(): void {}
-    
-    ngOnChanges(): void
+    constructor( @Inject( TranslateService ) private trans: TranslateService )
     {
-        // console.log(this.busy);
+        this.trans.onLangChange.subscribe( () => {
+            this.text = this.trans.instant( 'pleasewait' );
+        });
     }
 }

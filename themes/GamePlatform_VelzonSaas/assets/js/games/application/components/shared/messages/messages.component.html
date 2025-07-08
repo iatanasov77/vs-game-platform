@@ -1,8 +1,5 @@
 <span class="message"
     [@showHide]="{ value: state, params: { shown: shown, initial: initial } }"
 >
-    <ng-container *ngIf="! isLoggedIn || ! lobbyButtonsVisible">
-        {{ message?.text }}<i [ngClass]="getIcon()"></i>
-        <span *ngIf="timeLeft && timeLeft > 0">{{ roundTimeLeft() }}</span>
-    </ng-container>
+    {{ message?.text }}<i [ngClass]="getIcon()"></i>
 </span>

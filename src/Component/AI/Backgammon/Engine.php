@@ -8,7 +8,7 @@ use App\Component\Rules\Backgammon\Game;
 use App\Component\Rules\Backgammon\Move;
 use App\Component\Rules\Backgammon\Helper as GameHelper;
 
-class Engine
+abstract class Engine
 {
     use GameHelper;
     
@@ -33,47 +33,36 @@ class Engine
 
     public function GetBestMoves(): Collection
     {
-        $bestMoveSequence = null;
-        $bestScore = - PHP_FLOAT_MAX;
-        $allSequences = $this->GenerateMovesSequence( $this->EngineGame );
-        $this->logger->log( 'Engin GetBestMoves: ' . print_r( $allSequences, true ), 'EngineGenerateMoves' );
+        $bestMoveSequence   = null;
+        $bestScore          = - PHP_FLOAT_MAX;
+        $allSequences       = $this->GenerateMovesSequence( $this->EngineGame );
+        //$this->logger->log( 'Engin GetBestMoves: ' . print_r( $allSequences->toArray(), true ), 'EngineGenerateMoves' );
         
-        $oponent = $this->EngineGame->OtherPlayer();
-        $myColor = $this->EngineGame->CurrentPlayer;
-        $inParallel = 2;
-
-        /**
-         * PHP Manual for Parallel: https://www.php.net/manual/en/book.parallel.php
-         */
-        /*
-        $opt = new ParallelOptions { MaxDegreeOfParallelism = inParallel };
-        Parallel.ForEach( allSequences, opt, (sequence) =>
-        {
-            var g = allSequences.IndexOf(sequence) % inParallel;
-            var game = EngineGame.Clone();
-
-            var localSequence = ToLocalSequence(sequence, game);
-
-            var hits = DoSequence(localSequence, game);
-            var score = 0d;
-            if (Configuration.ProbablityScore)
-                score = -ProbabilityScore(oponent, game);
-            else
-                score = EvaluatePoints(myColor, game) + EvaluateCheckers(myColor, game);
-
-            UndoSequence(localSequence, hits, game);
-            //Console.WriteLine($"Engine search {s} of {allSequences.Count}\t{score.ToString("0.##")}\t{sequence.BuildString()}");
-            if (score > bestScore)
-            {
-                bestScore = score;
-                $bestMoveSequence = sequence;
+        $oponent    = $this->EngineGame->OtherPlayer();
+        $myColor    = $this->EngineGame->CurrentPlayer;
+        
+        foreach ( $allSequences as $sequence ) {
+            $localSequence = $this->ToLocalSequence( $sequence, $this->EngineGame );
+            
+            $hits = $this->DoSequence( $localSequence, $this->EngineGame );
+            $score = $this->EvaluatePoints( $myColor, $this->EngineGame ) + $this->EvaluateCheckers( $myColor, $this->EngineGame );
+            
+            $this->UndoSequence( $localSequence, $hits, $this->EngineGame );
+            if ( $score > $bestScore ) {
+                $bestScore = $score;
+                $bestMoveSequence = $sequence;
             }
-        });
-        */
+        }
         
         if ( $bestMoveSequence == null ) {
             return new ArrayCollection();
         }
+        
+        $bestMoveSequence   = $bestMoveSequence->filter(
+            function( $entry ) {
+                return $entry != null;
+            }
+        );
         
         if ( $myColor == PlayerColor::Black ) {
             $bestMoveSequence   = $bestMoveSequence->filter(
@@ -87,49 +76,51 @@ class Engine
                 return $b->From->BlackNumber <=> $a->From->BlackNumber;
             });
             
-            return \iterator_to_array( $bestMoveSequence );
+            return \iterator_to_array( $bestMoveSequenceIterator );
         }
-
-        $bestMoveSequence   = $bestMoveSequence->filter(
-            function( $entry ) {
-                return $entry != null;
-            }
-        );
         
         $bestMoveSequenceIterator  = $bestMoveSequence->getIterator();
         $bestMoveSequenceIterator->uasort( function ( $a, $b ) {
             return $b->From->WhiteNumber <=> $a->From->WhiteNumber;
         });
             
-        return new ArrayCollection( \iterator_to_array( $bestMoveSequence ) );
+        return new ArrayCollection( \iterator_to_array( $bestMoveSequenceIterator ) );
     }
     
     public function GenerateMovesSequence( Game $game ): Collection // List<Move[]>
     {
+        //$this->logger->log( 'Engin GetBestMoves: ' . print_r( $game->Roll->toArray(), true ), 'EngineGenerateMoves' );
         $sequences  = new ArrayCollection();
-        $moves      = [];
+        $moves      = new ArrayCollection();
         foreach ( $game->Roll as $roll ) {
             $moves[]    = new Move();
         }
         $this->_GenerateMovesSequence( $sequences, $moves, 0, $game );
         
         // Special case. Sometimes the first dice is blocked, but can be moved after next dice
-        if ( $sequences.count() == 1 && $sequences[0] == null ) {
-            $temp = $game->Roll[0];
-            $game->Roll[0] = $game->Roll[1];
-            $game->Roll[1] = $temp;
-            $this->_GenerateMovesSequence( $sequences, $moves, 0, $game );
+        if ( $sequences->count() == 1 ) {
+            $blockedMoves = $sequences[0]->filter(
+                function( $item ) {
+                    return $item == null;
+                }
+            );
+            if ( $blockedMoves->count() ) {
+                $temp = $game->Roll[0];
+                $game->Roll[0] = $game->Roll[1];
+                $game->Roll[1] = $temp;
+                $this->_GenerateMovesSequence( $sequences, $moves, 0, $game );
+            }
         }
         
         // If there are move sequences with all moves not null, remove sequences that has some moves null.
         // (rule of backgammon that you have to use all dice if you can)
-        $emptyMoves = $sequences.filter(
+        $emptyMoves = $sequences->filter(
             function( $item ) {
-                return $item == null || $item->isEmpty();
+                return $item == null || empty( $item );
             }
         );
         
-        if ( $emptyMoves.count() ) {
+        if ( $emptyMoves->count() ) {
             $sequences = new ArrayCollection(
                 \array_values( \array_diff( $sequences->toArray(), $emptyMoves->toArray() ) )
             );
@@ -157,29 +148,37 @@ class Engine
         return $k > -0.25; // Just my best guess
     }
 
-    private function ToLocalSequence( Collection $sequence, Game $game ): Collection
+    abstract protected function _GenerateMovesSequence( Collection &$sequences, Collection $moves, int $diceIndex, Game $game ): void;
+    
+    protected function ToLocalSequence( Collection $sequence, Game $game ): Collection
     {
-        $moves = new ArrayCollection();
-        for ( $i = 0; $i < $sequence->count; $i++ ) {
-            if ( $sequence[$i] != null ) {
-                $move   = new Move();
-                $move->From = $game->Points[$sequence[$i]->From->BlackNumber];
-                $move->To = $game->Points[$sequence[$i]->To->BlackNumber];
-                $move->Color = $sequence[$i]->Color;
-                    
-                $moves[] = $move;
+        try {
+            $moves = new ArrayCollection();
+            for ( $i = 0; $i < count( $sequence ); $i++ ) {
+                if ( $sequence[$i] != null ) {
+                    $move   = new Move();
+                    $move->From = $game->Points[$sequence[$i]->From->BlackNumber];
+                    $move->To = $game->Points[$sequence[$i]->To->BlackNumber];
+                    $move->Color = $sequence[$i]->Color;
+                        
+                    $moves[] = $move;
+                }
             }
+        } catch ( \Exception $e ) {
+            $this->logger->log( 'Exception at Engine::ToLocalSequence', 'EngineGenerateMoves' );
+            $this->logger->log( 'Wrong Sequence: ' . print_r( $sequence->toArray(), true ), 'EngineGenerateMoves' );
         }
         
         return $moves;
     }
 
-    private function DoSequence( Collection $sequence, Game $game ): Collection
+    protected function DoSequence( Collection $sequence, Game $game ): Collection
     {
         $hits = new ArrayCollection();
         foreach ( $sequence as $move ) {
-            if ( $move == null )
+            if ( $move == null ) {
                 continue;
+            }
             $hit = $game->MakeMove( $move );
             $hits[] = $hit;
         }
@@ -188,7 +187,7 @@ class Engine
         return $hits;
     }
 
-    private function UndoSequence( Collection $sequence, Collection $hits, Game $game ): void
+    protected function UndoSequence( Collection $sequence, Collection $hits, Game $game ): void
     {
         $game->SwitchPlayer();
 
@@ -202,7 +201,7 @@ class Engine
         }
     }
 
-    private function EvaluatePoints( PlayerColor $myColor, Game $game ): float
+    protected function EvaluatePoints( PlayerColor $myColor, Game $game ): float
     {
         if ( $myColor == PlayerColor::White ) {
             // Higher score for white when few checkers and black has many checkers left
@@ -212,7 +211,7 @@ class Engine
         }
     }
 
-    private function EvaluateCheckers( PlayerColor $myColor, Game $game ): float
+    protected function EvaluateCheckers( PlayerColor $myColor, Game $game ): float
     {
         $score = 0;
         $inBlock = false;
@@ -225,31 +224,25 @@ class Engine
 
         $other = $myColor == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
         // Oponents checker closest to their bar. Relative to my point numbers.
-        $opponentColorNumber = $game->Points->filter(
+        $opponentMax = $game->Points->filter(
             function( $entry ) use ( $other ) {
-                return $entry->Checkers->exists(
-                    function( $key, $entry ) use ( $other ) {
-                        return $entry->Color === $other;
-                    }
-                );
+                $checker = $entry->Checkers->first();
+                
+                return $checker && $checker->Color == $other;
             }
-        )->pluck( $myColor == PlayerColor::Black ? 'BlackNumber' : 'WhiteNumber' );
-        $opponentMax = \max( $opponentColorNumber );
+        )->last();
         
-        $myColorNumber = $game->Points->filter(
+        $myMin = $game->Points->filter(
             function( $entry ) use ( $myColor ) {
-                return $entry->Checkers->exists(
-                    function( $key, $entry ) use ( $myColor ) {
-                        return $entry->Color === $myColor;
-                    }
-                );
+                $checker = $entry->Checkers->first();
+                
+                return $checker && $checker->Color == $myColor;
             }
-        )->pluck( $myColor == PlayerColor::Black ? 'BlackNumber' : 'WhiteNumber' );
-        $myMin = \min( $myColorNumber );
-
+        )->last();
+        
         $allPassed = true;
 
-        if ( $myMin < $opponentMax ) {
+        if ( $myMin->GetNumber( $myColor ) < $opponentMax->GetNumber( $other ) ) {
             for ( $i = 1; $i < 25; $i++ ) {
                 // It is important to reverse looping for white
                 $point = $game->Points[$i];
@@ -260,7 +253,7 @@ class Engine
                 $pointNo = $point->GetNumber( $myColor );
 
                 // If all opponents checkers has passed this point, blots are not as bad
-                $allPassed = $pointNo > $opponentMax;
+                $allPassed = $pointNo > $opponentMax->GetNumber( $other );
 
                 if ( $point->Block( $myColor ) ) {
                     if ( $inBlock ) {
@@ -302,7 +295,7 @@ class Engine
     }
 
     //Get the average score for current player rolling all possible combinations
-    private function ProbabilityScore( PlayerColor $myColor, Game $game ): float
+    protected function ProbabilityScore( PlayerColor $myColor, Game $game ): float
     {
         $allDiceRoll = $this->AllRolls();
         $scores = [];
@@ -335,10 +328,11 @@ class Engine
         return \array_sum( $scores ) / \count( $scores );
     }
 
-    private function AllRolls(): array
+    protected function AllRolls(): array
     {
-        if ( $this->$_allRolls != null )
-            return $this->$_allRolls;
+        if ( $this->_allRolls != null ) {
+            return $this->_allRolls;
+        }
         
         $list = [];
         for ( $d1 = 1; $d1 < 7; $d1++ ) {
@@ -349,122 +343,12 @@ class Engine
                 }
             }
         }
-        $this->$_allRolls = \array_values( $list );
+        $this->_allRolls = \array_values( $list );
         
-        return $this->$_allRolls;
+        return $this->_allRolls;
     }
 
-    private function _GenerateMovesSequence( Collection &$sequences, array $moves, int $diceIndex, Game $game ): void
-    {
-        $current = $game->CurrentPlayer;
-        $bar = $game->Bars[$current->value];
-        $barHasCheckers = $bar->Checkers->filter(
-            function( $entry ) use ( $current ) {
-                return $entry && $entry->Color === $current;
-            }
-        )->count();
-        $dice = $game->Roll[$diceIndex];
-
-        $points = $barHasCheckers ? [ $bar ] : $this->getPointsForPlayer( $current, $game )->toArray();
-            
-        // There seems to be a big advantage to evaluate points from lowest number
-        // If not reversing here, black will win 60 to 40 with same config
-        if ( $game->CurrentPlayer == PlayerColor::White ) {
-            $points = \array_reverse( $points );
-        }
-
-        foreach ( $points as $fromPoint ) {
-            $fromPointNo = $fromPoint->GetNumber( $game->CurrentPlayer );
-            if ( $fromPointNo == 25 )
-                continue;
-            
-            $toPoint = $game->Points->filter(
-                function( $entry ) use ( $game, $dice, $fromPointNo ) {
-                    return $entry->GetNumber( $game->CurrentPlayer ) == $dice->Value + $fromPointNo;
-                }
-            )->first();
-            if (
-                $toPoint != null && 
-                $toPoint->IsOpen( $game->CurrentPlayer ) && 
-                ! $toPoint->IsHome( $game->CurrentPlayer )
-            ) {
-                // no creation of bearing off moves here. See next block.
-                $move = new Move();
-                $move->Color = game->CurrentPlayer;
-                $move->From = $fromPoint;
-                $move->To = $toPoint;
-                
-                //copy and make a new list for first dice
-                if ( $moves[$diceIndex] == null ) {
-                    $moves[$diceIndex] = $move;
-                } else {
-                    // a move is already generated for this dice in this sequence. branch off a new.
-                    $newMoves = new ArrayCollection( $moves->getValues() );
-                    $newMoves[$diceIndex] = $move;
-                    
-                    // For last checker identical sequences are omitted
-                    if ( $diceIndex < $game->Roll->count() - 1 ) { // || ! $sequences->ContainsEntryWithAll( $newMoves ) 
-                        $moves = $newMoves;
-                        $sequences[]    = $moves;
-                    }
-                }
-
-                if ( $diceIndex < $game->Roll->count() - 1 ) {
-                    // Do the created move and recurse to next dice
-                    $hit = $game->MakeMove( $move );
-                    $this->_GenerateMovesSequence( $sequences, $moves, $diceIndex + 1, $game );
-                    $game->UndoMove( $move, $hit );
-                }
-            } else if ( $game->IsBearingOff( $game->CurrentPlayer ) ) {
-                // The furthest away checker can be moved beyond home
-                $currentPlayerPoints = $game->Points->filter(
-                    function( $entry ) use ( $game ) {
-                        return $entry->Checkers->filter(
-                            function( $entry ) use ( $game ) {
-                                return $entry && $entry->Color === $game->CurrentPlayer;
-                            }
-                        );
-                    }
-                );
-                
-                $orderedCurrentPlayerPoints = $this->orderPlayerPoints( $currentPlayerPoints, $game );
-                $minPoint = $orderedCurrentPlayerPoints->first()->GetNumber( $game->CurrentPlayer );
-                
-                $toPointNo = $fromPointNo == $minPoint ? \min( 25, $fromPointNo + $dice->Value ) : $fromPointNo + $dice->Value;
-                $toPoint = $game->Points->filter(
-                    function( $entry ) use ( $game, $toPointNo ) {
-                        return $entry->GetNumber( $game->CurrentPlayer ) == $toPointNo;
-                    }
-                )->first();
-                if ( $toPoint != null && $toPoint->IsOpen( $game->CurrentPlayer ) ) {
-                    $move = new Move();
-                    $move->Color = $game->CurrentPlayer;
-                    $move->From = $fromPoint;
-                    $move->To = $toPoint;
-                    
-                    if ( $moves[$diceIndex] == null ) {
-                        $moves[$diceIndex] = $move;
-                    } else {
-                        $newMoves = new ArrayCollection( $moves->toArray() );
-                        $newMoves[$diceIndex] = $move;
-                        // For last checker identical sequences are omitted
-                        if ( $diceIndex < $game->Roll->count() - 1 ) { // || ! $sequences->ContainsEntryWithAll( $newMoves ) 
-                            $moves = $newMoves;
-                            $sequences[]    = $moves;
-                        }
-                    }
-                    
-                    if ( $diceIndex < $game->Roll->count() - 1 ) {
-                        $hit = $game->MakeMove( $move );
-                        $this->_GenerateMovesSequence( $sequences, $moves, $diceIndex + 1, $game );
-                        $game->UndoMove( $move, $hit );
-                    }
-                }
-            }
-        }
-    }
-
-    private function Evaluate( PlayerColor $color, Game $game ): float
+    protected function Evaluate( PlayerColor $color, Game $game ): float
     {
         $score = $this->EvaluatePoints( $color, $game ) + $this->EvaluateCheckers( $color, $game );
         return $score;

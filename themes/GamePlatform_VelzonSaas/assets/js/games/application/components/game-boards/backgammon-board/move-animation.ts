@@ -21,6 +21,10 @@ export class MoveAnimation
         finished: (move: MoveDto) => void,
         step: () => void
     ) {
+        if ( move.hint ) {
+            this.frames = 60;
+        }
+
         this.incrementX = ( to.x - from.x ) / this.frames;
         this.incrementY = ( to.y - from.y ) / this.frames;
         this.currentPos = { ...from };

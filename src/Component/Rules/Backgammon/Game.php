@@ -4,10 +4,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 use App\Component\GameLogger;
-use App\Component\System\Guid;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerColor;
-use App\Entity\GamePlayer;
 
 abstract class Game
 {
@@ -23,10 +21,10 @@ abstract class Game
     /** @var string */
     public $Id;
     
-    /** @var GamePlayer */
+    /** @var Player */
     public $BlackPlayer;
     
-    /** @var GamePlayer */
+    /** @var Player */
     public $WhitePlayer;
     
     /** @var PlayerColor */
@@ -81,7 +79,7 @@ abstract class Game
                 $this->Points = $value;
                 
                 $trace = debug_backtrace();
-                $this->logger->log( "Points Changed in File: {$trace[0]['file']} on line {$trace[0]['line']}", 'GenerateMoves' );
+                //$this->logger->log( "Points Changed in File: {$trace[0]['file']} on line {$trace[0]['line']}", 'GenerateMoves' );
                 
                 break;
             default:
@@ -189,13 +187,13 @@ abstract class Game
                 
                 return $askedColor;
             }
-            )->filter(
-                function( $entry ) use ( $color ) {
-                    return $entry->GetNumber( $color ) < 19;
-                }
-                );
-            
-            return $colorCheckers->isEmpty();
+        )->filter(
+            function( $entry ) use ( $color ) {
+                return $entry->GetNumber( $color ) < 19;
+            }
+        );
+        
+        return $colorCheckers->isEmpty(); // all have higher number than 18
     }
     
     abstract public function AddCheckers( int $count, PlayerColor $color, int $point ): void;
@@ -227,9 +225,6 @@ abstract class Game
     
     public function RollDice(): void
     {
-        /* Test With Concreate Dices 
-        $this->FakeRoll( 1, 2 );
-        */
         $this->Roll = new ArrayCollection( Dice::Roll() );
         $this->SetFirstRollWinner();
         
@@ -238,7 +233,7 @@ abstract class Game
         $this->_GenerateMoves( $this->ValidMoves );
         
         Game::$DebugValidMoves++;
-        $this->logger->debug( $this->ValidMoves, 'ValidMoves_' . Game::$DebugValidMoves .  '.txt' );
+        //$this->logger->debug( $this->ValidMoves, 'ValidMoves_' . Game::$DebugValidMoves .  '.txt' );
     }
     
     public function GetHome( PlayerColor $color ): Point

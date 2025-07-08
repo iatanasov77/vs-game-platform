@@ -10,10 +10,9 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use Vankosoft\UsersBundle\Security\SecurityBridge;
 
-use App\Component\GameLogger;
 use App\Component\Manager\GameManagerInterface;
 use App\Component\Manager\GameManagerFactory;
-use App\Component\AI\Backgammon\Engine as AiEngine;
+use App\Component\AI\Backgammon\EngineFactory as AiEngineFactory;
 use App\Component\System\Guid;
 
 // DTO Objects
@@ -257,7 +256,11 @@ class GameService
                 
                 if ( $gameManager != null && self::MyColor( $gameManager, $dbUser, $color ) )
                 {
-                    $gameManager->Engine = new AiEngine( $this->logger, $gameManager->Game );
+                    $gameManager->Engine = AiEngineFactory::CreateBackgammonEngine(
+                        $gameManager->GameCode,
+                        $this->logger,
+                        $gameManager->Game
+                    );
                     $this->logger->log( "Restoring game {$cookie->id} for {$color}", 'GameService' );
                     
                     // entering socket loop
@@ -284,7 +287,7 @@ class GameService
             if (
                 $m->Game->BlackPlayer->Id == $userId ||
                 $m->Game->WhitePlayer->Id == $userId &&
-                $userId != Guid::Empty
+                $userId != Guid::Empty()
             ) {
                 $this->logger->log( "Game Already Started", 'GameService' );
                 return true;
@@ -333,7 +336,7 @@ class GameService
         
     }
     
-    protected function SendConnectionLost( PlayerColor $color, GameManagerInterface $manager )
+    protected function SendConnectionLost( PlayerColor $color, GameManagerInterface &$manager )
     {
         $socket = $manager->Client1;
         if ( $color == PlayerColor::White ) {

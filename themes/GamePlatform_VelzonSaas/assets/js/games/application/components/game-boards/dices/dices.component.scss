@@ -18,9 +18,7 @@
     }
 }
 
-/* This Break Icons of Whole Layout
-*/
-
+/* Adding '.dice' class because otherwise Break Icons of Whole Layout */
 i.dice::before {
     position: absolute;
     font-size: 40px;
@@ -32,7 +30,6 @@ i.dice::before {
         font-size: 30px;
     }
 }
-
 
 .black {
     background-color: #aaa;

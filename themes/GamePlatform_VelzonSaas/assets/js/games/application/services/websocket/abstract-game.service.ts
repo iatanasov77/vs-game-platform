@@ -135,14 +135,14 @@ export abstract class AbstractGameService
     
     onOpen(): void
     {
+        // console.log('Open', { event });
         const now = new Date();
         const ping = now.getTime() - this.connectTime.getTime();
         
         //console.log( 'User in State', this.appState.user );
         if ( this.appState.user.getValue() ) {
-            this.statusMessageService.setWaitingForConnect();
-            //this.statusMessageService.setNotGameStarted();
-            //this.appState.hideBusy();
+            //this.statusMessageService.setWaitingForConnect();
+            this.statusMessageService.setNotGameStarted();
         } else {
             this.statusMessageService.setNotLoggedIn();
             this.appState.hideBusy();

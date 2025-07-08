@@ -112,13 +112,10 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         $this->logger->log( "Recieved Action: " . $action->actionName, 'GameServer' );
         
         try {
-            // For Debugging
-            // $gameManager->DoAction( ActionNames::from( $action->actionName ), $msg, $socket, $socket );
-            
             $otherClient    = $socket == $gameManager->Client1 ? $gameManager->Client2 : $gameManager->Client1;
             $gameManager->DoAction( ActionNames::from( $action->actionName ), $msg, $socket, $otherClient );
         } catch ( \Exception $e ) {
-            $this->logger->log( "Game Manager Do Action Error: '{$e->getMessage()}'", 'GameServer' );
+            $this->logger->log( "Game Manager Do Action Error: '{$e->getMessage()}' in file {$e->getFile()} at line {$e->getLine()}", 'GameServer' );
             if ( $this->logExceptionTrace ) {
                 $this->logger->log( "Exception Trace: {$e->getTraceAsString()}", 'GameServer' );
             }
@@ -168,44 +165,46 @@ final class WebsocketGamesHandler implements MessageComponentInterface
     {
         $this->logger->log( "Connect Game Request.", 'GameServer' );
         
-        $queryString        = $conn->httpRequest->getUri()->getQuery();
-        $queryParameters    = [];
-        
-        \parse_str( $queryString, $queryParameters );
-        //$this->logger->log( "API Verify Signature: ". $queryParameters['token'], 'GameServer' );
-        
-        $user   = $this->usersRepository->findOneBy( ['apiVerifySiganature' => $queryParameters['token']] );
-        if ( ! $user ) {
-            $this->logger->log( "User Not Found When Connecting Game.", 'GameServer' );
-            return;
-        }
-        
-        $gameCode   = isset( $queryParameters['gameCode'] ) ? $queryParameters['gameCode'] : null;
-        if ( ! $gameCode ) {
-            $this->logger->log( "Game Code Missing When Connecting Game.", 'GameServer' );
-            return;
-        }
-        
-        $webSocket  = $this->wsClientFactory->createRatchetConnectionClient( $conn );
-        $webSocket->State   = WebSocketState::Open;
-        
-        $userId     = $user->getId();
-        $gameId     = isset( $queryParameters['gameId'] ) ? $queryParameters['gameId'] : null;
-        $playAi     = isset( $queryParameters['playAi'] ) ? $queryParameters['playAi'] : "false";
-        $forGold    = isset( $queryParameters['forGold'] ) ? $queryParameters['forGold'] : "true";
-        $gameCookie = isset( $queryParameters['gameCookie'] ) ? $queryParameters['gameCookie'] : null;
-        
-        if ( $gameCookie ) {
-            $gameCookie = \base64_decode( $gameCookie );
-            $this->logger->log( "Game Cookie: ". $gameCookie, 'GameServer' );
-        }
-        
-        //$this->logger->log( "Game Code: ". $gameCode, 'GameServer' );
-        //$this->logger->log( "Game Id: ". $gameId, 'GameServer' );
-        //$this->logger->log( "Play AI: ". $playAi, 'GameServer' );
-        
-        $gameGuid   = null;
         try {
+            $queryString        = $conn->httpRequest->getUri()->getQuery();
+            $queryParameters    = [];
+            
+            \parse_str( $queryString, $queryParameters );
+            //$this->logger->log( "API Verify Signature: ". $queryParameters['token'], 'GameServer' );
+            
+            $verifyToken    = isset( $queryParameters['token'] ) ? $queryParameters['token'] : null;
+            $user           = $this->usersRepository->findOneBy( ['apiVerifySiganature' => $verifyToken ] );
+            if ( ! $user ) {
+                $this->logger->log( "User Not Found When Connecting Game.", 'GameServer' );
+                return;
+            }
+            
+            $gameCode   = isset( $queryParameters['gameCode'] ) ? $queryParameters['gameCode'] : null;
+            if ( ! $gameCode ) {
+                $this->logger->log( "Game Code Missing When Connecting Game.", 'GameServer' );
+                return;
+            }
+            
+            $webSocket  = $this->wsClientFactory->createRatchetConnectionClient( $conn );
+            $webSocket->State   = WebSocketState::Open;
+            
+            $userId     = $user->getId();
+            $gameId     = isset( $queryParameters['gameId'] ) ? $queryParameters['gameId'] : null;
+            $playAi     = isset( $queryParameters['playAi'] ) ? $queryParameters['playAi'] : "false";
+            $forGold    = isset( $queryParameters['forGold'] ) ? $queryParameters['forGold'] : "true";
+            $gameCookie = isset( $queryParameters['gameCookie'] ) ? $queryParameters['gameCookie'] : null;
+            
+            if ( $gameCookie ) {
+                $gameCookie = \base64_decode( $gameCookie );
+                $this->logger->log( "Game Cookie: ". $gameCookie, 'GameServer' );
+            }
+            
+            //$this->logger->log( "Game Code: ". $gameCode, 'GameServer' );
+            //$this->logger->log( "Game Id: ". $gameId, 'GameServer' );
+            //$this->logger->log( "Play AI: ". $playAi, 'GameServer' );
+            
+            $gameGuid   = null;
+        
             $gameGuid   = $this->gameService->Connect(
                 $webSocket,
                 $gameCode,
@@ -216,7 +215,7 @@ final class WebsocketGamesHandler implements MessageComponentInterface
                 $gameCookie
             );
         } catch ( \Exception $exc ) {
-            $this->logger->log( "Connect Game Error: {$exc->getMessage()}", 'GameServer' );
+            $this->logger->log( "Connect Game Error: {$exc->getMessage()} in file {$exc->getFile()} at line {$exc->getLine()}", 'GameServer' );
             if ( $this->logExceptionTrace ) {
                 $this->logger->log( "Exception Trace: {$exc->getTraceAsString()}", 'GameServer' );
             }

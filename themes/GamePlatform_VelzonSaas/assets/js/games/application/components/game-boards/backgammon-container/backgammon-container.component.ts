@@ -256,7 +256,6 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
             }
             
             this.isRoomSelected = true;
-            this.appStateService.hideBusy();
         });
         
         this.actions$.pipe( ofType( startGameSuccess ) ).subscribe( () => {
@@ -489,40 +488,47 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
     
     moveAnimFinished(): void
     {
+        this.sound.playChecker();
         this.wsService.shiftMoveAnimationsQueue();
     }
     
     @HostListener( 'window:resize', ['$event'] )
     onResize(): void
     {
+        // const _innerWidth   = window.innerWidth;
         const _innerWidth   = $( '#GameBoardContainer' ).width();
-        //alert( _innerWidth );
+        // alert( _innerWidth );
         
         this.width = Math.min( _innerWidth, 1024 );
         const span = this.messages?.nativeElement as Element;
+        // console.log( span.getElementsByTagName( 'span' ) );
         const spanWidth = span.getElementsByTagName( 'span' )[0].clientWidth;
+        // alert( spanWidth );
+        
         this.messageCenter = this.width / 2 - spanWidth / 2;
+        // alert( this.messageCenter );
         
         this.height = Math.min( window.innerHeight - 40, this.width * 0.6 );
         
         const buttons = this.backgammonBoardButtons?.nativeElement as HTMLElement;
-        const btnsOffset = 15; //Cheating. Could not get the height.
+        const btnsOffset = 5; //Cheating. Could not get the height.
         if ( buttons ) {
-            buttons.style.top = `${this.height / 2 + btnsOffset}px`;
-            buttons.style.right = `${this.width * 0.12}px`;
+            buttons.style.top = `${this.height / 2 - btnsOffset}px`;
+            buttons.style.right = `${this.width * 0.11}px`;
         }
         
         const dices = this.dices?.nativeElement as HTMLElement;
         if ( dices ) {
             // Puts the dices on right side if its my turn.
             if ( this.myTurn() ) {
-                dices.style.left = `${this.width / 2 - 95}px`;
+                dices.style.left = `${this.width / 2 + 20}px`;
                 dices.style.right = '';
             } else {
-                dices.style.right = `${this.width / 2 - 95}px`;
+                dices.style.right = `${this.width / 2 + 20}px`;
                 dices.style.left = '';
+                //alert( dices.style.right );
             }
-            dices.style.top = `${this.height / 2 + btnsOffset}px`;
+            dices.style.top = `${this.height / 2 - btnsOffset}px`;
         }
     }
     
@@ -558,11 +564,12 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
     {
         this.dicesVisible = true;
         this.sound.playDice();
+        //alert( 'opponentRolled' );
     }
     
     setRollButtonVisible(): void
     {
-        if ( ! this.myTurn() ) {
+        if ( ! this.myTurn() || this.doublingRequested() ) {
             this.rollButtonVisible = false;
             return;
         }
@@ -572,7 +579,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
     
     setSendVisible(): void
     {
-        if ( ! this.myTurn() || ! this.rollButtonClicked ) {
+        if ( ! this.myTurn() || ! this.rollButtonClicked || this.doublingRequested() ) {
             this.sendVisible = false;
             return;
         }
@@ -590,15 +597,6 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         
         const dices = this.appStateService.dices.getValue();
         this.undoVisible = dices && dices.filter( ( d ) => d.used ).length > 0;
-    }
-    
-    setDicesVisible(): void
-    {
-        if ( ! this.myTurn() ) {
-            this.dicesVisible = true;
-            return;
-        }
-        this.dicesVisible = ! this.rollButtonVisible;
     }
     
     resignGame(): void
@@ -748,8 +746,11 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         //console.log( 'GameDto Object: ', game );
         
         this.wsService.startGamePlay( game, myColor, this.playAiFlag, this.forGoldFlag );
-        this.exitVisible = true;
-        this.appStateService.showBusy();
+        
         this.waitForOpponent();
+        window.dispatchEvent( new Event( 'resize' ) );
+        
+        this.statusMessageService.setWaitingForConnect();
+        this.exitVisible = true;
     }
 }

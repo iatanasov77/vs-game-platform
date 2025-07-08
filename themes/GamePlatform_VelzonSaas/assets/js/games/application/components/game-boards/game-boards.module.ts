@@ -32,7 +32,7 @@ import { BackgammonVariantsComponent } from './game-variants/backgammon/backgamm
         BackgammonBoardComponent,
         BackgammonBoardButtonsComponent,
         DicesComponent,
-        BoardMenuComponent,
+        //BoardMenuComponent,
         BoardButtonsComponent,
         BoardPlayerComponent,
         BackgammonVariantsComponent
@@ -55,7 +55,7 @@ import { BackgammonVariantsComponent } from './game-variants/backgammon/backgamm
         BackgammonBoardComponent,
         BackgammonBoardButtonsComponent,
         DicesComponent,
-        BoardMenuComponent,
+        //BoardMenuComponent,
         BoardButtonsComponent,
         BoardPlayerComponent,
         BackgammonVariantsComponent

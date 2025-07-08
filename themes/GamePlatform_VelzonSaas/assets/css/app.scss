@@ -3,9 +3,11 @@
 @use "../vendor/Velzon_v4.2.0/scss/config/saas/app.scss";
 @use "../vendor/Velzon_v4.2.0/scss/config/saas/custom.scss";
 
-@use "~@fortawesome/fontawesome-free/scss/fontawesome.scss";
+//@use "~@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@import "~@fortawesome/fontawesome-free/css/all.css";
 
-@use "./games-themes.scss";
-@use "./games.css";
-@use "./communications.css";
+@import "./games-themes.scss";
+@import "./games.css";
+@import "./communications.css";
+
 @import "./custom.css";

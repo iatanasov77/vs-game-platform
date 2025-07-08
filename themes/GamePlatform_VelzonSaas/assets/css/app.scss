@@ -3,11 +3,9 @@
 @use "../vendor/Velzon_v4.2.0/scss/config/saas/app.scss";
 @use "../vendor/Velzon_v4.2.0/scss/config/saas/custom.scss";
 
+@use "~@fortawesome/fontawesome-free/scss/fontawesome.scss";
+
 @use "./games-themes.scss";
 @use "./games.css";
 @use "./communications.css";
-
-@import "~@fortawesome/fontawesome-free/css/all.css";
-@import "~@flaticon/flaticon-uicons/css/all/all";
-
 @import "./custom.css";

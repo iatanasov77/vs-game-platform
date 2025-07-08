@@ -1,3 +1,14 @@
+0.14.3	|	Release date: **08.07.2025**
+============================================
+* Bug-Fixes and Improvements:
+  - Fix Sending Moves by Black Player in Playing with AI.
+  - Fixing Backgammon Engine.
+  - Add More Fixes FOR Backgammon AI.
+  - Refactoring of Initializing Backgammon AI.
+  - Refactoring of All Backgammon Game CSS Styles.
+  - Fix GamePlatform Theme CSS Styles.
+
+
 0.14.2	|	Release date: **29.06.2025**
 ============================================
 * New Features:

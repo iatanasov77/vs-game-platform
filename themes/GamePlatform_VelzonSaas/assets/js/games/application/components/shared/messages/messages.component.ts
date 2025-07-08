@@ -1,5 +1,4 @@
 import {
-    AfterViewInit,
     Component,
     Input,
     OnChanges,
@@ -56,18 +55,14 @@ import templateString from './messages.component.html';
         ])
     ]
 })
-export class MessagesComponent implements OnChanges, AfterViewInit
+export class MessagesComponent implements OnChanges
 {
     @Input() message: StatusMessage | null = StatusMessage.getDefault();
     // changing the coordinates will affect all animations coordinates.
     @Input() initial = 0;
     @Input() shown = 0;
-    @Input() timeLeft: number | null = 0;
     
-    @Input() lobbyButtonsVisible: boolean   = false;
-    @Input() isLoggedIn: boolean            = false;
-    
-    state = 'initial';
+    state = 'hidden';
     
     ngOnChanges( changes: SimpleChanges ): void
     {
@@ -78,19 +73,8 @@ export class MessagesComponent implements OnChanges, AfterViewInit
                 case 'message':
                     this.animate();
                     break;
-                case 'lobbyButtonsVisible':
-                    this.lobbyButtonsVisible = changedProp.currentValue;
-                    break;
-                case 'isLoggedIn':
-                    this.isLoggedIn = changedProp.currentValue;
-                    break;
             }
         }
-    }
-    
-    ngAfterViewInit(): void
-    {
-        this.animate();
     }
     
     animate(): void
@@ -115,14 +99,5 @@ export class MessagesComponent implements OnChanges, AfterViewInit
         }
         
         return '';
-    }
-    
-    roundTimeLeft(): number
-    {
-        if ( ! this.timeLeft ) {
-            return 0;
-        }
-        
-        return Math.round( this.timeLeft );
     }
 }

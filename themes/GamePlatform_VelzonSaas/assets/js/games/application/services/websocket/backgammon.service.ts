@@ -171,6 +171,7 @@ export class BackgammonService extends AbstractGameService
                 break;
             }
             case ActionNames.opponentMove: {
+                //alert( 'WebSocket Action Opponent Move' );
                 console.log( 'WebSocket Action Opponent Move' ); // , action.actionName
                 
                 const action = JSON.parse( message.data ) as OpponentMoveActionDto;
@@ -236,6 +237,8 @@ export class BackgammonService extends AbstractGameService
             }
             case ActionNames.gamePlayStarted: {
                 console.log( 'WebSocket Action Game Play Started', action.actionName );
+                //this.appState.showBusy();
+                
                 this.store.dispatch( playGame() );
                 break;
             }

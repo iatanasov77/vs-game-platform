@@ -94,7 +94,6 @@ export class AuthService
                     
                     // Add Backgamon User in Local Storage
                     this.signIn( this.createUserDto( auth ), auth.apiToken );
-                    //this.statusMessageService.setWaitingForConnect();
                 }
             })
         );
@@ -172,8 +171,10 @@ export class AuthService
         this.httpClient.post<UserDto>( url, userDto, {headers} ).pipe(
             map( ( data: any ) => { return data; } )
         ).subscribe( ( userDto: UserDto ) => {
+            this.trans.use( userDto?.preferredLanguage ?? 'en' );
             this.storage.set( Keys.loginKey, userDto );
             this.appState.user.setValue( userDto );
+            if ( userDto ) this.appState.changeTheme( userDto?.theme );
             this.appState.hideBusy();
         });
     }

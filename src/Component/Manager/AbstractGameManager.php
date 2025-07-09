@@ -669,29 +669,34 @@ abstract class AbstractGameManager implements GameManagerInterface
             }
         )->first();
         
-        //$this->logger->log( \print_r( $firstMove, true ), 'DoMoves' );
+        $this->logger->log( \print_r( $firstMove, true ), 'DoMoves' );
         //$this->logger->log( \print_r( $this->Game->ValidMoves, true ), 'DoMoves' );
         //$this->logger->debug( $firstMove, 'DoMoves_FirstMove.txt' );
-        //$this->logger->debug( $this->Game->ValidMoves, 'GameValidMoves.txt' );
+        $this->logger->debug( $this->Game->ValidMoves, 'GameValidMoves.txt' );
         //$this->debugGetCheckerFromPoint();
         
-        foreach ( $action->moves as $key => $move ) {
+        for ( $i = 0; $i < count( $action->moves ); $i++ ) {
+            $moveDto = $action->moves[$i];
             if ( $validMove == null ) {
                 // Preventing invalid moves to enter the state. Should not happen unless someones hacking the socket or serious bugs.
                 throw new \RuntimeException( "An attempt to make an invalid move was made" );
-            } else if ( $key !== \array_key_last( $action->moves ) ) {
-                $nextMove = Mapper::MoveToMove( $action->moves[$key + 1], $this->Game );
+            } else if ( $i < count( $action->moves ) - 1 ) {
+                $nextMove = Mapper::MoveToMove( $action->moves[$i + 1], $this->Game );
                 
                 // Going up the valid moves tree one step for every sent move.
                 $validMove = $validMove->NextMoves->filter(
                     function( $entry ) use ( $nextMove ) {
-                        return $entry == $nextMove;
+                        //return $entry == $nextMove;
+                        return
+                            $entry->From->GetNumber( $nextMove->Color ) == $nextMove->From->GetNumber( $nextMove->Color ) &&
+                            $entry->To->GetNumber( $nextMove->Color ) == $nextMove->To->GetNumber( $nextMove->Color )
+                        ;
                     }
                 )->first();
             }
             
             //$color  = $move->color;
-            $move   = Mapper::MoveToMove( $move, $this->Game );
+            $move   = Mapper::MoveToMove( $moveDto, $this->Game );
             $this->Game->MakeMove( $move );
         }
     }

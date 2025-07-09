@@ -40,16 +40,16 @@ class GamePlayer implements ResourceInterface
     private $gamePlayers;
     
     /** @var int */
-    #[ORM\Column(type: "integer", nullable: true)]
-    private $elo;
+    #[ORM\Column(type: "integer", nullable: false, options: ["default" => 0])]
+    private $elo = 0;
     
     /** @var int */
-    #[ORM\Column(name: "game_count", type: "integer", nullable: true)]
-    private $gameCount;
+    #[ORM\Column(name: "game_count", type: "integer", nullable: false, options: ["default" => 0])]
+    private $gameCount = 0;
     
     /** @var int */
-    #[ORM\Column(type: "integer", nullable: true)]
-    private $gold;
+    #[ORM\Column(type: "integer", nullable: false, options: ["default" => 200])]
+    private $gold = 200;
     
     /** @var \DateTimeInterface */
     #[ORM\Column(name: "last_free_gold", type: Types::DATETIME_IMMUTABLE, nullable: true)]

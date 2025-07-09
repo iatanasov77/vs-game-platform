@@ -15,6 +15,7 @@ use App\Component\Rules\Backgammon\GameFactory as BackgammonRulesFactory;
 
 use App\Component\System\Guid;
 use App\Component\Rules\Backgammon\Game;
+use App\Component\Rules\Backgammon\Score;
 use App\Component\AI\Backgammon\Engine as AiEngine;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Websocket\WebSocketState;
@@ -183,7 +184,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         }
         
         $this->logger->log( 'GameManager Websocket Client Not Found !!!', 'GameManager' );
-        throw new \Exception( 'GameManager Websocket Client Not Found !!!' );
+        throw new \RuntimeException( 'GameManager Websocket Client Not Found !!!' );
     }
     
     public function getPlayerPhotoUrl( GamePlayer $player ): ? string
@@ -263,7 +264,7 @@ abstract class AbstractGameManager implements GameManagerInterface
             $this->Send( $otherSocket, $action );
         } else if ( $actionName == ActionNames::requestedDoubling ) {
             if ( ! $this->Game->IsGoldGame ) {
-                throw new \Exception( "requestedDoubling should not be possible in a non gold game" );
+                throw new \RuntimeException( "requestedDoubling should not be possible in a non gold game" );
             }
             
             $action = $this->serializer->deserialize( $actionText, DoublingActionDto::class, JsonEncoder::FORMAT );
@@ -291,7 +292,7 @@ abstract class AbstractGameManager implements GameManagerInterface
             }
         } else if ( $actionName == ActionNames::acceptedDoubling ) {
             if ( ! $this->Game->IsGoldGame ) {
-                throw new \Exception( "acceptedDoubling should not be possible in a non gold game" );
+                throw new \RuntimeException( "acceptedDoubling should not be possible in a non gold game" );
             }
             
             $action = $this->serializer->deserialize( $actionText, DoublingActionDto::class, JsonEncoder::FORMAT );
@@ -507,7 +508,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         $blackUser = $this->playersRepository->find( $this->Game->BlackPlayer->Id );
         
         if ( $this->Game->IsGoldGame && $blackUser->getGold() < self::firstBet ) {
-           //throw new \Exception( "Black player dont have enough gold" ); // Should be guarder earlier
+            throw new \RuntimeException( "Black player dont have enough gold" ); // Should be guarder earlier
         }
             
         if ( $this->Game->IsGoldGame && ! $this->IsAi( $blackUser->getGuid() ) ) {
@@ -523,7 +524,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         
         $whiteUser = $this->playersRepository->find( $this->Game->WhitePlayer->Id );
         if ( $this->Game->IsGoldGame && $whiteUser->getGold() < self::firstBet ) {
-            //throw new \Exception( "White player dont have enough gold" ); // Should be guarder earlier
+            throw new \RuntimeException( "White player dont have enough gold" ); // Should be guarder earlier
         }
         
         if ( $this->Game->IsGoldGame && ! $this->IsAi( $whiteUser->getGuid() ) ) {
@@ -561,20 +562,26 @@ abstract class AbstractGameManager implements GameManagerInterface
         }
         
         $em     = $this->doctrine->getManager();
-        $dbGame = $this->gamePlayRepository->find( $this->Game->Id );
+        $dbGame = $this->gamePlayRepository->findOneBy( ['guid' => $this->Game->Id] );
         if ( $dbGame->getWinner() ) { // extra safety
             return [null, null];
         }
             
         $black = $this->playersRepository->find( $this->Game->BlackPlayer->Id );
         $white = $this->playersRepository->find( $this->Game->WhitePlayer->Id );
-        $computed = $this->Score->NewScore( $black->getElo(), $white->getElo(), $black->getGameCount(), white->getGameCount(), PlayerColor::Black );
+        $computed = Score::NewScore(
+            $black->getElo(),
+            $white->getElo(),
+            $black->getGameCount(),
+            $white->getGameCount(),
+            $color == PlayerColor::Black
+        );
         $blackInc = 0;
         $whiteInc = 0;
         
         $black->increaseGameCount();
         $white->increaseGameCount();
-        $dbGame->setWinner( $color );
+        $dbGame->setWinner( $color == PlayerColor::Black ? 'Black' : 'White' );
         
         if ( $this->Game->IsGoldGame )
         {
@@ -586,17 +593,19 @@ abstract class AbstractGameManager implements GameManagerInterface
             
             $stake = $this->Game->Stake;
             $this->Game->Stake = 0;
-            $this->logger->log( "Stake" . $stake, 'GameManager' );
+            $this->logger->log( "Stake: {$stake}", 'GameManager' );
             $this->logger->log( "Initial gold: {$black->getGold()} {$this->Game->BlackPlayer->Gold} {$white->getGold()} {$this->Game->WhitePlayer->Gold}", 'GameManager' );
             
             if ( $color == PlayerColor::Black ) {
-                if ( ! $this->IsAi( $black->getGuid() ) )
+                if ( ! $this->IsAi( $black->getGuid() ) ) {
                     $black->addGold( $stake );
-                    $this->Game->BlackPlayer->Gold += stake;
+                }
+                $this->Game->BlackPlayer->Gold += $stake;
             } else {
-                if ( ! $this->IsAi( $white->getGuid() ) )
+                if ( ! $this->IsAi( $white->getGuid() ) ) {
                     $white->addGold( $stake );
-                    $this->Game->WhitePlayer->Gold += stake;
+                }
+                $this->Game->WhitePlayer->Gold += $stake;
             }
             $this->logger->log( "After transfer: {$black->Gold} {$this->Game->BlackPlayer->Gold} {$white->Gold} {$this->Game->WhitePlayer->Gold}", 'GameManager' );
         }
@@ -795,12 +804,12 @@ abstract class AbstractGameManager implements GameManagerInterface
         $this->Game->LastDoubler = $this->Game->CurrentPlayer;
     }
     
-    protected function NewTurn( WebsocketClientInterface $socket )
+    protected function NewTurn( WebsocketClientInterface $socket ): void
     {
         $winner = $this->GetWinner();
         $this->Game->SwitchPlayer();
-        if ( $winner && $winner->HasValue ) {
-            $this->EndGame( $winner->Value );
+        if ( $winner ) {
+            $this->EndGame( $winner );
         } else {
             $this->SendNewRoll();
             

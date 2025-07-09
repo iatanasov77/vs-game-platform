@@ -672,7 +672,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         $this->logger->log( \print_r( $firstMove, true ), 'DoMoves' );
         //$this->logger->log( \print_r( $this->Game->ValidMoves, true ), 'DoMoves' );
         //$this->logger->debug( $firstMove, 'DoMoves_FirstMove.txt' );
-        $this->logger->debug( $this->Game->ValidMoves, 'GameValidMoves.txt' );
+        //$this->logger->debug( $this->Game->ValidMoves, 'GameValidMoves.txt' );
         //$this->debugGetCheckerFromPoint();
         
         for ( $i = 0; $i < count( $action->moves ); $i++ ) {

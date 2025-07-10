@@ -1,4 +1,4 @@
-﻿<?php namespace App\Component\Dto\toplist;
+<?php namespace App\Component\Dto\toplist;
 
 use Doctrine\Common\Collections\Collection;
 

@@ -20,6 +20,7 @@ export class BackgammonBoardButtonsComponent
     @Input() requestHintVisible = false;
     @Input() acceptDoublingVisible = false;
     @Input() requestDoublingVisible = false;
+    @Input() doublingFactor: number | null = 1;
     
     @Output() onUndoMove = new EventEmitter<void>();
     @Output() onSendMoves = new EventEmitter<void>();

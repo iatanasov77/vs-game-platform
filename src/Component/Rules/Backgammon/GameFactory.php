@@ -55,7 +55,6 @@ final class GameFactory
         $game->Bars[PlayerColor::White->value] = $game->Points->last();
         
         $game->SetStartPosition();
-        $game->GoldMultiplier = 1;
         
         Game::CalcPointsLeft( $game );
         
@@ -102,7 +101,6 @@ final class GameFactory
         $game->Bars[PlayerColor::White->value] = $game->Points->last();
         
         $game->SetStartPosition();
-        $game->GoldMultiplier = 1;
         
         Game::CalcPointsLeft( $game );
         
@@ -149,7 +147,6 @@ final class GameFactory
         $game->Bars[PlayerColor::White->value] = $game->Points->last();
         
         $game->SetStartPosition();
-        $game->GoldMultiplier = 1;
         
         Game::CalcPointsLeft( $game );
         

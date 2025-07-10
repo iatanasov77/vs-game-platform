@@ -40,16 +40,16 @@ class GamePlayer implements ResourceInterface
     private $gamePlayers;
     
     /** @var int */
-    #[ORM\Column(type: "integer", nullable: true)]
-    private $elo;
+    #[ORM\Column(type: "integer", nullable: false, options: ["default" => 0])]
+    private $elo = 0;
     
     /** @var int */
-    #[ORM\Column(name: "game_count", type: "integer", nullable: true)]
-    private $gameCount;
+    #[ORM\Column(name: "game_count", type: "integer", nullable: false, options: ["default" => 0])]
+    private $gameCount = 0;
     
     /** @var int */
-    #[ORM\Column(type: "integer", nullable: true)]
-    private $gold;
+    #[ORM\Column(type: "integer", nullable: false, options: ["default" => 200])]
+    private $gold = 200;
     
     /** @var \DateTimeInterface */
     #[ORM\Column(name: "last_free_gold", type: Types::DATETIME_IMMUTABLE, nullable: true)]
@@ -139,7 +139,7 @@ class GamePlayer implements ResourceInterface
         return $this;
     }
     
-    public function getElo(): ?int
+    public function getElo(): int
     {
         return $this->elo;
     }
@@ -151,7 +151,7 @@ class GamePlayer implements ResourceInterface
         return $this;
     }
     
-    public function getGameCount(): ?int
+    public function getGameCount(): int
     {
         return $this->gameCount;
     }
@@ -163,7 +163,14 @@ class GamePlayer implements ResourceInterface
         return $this;
     }
     
-    public function getGold(): ?int
+    public function increaseGameCount(): self
+    {
+        $this->gameCount++;
+        
+        return $this;
+    }
+    
+    public function getGold(): int
     {
         return $this->gold;
     }
@@ -171,6 +178,13 @@ class GamePlayer implements ResourceInterface
     public function setGold( int $gold ): self
     {
         $this->gold = $gold;
+        
+        return $this;
+    }
+    
+    public function addGold( int $gold ): self
+    {
+        $this->gold += $gold;
         
         return $this;
     }

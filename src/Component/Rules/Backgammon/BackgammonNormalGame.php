@@ -53,9 +53,9 @@ class BackgammonNormalGame extends Game
                     return $entry->To->GetNumber( $currentPlayer ) - $entry->From->GetNumber( $currentPlayer );
                 }
             );
-            $first = $moves->getMovesOrderByDescending( $moves )->first();
+            $first = $moves->getMovesOrdered( $moves, AbstractGameManager::COLLECTION_ORDER_ASC )->first();
             $moves->clear();
-            $moves[]    = $first;
+            $moves[] = $first;
         }
         
         return $moves;
@@ -164,7 +164,7 @@ class BackgammonNormalGame extends Game
             }
         );
         
-        foreach ( $this->getRollOrdered( AbstractGameManager::COLLECTION_ORDER_ASC ) as $dice ) {
+        foreach ( $this->getRollOrdered( AbstractGameManager::COLLECTION_ORDER_DESC ) as $dice ) {
             if ( $dice->Used ) {
                 continue;
             }
@@ -235,6 +235,10 @@ class BackgammonNormalGame extends Game
                             return $entry->From == $fromPoint && $entry->To == $toPoint;
                         }
                     );
+                    
+                    //$this->logger->log( "fromPointNo: " . $fromPointNo, 'BearingOff' );
+                    //$this->logger->log( "minPoint: " . $minPoint, 'BearingOff' );
+                    //$this->logger->log( "toPointNo: " . $toPointNo, 'BearingOff' );
                     
                     if (
                         $toPoint != null &&

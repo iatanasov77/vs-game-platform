@@ -27,6 +27,13 @@ trait Helper
         return $orderedPoints;
     }
     
+    /*
+     * Points.Where(
+     *     p => p.Checkers.Any( c => c.Color == CurrentPlayer )
+     * ).OrderBy(
+     *     p => p.GetNumber( CurrentPlayer )
+     * ).First().GetNumber( CurrentPlayer );
+     */
     protected function calcMinPoint( $currentPlayer )
     {
         $points  = $this->Points->filter(
@@ -43,17 +50,21 @@ trait Helper
         
         $pointsIterator  = $points->getIterator();
         $pointsIterator->uasort( function ( $a, $b ) use ( $currentPlayer ) {
-            return $b->GetNumber( $currentPlayer ) <=> $a->GetNumber( $currentPlayer );
+            // The Right Ascending Ordering
+            return $a->GetNumber( $currentPlayer ) <=> $b->GetNumber( $currentPlayer );
         });
             
         return ( new ArrayCollection( \iterator_to_array( $pointsIterator ) ) )->first()->GetNumber( $currentPlayer );
     }
     
-    protected function getMovesOrderByDescending( Collection $moves ): Collection
+    protected function getMovesOrdered( Collection $moves, string $direction ): Collection
     {
         $movesIterator  = $moves->getIterator();
         $movesIterator->uasort( function ( $a, $b ) {
-            return $a->Value <=> $b->Value;
+            return $direction == AbstractGameManager::COLLECTION_ORDER_ASC ?
+                $a->Value <=> $b->Value :
+                $b->Value <=> $a->Value
+            ;
         });
             
         return new ArrayCollection( \iterator_to_array( $movesIterator ) );
@@ -64,8 +75,8 @@ trait Helper
         $dicesIterator  = $this->Roll->getIterator();
         $dicesIterator->uasort( function ( $a, $b ) use ( $direction ) {
             return $direction == AbstractGameManager::COLLECTION_ORDER_ASC ?
-                $b->Value <=> $a->Value :
-                $a->Value <=> $b->Value
+                $a->Value <=> $b->Value :
+                $b->Value <=> $a->Value
             ;
         });
             

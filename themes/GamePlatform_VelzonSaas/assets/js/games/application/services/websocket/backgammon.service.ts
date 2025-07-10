@@ -66,6 +66,7 @@ export class BackgammonService extends AbstractGameService
                 //console.log( 'WebSocket Action Game Created', action.actionName );
                 
                 const dto = JSON.parse( message.data ) as GameCreatedActionDto;
+                //console.log( 'WebSocket Action Game Created', dto.game );
                 this.appState.myColor.setValue( dto.myColor );
                 this.appState.game.setValue( dto.game );
                 

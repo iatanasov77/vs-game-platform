@@ -250,7 +250,7 @@ class GameService
                 
                 $gameManager = $this->AllGames->filter(
                     function( $entry ) use ( $cookie ) {
-                        return $entry->Game->Id == $cookie->id && $entry->Game->PlayState == GameState::Ended;
+                        return $entry->Game->Id == $cookie->id && $entry->Game->PlayState == GameState::ended;
                     }
                 )->first();
                 

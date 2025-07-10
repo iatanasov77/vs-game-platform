@@ -242,7 +242,6 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
          * Cannot Remove Game Rooms from Board Games Because Game Room is a Game Session for Now.
          */
         this.actions$.pipe( ofType( selectGameRoomSuccess ) ).subscribe( () => {
-            //this.newVisible = this.appStateService.game.getValue()?.playState === GameState.created;
             this.newVisible = false;
             this.exitVisible = false;
             

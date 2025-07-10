@@ -1,6 +1,4 @@
 ﻿enum GameState {
-    created,
-    
     opponentConnectWaiting,
     firstThrow,
     playing,

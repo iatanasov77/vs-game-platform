@@ -91,7 +91,7 @@ export class BackgammonService extends AbstractGameService
             }
             case ActionNames.dicesRolled: {
                 const dicesAction = JSON.parse( message.data ) as DicesRolledActionDto;
-                console.log( 'Dices Rolled Action', dicesAction );
+                console.log( 'Dices Rolled Action' + new Date().toLocaleTimeString(), dicesAction );
                 
                 this.appState.dices.setValue( dicesAction.dices );
                 const cGame = {
@@ -109,7 +109,7 @@ export class BackgammonService extends AbstractGameService
                 break;
             }
             case ActionNames.movesMade: {
-                console.log( 'WebSocket Action Moves Made', action.actionName );
+                //console.log( 'WebSocket Action Moves Made', action.actionName );
                 
                 // This action is only sent to server.
                 break;
@@ -119,6 +119,7 @@ export class BackgammonService extends AbstractGameService
                 
                 const endedAction = JSON.parse( message.data ) as GameEndedActionDto;
                 // console.log( 'game ended', endedAction.game.winner );
+                console.log( 'WebSocket Action Game Ended', endedAction.game );
                 this.appState.game.setValue({
                     ...endedAction.game,
                     playState: GameState.ended
@@ -173,7 +174,7 @@ export class BackgammonService extends AbstractGameService
             }
             case ActionNames.opponentMove: {
                 //alert( 'WebSocket Action Opponent Move' );
-                console.log( 'WebSocket Action Opponent Move' ); // , action.actionName
+                //console.log( 'WebSocket Action Opponent Move' + new Date().toLocaleTimeString() );
                 
                 const action = JSON.parse( message.data ) as OpponentMoveActionDto;
                 this.doMove( action.move );
@@ -186,7 +187,7 @@ export class BackgammonService extends AbstractGameService
                 break;
             }
             case ActionNames.rolled: {
-                console.log( 'WebSocket Action Rolled', action.actionName );
+                //console.log( 'WebSocket Action Rolled' + new Date().toLocaleTimeString() );
                 
                 // this is just to fire the changed event. The value is not important.
                 this.appState.rolled.setValue( true );
@@ -237,7 +238,7 @@ export class BackgammonService extends AbstractGameService
                 break;
             }
             case ActionNames.gamePlayStarted: {
-                console.log( 'WebSocket Action Game Play Started', action.actionName );
+                //console.log( 'WebSocket Action Game Play Started', action.actionName );
                 //this.appState.showBusy();
                 
                 this.store.dispatch( playGame() );
@@ -399,7 +400,7 @@ export class BackgammonService extends AbstractGameService
             moves: this.userMoves.filter( ( m ) => m.color === myColor )
         };
         this.sendMessage( JSON.stringify( action ) );
-        //console.log( 'Send Moves', action );
+        console.log( 'Send Moves', action.moves );
         
         this.userMoves = [];
         this.dicesHistory = [];

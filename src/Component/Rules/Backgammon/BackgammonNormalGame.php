@@ -108,9 +108,9 @@ class BackgammonNormalGame extends Game
                 
             $bar->Checkers[]    = $hit;
             if ( $move->Color == PlayerColor::Black ) {
-                $this->WhitePlayer->PointsLeft += ( 25 - $move->To->WhiteNumber );
+                $this->WhitePlayer->PointsLeft += ( $move->To->WhiteNumber );
             } else {
-                $this->BlackPlayer->PointsLeft += ( 25 - $move->To->BlackNumber );
+                $this->BlackPlayer->PointsLeft += ( $move->To->BlackNumber );
             }
         }
             
@@ -143,9 +143,9 @@ class BackgammonNormalGame extends Game
             
             $bar->Checkers->removeElement( $hitChecker );
             if ( $move->Color == PlayerColor::Black ) {
-                $this->WhitePlayer->PointsLeft -= ( 25 - $move->To->WhiteNumber );
+                $this->WhitePlayer->PointsLeft -= ( $move->To->WhiteNumber );
             } else {
-                $this->BlackPlayer->PointsLeft -= ( 25 - $move->To->BlackNumber );
+                $this->BlackPlayer->PointsLeft -= ( $move->To->BlackNumber );
             }
         }
     }

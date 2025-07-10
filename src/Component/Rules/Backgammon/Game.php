@@ -40,7 +40,7 @@ abstract class Game
     public $ValidMoves;
     
     /** @var GameState */
-    public $PlayState = GameState::FirstThrow;
+    public $PlayState = GameState::firstThrow;
     
     /** @var \DateTime */
     public $Created;
@@ -202,7 +202,7 @@ abstract class Game
     {
         // $this->logger->log( 'Existing Rolls: ' . \print_r( $this->Roll, true ), 'FirstThrowState' );
         
-        if ( $this->PlayState == GameState::FirstThrow ) {
+        if ( $this->PlayState == GameState::firstThrow ) {
             if ( $this->Roll[0]->Value > $this->Roll[1]->Value ) {
                 $this->CurrentPlayer = PlayerColor::Black;
                 $this->BlackStarts++;
@@ -212,7 +212,7 @@ abstract class Game
             }
             
             if ( $this->Roll[0]->Value != $this->Roll[1]->Value ) {
-                $this->PlayState = GameState::Playing;
+                $this->PlayState = GameState::playing;
             }
         }
     }
@@ -242,7 +242,7 @@ abstract class Game
             function( $entry ) use ( $color ) {
                 return $entry->GetNumber( $color ) == 25;
             }
-            )->first();
+        )->first();
     }
     
     public function PlayersPassed(): bool

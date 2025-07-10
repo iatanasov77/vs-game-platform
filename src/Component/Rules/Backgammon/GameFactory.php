@@ -34,8 +34,6 @@ final class GameFactory
         
         $game->Created = new \DateTime( 'now' );
         
-        $game->PlayState = GameState::Created;
-        
         $game->GoldMultiplier = 1;
         $game->IsGoldGame = $forGold;
         $game->LastDoubler = null;
@@ -80,8 +78,6 @@ final class GameFactory
         
         $game->Created = new \DateTime( 'now' );
         
-        $game->PlayState = GameState::Created;
-        
         $game->GoldMultiplier = 1;
         $game->IsGoldGame = $forGold;
         $game->LastDoubler = null;
@@ -125,8 +121,6 @@ final class GameFactory
         $game->WhitePlayer->Name = "Guest";
         
         $game->Created = new \DateTime( 'now' );
-        
-        $game->PlayState = GameState::Created;
         
         $game->GoldMultiplier = 1;
         $game->IsGoldGame = $forGold;

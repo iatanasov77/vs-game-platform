@@ -1,3 +1,12 @@
+0.15.0	|	Release date: **10.07.2025**
+============================================
+* Bug-Fixes and Improvements:
+  - Fix and Improve GameManager::DoMoves .
+  - Improve Backgammon Board 'drawHomes' Method.
+  - Improve GamePlayer Entity.
+  - Many Fixes and Inprovements on Backgammon Game Playing.
+
+
 0.14.3	|	Release date: **08.07.2025**
 ============================================
 * Bug-Fixes and Improvements:

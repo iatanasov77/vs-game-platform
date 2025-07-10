@@ -607,13 +607,13 @@ abstract class AbstractGameManager implements GameManagerInterface
                 }
                 $this->Game->WhitePlayer->Gold += $stake;
             }
-            $this->logger->log( "After transfer: {$black->Gold} {$this->Game->BlackPlayer->Gold} {$white->Gold} {$this->Game->WhitePlayer->Gold}", 'GameManager' );
+            $this->logger->log( "After transfer: {$black->getGold()} {$this->Game->BlackPlayer->Gold} {$white->getGold()} {$this->Game->WhitePlayer->Gold}", 'GameManager' );
         }
         
         $em->persist( $black );
         $em->persist( $white );
         $em->persist( $dbGame );
-        $em->push();
+        $em->flush();
         
         if ( $this->Game->IsGoldGame ) {
             $scoreBlack = new NewScoreDto();
@@ -678,7 +678,7 @@ abstract class AbstractGameManager implements GameManagerInterface
             }
         )->first();
         
-        $this->logger->log( \print_r( $firstMove, true ), 'DoMoves' );
+        //$this->logger->log( \print_r( $firstMove, true ), 'DoMoves' );
         //$this->logger->log( \print_r( $this->Game->ValidMoves, true ), 'DoMoves' );
         //$this->logger->debug( $firstMove, 'DoMoves_FirstMove.txt' );
         //$this->logger->debug( $this->Game->ValidMoves, 'GameValidMoves.txt' );

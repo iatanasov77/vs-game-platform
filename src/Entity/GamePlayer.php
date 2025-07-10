@@ -139,7 +139,7 @@ class GamePlayer implements ResourceInterface
         return $this;
     }
     
-    public function getElo(): ?int
+    public function getElo(): int
     {
         return $this->elo;
     }
@@ -151,7 +151,7 @@ class GamePlayer implements ResourceInterface
         return $this;
     }
     
-    public function getGameCount(): ?int
+    public function getGameCount(): int
     {
         return $this->gameCount;
     }
@@ -163,7 +163,14 @@ class GamePlayer implements ResourceInterface
         return $this;
     }
     
-    public function getGold(): ?int
+    public function increaseGameCount(): self
+    {
+        $this->gameCount++;
+        
+        return $this;
+    }
+    
+    public function getGold(): int
     {
         return $this->gold;
     }
@@ -171,6 +178,13 @@ class GamePlayer implements ResourceInterface
     public function setGold( int $gold ): self
     {
         $this->gold = $gold;
+        
+        return $this;
+    }
+    
+    public function addGold( int $gold ): self
+    {
+        $this->gold += $gold;
         
         return $this;
     }

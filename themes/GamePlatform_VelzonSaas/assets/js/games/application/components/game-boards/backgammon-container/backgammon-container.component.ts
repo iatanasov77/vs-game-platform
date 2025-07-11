@@ -236,6 +236,8 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
                 this.gameStarted    = true;
                 this.statusMessageService.setWaitingForConnect();
             }
+            
+            this.fireResize();
         });
         
         /**
@@ -271,17 +273,6 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
             this.waitForOpponent();
         }
         this.fireResize();
-        
-//         setTimeout( () => {
-//             console.log( this.appStateService.myConnection.getValue() );
-//             console.log( this.appStateService.myConnection );
-//             let socketConnected = this.appStateService.myConnection.getValue().connected;
-//             if ( socketConnected && ! this.isRoomSelected ) {
-//                 //alert( this.appStateService.user );
-//                 this.statusMessageService.setNotRoomSelected();
-//                 this.appStateService.hideBusy();
-//             }
-//         }, 11000 );
     }
     
     ngOnDestroy(): void
@@ -507,7 +498,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         this.messageCenter = this.width / 2 - spanWidth / 2;
         // alert( this.messageCenter );
         
-        this.height = Math.min( window.innerHeight - 40, this.width * 0.6 );
+        this.height = Math.min( window.innerHeight - 40, this.width * 0.63 );
         
         const buttons = this.backgammonBoardButtons?.nativeElement as HTMLElement;
         const btnsOffset = 5; //Cheating. Could not get the height.

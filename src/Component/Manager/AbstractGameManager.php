@@ -708,7 +708,7 @@ abstract class AbstractGameManager implements GameManagerInterface
             $move   = Mapper::MoveToMove( $moveDto, $this->Game );
             $this->Game->MakeMove( $move );
         }
-        $this->logger->log( "Black Player Points Left: " . $this->Game->BlackPlayer->PointsLeft, 'EndGame' );
+        //$this->logger->log( "Black Player Points Left: " . $this->Game->BlackPlayer->PointsLeft, 'EndGame' );
     }
     
     protected function SendWinner( PlayerColor $color, ?array $newScore ): void

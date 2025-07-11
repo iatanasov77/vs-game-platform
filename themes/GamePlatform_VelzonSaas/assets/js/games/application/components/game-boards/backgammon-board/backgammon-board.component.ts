@@ -181,9 +181,7 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
         if ( changes['width'] || changes['height'] || changes['flipped'] || changes['rotated'] ) {
             this.recalculateGeometry();
         }
-        //alert( this.lobbyButtonsVisible );
         
-        //this.debugGame();
         this.requestDraw();
         const bName = this.myColor === PlayerColor.black ? this.you : this.game?.blackPlayer.name;
         const wName = this.myColor === PlayerColor.white ? this.you : this.game?.whitePlayer.name;
@@ -204,6 +202,8 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
     
     recalculateGeometry(): void
     {
+        //console.log( 'Board Width', this.width );
+        //console.log( 'Board Height', this.height );
         if ( this.canvas ) {
             const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
             canvasEl.width = this.width;
@@ -1165,7 +1165,7 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
         this.handleDown( point.x, point.y );
     }
     
-    getPoint(event: MouseEvent): Point
+    getPoint( event: MouseEvent ): Point
     {
         // if ( this.flipped ) {
         //   return { x: event.offsetX, y: event.offsetY };
@@ -1486,12 +1486,5 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
         const w = this.getCheckerWidth();
         
         this.handleMove( x - w / 2, y - w / 2 );
-    }
-    
-    debugGame(): void
-    {
-        console.log( this.game );
-        alert( 'My Color: ' + this.myColor );
-        alert( 'Black Color: ' + PlayerColor.black );
     }
 }

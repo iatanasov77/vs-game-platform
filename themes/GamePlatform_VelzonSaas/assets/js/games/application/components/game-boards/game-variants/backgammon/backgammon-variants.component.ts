@@ -24,6 +24,12 @@ export class BackgammonVariantsComponent
     constructor(
         @Inject( TranslateService ) private translate: TranslateService
     ) {
-        this.game   = window.gamePlatformSettings.gameSlug;
+        const currentUrlparams = new URLSearchParams( window.location.search );
+        let variant = currentUrlparams.get( 'variant' );
+        if ( variant == null ) {
+            variant = 'normal';
+        }
+        
+        this.game   = variant;
     }
 }

@@ -91,7 +91,7 @@ export class BackgammonService extends AbstractGameService
             }
             case ActionNames.dicesRolled: {
                 const dicesAction = JSON.parse( message.data ) as DicesRolledActionDto;
-                console.log( 'Dices Rolled Action' + new Date().toLocaleTimeString(), dicesAction );
+                //console.log( 'Dices Rolled Action' + new Date().toLocaleTimeString(), dicesAction );
                 
                 this.appState.dices.setValue( dicesAction.dices );
                 const cGame = {
@@ -119,7 +119,7 @@ export class BackgammonService extends AbstractGameService
                 
                 const endedAction = JSON.parse( message.data ) as GameEndedActionDto;
                 // console.log( 'game ended', endedAction.game.winner );
-                console.log( 'WebSocket Action Game Ended', endedAction.game );
+                //console.log( 'WebSocket Action Game Ended', endedAction.game );
                 this.appState.game.setValue({
                     ...endedAction.game,
                     playState: GameState.ended
@@ -129,6 +129,7 @@ export class BackgammonService extends AbstractGameService
                     endedAction.newScore
                 );
                 this.appState.moveTimer.setValue( 0 );
+                
                 break;
             }
             case ActionNames.requestedDoubling: {
@@ -144,6 +145,7 @@ export class BackgammonService extends AbstractGameService
                     currentPlayer: this.appState.myColor.getValue()
                 });
                 this.statusMessageService.setDoublingRequested();
+                
                 break;
             }
             case ActionNames.acceptedDoubling: {
@@ -170,27 +172,32 @@ export class BackgammonService extends AbstractGameService
                 });
                 this.sound.playCoin();
                 this.statusMessageService.setDoublingAccepted();
+                
                 break;
             }
             case ActionNames.opponentMove: {
                 //alert( 'WebSocket Action Opponent Move' );
-                //console.log( 'WebSocket Action Opponent Move' + new Date().toLocaleTimeString() );
                 
                 const action = JSON.parse( message.data ) as OpponentMoveActionDto;
+                console.log( 'WebSocket Action Opponent Move ' + new Date().toLocaleTimeString() );
+                
                 this.doMove( action.move );
+                
                 break;
             }
             case ActionNames.undoMove: {
                 //console.log( 'WebSocket Action Undo Move', action.actionName );
                 
                 this.undoMove();
+                
                 break;
             }
             case ActionNames.rolled: {
-                //console.log( 'WebSocket Action Rolled' + new Date().toLocaleTimeString() );
+                console.log( 'WebSocket Action Rolled ' + new Date().toLocaleTimeString() );
                 
                 // this is just to fire the changed event. The value is not important.
                 this.appState.rolled.setValue( true );
+                
                 break;
             }
             case ActionNames.connectionInfo: {
@@ -206,6 +213,7 @@ export class BackgammonService extends AbstractGameService
                     ...cnn,
                     connected: action.connection.connected
                 });
+                
                 break;
             }
             case ActionNames.gameRestore: {
@@ -218,6 +226,7 @@ export class BackgammonService extends AbstractGameService
                 this.appState.moveTimer.setValue( dto.game.thinkTime );
                 this.statusMessageService.setTextMessage( dto.game );
                 this.startTimer();
+                
                 break;
             }
             case ActionNames.hintMoves: {
@@ -231,10 +240,12 @@ export class BackgammonService extends AbstractGameService
                     clone.push( hint );
                     this.appState.moveAnimations.setValue( clone );
                 });
+                
                 break;
             }
             case ActionNames.serverWasTerminated: {
                 this.cookieService.deleteAll( Keys.gameIdKey );
+                
                 break;
             }
             case ActionNames.gamePlayStarted: {
@@ -242,6 +253,7 @@ export class BackgammonService extends AbstractGameService
                 //this.appState.showBusy();
                 
                 this.store.dispatch( playGame() );
+                
                 break;
             }
             

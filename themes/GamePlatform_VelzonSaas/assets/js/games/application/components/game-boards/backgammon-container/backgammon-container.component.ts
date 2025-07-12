@@ -738,8 +738,6 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         this.wsService.startGamePlay( game, myColor, this.playAiFlag, this.forGoldFlag );
         
         this.waitForOpponent();
-        window.dispatchEvent( new Event( 'resize' ) );
-        
         this.statusMessageService.setWaitingForConnect();
         this.exitVisible = true;
     }

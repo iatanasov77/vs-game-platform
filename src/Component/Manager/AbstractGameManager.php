@@ -129,6 +129,9 @@ abstract class AbstractGameManager implements GameManagerInterface
     /** @var string */
     public $GameCode;
     
+    /** @var string */
+    public $GameVariant;
+    
     /** @var bool */
     public $ForGold;
     
@@ -146,7 +149,8 @@ abstract class AbstractGameManager implements GameManagerInterface
         RepositoryInterface $tempPlayersRepository,
         FactoryInterface $tempPlayersFactory,
         bool $forGold,
-        string $gameCode
+        string $gameCode,
+        string $gameVariant
     ) {
         $this->logger                   = $logger;
         $this->serializer               = $serializer;
@@ -162,8 +166,9 @@ abstract class AbstractGameManager implements GameManagerInterface
         $this->tempPlayersFactory       = $tempPlayersFactory;
         $this->ForGold                  = $forGold;
         $this->GameCode                 = $gameCode;
+        $this->GameVariant              = $gameVariant;
         
-        $this->InitializeGame( $gameCode );
+        $this->InitializeGame( $gameCode, $gameVariant );
     }
     
     public function setLogger( LoggerInterface $logger ): void
@@ -880,9 +885,9 @@ abstract class AbstractGameManager implements GameManagerInterface
         //$this->logger->debug( $checkerFromPoint, 'CheckerFromPoint.txt' );
     }
     
-    private function InitializeGame( string $gameCode ): void
+    private function InitializeGame( string $gameCode, string $gameVariant ): void
     {
-        switch ( $gameCode ) {
+        switch ( $gameVariant ) {
             case Keys::BACKGAMMON_NORMAL_KEY:
                 $this->Game = $this->backgammonRulesFactory->createBackgammonNormalGame( $this->ForGold );
                 break;

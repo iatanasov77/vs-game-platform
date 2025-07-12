@@ -76,7 +76,7 @@ final class GameManagerFactory
         $this->tempPlayersFactory       = $tempPlayersFactory;
     }
     
-    public function createWebsocketGameManager( bool $forGold, string $gameCode ): GameManagerInterface
+    public function createWebsocketGameManager( bool $forGold, string $gameCode, string $gameVariant ): GameManagerInterface
     {
         return new WebsocketGameManager(
             $this->logger,
@@ -92,7 +92,8 @@ final class GameManagerFactory
             $this->tempPlayersRepository,
             $this->tempPlayersFactory,
             $forGold,
-            $gameCode
+            $gameCode,
+            $gameVariant
         );
     }
     

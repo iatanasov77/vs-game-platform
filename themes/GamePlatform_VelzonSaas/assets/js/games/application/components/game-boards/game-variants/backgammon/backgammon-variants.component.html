@@ -2,18 +2,18 @@
 <div *ngIf="lobbyButtonsVisible" class="text-center">
     <ul class="list-inline categories-filter animation-nav" id="filter">
         <li class="list-inline-item">
-            <a class="categories active" data-filter="*">
+            <a href="/games/backgammon/normal" [ngClass]="{ active: game == 'backgammon-normal' }">
                 {{ 'game_board.backgammon_variants.normal' | translate }}
             </a>
         </li>
         <li class="list-inline-item">
-            <a class="categories" data-filter=".project">
-                {{ 'game_board.backgammon_variants.gulbara' | translate }}
+            <a href="/games/backgammon/tapa" [ngClass]="{ active: game == 'backgammon-tapa' }">
+                {{ 'game_board.backgammon_variants.tapa' | translate }}
             </a>
         </li>
         <li class="list-inline-item">
-            <a class="categories" data-filter=".designing">
-                {{ 'game_board.backgammon_variants.tapa' | translate }}
+            <a href="/games/backgammon/gulbara" [ngClass]="{ active: game == 'backgammon-gulbara' }">
+                {{ 'game_board.backgammon_variants.gulbara' | translate }}
             </a>
         </li>
     </ul>

@@ -218,6 +218,7 @@ declare module '_@/GamePlatform/Model/GameInterface' {
         id: number;
         slug: string;
         title: string;
+        url: string;
         
         room?: any;
         deck?: any;

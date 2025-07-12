@@ -126,6 +126,8 @@ abstract class Game
         }
     }
     
+    abstract public function SetStartPosition(): void;
+    
     abstract public function GenerateMoves(): array;
     
     public function SwitchPlayer(): void
@@ -137,34 +139,6 @@ abstract class Game
     public function OtherPlayer(): PlayerColor
     {
         return $this->CurrentPlayer == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
-    }
-    
-    public function SetStartPosition(): void
-    {
-        foreach ( $this->Points as $point ) {
-            $point->Checkers->clear();
-        }
-        
-        $this->AddCheckers( 2, PlayerColor::Black, 1 );
-        $this->AddCheckers( 2, PlayerColor::White, 1 );
-        
-        $this->AddCheckers( 5, PlayerColor::Black, 12 );
-        $this->AddCheckers( 5, PlayerColor::White, 12 );
-        
-        $this->AddCheckers( 3, PlayerColor::Black, 17 );
-        $this->AddCheckers( 3, PlayerColor::White, 17 );
-        
-        $this->AddCheckers( 5, PlayerColor::Black, 19 );
-        $this->AddCheckers( 5, PlayerColor::White, 19 );
-        
-        // CloseToVictory();
-        // DebugBar();
-        //DebugBlocked();
-        // DebugBearingOff();
-        // AtHomeAndOtherAtBar();
-        // AtHomeAndOtherAtBar2();
-        // Test();
-        // LegalMove();
     }
     
     public function ClearCheckers(): void

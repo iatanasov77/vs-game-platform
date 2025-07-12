@@ -49,6 +49,15 @@ export class GameService
         );
     }
     
+    loadGameVariants( baseGameSlug: string ): Observable<IGame[]>
+    {
+        var url         = `${this.url}/games-variants/${baseGameSlug}`;
+        
+        return this.httpClient.get<IGame[]>( url ).pipe(
+            map( ( response: any ) => this.mapGames( response ) )
+        );
+    }
+    
     loadGameRooms(): Observable<IGameRoom[]>
     {
         var url = `${this.url}/game-sessions`;
@@ -101,9 +110,30 @@ export class GameService
                 id: response.data.id,
                 slug: response.data.slug,
                 title: response.data.title,
+                url: response.data.url,
             };
             
             return game;
+        }
+        
+        return response.message;
+    }
+    
+    private mapGames( response: any )
+    {
+        if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
+            let games: IGame[] = [];
+            
+            for ( const game of response.data ) {
+                games.push({
+                    id: game.id,
+                    slug: game.slug,
+                    title: game.title,
+                    url: game.url,
+                });
+            }
+            
+            return games;
         }
         
         return response.message;

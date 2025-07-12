@@ -1,3 +1,11 @@
+vs_api_game_by_slug:
+    path: /api/games-ext/{slug}
+    controller: App\Controller\Api\Games\ShowGameBySlugController::index
+
+vs_api_game_variants:
+    path: /api/games-variants/{slug}
+    controller: App\Controller\Api\Games\GetGameVariantsController::index
+
 vs_api_get_verify_signature:
     path: /api/get-verify-signature
     controller: App\Controller\Api\DefaultController::getVerifySignatureAction

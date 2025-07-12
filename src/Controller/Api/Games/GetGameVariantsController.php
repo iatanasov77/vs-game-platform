@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Vankosoft\ApplicationBundle\Component\Status;
 
-class ShowGameBySlugController extends AbstractController
+class GetGameVariantsController extends AbstractController
 {
     /** @var RepositoryInterface */
     private $gamesRepository;
@@ -21,23 +21,20 @@ class ShowGameBySlugController extends AbstractController
     {
         $game  = $this->gamesRepository->findOneBy( ['slug' => $slug] );
         
-        $gameData   = [
-            'id'    => $game->getId(),
-            'slug'  => $game->getSlug(),
-            'title' => $game->getTitle(),
-            'url'   => $game->getGameUrl(),
-            'rooms' => [],
-        ];
-        /*
-        foreach ( $game->getRooms() as $room ) {
-            $gameData['rooms'][]    = [
-                'name'  => $room->getName(),
+        $variants   = [];
+        foreach ( $game->getGameVariants() as $variant ) {
+            $variants[] =  [
+                'id'    => $variant->getId(),
+                'slug'  => $variant->getSlug(),
+                'title' => $variant->getTitle(),
+                'url'   => $variant->getGameUrl(),
+                'rooms' => [],
             ];
         }
-        */
+        
         return new JsonResponse([
             'status'    => Status::STATUS_OK,
-            'data'      => $gameData,
+            'data'      => $variants,
         ]);
     }
 }

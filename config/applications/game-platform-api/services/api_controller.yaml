@@ -40,6 +40,12 @@ services:
             - '@vsapp.repository.games'
         autowire: true
         tags: ['controller.service_arguments']
+    
+    App\Controller\Api\Games\GetGameVariantsController:
+        arguments:
+            - '@vsapp.repository.games'
+        autowire: true
+        tags: ['controller.service_arguments']
         
     App\Controller\Api\Games\GetPlayersController:
         arguments:

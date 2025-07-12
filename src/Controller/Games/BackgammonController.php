@@ -6,7 +6,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Vankosoft\ApplicationBundle\Component\Status;
-use App\Component\Utils\Keys;
 
 class BackgammonController extends GameController
 {
@@ -35,7 +34,7 @@ class BackgammonController extends GameController
         ];
         
         return new Response(
-            $this->templatingEngine->render( $this->getTemplate( Keys::BACKGAMMON_NORMAL_KEY, 'Pages/Games/backgammon.html.twig' ), [
+            $this->templatingEngine->render( $this->getTemplate( $gameSlug, 'Pages/Games/backgammon.html.twig' ), [
                 'game'          => $game,
                 'gameSettings'  => $gameSettings,
             ])

@@ -1,6 +1,7 @@
 {
     "backgammon": "Backgammon",
     "invite": {
+        "invite_friend": "Invite a friend",
         "copylink": "Copy this link and send it to your friend",
         "cancelinvite": "Cancel",
         "startgame": "Start game"

@@ -66,21 +66,6 @@ class GameForm extends AbstractForm
                 },
             ])
             
-            ->add( 'parentGame', EntityType::class, [
-                'label'                 => 'game_platform.form.game.parent_game',
-                'placeholder'           => 'game_platform.form.game.parent_game_placeholder',
-                'translation_domain'    => 'GamePlatform',
-                'required'              => false,
-                'mapped'                => true,
-                'class'                 => Game::class,
-                'choice_label'          => 'title',
-                'query_builder' => function( EntityRepository $repository ) {
-                    return $repository->createQueryBuilder( 'g' )
-                            ->where( 'g.parentGame is NULL' )
-                    ;
-                }
-            ])
-            
             ->add( 'title', TextType::class, [
                 'label'                 => 'vs_application.form.title',
                 'translation_domain'    => 'VSApplicationBundle',

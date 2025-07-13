@@ -41,20 +41,6 @@
     </div>
     
     <div class="form-group">
-        {{ form_label(form.parentGame, null, {
-            'label_attr': {'class': 'form-label'}
-            }) 
-        }}
-        
-        {{ form_widget(form.parentGame, {
-            'attr': {
-                'class': 'form-select',
-            }
-        }) }}
-        <p>{{ 'game_platform.form.game.parent_game_help'  | trans( {},'GamePlatform' ) }}</p>
-    </div>
-    
-    <div class="form-group">
         {{ form_label(form.title, null, {
             'label_attr': {'class': 'form-label'}
             }) 

@@ -65,19 +65,9 @@ class Game implements ResourceInterface
     #[ORM\OneToMany(targetEntity: GamePlay::class, mappedBy: "game", cascade: ["persist", "remove"], orphanRemoval: true)]
     private $gameSessions;
     
-    /** @var Game */
-    #[ORM\ManyToOne(targetEntity: "Game", inversedBy: "gameVariants")]
-    #[ORM\JoinColumn(name: "parent_game_id", referencedColumnName: "id", nullable: true)]
-    private $parentGame;
-    
-    /** @var Collection | Game[] */
-    #[ORM\OneToMany(targetEntity: "Game", mappedBy: "parentGame", indexBy: "id", cascade: ["all"], orphanRemoval: true)]
-    private $gameVariants;
-    
     public function __construct()
     {
-        $this->gameSessions    = new ArrayCollection();
-        $this->gameVariants    = new ArrayCollection();
+        $this->gameSessions = new ArrayCollection();
     }
     
     public function getId(): ?int
@@ -179,44 +169,6 @@ class Game implements ResourceInterface
     {
         if ( $this->gameSessions->contains( $gameSession ) ) {
             $this->gameSessions->removeElement( $gameSession );
-        }
-        
-        return $this;
-    }
-    
-    public function getParentGame()
-    {
-        return $this->parentGame;
-    }
-    
-    public function setParentGame( $parentGame ): self
-    {
-        $this->parentGame = $parentGame;
-        
-        return $this;
-    }
-    
-    /**
-     * @return Collection|Game[]
-     */
-    public function getGameVariants()
-    {
-        return $this->gameVariants;
-    }
-    
-    public function addGameVariant( Game $gameVariant ): self
-    {
-        if ( ! $this->gameVariants->contains( $gameVariant ) ) {
-            $this->gameVariants[] = $gameVariant;
-        }
-        
-        return $this;
-    }
-    
-    public function removeGameVariant( Game $gameVariant ): self
-    {
-        if ( $this->gameVariants->contains( $gameVariant ) ) {
-            $this->gameVariants->removeElement( $gameVariant );
         }
         
         return $this;

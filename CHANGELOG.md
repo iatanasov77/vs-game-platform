@@ -1,3 +1,14 @@
+0.15.1	|	Release date: **15.07.2025**
+============================================
+* New Features:
+  - Create an Angular Login Dialog.
+* Bug-Fixes and Improvements:
+  - Fix Calculating Game Player Points Left Value.
+  - Fire Resize Event on Backgammon Lobby.
+  - Improve Backgammon Variants.
+  - Allow API Routes for Registered Users.
+
+
 0.15.0	|	Release date: **10.07.2025**
 ============================================
 * Bug-Fixes and Improvements:

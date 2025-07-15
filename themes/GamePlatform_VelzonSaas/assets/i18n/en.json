@@ -189,6 +189,7 @@
 
     "dialogs": {
         "close": "Close",
+        "cancel": "Cancel",
         "login": "Login",
         "not_loggedin_message": "You are NOT Logged In.",
         "have_an_account_question": "if you have an account",
@@ -199,7 +200,9 @@
         "create_a_player_question": "You can create a Player",
         "create_player_link": "from here",
         "select_game_room": "Select Game Room",
-        "create_game_room": "Create Game Room"
+        "create_game_room": "Create Game Room",
+        "username": "Username",
+        "password": "Password"
     },
     "forms": {
         "select_game_room": {

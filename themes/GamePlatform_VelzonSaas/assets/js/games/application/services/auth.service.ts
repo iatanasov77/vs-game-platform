@@ -11,9 +11,9 @@ import { IAuth } from '../interfaces/auth';
 import { ISignedUrlResponse } from '../interfaces/signed-url-response';
 import { IToggleSoundMuteResponse } from '../interfaces/toggle-sound-mute-response';
 
+import { LocalStorageService } from './local-storage.service';
 import { SoundService } from './sound.service';
 import { StatusMessageService } from './status-message.service';
-import { StorageService, LOCAL_STORAGE } from 'ngx-webstorage-service';
 import { AppStateService } from '../state/app-state.service';
 import { Busy } from '../state/busy';
 import { Keys } from '../utils/keys';
@@ -37,11 +37,11 @@ export class AuthService
     
     constructor(
         @Inject( HttpClient ) private httpClient: HttpClient,
-        @Inject( LOCAL_STORAGE ) private storage: StorageService,
         @Inject( AppStateService ) private appState: AppStateService,
         @Inject( StatusMessageService ) private statusMessageService: StatusMessageService,
         @Inject( TranslateService ) private trans: TranslateService,
         @Inject( SoundService ) private sound: SoundService,
+        @Inject( LocalStorageService ) private localStorageService: LocalStorageService,
     ) {
         this.url        = `${context.backendURL}`;
         
@@ -53,6 +53,38 @@ export class AuthService
     public isLoggedIn(): Observable<boolean>
     {
         return this.loggedIn$.asObservable();
+    }
+    
+    login( username: string, password: string ): Observable<IAuth>
+    {
+        var url = `${this.url}/login_check`;
+        let postData = { username : username, password :password };
+        
+        return this.httpClient.post<IAuth>( url, postData ).pipe(
+            tap( ( response: any ) => {
+                if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.payload ) {
+                    let auth: IAuth = {
+                        id: response.payload.userId,
+                        
+                        email: response.payload.email,
+                        username: response.payload.username,
+                        
+                        fullName: response.payload.userFullName,
+                        
+                        apiToken: response.payload.token,
+                        tokenCreated: response.payload.tokenCreated,
+                        tokenExpired: response.payload.tokenExpired,
+                        
+                        apiRefreshToken: response.refresh_token,
+                    };
+                    
+                    this.createAuth( auth );
+                    
+                    // Add Backgamon User in Local Storage
+                    this.signIn( this.createUserDto( auth ), auth.apiToken );
+                }
+            })
+        );
     }
     
     /*
@@ -113,17 +145,16 @@ export class AuthService
     
     public createAuth( auth: IAuth )
     {
-        localStorage.setItem( this.authKey, JSON.stringify( auth ) );
+        this.localStorageService.setItem( this.authKey, auth );
         
         this.loggedIn   = auth && auth.apiToken ? true : false;
         this.loggedIn$.next( this.loggedIn );
     }
     
-    public getAuth(): IAuth | null | undefined
+    public getAuth(): IAuth | null
     {
-        let authData    = localStorage.getItem( this.authKey );
+        let auth    = this.localStorageService.getItem<IAuth>( this.authKey );
         
-        let auth        = authData ? JSON.parse( authData ) : null;
         if ( auth && this.checkTokenExpired( auth ) ) {
             auth    = null;
         }
@@ -137,7 +168,7 @@ export class AuthService
         this.signOut();
         this.statusMessageService.setNotLoggedIn();
         
-        localStorage.removeItem( this.authKey );
+        this.localStorageService.removeItem( this.authKey );
         
         this.loggedIn   = false;
         if ( ! this.loggedIn$ ) {
@@ -172,7 +203,7 @@ export class AuthService
             map( ( data: any ) => { return data; } )
         ).subscribe( ( userDto: UserDto ) => {
             this.trans.use( userDto?.preferredLanguage ?? 'en' );
-            this.storage.set( Keys.loginKey, userDto );
+            this.localStorageService.setItem( Keys.loginKey, userDto );
             this.appState.user.setValue( userDto );
             if ( userDto ) this.appState.changeTheme( userDto?.theme );
             this.appState.hideBusy();
@@ -182,13 +213,22 @@ export class AuthService
     signOut(): void
     {
         this.appState.user.clearValue();
-        this.storage.remove( Keys.loginKey );
+        this.localStorageService.removeItem( Keys.loginKey );
     }
     
+    // If the user account is stored in local storage, it will be restored without contacting social provider
     repair(): void
     {
-        const user = this.storage.get( Keys.loginKey ) as UserDto;
+        const user = this.localStorageService.getItem( Keys.loginKey ) as UserDto;
         this.appState.user.setValue( user );
+        this.trans.use( user?.preferredLanguage ?? 'en' );
+        if ( user ) {
+            this.appState.changeTheme( user.theme );
+            // this.synchUser();
+        }
+        
+        //alert( 'Auth Repair' );
+        //console.log( 'User', user );
     }
     
     toggleIntro(): void

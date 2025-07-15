@@ -11,6 +11,7 @@ import { SelectGameRoomDialogComponent } from './select-game-room-dialog/select-
 import { CreateGameRoomDialogComponent } from './create-game-room-dialog/create-game-room-dialog.component';
 import { PlayAiQuestionComponent } from './play-ai-question/play-ai-question.component';
 import { CreateInviteGameDialogComponent } from './create-invite-game-dialog/create-invite-game-dialog.component';
+import { UserLoginDialogComponent } from './user-login-dialog/user-login-dialog.component';
 
 @NgModule({
     declarations: [
@@ -18,7 +19,8 @@ import { CreateInviteGameDialogComponent } from './create-invite-game-dialog/cre
         SelectGameRoomDialogComponent,
         CreateGameRoomDialogComponent,
         PlayAiQuestionComponent,
-        CreateInviteGameDialogComponent
+        CreateInviteGameDialogComponent,
+        UserLoginDialogComponent
     ],
     imports: [
         CommonModule,
@@ -34,7 +36,8 @@ import { CreateInviteGameDialogComponent } from './create-invite-game-dialog/cre
         SelectGameRoomDialogComponent,
         CreateGameRoomDialogComponent,
         PlayAiQuestionComponent,
-        CreateInviteGameDialogComponent
+        CreateInviteGameDialogComponent,
+        UserLoginDialogComponent
     ]
 })
 export class GameDialogsModule { }

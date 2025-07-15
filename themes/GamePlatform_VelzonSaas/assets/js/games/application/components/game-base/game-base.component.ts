@@ -46,7 +46,10 @@ export class GameBaseComponent implements OnInit, OnDestroy
             this.developementClass  = 'developement';
         }
         
-        this.authenticate();
+        if ( ! this.authService.getAuth() && window.gamePlatformSettings.apiVerifySiganature.length ) {
+            this.store.dispatch( loginBySignature( { apiVerifySiganature: window.gamePlatformSettings.apiVerifySiganature } ) );
+            this.store.dispatch( loadGameBySlug( { slug: window.gamePlatformSettings.gameSlug } ) );
+        }
     }
     
     ngOnInit()
@@ -80,16 +83,5 @@ export class GameBaseComponent implements OnInit, OnDestroy
     ngOnDestroy(): void
     {
 
-    }
-    
-    authenticate(): void
-    {
-        if ( window.gamePlatformSettings.apiVerifySiganature.length ) {
-            this.store.dispatch( loginBySignature( { apiVerifySiganature: window.gamePlatformSettings.apiVerifySiganature } ) );
-            this.store.dispatch( loadGameBySlug( { slug: window.gamePlatformSettings.gameSlug } ) );
-            return;
-        }
-        
-        this.authService.removeAuth();
     }
 }

@@ -16,6 +16,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable, Subscription, of, map, tap } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
+import { loginBySignatureSuccess } from '../../../+store/login.actions';
 import {
     selectGameRoom,
     selectGameRoomSuccess,
@@ -24,11 +25,13 @@ import {
 } from '../../../+store/game.actions';
 import { GameState as MyGameState } from '../../../+store/game.reducers';
 
+// Dialogs
 import { RequirementsDialogComponent } from '../../game-dialogs/requirements-dialog/requirements-dialog.component';
 import { SelectGameRoomDialogComponent } from '../../game-dialogs/select-game-room-dialog/select-game-room-dialog.component';
 import { CreateGameRoomDialogComponent } from '../../game-dialogs/create-game-room-dialog/create-game-room-dialog.component';
 import { PlayAiQuestionComponent } from '../../game-dialogs/play-ai-question/play-ai-question.component';
 import { CreateInviteGameDialogComponent } from '../../game-dialogs/create-invite-game-dialog/create-invite-game-dialog.component';
+import { UserLoginDialogComponent } from '../../game-dialogs/user-login-dialog/user-login-dialog.component';
 
 // Services
 import { AuthService } from '../../../services/auth.service';
@@ -176,9 +179,10 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         this.gameString$ = this.appStateService.gameString.observe();
         
         this.user$.subscribe( ( user ) => {
+            console.log( 'User', user );
             if ( user ) this.introMuted = user.muteIntro;
         });
-
+        
         // if game page is refreshed, restore user from login cookie
         if ( ! this.appStateService.user.getValue() ) {
             this.authService.repair();
@@ -221,6 +225,15 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
     
     ngOnInit(): void
     {
+        this.authService.isLoggedIn().subscribe( ( isLoggedIn: boolean ) => {
+            this.isLoggedIn = isLoggedIn;
+            let auth        = this.authService.getAuth();
+            
+            if ( isLoggedIn && auth ) {
+                this.statusMessageService.setNotGameStarted();
+            }
+        });
+        
         this.gameDto$.subscribe( res => {
             //console.log( res );
             this.gameDto = res;
@@ -687,6 +700,20 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
             modalRef.dismiss();
         });
         
+        modalRef.componentInstance.onPlayGame.subscribe( () => {
+            modalRef.close();
+            this.playGame();
+        });
+    }
+    
+    login(): void
+    {
+        const modalRef = this.ngbModal.open( UserLoginDialogComponent );
+        
+        modalRef.componentInstance.closeModal.subscribe( () => {
+            // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
+            modalRef.dismiss();
+        });
     }
     
     onFlipped(): void

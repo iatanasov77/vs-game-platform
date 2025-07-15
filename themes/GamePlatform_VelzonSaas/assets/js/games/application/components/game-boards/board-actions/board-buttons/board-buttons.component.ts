@@ -25,6 +25,7 @@ export class BoardButtonsComponent implements OnChanges
     @Output() onExit = new EventEmitter<void>();
     @Output() onResign = new EventEmitter<void>();
     @Output() onInviteFriend = new EventEmitter<void>();
+    @Output() onLogin = new EventEmitter<void>();
     @Output() onPlayGame = new EventEmitter<void>();
     
     constructor(
@@ -103,5 +104,10 @@ export class BoardButtonsComponent implements OnChanges
     inviteFriendClick(): void
     {
         this.onInviteFriend.emit();
+    }
+    
+    loginClick(): void
+    {
+        this.onLogin.emit();
     }
 }

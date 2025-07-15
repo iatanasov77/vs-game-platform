@@ -1,4 +1,4 @@
-﻿<?php namespace App\Component\Dto\Actions;
+<?php namespace App\Component\Dto\Actions;
 
 use App\Component\Dto\ConnectionDto;
 
@@ -8,6 +8,6 @@ class ConnectionInfoActionDto extends ActionDto
     {
         $this->actionName = ActionNames::connectionInfo->value;
     }
-
+    
     public ConnectionDto $connection;
 }

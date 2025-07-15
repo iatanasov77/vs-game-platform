@@ -9,7 +9,3 @@ vs_api_users:
 vs_api_test_index:
     path: /api/test-index
     controller: App\Controller\Api\TestController::index
-    
-vs_api_game_by_slug:
-    path: /api/games-ext/{slug}
-    controller: App\Controller\Api\Games\ShowGameBySlugController::index

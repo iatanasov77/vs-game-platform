@@ -47,6 +47,7 @@ final class WebsocketGameManager extends AbstractGameManager
                 
                 $this->Engine = AiEngineFactory::CreateBackgammonEngine(
                     $this->GameCode,
+                    $this->GameVariant,
                     $this->logger,
                     $this->Game
                 );

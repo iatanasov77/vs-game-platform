@@ -16,6 +16,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable, Subscription, of, map, tap } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
+import { loginBySignatureSuccess } from '../../../+store/login.actions';
 import {
     selectGameRoom,
     selectGameRoomSuccess,
@@ -24,11 +25,13 @@ import {
 } from '../../../+store/game.actions';
 import { GameState as MyGameState } from '../../../+store/game.reducers';
 
+// Dialogs
 import { RequirementsDialogComponent } from '../../game-dialogs/requirements-dialog/requirements-dialog.component';
 import { SelectGameRoomDialogComponent } from '../../game-dialogs/select-game-room-dialog/select-game-room-dialog.component';
 import { CreateGameRoomDialogComponent } from '../../game-dialogs/create-game-room-dialog/create-game-room-dialog.component';
 import { PlayAiQuestionComponent } from '../../game-dialogs/play-ai-question/play-ai-question.component';
 import { CreateInviteGameDialogComponent } from '../../game-dialogs/create-invite-game-dialog/create-invite-game-dialog.component';
+import { UserLoginDialogComponent } from '../../game-dialogs/user-login-dialog/user-login-dialog.component';
 
 // Services
 import { AuthService } from '../../../services/auth.service';
@@ -176,9 +179,10 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         this.gameString$ = this.appStateService.gameString.observe();
         
         this.user$.subscribe( ( user ) => {
+            console.log( 'User', user );
             if ( user ) this.introMuted = user.muteIntro;
         });
-
+        
         // if game page is refreshed, restore user from login cookie
         if ( ! this.appStateService.user.getValue() ) {
             this.authService.repair();
@@ -221,6 +225,15 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
     
     ngOnInit(): void
     {
+        this.authService.isLoggedIn().subscribe( ( isLoggedIn: boolean ) => {
+            this.isLoggedIn = isLoggedIn;
+            let auth        = this.authService.getAuth();
+            
+            if ( isLoggedIn && auth ) {
+                this.statusMessageService.setNotGameStarted();
+            }
+        });
+        
         this.gameDto$.subscribe( res => {
             //console.log( res );
             this.gameDto = res;
@@ -236,13 +249,14 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
                 this.gameStarted    = true;
                 this.statusMessageService.setWaitingForConnect();
             }
+            
+            this.fireResize();
         });
         
         /**
          * Cannot Remove Game Rooms from Board Games Because Game Room is a Game Session for Now.
          */
         this.actions$.pipe( ofType( selectGameRoomSuccess ) ).subscribe( () => {
-            //this.newVisible = this.appStateService.game.getValue()?.playState === GameState.created;
             this.newVisible = false;
             this.exitVisible = false;
             
@@ -272,17 +286,6 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
             this.waitForOpponent();
         }
         this.fireResize();
-        
-//         setTimeout( () => {
-//             console.log( this.appStateService.myConnection.getValue() );
-//             console.log( this.appStateService.myConnection );
-//             let socketConnected = this.appStateService.myConnection.getValue().connected;
-//             if ( socketConnected && ! this.isRoomSelected ) {
-//                 //alert( this.appStateService.user );
-//                 this.statusMessageService.setNotRoomSelected();
-//                 this.appStateService.hideBusy();
-//             }
-//         }, 11000 );
     }
     
     ngOnDestroy(): void
@@ -508,7 +511,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         this.messageCenter = this.width / 2 - spanWidth / 2;
         // alert( this.messageCenter );
         
-        this.height = Math.min( window.innerHeight - 40, this.width * 0.6 );
+        this.height = Math.min( window.innerHeight - 40, this.width * 0.62 );
         
         const buttons = this.backgammonBoardButtons?.nativeElement as HTMLElement;
         const btnsOffset = 5; //Cheating. Could not get the height.
@@ -697,6 +700,20 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
             modalRef.dismiss();
         });
         
+        modalRef.componentInstance.onPlayGame.subscribe( () => {
+            modalRef.close();
+            this.playGame();
+        });
+    }
+    
+    login(): void
+    {
+        const modalRef = this.ngbModal.open( UserLoginDialogComponent );
+        
+        modalRef.componentInstance.closeModal.subscribe( () => {
+            // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
+            modalRef.dismiss();
+        });
     }
     
     onFlipped(): void
@@ -748,8 +765,6 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         this.wsService.startGamePlay( game, myColor, this.playAiFlag, this.forGoldFlag );
         
         this.waitForOpponent();
-        window.dispatchEvent( new Event( 'resize' ) );
-        
         this.statusMessageService.setWaitingForConnect();
         this.exitVisible = true;
     }

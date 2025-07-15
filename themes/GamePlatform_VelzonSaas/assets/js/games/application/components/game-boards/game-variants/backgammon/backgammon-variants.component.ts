@@ -1,10 +1,14 @@
-import { Component, OnInit, OnDestroy, Inject, Input } from '@angular/core';
+import { Component, Inject, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import templateString from './backgammon-variants.component.html'
 import cssString from './backgammon-variants.component.scss'
 
-declare var $: any;
+declare global {
+    interface Window {
+        gamePlatformSettings: any;
+    }
+}
 
 @Component({
     selector: 'app-backgammon-variants',
@@ -12,23 +16,20 @@ declare var $: any;
     template: templateString || 'Template Not Loaded !!!',
     styles: [cssString || 'CSS Not Loaded !!!']
 })
-export class BackgammonVariantsComponent implements OnInit, OnDestroy
+export class BackgammonVariantsComponent
 {
     @Input() lobbyButtonsVisible: boolean   = false;
+    game: string;
     
     constructor(
         @Inject( TranslateService ) private translate: TranslateService
     ) {
-
-    }
-    
-    ngOnInit(): void
-    {
-
-    }
-    
-    ngOnDestroy()
-    {
-
+        const currentUrlparams = new URLSearchParams( window.location.search );
+        let variant = currentUrlparams.get( 'variant' );
+        if ( variant == null ) {
+            variant = 'normal';
+        }
+        
+        this.game   = variant;
     }
 }

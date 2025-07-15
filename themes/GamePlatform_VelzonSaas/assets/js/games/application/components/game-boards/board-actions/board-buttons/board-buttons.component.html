@@ -1,5 +1,5 @@
 <div class="p-1 float-start game-board-buttons-container">
-    <a *ngIf="! isLoggedIn" href="/login" class="default-button">
+    <a *ngIf="! isLoggedIn" (click)="loginClick()" class="default-button">
         {{ 'dialogs.login' | translate }}
     </a>
     

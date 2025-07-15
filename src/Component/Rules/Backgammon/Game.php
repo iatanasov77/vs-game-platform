@@ -40,7 +40,7 @@ abstract class Game
     public $ValidMoves;
     
     /** @var GameState */
-    public $PlayState = GameState::FirstThrow;
+    public $PlayState = GameState::firstThrow;
     
     /** @var \DateTime */
     public $Created;
@@ -126,6 +126,8 @@ abstract class Game
         }
     }
     
+    abstract public function SetStartPosition(): void;
+    
     abstract public function GenerateMoves(): array;
     
     public function SwitchPlayer(): void
@@ -137,34 +139,6 @@ abstract class Game
     public function OtherPlayer(): PlayerColor
     {
         return $this->CurrentPlayer == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
-    }
-    
-    public function SetStartPosition(): void
-    {
-        foreach ( $this->Points as $point ) {
-            $point->Checkers->clear();
-        }
-        
-        $this->AddCheckers( 2, PlayerColor::Black, 1 );
-        $this->AddCheckers( 2, PlayerColor::White, 1 );
-        
-        $this->AddCheckers( 5, PlayerColor::Black, 12 );
-        $this->AddCheckers( 5, PlayerColor::White, 12 );
-        
-        $this->AddCheckers( 3, PlayerColor::Black, 17 );
-        $this->AddCheckers( 3, PlayerColor::White, 17 );
-        
-        $this->AddCheckers( 5, PlayerColor::Black, 19 );
-        $this->AddCheckers( 5, PlayerColor::White, 19 );
-        
-        // CloseToVictory();
-        // DebugBar();
-        //DebugBlocked();
-        // DebugBearingOff();
-        // AtHomeAndOtherAtBar();
-        // AtHomeAndOtherAtBar2();
-        // Test();
-        // LegalMove();
     }
     
     public function ClearCheckers(): void
@@ -202,7 +176,7 @@ abstract class Game
     {
         // $this->logger->log( 'Existing Rolls: ' . \print_r( $this->Roll, true ), 'FirstThrowState' );
         
-        if ( $this->PlayState == GameState::FirstThrow ) {
+        if ( $this->PlayState == GameState::firstThrow ) {
             if ( $this->Roll[0]->Value > $this->Roll[1]->Value ) {
                 $this->CurrentPlayer = PlayerColor::Black;
                 $this->BlackStarts++;
@@ -212,7 +186,7 @@ abstract class Game
             }
             
             if ( $this->Roll[0]->Value != $this->Roll[1]->Value ) {
-                $this->PlayState = GameState::Playing;
+                $this->PlayState = GameState::playing;
             }
         }
     }
@@ -242,7 +216,7 @@ abstract class Game
             function( $entry ) use ( $color ) {
                 return $entry->GetNumber( $color ) == 25;
             }
-            )->first();
+        )->first();
     }
     
     public function PlayersPassed(): bool

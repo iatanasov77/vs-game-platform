@@ -21,7 +21,7 @@ import { GameEffects } from '../application/+store/game.effects';
 import { IAppState, getReducers } from '../application/+store/state';
 
 import { GlobalErrorService } from '../application/services/global-error-service';
-import { BackgammonGulbaraComponent } from './backgammon-gulbara.component';
+import { BackgammonComponent } from './backgammon.component';
 import { SharedModule } from '../application/components/shared/shared.module';
 import { GameBoardsModule } from '../application/components/game-boards/game-boards.module';
 import { SideBarsModule } from '../application/components/side-bars/side-bars.module';
@@ -34,7 +34,7 @@ export function HttpLoaderFactory( http: HttpClient ) {
 
 @NgModule({
     declarations: [
-        BackgammonGulbaraComponent,
+        BackgammonComponent,
     ],
     imports: [
         BrowserModule,
@@ -68,7 +68,7 @@ export function HttpLoaderFactory( http: HttpClient ) {
             GameEffects,
         ]),
     ],
-    bootstrap: [BackgammonGulbaraComponent],
+    bootstrap: [BackgammonComponent],
     providers: [
         //{ provide: Window, useValue: window },
         { provide: APP_BASE_HREF, useValue: window.location.pathname },
@@ -76,4 +76,4 @@ export function HttpLoaderFactory( http: HttpClient ) {
         { provide: ErrorHandler, useClass: GlobalErrorService }
     ]
 })
-export class BackgammonGulbaraModule { }
+export class BackgammonModule { }

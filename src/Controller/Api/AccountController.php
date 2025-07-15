@@ -54,10 +54,11 @@ class AccountController extends AbstractController
     {
         $user       = $this->vsSecurityBridge->getUser();
         $player     = $user->getPlayer();
+        $photoPath  = '/build/gameplatform-velzonsaas-theme/images/game_player/locallogin.jpg';
         
         if ( $player->getPhotoUrl() ) {
             $photoPath  = $player->getPhotoUrl();
-        } else {
+        } else if( $user->getInfo()->getAvatar() ) {
             $photoPath  = $this->imagineCacheManager->resolve( $user->getInfo()->getAvatar()->getPath(), 'users_crud_index_thumb' );
         }
         

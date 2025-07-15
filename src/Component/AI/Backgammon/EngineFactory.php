@@ -6,9 +6,9 @@ use App\Component\Rules\Backgammon\Game;
 
 final class EngineFactory
 {
-    public static function CreateBackgammonEngine( string $gameCode, GameLogger $logger, Game $game ): Engine
+    public static function CreateBackgammonEngine( string $gameCode, string $gameVariant, GameLogger $logger, Game $game ): Engine
     {
-        switch ( $gameCode ) {
+        switch ( $gameVariant ) {
             case Keys::BACKGAMMON_NORMAL_KEY:
                 $engine = new BackgammonNormalEngine( $logger, $game );
                 break;

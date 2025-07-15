@@ -89,9 +89,7 @@ Encore
     .addEntry( 'js/bridge-belote', './themes/GamePlatform_VelzonSaas/assets/js/games/bridge-belote/index.js' )
     .addEntry( 'js/contract-bridge', './themes/GamePlatform_VelzonSaas/assets/js/games/contract-bridge/index.js' )
     .addEntry( 'js/chess', './themes/GamePlatform_VelzonSaas/assets/js/games/chess/index.js' )
-    .addEntry( 'js/backgammon-normal', './themes/GamePlatform_VelzonSaas/assets/js/games/backgammon-normal/index.js' )
-    .addEntry( 'js/backgammon-gulbara', './themes/GamePlatform_VelzonSaas/assets/js/games/backgammon-gulbara/index.js' )
-    .addEntry( 'js/backgammon-tapa', './themes/GamePlatform_VelzonSaas/assets/js/games/backgammon-tapa/index.js' )
+    .addEntry( 'js/backgammon', './themes/GamePlatform_VelzonSaas/assets/js/games/backgammon/index.js' )
 ;
 
 if ( Encore.isDev() ) {

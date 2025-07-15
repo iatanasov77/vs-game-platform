@@ -19,18 +19,18 @@ import { ErrorState } from '../application/state/ErrorState';
 import { ErrorReportService } from '../application/services/error-report.service';
 import ErrorReportDto from '_@/GamePlatform/Model/BoardGame/errorReportDto';
 
-import cssGameString from './backgammon-normal.component.scss'
-import templateString from './backgammon-normal.component.html'
+import cssGameString from './backgammon.component.scss'
+import templateString from './backgammon.component.html'
 
 @Component({
-    selector: 'app-backgammon-normal',
+    selector: 'app-backgammon',
     
     template: templateString || 'Template Not Loaded !!!',
     styles: [
         cssGameString || 'Game CSS Not Loaded !!!',
     ]
 })
-export class BackgammonNormalComponent extends GameBaseComponent implements OnInit
+export class BackgammonComponent extends GameBaseComponent implements OnInit
 {
     title   = 'Backgammon';
     busy$: Observable<Busy>;

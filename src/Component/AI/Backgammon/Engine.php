@@ -83,7 +83,7 @@ abstract class Engine
         $bestMoveSequenceIterator->uasort( function ( $a, $b ) {
             return $b->From->WhiteNumber <=> $a->From->WhiteNumber;
         });
-            
+        
         return new ArrayCollection( \iterator_to_array( $bestMoveSequenceIterator ) );
     }
     

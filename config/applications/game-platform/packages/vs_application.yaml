@@ -106,21 +106,9 @@ vs_application:
                 display: false
                 attributes:
                     iconClass: "bx bxs-dashboard"
-            games_backgammon_normal:
+            games_backgammon:
                 name: vs_application.menu.games.backgammon
-                route: backgammon_normal
-                display: false
-                attributes:
-                    iconClass: "bx bxs-dashboard"
-            games_backgammon_gulbara:
-                name: vs_application.menu.games.backgammon
-                route: backgammon_gulbara
-                display: false
-                attributes:
-                    iconClass: "bx bxs-dashboard"
-            games_backgammon_tapa:
-                name: vs_application.menu.games.backgammon
-                route: backgammon_tapa
+                route: backgammon
                 display: false
                 attributes:
                     iconClass: "bx bxs-dashboard"

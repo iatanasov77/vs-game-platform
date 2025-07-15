@@ -59,12 +59,11 @@ security:
                 default_target_path:  /
             logout:
                 path: app_logout
-                target: app_login
+                target: /api/login
                 invalidate_session: true
 
             custom_authenticators:
                 - vs_users.security.login_form_authenticator
-                #- vs_api.security.api_key_authenticator
             entry_point: vs_users.security.login_form_authenticator
        
     role_hierarchy:
@@ -84,11 +83,19 @@ security:
         - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
         - { path: ^/api/recurring-payment, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
         
-        - { path: ^/api/get-translations, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
+        - { path: ^/api/account/signin, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
+        - { path: ^/api/account/toggleIntro, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
+        - { path: ^/api/get-verify-signature, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
+        - { path: ^/api/select-game-room, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
+        
+        - { path: ^/api/game-message, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
+        - { path: ^/api/zmq-message, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
+        
         - { path: ^/api/games, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
         - { path: ^/api/players, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
         - { path: ^/api/game-sessions, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
+        
         - { path: ^/api/backgamon/editor/gamestring, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
+        - { path: ^/api/invite/create, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
         
         - { path: ^/api, roles: [ROLE_SUPER_ADMIN,ROLE_VANKOSOFT_API_ADMIN], requires_channel: '%env(SECURE_SCHEME)%' }
-

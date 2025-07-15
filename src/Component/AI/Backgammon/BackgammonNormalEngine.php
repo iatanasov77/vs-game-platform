@@ -5,6 +5,7 @@ use Doctrine\Common\Collections\Collection;
 use App\Component\Type\PlayerColor;
 use App\Component\Rules\Backgammon\Game;
 use App\Component\Rules\Backgammon\Move;
+use App\Component\Manager\AbstractGameManager;
 
 class BackgammonNormalEngine extends Engine
 {
@@ -87,7 +88,7 @@ class BackgammonNormalEngine extends Engine
                     }
                 );
                 
-                $orderedCurrentPlayerPoints = $this->orderPlayerPoints( $currentPlayerPoints, $game );
+                $orderedCurrentPlayerPoints = $this->orderPlayerPoints( $currentPlayerPoints, $game, AbstractGameManager::COLLECTION_ORDER_ASC );
                 $minPoint = $orderedCurrentPlayerPoints->first()->GetNumber( $game->CurrentPlayer );
                 
                 $toPointNo = $fromPointNo == $minPoint ? \min( 25, $fromPointNo + $dice->Value ) : $fromPointNo + $dice->Value;

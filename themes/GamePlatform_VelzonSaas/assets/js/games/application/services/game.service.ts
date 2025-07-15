@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http'
 const { context } = require( '../context' );
 
 import { BehaviorSubject, Observable, tap, map, of } from 'rxjs';
+import { LocalStorageService } from './local-storage.service';
 import { AuthService } from './auth.service';
 import { AppConstants } from "../constants";
 
@@ -21,7 +22,8 @@ export class GameService
     
     constructor(
         @Inject( HttpClient ) private httpClient: HttpClient,
-        @Inject( AuthService ) private authService: AuthService
+        @Inject( AuthService ) private authService: AuthService,
+        @Inject( LocalStorageService ) private localStorageService: LocalStorageService,
     ) {
         this.url        = `${context.backendURL}`;
         this.hasPlayer$ = new BehaviorSubject<boolean>( false );
@@ -46,6 +48,15 @@ export class GameService
         
         return this.httpClient.get<IGame>( url, {headers} ).pipe(
             map( ( response: any ) => this.mapGame( response ) )
+        );
+    }
+    
+    loadGameVariants( baseGameSlug: string ): Observable<IGame[]>
+    {
+        var url         = `${this.url}/games-variants/${baseGameSlug}`;
+        
+        return this.httpClient.get<IGame[]>( url ).pipe(
+            map( ( response: any ) => this.mapGames( response ) )
         );
     }
     
@@ -80,12 +91,12 @@ export class GameService
                         rooms: [],
                     };
                     
-                    localStorage.setItem( 'player', JSON.stringify( player ) );
+                    this.localStorageService.setItem( 'player', player );
                     this.hasPlayer$.next( true );
                     
                     return player;
                 } else {
-                    localStorage.removeItem( 'player' );
+                    this.localStorageService.removeItem( 'player' );
                     this.hasPlayer$.next( false );
                     
                     return response.message;
@@ -101,9 +112,30 @@ export class GameService
                 id: response.data.id,
                 slug: response.data.slug,
                 title: response.data.title,
+                url: response.data.url,
             };
             
             return game;
+        }
+        
+        return response.message;
+    }
+    
+    private mapGames( response: any )
+    {
+        if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
+            let games: IGame[] = [];
+            
+            for ( const game of response.data ) {
+                games.push({
+                    id: game.id,
+                    slug: game.slug,
+                    title: game.title,
+                    url: game.url,
+                });
+            }
+            
+            return games;
         }
         
         return response.message;

@@ -1,7 +1,0 @@
-app_pricing_plans:
-    path: /pricing-plans
-    controller: App\Controller\__application_name__\PricingPlansController::index
-
-app_pricing_plans_select:
-    path: /pricing-plans/select/{pricingPlanId}
-    controller: App\Controller\__application_name__\PricingPlansController::selectPricingPlan

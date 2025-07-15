@@ -1,5 +1,6 @@
 import { Component, Inject, OnChanges, SimpleChanges, EventEmitter, Input, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { Router } from '@angular/router';
 
 import cssString from './board-buttons.component.scss';
 import templateString from './board-buttons.component.html';
@@ -24,10 +25,12 @@ export class BoardButtonsComponent implements OnChanges
     @Output() onExit = new EventEmitter<void>();
     @Output() onResign = new EventEmitter<void>();
     @Output() onInviteFriend = new EventEmitter<void>();
+    @Output() onLogin = new EventEmitter<void>();
     @Output() onPlayGame = new EventEmitter<void>();
     
     constructor(
-        @Inject( TranslateService ) private translate: TranslateService
+        @Inject( TranslateService ) private translate: TranslateService,
+        @Inject( Router ) private router: Router
     ) { }
     
     ngOnChanges( changes: SimpleChanges ): void
@@ -59,6 +62,19 @@ export class BoardButtonsComponent implements OnChanges
     
     exitGame(): void
     {
+        const currentUrlparams = new URLSearchParams( window.location.search );
+        let variant = currentUrlparams.get( 'variant' );
+        if ( variant == null ) {
+            variant = 'normal';
+        }
+        
+        const urlTree = this.router.createUrlTree([], {
+            queryParams: { variant: variant, playAi: null, forGold: null },
+            queryParamsHandling: "merge",
+            preserveFragment: true
+        });
+        this.router.navigateByUrl( urlTree );
+        
         this.onExit.emit();
     }
     
@@ -69,11 +85,29 @@ export class BoardButtonsComponent implements OnChanges
     
     playGame(): void
     {
+        const currentUrlparams = new URLSearchParams( window.location.search );
+        let variant = currentUrlparams.get( 'variant' );
+        if ( variant == null ) {
+            variant = 'normal';
+        }
+        
+        const urlTree = this.router.createUrlTree([], {
+            queryParams: { variant: variant, playAi: false, forGold: true },
+            queryParamsHandling: "merge",
+            preserveFragment: true
+        });
+        this.router.navigateByUrl( urlTree );
+        
         this.onPlayGame.emit();
     }
     
     inviteFriendClick(): void
     {
         this.onInviteFriend.emit();
+    }
+    
+    loginClick(): void
+    {
+        this.onLogin.emit();
     }
 }

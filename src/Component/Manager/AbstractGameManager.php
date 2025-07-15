@@ -129,6 +129,9 @@ abstract class AbstractGameManager implements GameManagerInterface
     /** @var string */
     public $GameCode;
     
+    /** @var string */
+    public $GameVariant;
+    
     /** @var bool */
     public $ForGold;
     
@@ -146,7 +149,8 @@ abstract class AbstractGameManager implements GameManagerInterface
         RepositoryInterface $tempPlayersRepository,
         FactoryInterface $tempPlayersFactory,
         bool $forGold,
-        string $gameCode
+        string $gameCode,
+        string $gameVariant
     ) {
         $this->logger                   = $logger;
         $this->serializer               = $serializer;
@@ -162,8 +166,9 @@ abstract class AbstractGameManager implements GameManagerInterface
         $this->tempPlayersFactory       = $tempPlayersFactory;
         $this->ForGold                  = $forGold;
         $this->GameCode                 = $gameCode;
+        $this->GameVariant              = $gameVariant;
         
-        $this->InitializeGame( $gameCode );
+        $this->InitializeGame( $gameCode, $gameVariant );
     }
     
     public function setLogger( LoggerInterface $logger ): void
@@ -362,11 +367,11 @@ abstract class AbstractGameManager implements GameManagerInterface
         $action->myColor = PlayerColor::White;
         $this->Send( $this->Client2, $action );
         
-        $this->Game->PlayState = GameState::FirstThrow;
+        $this->Game->PlayState = GameState::firstThrow;
         
         // todo: visa på clienten även när det blir samma
         // English: visa for clients who are not allowed to contact them
-        while ( $this->Game->PlayState == GameState::FirstThrow ) {
+        while ( $this->Game->PlayState == GameState::firstThrow ) {
             $this->logger->log( 'First Throw State !!!', 'FirstThrowState' );
             
             $this->Game->RollDice();
@@ -460,8 +465,8 @@ abstract class AbstractGameManager implements GameManagerInterface
     protected function EndGame( PlayerColor $winner )
     {
         //$this->moveTimeOut->cancel();
-        $this->Game->PlayState = GameState::Ended;
-        $this->logger->log( "The winner is {$winner->value}", 'GameManager' );
+        $this->Game->PlayState = GameState::ended;
+        $this->logger->log( "The winner is {$winner->value}", 'EndGame' );
         
         $newScore = $this->SaveWinner( $winner );
         $this->SendWinner( $winner, $newScore );
@@ -593,8 +598,8 @@ abstract class AbstractGameManager implements GameManagerInterface
             
             $stake = $this->Game->Stake;
             $this->Game->Stake = 0;
-            $this->logger->log( "Stake: {$stake}", 'GameManager' );
-            $this->logger->log( "Initial gold: {$black->getGold()} {$this->Game->BlackPlayer->Gold} {$white->getGold()} {$this->Game->WhitePlayer->Gold}", 'GameManager' );
+            $this->logger->log( "Stake: {$stake}", 'EndGame' );
+            $this->logger->log( "Initial gold: {$black->getGold()} {$this->Game->BlackPlayer->Gold} {$white->getGold()} {$this->Game->WhitePlayer->Gold}", 'EndGame' );
             
             if ( $color == PlayerColor::Black ) {
                 if ( ! $this->IsAi( $black->getGuid() ) ) {
@@ -607,7 +612,7 @@ abstract class AbstractGameManager implements GameManagerInterface
                 }
                 $this->Game->WhitePlayer->Gold += $stake;
             }
-            $this->logger->log( "After transfer: {$black->getGold()} {$this->Game->BlackPlayer->Gold} {$white->getGold()} {$this->Game->WhitePlayer->Gold}", 'GameManager' );
+            $this->logger->log( "After transfer: {$black->getGold()} {$this->Game->BlackPlayer->Gold} {$white->getGold()} {$this->Game->WhitePlayer->Gold}", 'EndGame' );
         }
         
         $em->persist( $black );
@@ -641,7 +646,7 @@ abstract class AbstractGameManager implements GameManagerInterface
                     }
                 )->count() == 15
             ) {
-                $this->Game->PlayState = GameState::Ended;
+                $this->Game->PlayState = GameState::ended;
                 $winner = PlayerColor::Black;
             }
         } else {
@@ -652,7 +657,7 @@ abstract class AbstractGameManager implements GameManagerInterface
                     }
                 )->count() == 15
             ) {
-                $this->Game->PlayState = GameState::Ended;
+                $this->Game->PlayState = GameState::ended;
                 $winner = PlayerColor::White;
             }
         }
@@ -708,6 +713,7 @@ abstract class AbstractGameManager implements GameManagerInterface
             $move   = Mapper::MoveToMove( $moveDto, $this->Game );
             $this->Game->MakeMove( $move );
         }
+        //$this->logger->log( "Black Player Points Left: " . $this->Game->BlackPlayer->PointsLeft, 'EndGame' );
     }
     
     protected function SendWinner( PlayerColor $color, ?array $newScore ): void
@@ -740,7 +746,7 @@ abstract class AbstractGameManager implements GameManagerInterface
             $em->persist( $white );
         }
             
-        $em->push();
+        $em->flush();
     }
     
     protected function CloseConnections( WebsocketClientInterface $socket )
@@ -879,9 +885,9 @@ abstract class AbstractGameManager implements GameManagerInterface
         //$this->logger->debug( $checkerFromPoint, 'CheckerFromPoint.txt' );
     }
     
-    private function InitializeGame( string $gameCode ): void
+    private function InitializeGame( string $gameCode, string $gameVariant ): void
     {
-        switch ( $gameCode ) {
+        switch ( $gameVariant ) {
             case Keys::BACKGAMMON_NORMAL_KEY:
                 $this->Game = $this->backgammonRulesFactory->createBackgammonNormalGame( $this->ForGold );
                 break;

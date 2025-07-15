@@ -25,6 +25,7 @@ class ShowGameBySlugController extends AbstractController
             'id'    => $game->getId(),
             'slug'  => $game->getSlug(),
             'title' => $game->getTitle(),
+            'url'   => $game->getGameUrl(),
             'rooms' => [],
         ];
         /*

@@ -1,6 +1,18 @@
+vs_api_account_signin:
+    path: /api/account/signin
+    controller: App\Controller\Api\AccountController::signinAction
+
+vs_api_account_toggleintro:
+    path: /api/account/toggleIntro
+    controller: App\Controller\Api\AccountController::toggleIntroAction
+    
 vs_api_get_verify_signature:
     path: /api/get-verify-signature
     controller: App\Controller\Api\DefaultController::getVerifySignatureAction
+
+vs_api_game_by_slug:
+    path: /api/games-ext/{slug}
+    controller: App\Controller\Api\Games\ShowGameBySlugController::index
 
 vs_api_mercure_game_message:
     path: /api/game-message
@@ -9,14 +21,6 @@ vs_api_mercure_game_message:
 vs_api_zmq_publish_message:
     path: /api/zmq-message
     controller: App\Controller\Api\ZmqPublishController::publish
-
-vs_api_account_signin:
-    path: /api/account/signin
-    controller: App\Controller\Api\AccountController::signinAction
-
-vs_api_account_toggleintro:
-    path: /api/account/toggleIntro
-    controller: App\Controller\Api\AccountController::toggleIntroAction
 
 vs_api_backgamon_editor_game_string:
     path: /api/backgamon/editor/gamestring

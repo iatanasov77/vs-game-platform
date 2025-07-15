@@ -83,11 +83,16 @@ trait Helper
         return new ArrayCollection( \iterator_to_array( $dicesIterator ) );
     }
     
-    protected function orderPlayerPoints( Collection $currentPlayerPoints, Game $game ): Collection
+    protected function orderPlayerPoints( Collection $currentPlayerPoints, Game $game, string $direction ): Collection
     {
         $playerPointsIterator   = $currentPlayerPoints->getIterator();
         $playerPointsIterator->uasort( function ( $a, $b ) use ( $game ) {
             return $b->GetNumber( $game->CurrentPlayer ) <=> $a->GetNumber( $game->CurrentPlayer );
+            
+            return $direction == AbstractGameManager::COLLECTION_ORDER_ASC ?
+                $a->Value <=> $b->Value :
+                $b->Value <=> $a->Value
+            ;
         });
         
         return new ArrayCollection( \iterator_to_array( $playerPointsIterator ) );

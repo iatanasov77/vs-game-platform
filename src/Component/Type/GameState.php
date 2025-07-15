@@ -5,12 +5,10 @@
  */
 enum GameState: int
 {
-    // My Workaround State
-    case Created                = 0;
-    
-    case OpponentConnectWaiting = 1;
-    case FirstThrow             = 2;
-    case Playing                = 3;
-    case Ended                  = 4;
+    case opponentConnectWaiting = 0;
+    case firstThrow             = 1;
+    case playing                = 2;
+    case requestedDoubling      = 3;
+    case ended                  = 4;
 }
     

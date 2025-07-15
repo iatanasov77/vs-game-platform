@@ -14,6 +14,34 @@ class BackgammonNormalGame extends Game
 {   
     use GameHelper;
     
+    public function SetStartPosition(): void
+    {
+        foreach ( $this->Points as $point ) {
+            $point->Checkers->clear();
+        }
+        
+        $this->AddCheckers( 2, PlayerColor::Black, 1 );
+        $this->AddCheckers( 2, PlayerColor::White, 1 );
+        
+        $this->AddCheckers( 5, PlayerColor::Black, 12 );
+        $this->AddCheckers( 5, PlayerColor::White, 12 );
+        
+        $this->AddCheckers( 3, PlayerColor::Black, 17 );
+        $this->AddCheckers( 3, PlayerColor::White, 17 );
+        
+        $this->AddCheckers( 5, PlayerColor::Black, 19 );
+        $this->AddCheckers( 5, PlayerColor::White, 19 );
+        
+        // CloseToVictory();
+        // DebugBar();
+        //DebugBlocked();
+        // DebugBearingOff();
+        // AtHomeAndOtherAtBar();
+        // AtHomeAndOtherAtBar2();
+        // Test();
+        // LegalMove();
+    }
+    
     public function AddCheckers( int $count, PlayerColor $color, int $point ): void
     {
         $checker        = new Checker();
@@ -108,9 +136,9 @@ class BackgammonNormalGame extends Game
                 
             $bar->Checkers[]    = $hit;
             if ( $move->Color == PlayerColor::Black ) {
-                $this->WhitePlayer->PointsLeft += ( 25 - $move->To->WhiteNumber );
+                $this->WhitePlayer->PointsLeft += ( $move->To->WhiteNumber );
             } else {
-                $this->BlackPlayer->PointsLeft += ( 25 - $move->To->BlackNumber );
+                $this->BlackPlayer->PointsLeft += ( $move->To->BlackNumber );
             }
         }
             
@@ -143,9 +171,9 @@ class BackgammonNormalGame extends Game
             
             $bar->Checkers->removeElement( $hitChecker );
             if ( $move->Color == PlayerColor::Black ) {
-                $this->WhitePlayer->PointsLeft -= ( 25 - $move->To->WhiteNumber );
+                $this->WhitePlayer->PointsLeft -= ( $move->To->WhiteNumber );
             } else {
-                $this->BlackPlayer->PointsLeft -= ( 25 - $move->To->BlackNumber );
+                $this->BlackPlayer->PointsLeft -= ( $move->To->BlackNumber );
             }
         }
     }

@@ -8,14 +8,14 @@
         data-locale="{{ app.request.locale }}"
         data-mercureEventSource="{{ mercure( '/game-play' ) | escape( 'html_attr' ) }}"
     >
-        <app-backgammon-tapa></app-backgammon-tapa>
+        <app-backgammon></app-backgammon>
     </div>
 {% endblock %}
 
 {% block head_styles %}
     {{ parent() }}
 
-    {{ encore_entry_link_tags( 'js/backgammon-tapa', null, 'GameplatformVelzonsaasTheme' ) }}
+    {{ encore_entry_link_tags( 'js/backgammon', null, 'GameplatformVelzonsaasTheme' ) }}
 {% endblock %}
 
 {% block javascripts %}
@@ -26,5 +26,5 @@
         window.gamePlatformSettings = gamePlatformSettings;
     </script>
     
-    {{ encore_entry_script_tags( 'js/backgammon-tapa', null, 'GameplatformVelzonsaasTheme' ) }}
+    {{ encore_entry_script_tags( 'js/backgammon', null, 'GameplatformVelzonsaasTheme' ) }}
 {% endblock %}

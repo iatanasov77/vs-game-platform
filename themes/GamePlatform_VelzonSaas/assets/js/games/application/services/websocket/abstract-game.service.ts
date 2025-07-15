@@ -101,6 +101,12 @@ export abstract class AbstractGameService
             this.socket.close();
         }
         
+        const currentUrlparams = new URLSearchParams( window.location.search );
+        let variant = currentUrlparams.get( 'variant' );
+        if ( variant == null ) {
+            variant = 'normal';
+        }
+        
         let gameCookie  = this.cookieService.get( Keys.gameIdKey );
         let b64Cookie;
         if ( gameCookie ) {
@@ -113,8 +119,9 @@ export abstract class AbstractGameService
         const userId    = user ? user.id : '';
         const tree      = this.router.createUrlTree([], {
             queryParams: {
-                gameCode: window.gamePlatformSettings.gameSlug,
                 token: window.gamePlatformSettings.apiVerifySiganature,
+                gameCode: window.gamePlatformSettings.gameSlug,
+                gameVariant: variant,
                 gameCookie: b64Cookie,
                 
                 userId: userId,

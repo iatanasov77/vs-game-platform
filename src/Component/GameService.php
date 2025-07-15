@@ -83,6 +83,7 @@ class GameService
     public function Connect(
         WebsocketClientInterface $webSocket,
         string $gameCode,
+        string $gameVariant,
         int $userId,
         ?string $gameId,
         bool $playAi,
@@ -144,7 +145,7 @@ class GameService
         $manager = $managers->first();
         if ( $manager == null || $playAi ) {
             $this->logger->log( "Possibly Play AI !!!", 'GameService' );
-            $manager            = $this->managerFactory->createWebsocketGameManager( $forGold, $gameCode );
+            $manager            = $this->managerFactory->createWebsocketGameManager( $forGold, $gameCode, $gameVariant );
             $manager->Client1   = $webSocket;
             
             $manager->dispatchGameEnded();
@@ -250,7 +251,7 @@ class GameService
                 
                 $gameManager = $this->AllGames->filter(
                     function( $entry ) use ( $cookie ) {
-                        return $entry->Game->Id == $cookie->id && $entry->Game->PlayState == GameState::Ended;
+                        return $entry->Game->Id == $cookie->id && $entry->Game->PlayState == GameState::ended;
                     }
                 )->first();
                 
@@ -258,6 +259,7 @@ class GameService
                 {
                     $gameManager->Engine = AiEngineFactory::CreateBackgammonEngine(
                         $gameManager->GameCode,
+                        $gameManager->GameVariant,
                         $this->logger,
                         $gameManager->Game
                     );

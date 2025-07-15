@@ -179,7 +179,6 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         this.gameString$ = this.appStateService.gameString.observe();
         
         this.user$.subscribe( ( user ) => {
-            console.log( 'User', user );
             if ( user ) this.introMuted = user.muteIntro;
         });
         

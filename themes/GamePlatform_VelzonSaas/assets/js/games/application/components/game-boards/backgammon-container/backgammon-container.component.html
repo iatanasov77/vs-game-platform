@@ -21,16 +21,6 @@
           <span class="x-char">{{ introMuted ? '' : 'x' }}</span>
         </app-button>
     </div>
-  
-    <!-- Not Needed
-    <app-board-menu
-      class="app-menu"
-      (flip)="this.flipped = !this.flipped"
-      (resign)="resignGame()"
-    ></app-board-menu>
-    -->
-    
-    <app-invite-game></app-invite-game>
     
     <div
         *ngIf="(gameDto$ | async)?.isGoldGame && ! lobbyButtonsVisible"
@@ -112,15 +102,21 @@
         <app-board-buttons
             [isLoggedIn]="isLoggedIn"
             [lobbyButtonsVisible]="lobbyButtonsVisible"
+            [tutorial]="tutorial"
             
             [newVisible]="newVisible"
             [exitVisible]="exitVisible"
+            
+            (onLogin)="login()"
             (onNew)="newGame()"
             (onExit)="exitGame()"
-            (onResign)="resignGame()"
-            (onInviteFriend)="inviteFriend()"
-            (onLogin)="login()"
+            
             (onPlayGame)="playGame()"
+            (onInviteFriend)="inviteFriend()"
+            
+            (onRotate)="onRotated()"
+            (onFlip)="onFlipped()"
+            (onResign)="resignGame()"
         ></app-board-buttons>
     </div>
     

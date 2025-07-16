@@ -1,5 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
 
+import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 const { context } = require( '../context' );
 
@@ -22,23 +23,11 @@ export class GamePlayService
     url: string;
     
     constructor(
+        @Inject( Router ) private router: Router,
         @Inject( HttpClient ) private httpClient: HttpClient,
         @Inject( AuthService ) private authService: AuthService,
     ) {
         this.url    = `${context.backendURL}`;
-    }
-    
-    /**
-     * @NOTE This NOT Work Here Because Game Service is Different Instance in API Application From GamePlatform Application
-     */
-    startPlayGame( gameId: string ): Observable<IGamePlay>
-    {
-        const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
-        var url         = `${this.url}/select-game-room/${gameId}`;
-        
-        return this.httpClient.get<IGamePlay>( url, {headers} ).pipe(
-            map( ( response: any ) => this.mapGamePlay( response ) )
-        );
     }
     
     selectGameRoom( inputProps: any ): Observable<IGame>
@@ -50,7 +39,7 @@ export class GamePlayService
         })));
     }
     
-    startGame( game: any ): Observable<IGamePlay>
+    startCardGame( game: any ): Observable<IGamePlay>
     {
         if ( ! game ) {
             return new Observable;
@@ -72,7 +61,7 @@ export class GamePlayService
         return new Observable;
     }
     
-    finishGame( gamePlay: any ): Observable<IGamePlay>
+    finishCardGame( gamePlay: any ): Observable<IGamePlay>
     {
         if ( ! gamePlay ) {
             return new Observable;
@@ -84,6 +73,27 @@ export class GamePlayService
         return this.httpClient.post<IGamePlay>( url, {game_room: gamePlay.room.id}, {headers} ).pipe(
             map( ( response: any ) => this.mapGamePlay( response ) )
         );
+    }
+    
+    startBoardGame( variant: string ): void
+    {
+        const currentUrlparams = new URLSearchParams( window.location.search );
+        let urlVariant = currentUrlparams.get( 'variant' );
+        if ( urlVariant == null ) {
+            urlVariant = variant;
+        }
+        
+        const urlTree = this.router.createUrlTree([], {
+            queryParams: { variant: urlVariant, playAi: false, forGold: true },
+            queryParamsHandling: "merge",
+            preserveFragment: true
+        });
+        this.router.navigateByUrl( urlTree );
+    }
+    
+    exitBoardGame( game: string ): void
+    {
+    
     }
     
     createInvite(): Observable<InviteResponseDto>

@@ -1,6 +1,5 @@
 import { Component, Inject, OnInit, OnChanges, SimpleChanges, EventEmitter, Input, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 
 import { Keys } from '../../../../utils/keys';
@@ -46,7 +45,6 @@ export class BoardButtonsComponent implements OnInit, OnChanges
     
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,
-        @Inject( Router ) private router: Router,
         @Inject( AppStateService ) private appState: AppStateService
     ) {
         this.user$ = this.appState.user.observe();
@@ -98,37 +96,11 @@ export class BoardButtonsComponent implements OnInit, OnChanges
     
     exitGame(): void
     {
-        const currentUrlparams = new URLSearchParams( window.location.search );
-        let variant = currentUrlparams.get( 'variant' );
-        if ( variant == null ) {
-            variant = 'normal';
-        }
-        
-        const urlTree = this.router.createUrlTree([], {
-            queryParams: { variant: variant, playAi: null, forGold: null },
-            queryParamsHandling: "merge",
-            preserveFragment: true
-        });
-        this.router.navigateByUrl( urlTree );
-        
         this.onExit.emit();
     }
     
     playGame(): void
     {
-        const currentUrlparams = new URLSearchParams( window.location.search );
-        let variant = currentUrlparams.get( 'variant' );
-        if ( variant == null ) {
-            variant = 'normal';
-        }
-        
-        const urlTree = this.router.createUrlTree([], {
-            queryParams: { variant: variant, playAi: false, forGold: true },
-            queryParamsHandling: "merge",
-            preserveFragment: true
-        });
-        this.router.navigateByUrl( urlTree );
-        
         this.onPlayGame.emit();
     }
     

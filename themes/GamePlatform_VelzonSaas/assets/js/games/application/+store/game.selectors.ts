@@ -36,7 +36,7 @@ export const selectGameRoom           = createSelector(
     ( s: GameState ) => s?.game
 );
 
-export const runStartGame           = createSelector(
+export const runStartCardGame           = createSelector(
     mainSelector,
     ( s: GameState ) => s?.gamePlay
 );

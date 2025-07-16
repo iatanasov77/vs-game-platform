@@ -21,11 +21,9 @@ import {
     selectGameRoomFailure,
     selectGameRoomSuccess,
     
-    startGame,
-    startGameFailure,
-    startGameSuccess,
-    
-    playGame,
+    startCardGame,
+    startCardGameFailure,
+    startCardGameSuccess,
     
     playerAnnounce,
     playerAnnounceFailure,
@@ -124,13 +122,13 @@ export class GameEffects
         )
     );
     
-    startGame = createEffect( (): any =>
+    startCardGame = createEffect( (): any =>
         this.actions$.pipe(
-            ofType( startGame ),
+            ofType( startCardGame ),
             switchMap( ( { game } ) =>
-                this.gamePlayService.startGame( game ).pipe(
-                    map( ( gamePlay: IGamePlay ) => startGameSuccess( { gamePlay } ) ),
-                    catchError( error => [startGameFailure( { error } )] )
+                this.gamePlayService.startCardGame( game ).pipe(
+                    map( ( gamePlay: IGamePlay ) => startCardGameSuccess( { gamePlay } ) ),
+                    catchError( error => [startCardGameFailure( { error } )] )
                 )
             )
         )

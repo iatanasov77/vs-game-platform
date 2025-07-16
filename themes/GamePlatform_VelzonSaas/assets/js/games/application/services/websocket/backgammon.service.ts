@@ -220,6 +220,8 @@ export class BackgammonService extends AbstractGameService
                 //console.log( 'WebSocket Action Game Restore', action.actionName );
                 
                 const dto = JSON.parse( message.data ) as GameRestoreActionDto;
+                console.log( 'WebSocket Action Game Restore', dto );
+                
                 this.appState.myColor.setValue( dto.color );
                 this.appState.game.setValue( dto.game );
                 this.appState.dices.setValue( dto.dices );

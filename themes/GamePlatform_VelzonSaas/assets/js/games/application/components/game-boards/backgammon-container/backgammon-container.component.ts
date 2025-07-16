@@ -13,14 +13,12 @@ import {
     HostListener
 } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Observable, Subscription, of, map, tap } from 'rxjs';
+import { Observable, Subscription, map } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
-import { loginBySignatureSuccess } from '../../../+store/login.actions';
 import {
     selectGameRoom,
     selectGameRoomSuccess,
-    startGameSuccess,
     loadGameRooms
 } from '../../../+store/game.actions';
 import { GameState as MyGameState } from '../../../+store/game.reducers';
@@ -234,7 +232,6 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         });
         
         this.gameDto$.subscribe( res => {
-            //console.log( res );
             this.gameDto = res;
         });
         
@@ -269,10 +266,6 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
             }
             
             this.isRoomSelected = true;
-        });
-        
-        this.actions$.pipe( ofType( startGameSuccess ) ).subscribe( () => {
-            this.store.dispatch( loadGameRooms() );
         });
     }
     
@@ -400,6 +393,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
                 clearTimeout( this.startedHandle );
                 this.started = true;
                 this.playAiQuestion = false;
+                this.lobbyButtonsVisible = false;
             }
             
             if ( dto.isGoldGame ) this.sound.playCoin();
@@ -761,6 +755,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         const myColor   = this.appStateService.myColor.getValue();
         //console.log( 'GameDto Object: ', game );
         
+        this.gamePlayService.startBoardGame( 'normal' );
         this.wsService.startGamePlay( game, myColor, this.playAiFlag, this.forGoldFlag );
         
         this.waitForOpponent();

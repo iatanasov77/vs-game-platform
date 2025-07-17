@@ -91,9 +91,20 @@ export class GamePlayService
         this.router.navigateByUrl( urlTree );
     }
     
-    exitBoardGame( game: string ): void
+    exitBoardGame(): void
     {
-    
+        const currentUrlparams = new URLSearchParams( window.location.search );
+        let urlVariant = currentUrlparams.get( 'variant' );
+        if ( urlVariant == null ) {
+            return;
+        }
+        
+        const urlTree = this.router.createUrlTree([], {
+            queryParams: { variant: urlVariant, playAi: null, forGold: null },
+            queryParamsHandling: "merge",
+            preserveFragment: true
+        });
+        this.router.navigateByUrl( urlTree );
     }
     
     createInvite(): Observable<InviteResponseDto>

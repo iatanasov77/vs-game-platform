@@ -2,11 +2,26 @@
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+
 use App\Component\Type\PlayerColor;
+use App\Component\GameService;
 use App\Component\Manager\AbstractGameManager;
 
 trait Helper
 {
+    protected function orderAllGames( GameService $service, string $direction ): Collection
+    {
+        $gamesIterator  = $this->AllGames->getIterator();
+        $gamesIterator->uasort( function ( $a, $b ) use ( $direction ) {
+            return $direction == AbstractGameManager::COLLECTION_ORDER_ASC ?
+                $a->Created <=> $b->Created :
+                $b->Created <=> $a->Created
+            ;
+        });
+            
+        return new ArrayCollection( \iterator_to_array( $gamesIterator ) );
+    }
+    
     protected function getPointsForPlayer( PlayerColor $currentPlayer, Game $game ): Collection
     {
         //$this->logger->debug( $game->Points , 'BeforeFilteringPoints.txt' );
@@ -60,7 +75,7 @@ trait Helper
     protected function getMovesOrdered( Collection $moves, string $direction ): Collection
     {
         $movesIterator  = $moves->getIterator();
-        $movesIterator->uasort( function ( $a, $b ) {
+        $movesIterator->uasort( function ( $a, $b ) use ( $direction ) {
             return $direction == AbstractGameManager::COLLECTION_ORDER_ASC ?
                 $a->Value <=> $b->Value :
                 $b->Value <=> $a->Value

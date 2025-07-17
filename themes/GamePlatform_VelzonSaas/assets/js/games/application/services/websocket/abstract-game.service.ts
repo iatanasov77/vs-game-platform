@@ -259,15 +259,17 @@ export abstract class AbstractGameService
     
     startGamePlay( game: GameDto, myColor: PlayerColor, playAi: boolean, forGold: boolean ): void
     {
+        /*
         if ( ! this.socket || this.socket.readyState !== this.socket.OPEN ) {
             this.connect( '', playAi, forGold );
         }
+        */
         
         /**
          * Delete Cookie on Every Browser Refresh,
          * May be later this should on DEV Environement Only.
          */
-        this.cookieService.deleteAll( Keys.gameIdKey );
+        //this.cookieService.deleteAll( Keys.gameIdKey );
         
         const action: StartGamePlayActionDto = {
             actionName: ActionNames.startGamePlay,

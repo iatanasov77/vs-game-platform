@@ -16,7 +16,7 @@ class MovesMadeActionDtoDenormalizer implements DenormalizerInterface, Denormali
 {
     use DenormalizerAwareTrait;
     
-    public function denormalize( mixed $data, string $type, ?string $format = null, array $context = [] )
+    public function denormalize( mixed $data, string $type, ?string $format = null, array $context = [] ): mixed
     {
         $moves      = \array_map(
             fn( $move ) => $this->denormalizer->denormalize( $move, MoveDto::class ),

@@ -35,12 +35,12 @@
         <!--
          -- Backgammon Menu Buttons
         -->
-        <button class="red-button smaller" (click)="rotateClick()" *ngIf="! tutorial">
+        <button class="red-button" (click)="rotateClick()" *ngIf="! tutorial">
             <i class="fas fa-sync"></i>
             {{ 'menu.rotate' | translate }}
         </button>
         
-        <button class="red-button smaller" (click)="flipClick()" *ngIf="! tutorial">
+        <button class="red-button" (click)="flipClick()" *ngIf="! tutorial">
             <i class="fas fa-arrow-up"></i>
             {{ 'menu.flip' | translate }}
         </button>
@@ -51,7 +51,7 @@
         </button>
         -->
         
-        <button class="red-button smaller" (click)="resignClick()" *ngIf="! tutorial">
+        <button class="red-button" (click)="resignClick()" *ngIf="! tutorial">
             <i class="fas fa-flag"></i>
             {{ 'menu.resign' | translate }}
         </button>

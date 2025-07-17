@@ -17,7 +17,7 @@ class MoveDtoDenormalizer implements DenormalizerInterface, DenormalizerAwareInt
 {
     use DenormalizerAwareTrait;
     
-    public function denormalize( mixed $data, string $type, ?string $format = null, array $context = [] )
+    public function denormalize( mixed $data, string $type, ?string $format = null, array $context = [] ): mixed
     {
         $dto        = new MoveDto();
         

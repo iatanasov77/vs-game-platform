@@ -8,10 +8,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
+use Ratchet\RFC6455\Messaging\Frame;
 use Vankosoft\UsersBundle\Security\SecurityBridge;
 
 use App\Component\Manager\GameManagerInterface;
 use App\Component\Manager\GameManagerFactory;
+use App\Component\Manager\AbstractGameManager;
 use App\Component\AI\Backgammon\EngineFactory as AiEngineFactory;
 use App\Component\System\Guid;
 
@@ -20,6 +22,7 @@ use App\Component\Dto\GameCookieDto;
 use App\Component\Dto\Actions\ConnectionInfoActionDto;
 use App\Component\Dto\ConnectionDto;
 
+use App\Component\Rules\Backgammon\Helper as GameHelper;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerColor;
 use App\Component\Websocket\Client\WebsocketClientInterface;
@@ -28,6 +31,8 @@ use App\Entity\GamePlayer;
 
 class GameService
 {
+    use GameHelper;
+    
     /** @var GameLogger */
     protected $logger;
     
@@ -121,7 +126,7 @@ class GameService
         //todo: pair with someone equal ranking?
         
         // Search any game, oldest first.
-        $managers = $this->orderAllGames()->filter(
+        $managers = $this->orderAllGames( $this, AbstractGameManager::COLLECTION_ORDER_DESC )->filter(
             function( $entry ) {
                 return ( $entry->Client2 == null || $entry->Client1 == null ) && $entry->SearchingOpponent;
             }
@@ -147,6 +152,7 @@ class GameService
         if ( $manager == null || $playAi ) {
             $this->logger->log( "Possibly Play AI !!!", 'GameService' );
             $manager            = $this->managerFactory->createWebsocketGameManager( $forGold, $gameCode, $gameVariant );
+            //manager.Ended += Game_Ended;
             $manager->Client1   = $webSocket;
             
             $manager->dispatchGameEnded();
@@ -233,6 +239,19 @@ class GameService
         return $manager->Game->Id;
     }
     
+    public function Game_Ended( GameManagerInterface $sender ): void
+    {
+        if ( $sender->Client1 ) {
+            $sender->Client1->close( Frame::CLOSE_NORMAL );
+        }
+        
+        if ( $sender->Client2 ) {
+            $sender->Client2->close( Frame::CLOSE_NORMAL );
+        }
+        
+        $this->AllGames->removeElement( $sender );
+    }
+    
     protected function TryReConnect( WebsocketClientInterface $webSocket, ?string $gameCookie, ?GamePlayer $dbUser ): ?string
     {
         $this->logger->log( 'Try Reconnect with cookie: '. $gameCookie, 'GameService' );
@@ -255,8 +274,8 @@ class GameService
                     }
                 )->first();
                 
-                //$json = $this->serializer->serialize( $gameManager, JsonEncoder::FORMAT );
-                //$this->logger->log( "Found ReConnect GmeManager: {$json}", 'GameService' );
+                $json = $this->serializer->serialize( $gameManager, JsonEncoder::FORMAT );
+                $this->logger->log( "Found ReConnect GmeManager: {$json}", 'GameService' );
                 
                 if ( $gameManager && self::MyColor( $gameManager, $dbUser, $color ) ) {
                     $gameManager->Engine = AiEngineFactory::CreateBackgammonEngine(
@@ -366,23 +385,8 @@ class GameService
         return $dbUser != null && $dbUser->getId() == $player->Id;
     }
     
-    protected function Game_Ended( object $sender ): void
-    {
-        $this->AllGames->removeElement( $sender );
-    }
-    
     protected function GetDbUser( $userId ): ?UserInterface
     {
         return $userId ? $this->usersRepository->find( $userId ) : $this->securityBridge->getUser();
-    }
-    
-    protected function orderAllGames(): Collection
-    {
-        $gamesIterator  = $this->AllGames->getIterator();
-        $gamesIterator->uasort( function ( $a, $b ) {
-            return $a->Created <=> $b->Created;
-        });
-            
-        return new ArrayCollection( \iterator_to_array( $gamesIterator ) );
     }
 }

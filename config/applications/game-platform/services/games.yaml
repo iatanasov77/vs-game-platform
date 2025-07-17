@@ -119,6 +119,12 @@ services:
             - '@vsapp.repository.temp_players'
             - '@vsapp.factory.temp_players'
     
+    app_games_event_listener:
+        class: App\EventListener\GamesEventListener
+        arguments:
+            - '@app_game_logger'
+            - '@app_game_service'
+    
     ##############################################################
     # Game Rules
     ##############################################################

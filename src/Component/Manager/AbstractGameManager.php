@@ -44,10 +44,8 @@ use App\Component\Dto\Actions\StartGamePlayActionDto;
 use App\Component\Dto\Actions\GamePlayStartedActionDto;
 use App\Component\Dto\Actions\HintMovesActionDto;
 
-// Serializer Denormalizers
-use App\Component\Serializer\Normalizer\MovesMadeActionDtoDenormalizer;
-
 use App\Entity\GamePlayer;
+use App\EventListener\Event\GameEndedEvent;
 
 /**
  * See Logs:        sudo tail -f /dev/shm/game-platform.lh/game-platform/log/websocket.log
@@ -117,10 +115,10 @@ abstract class AbstractGameManager implements GameManagerInterface
     /** @var bool */
     public $SearchingOpponent;
     
-    /** @var WebSocket */
+    /** @var WebsocketClientInterface */
     public $Client1;
     
-    /** @var WebSocket */
+    /** @var WebsocketClientInterface */
     public $Client2;
     
     /** @var string */
@@ -176,20 +174,20 @@ abstract class AbstractGameManager implements GameManagerInterface
         $this->logger   = $logger;
     }
     
-    public function getClient( $clientId ): mixed
+    public function getClient( $clientId ): ?WebsocketClientInterface
     {
-        if ( $this->Client1->getClientId() == $clientId ) {
+        if ( $this->Client1 && $this->Client1->getClientId() == $clientId ) {
             $this->logger->log( 'GameManager Websocket Client 1 Found !!!', 'GameManager' );
             return $this->Client1;
         }
         
-        if ( $this->Client2->getClientId() == $clientId ) {
+        if ( $this->Client2 && $this->Client2->getClientId() == $clientId ) {
             $this->logger->log( 'GameManager Websocket Client 2 Found !!!', 'GameManager' );
             return $this->Client2;
         }
         
         $this->logger->log( 'GameManager Websocket Client Not Found !!!', 'GameManager' );
-        throw new \RuntimeException( 'GameManager Websocket Client Not Found !!!' );
+        return null;
     }
     
     public function getPlayerPhotoUrl( GamePlayer $player ): ? string
@@ -208,7 +206,7 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     public function dispatchGameEnded(): void
     {
-        //$this->eventDispatcher->dispatch( new GameEndedEvent( Mapper::GameToDto( $this->Game ) ), GameEndedEvent::NAME );
+        $this->eventDispatcher->dispatch( new GameEndedEvent( $this ), GameEndedEvent::NAME );
     }
     
     public function Restore( PlayerColor $color, WebsocketClientInterface $socket ): void
@@ -470,7 +468,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         
         $newScore = $this->SaveWinner( $winner );
         $this->SendWinner( $winner, $newScore );
-        //$this->eventDispatcher->dispatch( new GameEndedEvent( Mapper::GameToDto( $this->Game ) ), GameEndedEvent::NAME );
+        $this->dispatchGameEnded();
     }
     
     protected function SendNewRoll(): void
@@ -752,11 +750,15 @@ abstract class AbstractGameManager implements GameManagerInterface
     protected function CloseConnections( WebsocketClientInterface $socket )
     {
         if ( $socket != null ) {
-            $this->logger->log( "Closing client", 'GameManager' );
-            //await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Game aborted by client", CancellationToken.None);
-            
+            $this->logger->log( "Closing client", 'ExitGame' );
             $socket->close( Frame::CLOSE_NORMAL );
-            //$socket->close( Frame::CLOSE_GOING_AWAY );
+            
+            // Dispose Websocket
+            if ( $socket == $this->Client1 ) {
+                $this->Client1 = null;
+            } else {
+                $this->Client2 = null;
+            }
         }
     }
     

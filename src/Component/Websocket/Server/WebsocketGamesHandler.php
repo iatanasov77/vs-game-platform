@@ -107,6 +107,9 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         
         $gameManager    = $this->gameService->getGameManager( $this->games[$from->resourceId] );
         $socket         = $gameManager->getClient( $from->resourceId );
+        if ( ! $socket ) {
+            return;
+        }
         
         $action         = $this->serializer->deserialize( $msg, ActionDto::class, JsonEncoder::FORMAT );
         $this->logger->log( "Recieved Action: " . $action->actionName, 'GameServer' );
@@ -129,6 +132,9 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         
         $gameManager    = $this->gameService->getGameManager( $this->games[$conn->resourceId] );
         $socket         = $gameManager->getClient( $conn->resourceId );
+        if ( ! $socket ) {
+            return;
+        }
         $socket->State  = WebSocketState::Closed;
         
         /** @var int $sequenceId */

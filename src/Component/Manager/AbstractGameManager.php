@@ -731,16 +731,20 @@ abstract class AbstractGameManager implements GameManagerInterface
     protected function ReturnStakes(): void
     {
         $em     = $this->doctrine->getManager();
+        
+        //$this->logger->log( "Resign White Player: " . $this->Game->WhitePlayer, 'EndGame' );
         $black  = $this->playersRepository->find( $this->Game->BlackPlayer->Id );
-        $white  = $this->playersRepository->find( $this->Game->WhitePlayer->Id );
+        $white  = $this->Game->WhitePlayer && $this->Game->WhitePlayer->Id ?
+                    $this->playersRepository->find( $this->Game->WhitePlayer->Id ) :
+                    null;
         
         if ( ! $this->IsAi( $black->getGuid() ) ) {
-            $black->Gold += $this->Game->Stake / 2;
+            $black->setGold( $black->getGold() + $this->Game->Stake / 2 );
             $em->persist( $black );
         }
         
-        if ( ! $this->IsAi( $white->getGuid() ) ) {
-            $white->Gold += $this->Game->Stake / 2;
+        if ( $white && ! $this->IsAi( $white->getGuid() ) ) {
+            $white->setGold( $white->getGold() + $this->Game->Stake / 2 );
             $em->persist( $white );
         }
             

@@ -206,7 +206,7 @@ final class WebsocketGamesHandler implements MessageComponentInterface
                 $this->logger->log( "Game Cookie: ". $gameCookie, 'GameServer' );
             }
             
-            //$this->logger->log( "Game Code: ". $gameCode, 'GameServer' );
+            $this->logger->log( "Game Code: ". $gameCode, 'GameServer' );
             //$this->logger->log( "Game Id: ". $gameId, 'GameServer' );
             //$this->logger->log( "Play AI: ". $playAi, 'GameServer' );
             

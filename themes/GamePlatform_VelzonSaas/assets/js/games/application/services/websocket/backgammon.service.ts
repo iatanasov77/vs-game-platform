@@ -40,9 +40,6 @@ import { Keys } from '../../utils/keys';
 })
 export class BackgammonService extends AbstractGameService
 {
-    userMoves: MoveDto[] = [];
-    dicesHistory: DiceDto[][] = [];
-    
     constructor(
         @Inject( Injector ) private injector: Injector,
     ) {
@@ -91,7 +88,7 @@ export class BackgammonService extends AbstractGameService
             }
             case ActionNames.dicesRolled: {
                 const dicesAction = JSON.parse( message.data ) as DicesRolledActionDto;
-                //console.log( 'Dices Rolled Action' + new Date().toLocaleTimeString(), dicesAction );
+                console.log( 'Dices Rolled Action' + new Date().toLocaleTimeString(), dicesAction );
                 
                 this.appState.dices.setValue( dicesAction.dices );
                 const cGame = {

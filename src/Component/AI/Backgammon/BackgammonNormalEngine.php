@@ -9,7 +9,7 @@ use App\Component\Manager\AbstractGameManager;
 
 class BackgammonNormalEngine extends Engine
 {
-    protected function _GenerateMovesSequence( Collection &$sequences, Collection $moves, int $diceIndex, Game $game ): void
+    protected function _GenerateMovesSequence( Collection &$sequences, Collection &$moves, int $diceIndex, Game $game ): void
     {
         $current = $game->CurrentPlayer;
         $bar = $game->Bars[$current->value];
@@ -51,7 +51,7 @@ class BackgammonNormalEngine extends Engine
                 $move->To = $toPoint;
                 
                 //copy and make a new list for first dice
-                if ( ! isset( $moves[$diceIndex] ) || $moves[$diceIndex] == null ) {
+                if ( ! isset( $moves[$diceIndex] ) || $moves[$diceIndex]->isNull() ) {
                     $moves[$diceIndex] = $move;
                 } else { // a move is already generated for this dice in this sequence. branch off a new.
                     $newMoves = new ArrayCollection();
@@ -103,7 +103,7 @@ class BackgammonNormalEngine extends Engine
                     $move->From = $fromPoint;
                     $move->To = $toPoint;
                     
-                    if ( isset( $moves[$diceIndex] ) && $moves[$diceIndex] == null ) {
+                    if ( isset( $moves[$diceIndex] ) && $moves[$diceIndex]->isNull() ) {
                         $moves[$diceIndex] = $move;
                     } else {
                         $newMoves = $moves;

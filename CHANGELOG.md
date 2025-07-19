@@ -1,3 +1,15 @@
+0.15.2	|	Release date: **19.07.2025**
+============================================
+* Bug-Fixes and Improvements:
+  - Move Backgammon Menu and Invite Game Buttons into BoardButtonsComponent .
+  - Fix Game Restore From Cookie.
+  - Try to Create an Exit Game Action.
+  - Fix and Improve Backgammon Board Actions.
+  - Fix and Improve Generationg Engine Moves Sequences.
+  - Make AI Engine Websocket Messages Async.
+  - Fixing Ending a Game.
+
+
 0.15.1	|	Release date: **15.07.2025**
 ============================================
 * New Features:

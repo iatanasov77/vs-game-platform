@@ -170,6 +170,7 @@ class GameService
             
         } else {
             $manager->SearchingOpponent = false;
+            $gameGuid                   =  $manager->Game->Id;
             
             $this->logger->log( "Found a game and added a second player. Game id {$manager->Game->Id}", 'GameService' );
             $color = $manager->Client1 == null ? PlayerColor::Black : PlayerColor::White;

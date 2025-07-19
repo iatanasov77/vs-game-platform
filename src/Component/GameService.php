@@ -232,6 +232,7 @@ class GameService
             
         $manager    = $this->managerFactory->createWebsocketGameManager( true, $gameCode );
         //$manager.Ended += Game_Ended;
+        $manager->dispatchGameEnded();
         $manager->Inviter = $userId;
         $manager->SearchingOpponent = false;
         $this->AllGames[]   = $manager;
@@ -241,14 +242,6 @@ class GameService
     
     public function Game_Ended( GameManagerInterface $sender ): void
     {
-        if ( $sender->Client1 ) {
-            $sender->Client1->close( Frame::CLOSE_NORMAL );
-        }
-        
-        if ( $sender->Client2 ) {
-            $sender->Client2->close( Frame::CLOSE_NORMAL );
-        }
-        
         $this->AllGames->removeElement( $sender );
     }
     

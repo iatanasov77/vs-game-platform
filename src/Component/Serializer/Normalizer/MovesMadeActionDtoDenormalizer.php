@@ -29,7 +29,7 @@ class MovesMadeActionDtoDenormalizer implements DenormalizerInterface, Denormali
         return $dto;
     }
     
-    public function supportsDenormalization( mixed $data, string $type, ?string $format = null )
+    public function supportsDenormalization( mixed $data, string $type, ?string $format = null, array $context = [] ): bool
     {
         return $type === MovesMadeActionDto::class;
     }

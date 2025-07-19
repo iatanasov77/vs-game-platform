@@ -472,7 +472,6 @@ abstract class AbstractGameManager implements GameManagerInterface
         
         $newScore = $this->SaveWinner( $winner );
         $this->SendWinner( $winner, $newScore );
-        $this->dispatchGameEnded();
     }
     
     protected function SendNewRoll(): void

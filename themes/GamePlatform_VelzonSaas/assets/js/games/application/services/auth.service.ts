@@ -101,7 +101,7 @@ export class AuthService
     }
     
     loginBySignature( apiVerifySiganature: string ): Observable<IAuth>
-    {alert( apiVerifySiganature );
+    {
         var url = `${this.url}/login-by-signature/${apiVerifySiganature}`;
         
         return this.httpClient.get<ISignedUrlResponse>( url ).pipe(

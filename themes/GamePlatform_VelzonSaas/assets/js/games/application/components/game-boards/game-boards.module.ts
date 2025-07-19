@@ -11,12 +11,10 @@ import { CardGameBoardComponent } from './card-game-board/card-game-board.compon
 import { GameStartComponent } from './board-actions/game-start/game-start.component';
 import { CardGameAnnounceComponent } from './board-actions/card-game-announce/card-game-announce.component';
 
-import { InviteGameComponent } from './invite-game/invite-game.component';
 import { BackgammonContainerComponent } from './backgammon-container/backgammon-container.component';
 import { BackgammonBoardComponent } from './backgammon-board/backgammon-board.component';
 import { BackgammonBoardButtonsComponent } from './board-actions/backgammon-board-buttons/backgammon-board-buttons.component';
 import { DicesComponent } from './dices/dices.component';
-import { BoardMenuComponent } from './board-actions/board-menu/board-menu.component';
 import { BoardButtonsComponent } from './board-actions/board-buttons/board-buttons.component';
 import { BoardPlayerComponent } from './board-player/board-player.component';
 import { BackgammonVariantsComponent } from './game-variants/backgammon/backgammon-variants.component';
@@ -27,12 +25,10 @@ import { BackgammonVariantsComponent } from './game-variants/backgammon/backgamm
         CardGameBoardComponent,
         GameStartComponent,
         CardGameAnnounceComponent,
-        InviteGameComponent,
         BackgammonContainerComponent,
         BackgammonBoardComponent,
         BackgammonBoardButtonsComponent,
         DicesComponent,
-        //BoardMenuComponent,
         BoardButtonsComponent,
         BoardPlayerComponent,
         BackgammonVariantsComponent
@@ -50,12 +46,10 @@ import { BackgammonVariantsComponent } from './game-variants/backgammon/backgamm
         CardGameBoardComponent,
         GameStartComponent,
         CardGameAnnounceComponent,
-        InviteGameComponent,
         BackgammonContainerComponent,
         BackgammonBoardComponent,
         BackgammonBoardButtonsComponent,
         DicesComponent,
-        //BoardMenuComponent,
         BoardButtonsComponent,
         BoardPlayerComponent,
         BackgammonVariantsComponent

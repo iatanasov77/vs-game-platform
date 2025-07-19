@@ -3,17 +3,27 @@
         {{ 'dialogs.login' | translate }}
     </a>
     
+    <!--
+     -- Backgammon Lobby Buttons
+    -->
     <ng-container *ngIf="lobbyButtonsVisible">
-        <button *ngIf="isLoggedIn" (click)="playGame()" class="default-button">
+        <button *ngIf="isLoggedIn && ! acceptInviteVisible" (click)="playGame()" class="default-button">
             {{ 'game_board.play_game' | translate }}
         </button>
         
-        <button *ngIf="isLoggedIn" (click)="inviteFriendClick()" class="default-button">
+        <button *ngIf="isLoggedIn && ! acceptInviteVisible" (click)="inviteFriendClick()" class="default-button">
             {{ 'game_board.invite_friend' | translate }}
+        </button>
+        
+        <button *ngIf="isLoggedIn && acceptInviteVisible" (click)="startInvitedGame(inviteId)" class="default-button">
+            {{ 'logincontainer.accept' | translate }}
         </button>
     </ng-container>
     
     <ng-container *ngIf="! lobbyButtonsVisible">
+        <!--
+         -- Backgammon Board Buttons
+        -->
         <button (click)="newGame()" *ngIf="newVisible" class="default-button">
             {{ 'game_board.new_game' | translate }}
         </button>
@@ -22,8 +32,28 @@
             {{ 'game_board.exit_game' | translate }}
         </button>
         
-        <button (click)="resign()" *ngIf="acceptDoublingVisible" class="red-button smaller">
-            {{ 'game_board.resign' | translate }}
+        <!--
+         -- Backgammon Menu Buttons
+        -->
+        <button class="red-button" (click)="rotateClick()" *ngIf="! tutorial">
+            <i class="fas fa-sync"></i>
+            {{ 'menu.rotate' | translate }}
+        </button>
+        
+        <button class="red-button" (click)="flipClick()" *ngIf="! tutorial">
+            <i class="fas fa-arrow-up"></i>
+            {{ 'menu.flip' | translate }}
+        </button>
+        
+        <!--
+        <button class="red-button smaller" *ngIf="! tutorial">
+            Change theme
+        </button>
+        -->
+        
+        <button class="red-button" (click)="resignClick()" *ngIf="! tutorial">
+            <i class="fas fa-flag"></i>
+            {{ 'menu.resign' | translate }}
         </button>
     </ng-container>
 </div>

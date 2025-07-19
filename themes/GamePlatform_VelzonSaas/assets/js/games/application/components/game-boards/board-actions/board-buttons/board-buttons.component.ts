@@ -1,6 +1,10 @@
-import { Component, Inject, OnChanges, SimpleChanges, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Inject, OnInit, OnChanges, SimpleChanges, EventEmitter, Input, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
+
+import { Keys } from '../../../../utils/keys';
+import { AppStateService } from '../../../../state/app-state.service';
+import UserDto from '_@/GamePlatform/Model/BoardGame/userDto';
 
 import cssString from './board-buttons.component.scss';
 import templateString from './board-buttons.component.html';
@@ -13,25 +17,50 @@ import templateString from './board-buttons.component.html';
         cssString || 'CSS Not Loaded !!!',
     ]
 })
-export class BoardButtonsComponent implements OnChanges
+export class BoardButtonsComponent implements OnInit, OnChanges
 {
     @Input() isLoggedIn: boolean        = false;
     @Input() lobbyButtonsVisible        = false;
+    @Input() tutorial                   = false;
     
     @Input() newVisible = false;
     @Input() exitVisible = false;
     
+    @Output() onLogin = new EventEmitter<void>();
+    
     @Output() onNew = new EventEmitter<void>();
     @Output() onExit = new EventEmitter<void>();
-    @Output() onResign = new EventEmitter<void>();
-    @Output() onInviteFriend = new EventEmitter<void>();
-    @Output() onLogin = new EventEmitter<void>();
+    
     @Output() onPlayGame = new EventEmitter<void>();
+    @Output() onInviteFriend = new EventEmitter<void>();
+    
+    @Output() onRotate = new EventEmitter<void>();
+    @Output() onFlip = new EventEmitter<void>();
+    @Output() onResign = new EventEmitter<void>();
+    
+    inviteId = '';
+    acceptInviteVisible: boolean = false;
+    
+    user$: Observable<UserDto>;
     
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,
-        @Inject( Router ) private router: Router
-    ) { }
+        @Inject( AppStateService ) private appState: AppStateService
+    ) {
+        this.user$ = this.appState.user.observe();
+    }
+    
+    ngOnInit(): void
+    {
+        this.inviteId = window.gamePlatformSettings.queryParams[
+            Keys.inviteId
+        ];
+        //alert( this.inviteId );
+        
+        this.user$.subscribe( ( user ) => {
+            if ( user && this.inviteId ) this.acceptInviteVisible = true;
+        });
+    }
     
     ngOnChanges( changes: SimpleChanges ): void
     {
@@ -55,6 +84,11 @@ export class BoardButtonsComponent implements OnChanges
         }
     }
     
+    loginClick(): void
+    {
+        this.onLogin.emit();
+    }
+    
     newGame(): void
     {
         this.onNew.emit();
@@ -62,42 +96,11 @@ export class BoardButtonsComponent implements OnChanges
     
     exitGame(): void
     {
-        const currentUrlparams = new URLSearchParams( window.location.search );
-        let variant = currentUrlparams.get( 'variant' );
-        if ( variant == null ) {
-            variant = 'normal';
-        }
-        
-        const urlTree = this.router.createUrlTree([], {
-            queryParams: { variant: variant, playAi: null, forGold: null },
-            queryParamsHandling: "merge",
-            preserveFragment: true
-        });
-        this.router.navigateByUrl( urlTree );
-        
         this.onExit.emit();
-    }
-    
-    resign(): void
-    {
-        this.onResign.emit();
     }
     
     playGame(): void
     {
-        const currentUrlparams = new URLSearchParams( window.location.search );
-        let variant = currentUrlparams.get( 'variant' );
-        if ( variant == null ) {
-            variant = 'normal';
-        }
-        
-        const urlTree = this.router.createUrlTree([], {
-            queryParams: { variant: variant, playAi: false, forGold: true },
-            queryParamsHandling: "merge",
-            preserveFragment: true
-        });
-        this.router.navigateByUrl( urlTree );
-        
         this.onPlayGame.emit();
     }
     
@@ -106,8 +109,28 @@ export class BoardButtonsComponent implements OnChanges
         this.onInviteFriend.emit();
     }
     
-    loginClick(): void
+    startInvitedGame( id: string ): void
     {
-        this.onLogin.emit();
+        //this.router.navigateByUrl( 'game?gameId=' + id );
+    }
+    
+    cancelInvite(): void
+    {
+        //this.router.navigateByUrl( 'lobby' );
+    }
+    
+    flipClick(): void
+    {
+        this.onFlip.emit();
+    }
+    
+    rotateClick(): void
+    {
+        this.onRotate.emit();
+    }
+    
+    resignClick(): void
+    {
+        this.onResign.emit();
     }
 }

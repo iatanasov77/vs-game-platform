@@ -26,15 +26,15 @@ const actionTypes = {
     selectGameRoomSuccess:      'SELECT_GAME_ROOM_SUCCESS',
     selectGameRoomFailure:      'SELECT_GAME_ROOM_FAILURE',
     
-    startGame:                  'START_GAME',
-    startGameSuccess:           'START_GAME_SUCCESS',
-    startGameFailure:           'START_GAME_FAILURE',
-    
-    playGame:                   'PLAY_GAME',
+    startCardGame:              'START_CARD_GAME',
+    startCardGameSuccess:       'START_CARD_GAME_SUCCESS',
+    startCardGameFailure:       'START_CARD_GAME_FAILURE',
     
     playerAnnounce:             'PLAYER_ANNOUNCE',
     playerAnnounceSuccess:      'PLAYER_ANNOUNCE_SUCCESS',
     playerAnnounceFailure:      'PLAYER_ANNOUNCE_FAILURE',
+    
+    playGame:                   'PLAY_GAME',
 };
 
 export const loadGame                   = createAction( actionTypes.loadGame, props<{ id: number }>() );
@@ -54,12 +54,12 @@ export const selectGameRoom             = createAction( actionTypes.selectGameRo
 export const selectGameRoomSuccess      = createAction( actionTypes.selectGameRoomSuccess, props<{ game: IGame }>() );
 export const selectGameRoomFailure      = createAction( actionTypes.selectGameRoomFailure, props<{ error: any }>() );
 
-export const startGame                  = createAction( actionTypes.startGame, props<{ game: any }>() );
-export const startGameSuccess           = createAction( actionTypes.startGameSuccess, props<{ gamePlay: IGamePlay }>() );
-export const startGameFailure           = createAction( actionTypes.startGameFailure, props<{ error: any }>() );
-
-export const playGame                   = createAction( actionTypes.playGame );
+export const startCardGame              = createAction( actionTypes.startCardGame, props<{ game: any }>() );
+export const startCardGameSuccess       = createAction( actionTypes.startCardGameSuccess, props<{ gamePlay: IGamePlay }>() );
+export const startCardGameFailure       = createAction( actionTypes.startCardGameFailure, props<{ error: any }>() );
 
 export const playerAnnounce             = createAction( actionTypes.playerAnnounce );
 export const playerAnnounceSuccess      = createAction( actionTypes.playerAnnounceSuccess, props<{ announce: ICardGameAnnounce }>() );
 export const playerAnnounceFailure      = createAction( actionTypes.playerAnnounceFailure, props<{ error: any }>() );
+
+export const playGame                   = createAction( actionTypes.playGame );

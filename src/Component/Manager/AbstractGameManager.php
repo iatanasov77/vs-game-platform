@@ -44,10 +44,8 @@ use App\Component\Dto\Actions\StartGamePlayActionDto;
 use App\Component\Dto\Actions\GamePlayStartedActionDto;
 use App\Component\Dto\Actions\HintMovesActionDto;
 
-// Serializer Denormalizers
-use App\Component\Serializer\Normalizer\MovesMadeActionDtoDenormalizer;
-
 use App\Entity\GamePlayer;
+use App\EventListener\Event\GameEndedEvent;
 
 /**
  * See Logs:        sudo tail -f /dev/shm/game-platform.lh/game-platform/log/websocket.log
@@ -117,10 +115,10 @@ abstract class AbstractGameManager implements GameManagerInterface
     /** @var bool */
     public $SearchingOpponent;
     
-    /** @var WebSocket */
+    /** @var WebsocketClientInterface */
     public $Client1;
     
-    /** @var WebSocket */
+    /** @var WebsocketClientInterface */
     public $Client2;
     
     /** @var string */
@@ -176,20 +174,20 @@ abstract class AbstractGameManager implements GameManagerInterface
         $this->logger   = $logger;
     }
     
-    public function getClient( $clientId ): mixed
+    public function getClient( $clientId ): ?WebsocketClientInterface
     {
-        if ( $this->Client1->getClientId() == $clientId ) {
+        if ( $this->Client1 && $this->Client1->getClientId() == $clientId ) {
             $this->logger->log( 'GameManager Websocket Client 1 Found !!!', 'GameManager' );
             return $this->Client1;
         }
         
-        if ( $this->Client2->getClientId() == $clientId ) {
+        if ( $this->Client2 && $this->Client2->getClientId() == $clientId ) {
             $this->logger->log( 'GameManager Websocket Client 2 Found !!!', 'GameManager' );
             return $this->Client2;
         }
         
         $this->logger->log( 'GameManager Websocket Client Not Found !!!', 'GameManager' );
-        throw new \RuntimeException( 'GameManager Websocket Client Not Found !!!' );
+        return null;
     }
     
     public function getPlayerPhotoUrl( GamePlayer $player ): ? string
@@ -208,7 +206,7 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     public function dispatchGameEnded(): void
     {
-        //$this->eventDispatcher->dispatch( new GameEndedEvent( Mapper::GameToDto( $this->Game ) ), GameEndedEvent::NAME );
+        $this->eventDispatcher->dispatch( new GameEndedEvent( $this ), GameEndedEvent::NAME );
     }
     
     public function Restore( PlayerColor $color, WebsocketClientInterface $socket ): void
@@ -397,7 +395,11 @@ abstract class AbstractGameManager implements GameManagerInterface
             $this->Send( $this->Client2, $rollAction );
         }
         
-        /* Create This on Frontend
+        /** 
+         * This Used to END Game When Player Not Create an Action in Game TotalThinkTime Seconds
+         * ------------------------------------------------------------------------------------------
+         * 
+         * Create This on Frontend
          * =========================
          * https://stackoverflow.com/questions/33185302/how-to-make-a-php-function-loop-every-5-seconds
          */
@@ -470,7 +472,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         
         $newScore = $this->SaveWinner( $winner );
         $this->SendWinner( $winner, $newScore );
-        //$this->eventDispatcher->dispatch( new GameEndedEvent( Mapper::GameToDto( $this->Game ) ), GameEndedEvent::NAME );
+        $this->dispatchGameEnded();
     }
     
     protected function SendNewRoll(): void
@@ -733,16 +735,20 @@ abstract class AbstractGameManager implements GameManagerInterface
     protected function ReturnStakes(): void
     {
         $em     = $this->doctrine->getManager();
+        
+        //$this->logger->log( "Resign White Player: " . $this->Game->WhitePlayer, 'EndGame' );
         $black  = $this->playersRepository->find( $this->Game->BlackPlayer->Id );
-        $white  = $this->playersRepository->find( $this->Game->WhitePlayer->Id );
+        $white  = $this->Game->WhitePlayer && $this->Game->WhitePlayer->Id ?
+                    $this->playersRepository->find( $this->Game->WhitePlayer->Id ) :
+                    null;
         
         if ( ! $this->IsAi( $black->getGuid() ) ) {
-            $black->Gold += $this->Game->Stake / 2;
+            $black->setGold( $black->getGold() + $this->Game->Stake / 2 );
             $em->persist( $black );
         }
         
-        if ( ! $this->IsAi( $white->getGuid() ) ) {
-            $white->Gold += $this->Game->Stake / 2;
+        if ( $white && ! $this->IsAi( $white->getGuid() ) ) {
+            $white->setGold( $white->getGold() + $this->Game->Stake / 2 );
             $em->persist( $white );
         }
             
@@ -752,11 +758,15 @@ abstract class AbstractGameManager implements GameManagerInterface
     protected function CloseConnections( WebsocketClientInterface $socket )
     {
         if ( $socket != null ) {
-            $this->logger->log( "Closing client", 'GameManager' );
-            //await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Game aborted by client", CancellationToken.None);
-            
+            $this->logger->log( "Closing client", 'ExitGame' );
             $socket->close( Frame::CLOSE_NORMAL );
-            //$socket->close( Frame::CLOSE_GOING_AWAY );
+            
+            // Dispose Websocket
+            if ( $socket == $this->Client1 ) {
+                $this->Client1 = null;
+            } else {
+                $this->Client2 = null;
+            }
         }
     }
     
@@ -820,8 +830,11 @@ abstract class AbstractGameManager implements GameManagerInterface
             $this->SendNewRoll();
             
             if ( $this->AisTurn() ) {
-                $this->logger->log( "NewTurn for AI", 'SwitchPlayer' );
-                $this->EnginMoves( $socket );
+                $promise = \React\Async\async( function () use ( $socket ) {
+                    $this->logger->log( "NewTurn for AI", 'SwitchPlayer' );
+                    $this->EnginMoves( $socket );
+                })();
+                \React\Async\await( $promise );
             }
         }
     }
@@ -836,9 +849,14 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     protected function EnginMoves( WebsocketClientInterface $client )
     {
-        \usleep( \rand( 700, 1200 ) * 1000 );
-        $action = new RolledActionDto();
-        $this->Send( $client, $action );
+        $promise = \React\Async\async( function () use ( $client ) {
+            $sleepMileseconds   = \rand( 700, 1200 );
+            \React\Async\delay( $sleepMileseconds / 1000 );
+            
+            $action = new RolledActionDto();
+            $this->Send( $client, $action );
+        })();
+        \React\Async\await( $promise );
         
         $moves = $this->Engine->GetBestMoves();
         $this->logger->log( 'EnginMoves: ' . print_r( $moves->toArray(), true ), 'EnginMoves' );
@@ -846,28 +864,37 @@ abstract class AbstractGameManager implements GameManagerInterface
         $noMoves = true;
         for ( $i = 0; $i < $moves->count(); $i++ ) {
             $move = $moves[$i];
-            if ( $move == null ) {
+            if ( $move->isNull() ) {
                 continue;
             }
             
-            \usleep( \rand( 700, 1200 ) * 1000 );
-            $moveDto = Mapper::MoveToDto( $move );
-            $moveDto->animate = true;
-            $dto = new OpponentMoveActionDto();
-            $dto->move = $moveDto;
-            $this->Game->MakeMove( $move );
-            if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {
-                $this->Game->BlackPlayer->FirstMoveMade = true;
-            } else {
-                $this->Game->WhitePlayer->FirstMoveMade = true;
-            }
+            $promise = \React\Async\async( function () use ( $client, $move, &$noMoves ) {
+                $sleepMileseconds   = \rand( 700, 1200 );
+                \React\Async\delay( $sleepMileseconds / 1000 );
                 
-            $noMoves = false;
-            $this->Send( $client, $dto );
+                $moveDto = Mapper::MoveToDto( $move );
+                $moveDto->animate = true;
+                $dto = new OpponentMoveActionDto();
+                $dto->move = $moveDto;
+                
+                $this->Game->MakeMove( $move );
+                if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {
+                    $this->Game->BlackPlayer->FirstMoveMade = true;
+                } else {
+                    $this->Game->WhitePlayer->FirstMoveMade = true;
+                }
+                
+                $noMoves = false;
+                $this->Send( $client, $dto );
+            })();
+            \React\Async\await( $promise );
         }
         
         if ( $noMoves ) {
-            \usleep( 2500000 ); // if turn is switch right away, ui will not have time to display dice.
+            $promise = \React\Async\async( function () {
+                \React\Async\delay( 2.5 );
+            })();
+            \React\Async\await( $promise );
         }
         
         $this->NewTurn( $client );

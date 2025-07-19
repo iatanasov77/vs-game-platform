@@ -168,23 +168,28 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
         this.black = this.translateService.instant( 'gameboard.black' );
         this.left = this.translateService.instant( 'gameboard.left' );
         
-//         this.you = this.translateService.get( 'gameboard.you' );
-//         this.white = this.translateService.get( 'gameboard.white' );
-//         this.black = this.translateService.get( 'gameboard.black' );
-//         this.left = this.translateService.get( 'gameboard.left' );
-        
         this.requestDraw();
     }
   
     ngOnChanges( changes: SimpleChanges ): void
     {
-        if ( changes['width'] || changes['height'] || changes['flipped'] || changes['rotated'] ) {
+        if (
+            changes['width'] ||
+            changes['height'] ||
+            changes['flipped'] ||
+            changes['rotated']
+        ) {
             this.recalculateGeometry();
         }
-        
         this.requestDraw();
-        const bName = this.myColor === PlayerColor.black ? this.you : this.game?.blackPlayer.name;
-        const wName = this.myColor === PlayerColor.white ? this.you : this.game?.whitePlayer.name;
+        
+        const bName = this.myColor === PlayerColor.black
+            ? this.you
+            : this.game?.blackPlayer.name;
+        const wName = this.myColor === PlayerColor.white
+            ? this.you
+            : this.game?.whitePlayer.name;
+        
         const bLeft = this.game?.blackPlayer.pointsLeft;
         const wLeft = this.game?.whitePlayer.pointsLeft;
         

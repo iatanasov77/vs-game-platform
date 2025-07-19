@@ -2,11 +2,26 @@
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+
 use App\Component\Type\PlayerColor;
+use App\Component\GameService;
 use App\Component\Manager\AbstractGameManager;
 
 trait Helper
 {
+    protected function orderAllGames( GameService $service, string $direction ): Collection
+    {
+        $gamesIterator  = $this->AllGames->getIterator();
+        $gamesIterator->uasort( function ( $a, $b ) use ( $direction ) {
+            return $direction == AbstractGameManager::COLLECTION_ORDER_ASC ?
+                $a->Created <=> $b->Created :
+                $b->Created <=> $a->Created
+            ;
+        });
+            
+        return new ArrayCollection( \iterator_to_array( $gamesIterator ) );
+    }
+    
     protected function getPointsForPlayer( PlayerColor $currentPlayer, Game $game ): Collection
     {
         //$this->logger->debug( $game->Points , 'BeforeFilteringPoints.txt' );
@@ -57,10 +72,36 @@ trait Helper
         return ( new ArrayCollection( \iterator_to_array( $pointsIterator ) ) )->first()->GetNumber( $currentPlayer );
     }
     
+    protected function getMovesOrderedByFromBlackNumber( Collection $moves, string $direction ): Collection
+    {
+        $movesIterator  = $moves->getIterator();
+        $movesIterator->uasort( function ( $a, $b ) use ( $direction ) {
+            return $direction == AbstractGameManager::COLLECTION_ORDER_ASC ?
+                $a->From->BlackNumber <=> $b->From->BlackNumber :
+                $b->From->BlackNumber <=> $a->From->BlackNumber
+            ;
+        });
+            
+            return new ArrayCollection( \iterator_to_array( $movesIterator ) );
+    }
+    
+    protected function getMovesOrderedByFromWhiteNumber( Collection $moves, string $direction ): Collection
+    {
+        $movesIterator  = $moves->getIterator();
+        $movesIterator->uasort( function ( $a, $b ) use ( $direction ) {
+            return $direction == AbstractGameManager::COLLECTION_ORDER_ASC ?
+                $a->From->WhiteNumber <=> $b->From->WhiteNumber :
+                $b->From->WhiteNumber <=> $a->From->WhiteNumber
+            ;
+        });
+            
+        return new ArrayCollection( \iterator_to_array( $movesIterator ) );
+    }
+    
     protected function getMovesOrdered( Collection $moves, string $direction ): Collection
     {
         $movesIterator  = $moves->getIterator();
-        $movesIterator->uasort( function ( $a, $b ) {
+        $movesIterator->uasort( function ( $a, $b ) use ( $direction ) {
             return $direction == AbstractGameManager::COLLECTION_ORDER_ASC ?
                 $a->Value <=> $b->Value :
                 $b->Value <=> $a->Value
@@ -86,12 +127,10 @@ trait Helper
     protected function orderPlayerPoints( Collection $currentPlayerPoints, Game $game, string $direction ): Collection
     {
         $playerPointsIterator   = $currentPlayerPoints->getIterator();
-        $playerPointsIterator->uasort( function ( $a, $b ) use ( $game ) {
-            return $b->GetNumber( $game->CurrentPlayer ) <=> $a->GetNumber( $game->CurrentPlayer );
-            
+        $playerPointsIterator->uasort( function ( $a, $b ) use ( $direction, $game ) {
             return $direction == AbstractGameManager::COLLECTION_ORDER_ASC ?
-                $a->Value <=> $b->Value :
-                $b->Value <=> $a->Value
+                $a->GetNumber( $game->CurrentPlayer ) <=> $b->GetNumber( $game->CurrentPlayer ) :
+                $b->GetNumber( $game->CurrentPlayer ) <=> $a->GetNumber( $game->CurrentPlayer )
             ;
         });
         

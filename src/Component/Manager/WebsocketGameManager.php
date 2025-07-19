@@ -55,9 +55,11 @@ final class WebsocketGameManager extends AbstractGameManager
                 $this->StartGame();
                 
                 if ( $this->Game->CurrentPlayer == PlayerColor::White ) {
-                    $this->logger->log( "GameManager CurrentPlayer: White", 'GameManager' );
-                    
-                    $this->EnginMoves( $this->Client1 );
+                    $promise = \React\Async\async( function () {
+                        $this->logger->log( "GameManager CurrentPlayer: White", 'GameManager' );
+                        $this->EnginMoves( $this->Client1 );
+                    })();
+                    \React\Async\await( $promise );
                 }
             }
         } else {

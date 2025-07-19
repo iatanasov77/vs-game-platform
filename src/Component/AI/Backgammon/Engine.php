@@ -7,6 +7,7 @@ use App\Component\Type\PlayerColor;
 use App\Component\Rules\Backgammon\Game;
 use App\Component\Rules\Backgammon\Move;
 use App\Component\Rules\Backgammon\Helper as GameHelper;
+use App\Component\Manager\AbstractGameManager;
 
 abstract class Engine
 {
@@ -65,26 +66,15 @@ abstract class Engine
         );
         
         if ( $myColor == PlayerColor::Black ) {
-            $bestMoveSequence   = $bestMoveSequence->filter(
-                function( $entry ) {
-                    return $entry != null;
-                }
-            );
-            
-            $bestMoveSequenceIterator  = $bestMoveSequence->getIterator();
-            $bestMoveSequenceIterator->uasort( function ( $a, $b ) {
-                return $b->From->BlackNumber <=> $a->From->BlackNumber;
-            });
-            
-            return \iterator_to_array( $bestMoveSequenceIterator );
+            $this->getMovesOrderedByFromBlackNumber( $bestMoveSequence, AbstractGameManager::COLLECTION_ORDER_ASC );
         }
         
-        $bestMoveSequenceIterator  = $bestMoveSequence->getIterator();
-        $bestMoveSequenceIterator->uasort( function ( $a, $b ) {
-            return $b->From->WhiteNumber <=> $a->From->WhiteNumber;
-        });
-        
-        return new ArrayCollection( \iterator_to_array( $bestMoveSequenceIterator ) );
+        try {
+            return $this->getMovesOrderedByFromWhiteNumber( $bestMoveSequence, AbstractGameManager::COLLECTION_ORDER_ASC );
+        } catch ( \Exception $e ) {
+            $this->logger->log( 'Engin GetBestMoves: ' . print_r( $bestMoveSequence->toArray(), true ), 'EngineGenerateMoves' );
+            throw $e;
+        }
     }
     
     public function GenerateMovesSequence( Game $game ): Collection // List<Move[]>
@@ -101,7 +91,7 @@ abstract class Engine
         if ( $sequences->count() == 1 ) {
             $blockedMoves = $sequences[0]->filter(
                 function( $item ) {
-                    return $item == null;
+                    return $item->isNull();
                 }
             );
             if ( $blockedMoves->count() ) {
@@ -114,15 +104,19 @@ abstract class Engine
         
         // If there are move sequences with all moves not null, remove sequences that has some moves null.
         // (rule of backgammon that you have to use all dice if you can)
-        $emptyMoves = $sequences->filter(
-            function( $item ) {
-                return $item == null || empty( $item );
+        $sequencesWithEmptyMoves = $sequences->filter(
+            function( $entry ) {
+                return $entry->filter(
+                    function( $entry ) {
+                        return $entry->isNull();
+                    }
+                );
             }
         );
         
-        if ( $emptyMoves->count() ) {
+        if ( $sequences->count() > $sequencesWithEmptyMoves->count() ) {
             $sequences = new ArrayCollection(
-                \array_values( \array_diff( $sequences->toArray(), $emptyMoves->toArray() ) )
+                \array_values( \array_diff( $sequences->toArray(), $sequencesWithEmptyMoves->toArray() ) )
             );
         }
         
@@ -148,7 +142,7 @@ abstract class Engine
         return $k > -0.25; // Just my best guess
     }
 
-    abstract protected function _GenerateMovesSequence( Collection &$sequences, Collection $moves, int $diceIndex, Game $game ): void;
+    abstract protected function _GenerateMovesSequence( Collection &$sequences, Collection &$moves, int $diceIndex, Game $game ): void;
     
     protected function ToLocalSequence( Collection $sequence, Game $game ): Collection
     {
@@ -167,6 +161,7 @@ abstract class Engine
         } catch ( \Exception $e ) {
             $this->logger->log( 'Exception at Engine::ToLocalSequence', 'EngineGenerateMoves' );
             $this->logger->log( 'Wrong Sequence: ' . print_r( $sequence->toArray(), true ), 'EngineGenerateMoves' );
+            throw $e;
         }
         
         return $moves;

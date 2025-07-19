@@ -15,6 +15,8 @@ import IGameRoom from '_@/GamePlatform/Model/GameRoomInterface';
 
 // Board Interfaces
 import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
+import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
+import DiceDto from '_@/GamePlatform/Model/BoardGame/diceDto';
 import GameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
 import GameCookieDto from '_@/GamePlatform/Model/BoardGame/gameCookieDto';
 import GameState from '_@/GamePlatform/Model/BoardGame/gameState';
@@ -54,7 +56,9 @@ export abstract class AbstractGameService
     socket: WebSocket | undefined;
     url: string = '';
     
+    userMoves: MoveDto[] = [];
     gameHistory: GameDto[] = [];
+    dicesHistory: DiceDto[][] = [];
     connectTime = new Date();
     
     timerStarted = false;
@@ -245,7 +249,9 @@ export abstract class AbstractGameService
     resetGame(): void
     {
         this.cookieService.deleteAll( Keys.gameIdKey );
+        this.userMoves = [];
         this.gameHistory = [];
+        this.dicesHistory = [];
         this.connectTime = new Date();
     }
     
@@ -267,7 +273,7 @@ export abstract class AbstractGameService
          * Delete Cookie on Every Browser Refresh,
          * May be later this should on DEV Environement Only.
          */
-        this.cookieService.deleteAll( Keys.gameIdKey );
+        //this.cookieService.deleteAll( Keys.gameIdKey );
         
         const action: StartGamePlayActionDto = {
             actionName: ActionNames.startGamePlay,

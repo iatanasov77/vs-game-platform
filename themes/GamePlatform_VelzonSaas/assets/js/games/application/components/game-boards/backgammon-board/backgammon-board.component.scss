@@ -1,7 +1,9 @@
 .game-board {
     display: inline-block;
     touch-action: none;
-    transition: transform .8s ease-in-out;
+    transition: transform 0.8s ease-in-out;
+    max-width: 100vw;
+    max-height: calc(100vh - 20px);
 }
 
 .rotated {
@@ -9,5 +11,5 @@
 }
 
 .flipped {
-    transform: rotate(180deg);
+    transform: rotateX(180deg);
 }

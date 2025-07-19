@@ -9,8 +9,8 @@ import { Observable, map, merge, take } from 'rxjs';
 import {
     selectGameRoom,
     selectGameRoomSuccess,
-    startGame,
-    startGameSuccess,
+    startCardGame,
+    startCardGameSuccess,
     loadGameRooms
 } from '../../../../+store/game.actions';
 import { GameState } from '../../../../+store/game.reducers';
@@ -50,7 +50,7 @@ export class GameStartComponent implements OnInit, OnChanges
             this.appState   = state.app.main;
         });
         
-        this.actions$.pipe( ofType( startGameSuccess ) ).subscribe( () => {
+        this.actions$.pipe( ofType( startCardGameSuccess ) ).subscribe( () => {
             this.store.dispatch( loadGameRooms() );
             this.game.startGame();
         });
@@ -101,14 +101,14 @@ export class GameStartComponent implements OnInit, OnChanges
     onPlayWithComputer( event: any ): void
     {
         if ( this.appState && this.appState.game ) {
-            this.store.dispatch( startGame( this.appState ) );
+            this.store.dispatch( startCardGame( this.appState ) );
         }
     }
     
     onPlayWithFriends( event: any ): void
     {
         if ( this.appState && this.appState.game ) {
-            this.store.dispatch( startGame( this.appState ) );
+            this.store.dispatch( startCardGame( this.appState ) );
         }
     }
     

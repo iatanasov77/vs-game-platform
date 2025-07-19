@@ -8,7 +8,7 @@ import {
     selectGameRoom,
     selectGameRoomSuccess,
     
-    startGameSuccess,
+    startCardGameSuccess,
     playerAnnounceSuccess
 } from "./game.actions";
 
@@ -44,6 +44,6 @@ export const gameReducer = createReducer( initialState,
     on( loadGameRoomsSuccess, ( state, { rooms } ) => ( { ...state, rooms } ) ),
     
     on( selectGameRoomSuccess, ( state, { game } ) => ( { ...state, game } ) ),
-    on( startGameSuccess, ( state, { gamePlay } ) => ( { ...state, gamePlay } ) ),
+    on( startCardGameSuccess, ( state, { gamePlay } ) => ( { ...state, gamePlay } ) ),
     on( playerAnnounceSuccess, ( state, { announce } ) => ( { ...state, announce } ) ),
 );

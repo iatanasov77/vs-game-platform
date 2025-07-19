@@ -33,4 +33,10 @@ class Move
     {
         return $move->From == $this->From && $move->To == $this->To && $move->Color == $this->Color;
     }
+    
+    /** DotNet NULL Object Check */
+    public function isNull(): bool
+    {
+        return ! $this->From && ! $this->To && ! $this->Color;
+    }
 }

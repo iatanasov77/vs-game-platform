@@ -265,11 +265,9 @@ export abstract class AbstractGameService
     
     startGamePlay( game: GameDto, myColor: PlayerColor, playAi: boolean, forGold: boolean ): void
     {
-        /*
         if ( ! this.socket || this.socket.readyState !== this.socket.OPEN ) {
             this.connect( '', playAi, forGold );
         }
-        */
         
         /**
          * Delete Cookie on Every Browser Refresh,

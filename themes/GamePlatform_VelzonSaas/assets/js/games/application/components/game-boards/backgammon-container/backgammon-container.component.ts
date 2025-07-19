@@ -752,16 +752,17 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
     
     playGame(): void
     {
-        this.gamePlayService.startBoardGame( 'normal' );
-        //this.wsService.connect( '', this.playAiFlag, this.forGoldFlag );
-        
         const game      = this.appStateService.game.getValue();
         const myColor   = this.appStateService.myColor.getValue();
-        console.log( 'GameDto Object: ', game );
+        //console.log( 'GameDto Object: ', game );
         
+        this.gamePlayService.startBoardGame( 'normal' );
+        //this.wsService.connect( '', this.playAiFlag, this.forGoldFlag );
         this.wsService.startGamePlay( game, myColor, this.playAiFlag, this.forGoldFlag );
         
         this.waitForOpponent();
+        window.dispatchEvent( new Event( 'resize' ) );
+        
         this.statusMessageService.setWaitingForConnect();
         this.exitVisible = true;
     }

@@ -1,5 +1,6 @@
 <?php namespace App\Component\Dto;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use App\Component\Type\PlayerColor;
 use App\Component\Rules\Backgammon\Game;
@@ -65,11 +66,11 @@ final class Mapper
         $pointDto = new PointDto();
         $pointDto->blackNumber = $point->BlackNumber;
         $pointDto->whiteNumber = $point->WhiteNumber;
-        $pointDto->checkers = $point->Checkers->map(
+        $pointDto->checkers = new ArrayCollection( $point->Checkers->map(
             function( $entry ) {
                 return self::CheckerToDto( $entry );
             }
-        ); // ->toArray();
+        )->getValues() );
         
         return $pointDto;
     }

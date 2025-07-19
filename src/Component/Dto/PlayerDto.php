@@ -10,4 +10,7 @@ class PlayerDto
     public $photoUrl;
     public $gold;
     public $elo;
+    
+    // My Property to Detect If Player is AI in Frontend
+    public bool $isAi;
 }

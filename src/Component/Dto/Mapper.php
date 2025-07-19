@@ -55,6 +55,8 @@ final class Mapper
         $playerDto->gold = $player->Gold;
         $playerDto->photoUrl = $player->Photo;
         
+        $playerDto->isAi = $player->IsAi();
+        
         return $playerDto;
     }
     

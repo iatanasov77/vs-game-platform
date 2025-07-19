@@ -65,7 +65,8 @@ export class EditorService
                 pointsLeft: 167,
                 photoUrl: '',
                 elo: 1200,
-                gold: 0
+                gold: 0,
+                isAi: false
             },
             whitePlayer: {
                 name: 'Guest',
@@ -73,7 +74,8 @@ export class EditorService
                 pointsLeft: 167,
                 photoUrl: '',
                 elo: 1383,
-                gold: 0
+                gold: 0,
+                isAi: false
             },
             currentPlayer: 0,
             winner: 2,

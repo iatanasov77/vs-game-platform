@@ -395,7 +395,11 @@ abstract class AbstractGameManager implements GameManagerInterface
             $this->Send( $this->Client2, $rollAction );
         }
         
-        /* Create This on Frontend
+        /** 
+         * This Used to END Game When Player Not Create an Action in Game TotalThinkTime Seconds
+         * ------------------------------------------------------------------------------------------
+         * 
+         * Create This on Frontend
          * =========================
          * https://stackoverflow.com/questions/33185302/how-to-make-a-php-function-loop-every-5-seconds
          */
@@ -826,8 +830,11 @@ abstract class AbstractGameManager implements GameManagerInterface
             $this->SendNewRoll();
             
             if ( $this->AisTurn() ) {
-                $this->logger->log( "NewTurn for AI", 'SwitchPlayer' );
-                $this->EnginMoves( $socket );
+                $promise = \React\Async\async( function () use ( $socket ) {
+                    $this->logger->log( "NewTurn for AI", 'SwitchPlayer' );
+                    $this->EnginMoves( $socket );
+                })();
+                \React\Async\await( $promise );
             }
         }
     }
@@ -842,9 +849,14 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     protected function EnginMoves( WebsocketClientInterface $client )
     {
-        \usleep( \rand( 700, 1200 ) * 1000 );
-        $action = new RolledActionDto();
-        $this->Send( $client, $action );
+        $promise = \React\Async\async( function () use ( $client ) {
+            $sleepMileseconds   = \rand( 700, 1200 );
+            \React\Async\delay( $sleepMileseconds / 1000 );
+            
+            $action = new RolledActionDto();
+            $this->Send( $client, $action );
+        })();
+        \React\Async\await( $promise );
         
         $moves = $this->Engine->GetBestMoves();
         $this->logger->log( 'EnginMoves: ' . print_r( $moves->toArray(), true ), 'EnginMoves' );
@@ -852,28 +864,37 @@ abstract class AbstractGameManager implements GameManagerInterface
         $noMoves = true;
         for ( $i = 0; $i < $moves->count(); $i++ ) {
             $move = $moves[$i];
-            if ( $move == null ) {
+            if ( $move->isNull() ) {
                 continue;
             }
             
-            \usleep( \rand( 700, 1200 ) * 1000 );
-            $moveDto = Mapper::MoveToDto( $move );
-            $moveDto->animate = true;
-            $dto = new OpponentMoveActionDto();
-            $dto->move = $moveDto;
-            $this->Game->MakeMove( $move );
-            if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {
-                $this->Game->BlackPlayer->FirstMoveMade = true;
-            } else {
-                $this->Game->WhitePlayer->FirstMoveMade = true;
-            }
+            $promise = \React\Async\async( function () use ( $client, $move, &$noMoves ) {
+                $sleepMileseconds   = \rand( 700, 1200 );
+                \React\Async\delay( $sleepMileseconds / 1000 );
                 
-            $noMoves = false;
-            $this->Send( $client, $dto );
+                $moveDto = Mapper::MoveToDto( $move );
+                $moveDto->animate = true;
+                $dto = new OpponentMoveActionDto();
+                $dto->move = $moveDto;
+                
+                $this->Game->MakeMove( $move );
+                if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {
+                    $this->Game->BlackPlayer->FirstMoveMade = true;
+                } else {
+                    $this->Game->WhitePlayer->FirstMoveMade = true;
+                }
+                
+                $noMoves = false;
+                $this->Send( $client, $dto );
+            })();
+            \React\Async\await( $promise );
         }
         
         if ( $noMoves ) {
-            \usleep( 2500000 ); // if turn is switch right away, ui will not have time to display dice.
+            $promise = \React\Async\async( function () {
+                \React\Async\delay( 2.5 );
+            })();
+            \React\Async\await( $promise );
         }
         
         $this->NewTurn( $client );

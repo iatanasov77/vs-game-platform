@@ -78,7 +78,8 @@ export class TutorialService
                 gold: 0,
                 photoUrl: '',
                 playerColor: PlayerColor.black,
-                pointsLeft: 0
+                pointsLeft: 0,
+                isAi: false
             },
             currentPlayer: PlayerColor.black,
             goldMultiplier: 0,
@@ -95,7 +96,8 @@ export class TutorialService
                 gold: 0,
                 photoUrl: '',
                 playerColor: PlayerColor.black,
-                pointsLeft: 0
+                pointsLeft: 0,
+                isAi: false
             },
             winner: PlayerColor.neither,
             lastDoubler: undefined

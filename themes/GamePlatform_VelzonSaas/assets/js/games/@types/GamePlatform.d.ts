@@ -132,6 +132,9 @@ declare module '_@/GamePlatform/Model/BoardGame/playerDto' {
         photoUrl: string;
         elo: number;
         gold: number;
+        
+        // My Property to Detect If Player is AI in Frontend
+        isAi: boolean;
     }
     
     export = PlayerDto;

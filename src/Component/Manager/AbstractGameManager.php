@@ -9,7 +9,12 @@ use Doctrine\Persistence\ManagerRegistry;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager as LiipImagineCacheManager;
+use React\Async;
+use React\EventLoop\Loop;
+use React\EventLoop\TimerInterface;
+use Amp\DeferredCancellation;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
+
 use App\Component\GameLogger;
 use App\Component\Rules\Backgammon\GameFactory as BackgammonRulesFactory;
 
@@ -103,8 +108,15 @@ abstract class AbstractGameManager implements GameManagerInterface
     /** @var FactoryInterface */
     protected $tempPlayersFactory;
     
-    /** @var DeferredCancellation */
+    /**
+     * CancellationTokenSource has been renamed to DeferredCancellation in AMPHP Version 3.0.0
+     * 
+     * @var DeferredCancellation
+     */
     protected $moveTimeOut;
+    
+    /** @var bool */
+    protected $EndGameOnTotalThinkTimeElapse;
     
     /** @var Game */
     public $Game;
@@ -148,7 +160,8 @@ abstract class AbstractGameManager implements GameManagerInterface
         FactoryInterface $tempPlayersFactory,
         bool $forGold,
         string $gameCode,
-        string $gameVariant
+        string $gameVariant,
+        bool $EndGameOnTotalThinkTimeElapse
     ) {
         $this->logger                   = $logger;
         $this->serializer               = $serializer;
@@ -166,6 +179,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         $this->GameCode                 = $gameCode;
         $this->GameVariant              = $gameVariant;
         
+        $this->EndGameOnTotalThinkTimeElapse = $EndGameOnTotalThinkTimeElapse;
         $this->InitializeGame( $gameCode, $gameVariant );
     }
     
@@ -395,21 +409,19 @@ abstract class AbstractGameManager implements GameManagerInterface
             $this->Send( $this->Client2, $rollAction );
         }
         
-        /** 
-         * This Used to END Game When Player Not Create an Action in Game TotalThinkTime Seconds
-         * ------------------------------------------------------------------------------------------
-         * 
-         * Create This on Frontend
-         * =========================
-         * https://stackoverflow.com/questions/33185302/how-to-make-a-php-function-loop-every-5-seconds
-         */
-        /*
-        $this->moveTimeOut = new CancellationTokenSource();
-        Utils::RepeatEvery( 500, () =>
-        {
-            TimeTick();
-        }, $this->moveTimeOut );
-        */
+        $this->moveTimeOut = new DeferredCancellation();
+        if ( $this->EndGameOnTotalThinkTimeElapse ) {
+            Async\async( function () {
+                $loop = Loop::get();
+                $loop->addPeriodicTimer( 0.5, function ( TimerInterface $timer ) use ( $loop ) {
+                    if ( ! $this->moveTimeOut->isCancelled() ) {
+                        $this->TimeTick();
+                    } else {
+                        $loop->cancelTimer( $timer );
+                    }
+                });
+            })();
+        }
     }
     
     public function StartGamePlay(): void
@@ -453,10 +465,12 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     protected function TimeTick(): void
     {
-        if ( ! $this->moveTimeOut->IsCancellationRequested ) {
-            $ellapsed = ( new \DateTime( 'now' ) ) - $this->Game->ThinkStart;
-            if ( $ellapsed->TotalSeconds > Game::TotalThinkTime ) {
-                $this->logger->log( "The time run out for {$this->Game->CurrentPlayer}", 'GameManager' );
+        if ( ! $this->moveTimeOut->isCancelled() ) {
+            $ellapsed = ( new \DateTime( 'now' ) )->getTimestamp() - $this->Game->ThinkStart->getTimestamp();
+            if ( $ellapsed > Game::TotalThinkTime ) {
+                $CurrentPlayerColor = $this->Game->CurrentPlayer == PlayerColor::Black ? 'Black' : 'White';
+                $this->logger->log( "The time run out for {$CurrentPlayerColor}", 'GameManager' );
+                
                 $this->moveTimeOut->cancel();
                 $winner = $this->Game->CurrentPlayer == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
                 $this->EndGame( $winner );
@@ -466,7 +480,7 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     protected function EndGame( PlayerColor $winner )
     {
-        //$this->moveTimeOut->cancel();
+        $this->moveTimeOut->cancel();
         $this->Game->PlayState = GameState::ended;
         $this->logger->log( "The winner is {$winner->value}", 'EndGame' );
         
@@ -829,11 +843,11 @@ abstract class AbstractGameManager implements GameManagerInterface
             $this->SendNewRoll();
             
             if ( $this->AisTurn() ) {
-                $promise = \React\Async\async( function () use ( $socket ) {
+                $promise = Async\async( function () use ( $socket ) {
                     $this->logger->log( "NewTurn for AI", 'SwitchPlayer' );
                     $this->EnginMoves( $socket );
                 })();
-                \React\Async\await( $promise );
+                Async\await( $promise );
             }
         }
     }
@@ -848,14 +862,14 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     protected function EnginMoves( WebsocketClientInterface $client )
     {
-        $promise = \React\Async\async( function () use ( $client ) {
+        $promise = Async\async( function () use ( $client ) {
             $sleepMileseconds   = \rand( 700, 1200 );
-            \React\Async\delay( $sleepMileseconds / 1000 );
+            Async\delay( $sleepMileseconds / 1000 );
             
             $action = new RolledActionDto();
             $this->Send( $client, $action );
         })();
-        \React\Async\await( $promise );
+        Async\await( $promise );
         
         $moves = $this->Engine->GetBestMoves();
         $this->logger->log( 'EnginMoves: ' . print_r( $moves->toArray(), true ), 'EnginMoves' );
@@ -867,9 +881,9 @@ abstract class AbstractGameManager implements GameManagerInterface
                 continue;
             }
             
-            $promise = \React\Async\async( function () use ( $client, $move, &$noMoves ) {
+            $promise = Async\async( function () use ( $client, $move, &$noMoves ) {
                 $sleepMileseconds   = \rand( 700, 1200 );
-                \React\Async\delay( $sleepMileseconds / 1000 );
+                Async\delay( $sleepMileseconds / 1000 );
                 
                 $moveDto = Mapper::MoveToDto( $move );
                 $moveDto->animate = true;
@@ -886,14 +900,14 @@ abstract class AbstractGameManager implements GameManagerInterface
                 $noMoves = false;
                 $this->Send( $client, $dto );
             })();
-            \React\Async\await( $promise );
+            Async\await( $promise );
         }
         
         if ( $noMoves ) {
-            $promise = \React\Async\async( function () {
-                \React\Async\delay( 2.5 );
+            $promise = Async\async( function () {
+                Async\delay( 2.5 );
             })();
-            \React\Async\await( $promise );
+            Async\await( $promise );
         }
         
         $this->NewTurn( $client );

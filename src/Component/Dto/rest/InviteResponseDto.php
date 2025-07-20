@@ -1,4 +1,4 @@
-﻿<?php namespace App\Component\Dto\rest;
+<?php namespace App\Component\Dto\rest;
 
 class InviteResponseDto
 {

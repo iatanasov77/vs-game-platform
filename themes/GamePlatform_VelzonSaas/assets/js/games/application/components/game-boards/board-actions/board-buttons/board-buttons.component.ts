@@ -33,6 +33,8 @@ export class BoardButtonsComponent implements OnInit, OnChanges
     
     @Output() onPlayGame = new EventEmitter<void>();
     @Output() onInviteFriend = new EventEmitter<void>();
+    @Output() onAcceptInvite = new EventEmitter<void>();
+    @Output() onCancelInvite = new EventEmitter<void>();
     
     @Output() onRotate = new EventEmitter<void>();
     @Output() onFlip = new EventEmitter<void>();
@@ -111,12 +113,12 @@ export class BoardButtonsComponent implements OnInit, OnChanges
     
     startInvitedGame( id: string ): void
     {
-        //this.router.navigateByUrl( 'game?gameId=' + id );
+        this.onAcceptInvite.emit();
     }
     
     cancelInvite(): void
     {
-        //this.router.navigateByUrl( 'lobby' );
+        this.onCancelInvite.emit();
     }
     
     flipClick(): void

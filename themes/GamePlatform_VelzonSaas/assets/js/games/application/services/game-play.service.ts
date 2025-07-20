@@ -107,11 +107,12 @@ export class GamePlayService
         this.router.navigateByUrl( urlTree );
     }
     
-    createInvite(): Observable<InviteResponseDto>
+    createInvite( game: string, variant: string ): Observable<InviteResponseDto>
     {
-        var url = `${this.url}/invite/create`;
+        const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
+        var url = `${this.url}/${game}-${variant}/invite/create`;
         
-        return this.httpClient.get<InviteResponseDto>( url ).pipe(
+        return this.httpClient.get<InviteResponseDto>( url, {headers} ).pipe(
             map( ( dto ) => dto as InviteResponseDto )
         );
     }

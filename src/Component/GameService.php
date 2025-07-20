@@ -219,11 +219,11 @@ class GameService
         }
     }
     
-    public function CreateInvite( string $userId, string $gameCode ): string
+    public function CreateInvite( int $playerId, string $gameCode, string $gameVariant ): string
     {
         $existing = $this->AllGames->filter(
-            function( $entry ) use ( $userId ) {
-                return $entry->Inviter == $userId;
+            function( $entry ) use ( $playerId ) {
+                return $entry->Inviter == $playerId;
             }
         );
             
@@ -231,10 +231,10 @@ class GameService
             $this->AllGames->removeElement( $existing[$i] );
         }
             
-        $manager    = $this->managerFactory->createWebsocketGameManager( true, $gameCode );
+        $manager    = $this->managerFactory->createWebsocketGameManager( true, $gameCode, $gameVariant );
         //$manager.Ended += Game_Ended;
         $manager->dispatchGameEnded();
-        $manager->Inviter = $userId;
+        $manager->Inviter = $playerId;
         $manager->SearchingOpponent = false;
         $this->AllGames[]   = $manager;
         

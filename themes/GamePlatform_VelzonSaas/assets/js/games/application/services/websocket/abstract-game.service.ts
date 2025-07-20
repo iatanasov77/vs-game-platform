@@ -265,10 +265,6 @@ export abstract class AbstractGameService
     
     startGamePlay( game: GameDto, myColor: PlayerColor, playAi: boolean, forGold: boolean ): void
     {
-        if ( ! this.socket || this.socket.readyState !== this.socket.OPEN ) {
-            this.connect( '', playAi, forGold );
-        }
-        
         /**
          * Delete Cookie on Every Browser Refresh,
          * May be later this should on DEV Environement Only.
@@ -282,5 +278,21 @@ export abstract class AbstractGameService
         };
         
         this.sendMessage( JSON.stringify( action ) );
+    }
+    
+    acceptInvite( inviteId: string ): void
+    {
+        const currentUrlparams = new URLSearchParams( window.location.search );
+        let variant = currentUrlparams.get( 'variant' );
+        if ( variant == null ) {
+            variant = 'normal';
+        }
+        
+        const urlTree = this.router.createUrlTree([], {
+            queryParams: { variant: variant, gameId: inviteId },
+            queryParamsHandling: "merge",
+            preserveFragment: true
+        });
+        this.router.navigateByUrl( urlTree );
     }
 }

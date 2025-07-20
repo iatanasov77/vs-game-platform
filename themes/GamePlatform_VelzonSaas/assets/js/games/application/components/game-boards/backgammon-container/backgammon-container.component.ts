@@ -700,6 +700,23 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         });
     }
     
+    acceptInvite(): void
+    {
+        const inviteId = window.gamePlatformSettings.queryParams.inviteId;
+        if ( inviteId ) {
+            this.wsService.acceptInvite( inviteId );
+            
+            this.wsService.resetGame();
+            this.wsService.connect( inviteId, this.playAiFlag, this.forGoldFlag );
+            this.waitForOpponent();
+        }
+    }
+    
+    cancelInvite(): void
+    {
+        this.exitGame();
+    }
+    
     login(): void
     {
         const modalRef = this.ngbModal.open( UserLoginDialogComponent );

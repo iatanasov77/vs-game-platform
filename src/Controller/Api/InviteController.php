@@ -23,9 +23,13 @@ class InviteController extends AbstractController
         $this->gamesService     = $gamesService;
     }
     
-    public function createInviteAction( Request $request ): JsonResponse
+    public function createInviteAction( $gameCode, $gameVariant, Request $request ): JsonResponse
     {
-        $id             = $this->gamesService->CreateInvite( $this->vsSecurityBridge->getUser()->getPlayer()->getGuid() );
+        $id = $this->gamesService->CreateInvite(
+            $this->vsSecurityBridge->getUser()->getPlayer()->getId(),
+            $gameCode,
+            $gameVariant
+        );
         
         $dto            = new InviteResponseDto();
         $dto->gameId    = $id;

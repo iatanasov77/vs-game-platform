@@ -31,5 +31,5 @@ vs_api_select_game_room:
     controller: App\Controller\Api\Games\SelectGameRoomController::selectGameRoomAction
 
 vs_api_create_invite:
-    path: /api/invite/create
+    path: /api/{gameCode}-{gameVariant}/invite/create
     controller: App\Controller\Api\InviteController::createInviteAction

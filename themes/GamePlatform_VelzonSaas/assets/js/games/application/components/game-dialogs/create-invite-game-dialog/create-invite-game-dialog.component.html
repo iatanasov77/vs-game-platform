@@ -5,7 +5,7 @@
 
 <div class="modal-body">
     <p>{{ 'invite.copylink' | translate }}</p>
-    <div>
+    <div *ngIf="invite$ | async">
         <app-input-copy [text]="link"></app-input-copy>
     </div>
 </div>

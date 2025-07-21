@@ -14,6 +14,7 @@
             [introPlaying]="introPlaying"
             [isLoggedIn]="isLoggedIn"
             [hasPlayer]="hasPlayer"
+            (lobbyButtonsVisibleChanged)="lobbyButtonsVisibleChanged($event)"
         ></app-backgammon-container>
         
         <app-busy [busy]="busy$ | async" [lobbyButtonsVisible]="lobbyButtonsVisible"></app-busy>

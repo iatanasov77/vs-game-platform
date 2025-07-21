@@ -57,13 +57,9 @@ export class BackgammonComponent extends GameBaseComponent implements OnInit
         this.authService.repair();
     }
     
-    override ngOnInit()
+    lobbyButtonsVisibleChanged( value: boolean )
     {
-        super.ngOnInit();
-        
-        this.actions$.pipe( ofType( playGame ) ).subscribe( () => {
-            this.lobbyButtonsVisible = false;
-        });
+        this.lobbyButtonsVisible = value;
     }
     
     saveErrorReport( errorDto: ErrorReportDto ): void

@@ -16,6 +16,8 @@ import { StatusMessage, MessageLevel } from '../../../utils/status-message';
 import cssString from './messages.component.scss';
 import templateString from './messages.component.html';
 
+declare var $: any;
+
 @Component({
     selector: 'app-messages',
     
@@ -29,16 +31,30 @@ import templateString from './messages.component.html';
             state(
                 'initial',
                 style({
-                    left: '{{ initial }}px',
-                    opacity: 0
+                    left: '{{ shown }}px',
+                    transform: 'scale(3)',
+                    opacity: 0.3,
+                    top: 40
                 }),
-                { params: { initial: 0 } }
+                { params: { shown: 0 } }
             ),
             state(
                 'shown',
                 style({
                     left: '{{ shown }}px',
-                    opacity: 1
+                    transform: 'scale(1)',
+                    opacity: 1,
+                    top: 0
+                }),
+                { params: { shown: 0 } }
+            ),
+            state(
+                'shown-flipped',
+                style({
+                    left: '{{ shown }}px',
+                    transform: 'scale(1)',
+                    opacity: 1,
+                    top: '-10px'
                 }),
                 { params: { shown: 0 } }
             ),
@@ -46,12 +62,16 @@ import templateString from './messages.component.html';
                 'hidden',
                 style({
                     left: '0px',
-                    opacity: 0
+                    opacity: 0,
+                    transform: 'scale(1)'
                 })
             ),
-            transition( 'shown => hidden', [animate('0.5s')] ),
+            transition( 'shown => hidden', [animate('0.5s ease-out')] ),
             transition( 'hidden => initial', [animate('0.01s')] ),
-            transition( 'initial => shown', [animate('1.0s')] )
+            
+            // My Workaround
+            transition( 'shown-flipped => hidden', [animate('0.5s ease-out')] ),
+            transition( 'initial => shown-flipped', [animate('1s ease')] ),
         ])
     ]
 })
@@ -59,10 +79,12 @@ export class MessagesComponent implements OnChanges
 {
     @Input() message: StatusMessage | null = StatusMessage.getDefault();
     // changing the coordinates will affect all animations coordinates.
+    
     @Input() initial = 0;
-    @Input() shown = 0;
+    @Input() shown = 0; //x coordinate when shown.
     
     state = 'hidden';
+    animating = false;
     
     ngOnChanges( changes: SimpleChanges ): void
     {
@@ -79,11 +101,20 @@ export class MessagesComponent implements OnChanges
     
     animate(): void
     {
+        if ( this.animating ) return;
+        this.animating = true;
+    
         this.state = 'hidden';
         setTimeout( () => {
             this.state = 'initial';
             setTimeout( () => {
-                this.state = 'shown';
+                // My Workaround
+                if ( $( 'canvas.game-board' ).hasClass( 'flipped' ) || $( 'canvas.game-board' ).hasClass( 'rotated' ) ) {
+                    this.state = 'shown-flipped';
+                } else {
+                    this.state = 'shown';
+                }
+                this.animating = false;
             }, 100 );
         }, 500 );
     }
@@ -91,7 +122,7 @@ export class MessagesComponent implements OnChanges
     getIcon(): string
     {
         if ( this.message?.level === MessageLevel.error ) {
-            return 'fas fa-exclamation-circle red';
+            return 'fas fa-exclamation-circle error-color';
         }
         
         if ( this.message?.level === MessageLevel.warning ) {

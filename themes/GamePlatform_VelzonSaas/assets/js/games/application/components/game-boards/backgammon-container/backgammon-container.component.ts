@@ -9,8 +9,10 @@ import {
     ElementRef,
     ChangeDetectorRef,
     Input,
+    Output,
     ViewChild,
-    HostListener
+    HostListener,
+    EventEmitter
 } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable, Subscription, map } from 'rxjs';
@@ -80,6 +82,8 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
     @Input() isLoggedIn: boolean            = false;
     @Input() introPlaying: boolean          = false;
     @Input() hasPlayer: boolean             = false;
+    
+    @Output() lobbyButtonsVisibleChanged    = new EventEmitter<boolean>();
     
     @ViewChild( 'dices' ) dices: ElementRef | undefined;
     @ViewChild( 'backgammonBoardButtons' ) backgammonBoardButtons: ElementRef | undefined;
@@ -306,6 +310,9 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
                 case 'isLoggedIn':
                     this.isLoggedIn = changedProp.currentValue;
                     break;
+                case 'lobbyButtonsVisible':
+                    this.lobbyButtonsVisible = changedProp.currentValue;
+                    break;
                 case 'introPlaying':
                     this.introPlaying = changedProp.currentValue;
                     break;
@@ -386,14 +393,12 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
             return;
         }
         
-        //alert( dto?.playState );
         if ( ! this.started && dto ) {
             if ( dto.playState === GameState.playing ) {
-                //alert( dto.playState );
                 clearTimeout( this.startedHandle );
                 this.started = true;
                 this.playAiQuestion = false;
-                this.lobbyButtonsVisible = false;
+                this.lobbyButtonsVisibleChanged.emit( false );
             }
             
             if ( dto.isGoldGame ) this.sound.playCoin();
@@ -491,9 +496,13 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
     @HostListener( 'window:resize', ['$event'] )
     onResize(): void
     {
-        // const _innerWidth   = window.innerWidth;
+        //const _innerWidth   = window.innerWidth;
         const _innerWidth   = $( '#GameBoardContainer' ).width();
-        // alert( _innerWidth );
+        //const _innerHeight   = window.innerHeight;
+        const _innerHeight   = $( '#GameBoardContainer' ).height();
+        
+        //console.log( 'Window innerHeight', window.innerHeight );
+        //console.log( 'Container innerHeight', $( '#GameBoardContainer' ).height() );
         
         this.width = Math.min( _innerWidth, 1024 );
         const span = this.messages?.nativeElement as Element;
@@ -504,12 +513,18 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         this.messageCenter = this.width / 2 - spanWidth / 2;
         // alert( this.messageCenter );
         
-        this.height = Math.min( window.innerHeight - 40, this.width * 0.62 );
+        this.height = Math.min( _innerHeight - 40, this.width * 0.6 );
         
         const buttons = this.backgammonBoardButtons?.nativeElement as HTMLElement;
         const btnsOffset = 5; //Cheating. Could not get the height.
         if ( buttons ) {
-            buttons.style.top = `${this.height / 2 - btnsOffset}px`;
+            let buttonsTop  = this.height / 2 - btnsOffset;
+            // My Workaround
+            if ( $( 'canvas.game-board' ).hasClass( 'flipped' ) || $( 'canvas.game-board' ).hasClass( 'rotated' ) ) {
+                buttonsTop  = buttonsTop - 10;
+            }
+            
+            buttons.style.top = `${buttonsTop}px`;
             buttons.style.right = `${this.width * 0.11}px`;
         }
         
@@ -524,7 +539,13 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
                 dices.style.left = '';
                 //alert( dices.style.right );
             }
-            dices.style.top = `${this.height / 2 - btnsOffset}px`;
+            
+            let dicesTop  = this.height / 2 - btnsOffset - 10;
+            // My Workaround
+            if ( $( 'canvas.game-board' ).hasClass( 'flipped' ) ) {
+                dicesTop  = dicesTop - 15;
+            }
+            dices.style.top = `${dicesTop}px`;
         }
     }
     
@@ -619,7 +640,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         
         this.gamePlayService.exitBoardGame();
         this.playAiQuestion = false;
-        this.lobbyButtonsVisible = true;
+        this.lobbyButtonsVisibleChanged.emit( true );
     }
     
     requestDoubling(): void
@@ -777,6 +798,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         //this.wsService.connect( '', this.playAiFlag, this.forGoldFlag );
         this.wsService.startGamePlay( game, myColor, this.playAiFlag, this.forGoldFlag );
         
+        this.lobbyButtonsVisibleChanged.emit( false );
         this.waitForOpponent();
         window.dispatchEvent( new Event( 'resize' ) );
         

@@ -78,6 +78,8 @@ class BackgammonNormalEngine extends Engine
                 }
             } else if ( $game->IsBearingOff( $game->CurrentPlayer ) ) {
                 // The furthest away checker can be moved beyond home
+                
+                /*
                 $currentPlayerPoints = $game->Points->filter(
                     function( $entry ) use ( $game ) {
                         return $entry->Checkers->filter(
@@ -90,7 +92,9 @@ class BackgammonNormalEngine extends Engine
                 
                 $orderedCurrentPlayerPoints = $this->orderPlayerPoints( $currentPlayerPoints, $game, AbstractGameManager::COLLECTION_ORDER_ASC );
                 $minPoint = $orderedCurrentPlayerPoints->first()->GetNumber( $game->CurrentPlayer );
+                */
                 
+                $minPoint = $this->calcMinPoint( $game->Points, $game->CurrentPlayer );
                 $toPointNo = $fromPointNo == $minPoint ? \min( 25, $fromPointNo + $dice->Value ) : $fromPointNo + $dice->Value;
                 $this->logger->log( 'Engin toPointNo in IsBearingOff: ' . $toPointNo, 'EngineGenerateMoves' );
                 $toPoint = $game->Points->filter(

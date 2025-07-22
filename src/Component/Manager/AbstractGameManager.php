@@ -666,7 +666,7 @@ abstract class AbstractGameManager implements GameManagerInterface
             }
         } else {
             if (
-                $this->Game->GetHome( PlayerColor::Black )->Checkers->filter(
+                $this->Game->GetHome( PlayerColor::White )->Checkers->filter(
                     function( $entry ) {
                         return $entry->Color == PlayerColor::White;
                     }

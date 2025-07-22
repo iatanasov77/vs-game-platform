@@ -60,6 +60,7 @@ abstract class Engine
             return new ArrayCollection();
         }
         
+        $this->logger->log( 'BestMoves Before Filter: ' . print_r( $bestMoveSequence->toArray(), true ), 'EnginMoves' );
         $bestMoveSequence   = $bestMoveSequence->filter(
             function( $entry ) {
                 return $entry != null && ! $entry->isNull();
@@ -67,7 +68,7 @@ abstract class Engine
         );
         
         if ( $myColor == PlayerColor::Black ) {
-            $this->getMovesOrderedByFromBlackNumber( $bestMoveSequence, AbstractGameManager::COLLECTION_ORDER_ASC );
+            return $this->getMovesOrderedByFromBlackNumber( $bestMoveSequence, AbstractGameManager::COLLECTION_ORDER_ASC );
         }
         
         try {
@@ -89,7 +90,7 @@ abstract class Engine
         $sequences[]    = $moves;
         
         $this->_GenerateMovesSequence( $sequences, $moves, 0, $game );
-        $this->logger->log( 'Engin GetBestMoves: ' . print_r( $sequences->toArray(), true ), 'EngineGenerateMoves' );
+        //$this->logger->log( 'Engin GetBestMoves: ' . print_r( $sequences->toArray(), true ), 'EngineGenerateMoves' );
         
         // Special case. Sometimes the first dice is blocked, but can be moved after next dice
         if ( $sequences->count() == 1 ) {
@@ -192,7 +193,7 @@ abstract class Engine
         $game->SwitchPlayer();
 
         for ( $i = $sequence->count() - 1; $i >= 0; $i-- ) {
-            if ( $sequence[$i] != null ) {
+            if ( $sequence[$i] != null && $hits->count() ) {
                 $lastHit    = $hits->last();
                 $hits->removeElement( $lastHit );
                 

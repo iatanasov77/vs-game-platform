@@ -49,9 +49,9 @@ trait Helper
      *     p => p.GetNumber( CurrentPlayer )
      * ).First().GetNumber( CurrentPlayer );
      */
-    protected function calcMinPoint( $currentPlayer )
+    protected function calcMinPoint( Collection $gamePoints, PlayerColor $currentPlayer ): int
     {
-        $points  = $this->Points->filter(
+        $points  = $gamePoints->filter(
             function( $entry ) use ( $currentPlayer ) {
                 $askedColor = false;
                 

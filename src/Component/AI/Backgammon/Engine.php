@@ -56,12 +56,13 @@ abstract class Engine
         }
         
         if ( $bestMoveSequence == null ) {
+            $this->logger->debug( $allSequences->toArray(), 'EngineAllSequences.txt' );
             return new ArrayCollection();
         }
         
         $bestMoveSequence   = $bestMoveSequence->filter(
             function( $entry ) {
-                return $entry != null;
+                return $entry != null && ! $entry->isNull();
             }
         );
         
@@ -72,7 +73,7 @@ abstract class Engine
         try {
             return $this->getMovesOrderedByFromWhiteNumber( $bestMoveSequence, AbstractGameManager::COLLECTION_ORDER_ASC );
         } catch ( \Exception $e ) {
-            $this->logger->log( 'Engin GetBestMoves: ' . print_r( $bestMoveSequence->toArray(), true ), 'EngineGenerateMoves' );
+            $this->logger->log( print_r( $bestMoveSequence->toArray(), true ), 'EngineGenerateMoves' );
             throw $e;
         }
     }
@@ -85,7 +86,10 @@ abstract class Engine
         foreach ( $game->Roll as $roll ) {
             $moves[]    = new Move();
         }
+        $sequences[]    = $moves;
+        
         $this->_GenerateMovesSequence( $sequences, $moves, 0, $game );
+        $this->logger->log( 'Engin GetBestMoves: ' . print_r( $sequences->toArray(), true ), 'EngineGenerateMoves' );
         
         // Special case. Sometimes the first dice is blocked, but can be moved after next dice
         if ( $sequences->count() == 1 ) {
@@ -95,6 +99,7 @@ abstract class Engine
                 }
             );
             if ( $blockedMoves->count() ) {
+                $this->logger->log( 'Has Blocked Moves. Count: ' . $blockedMoves->count(), 'EngineGenerateMoves' );
                 $temp = $game->Roll[0];
                 $game->Roll[0] = $game->Roll[1];
                 $game->Roll[1] = $temp;
@@ -149,7 +154,7 @@ abstract class Engine
         try {
             $moves = new ArrayCollection();
             for ( $i = 0; $i < count( $sequence ); $i++ ) {
-                if ( $sequence[$i] != null ) {
+                if ( ! $sequence[$i]->isNull() ) {
                     $move   = new Move();
                     $move->From = $game->Points[$sequence[$i]->From->BlackNumber];
                     $move->To = $game->Points[$sequence[$i]->To->BlackNumber];
@@ -164,14 +169,14 @@ abstract class Engine
             throw $e;
         }
         
-        return $moves;
+        return $moves->count() ? $moves : $sequence;
     }
 
     protected function DoSequence( Collection $sequence, Game $game ): Collection
     {
         $hits = new ArrayCollection();
         foreach ( $sequence as $move ) {
-            if ( $move == null ) {
+            if ( $move == null || $move->isNull() ) {
                 continue;
             }
             $hit = $game->MakeMove( $move );

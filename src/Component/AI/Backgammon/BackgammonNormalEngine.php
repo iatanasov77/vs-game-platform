@@ -92,6 +92,7 @@ class BackgammonNormalEngine extends Engine
                 $minPoint = $orderedCurrentPlayerPoints->first()->GetNumber( $game->CurrentPlayer );
                 
                 $toPointNo = $fromPointNo == $minPoint ? \min( 25, $fromPointNo + $dice->Value ) : $fromPointNo + $dice->Value;
+                $this->logger->log( 'Engin toPointNo in IsBearingOff: ' . $toPointNo, 'EngineGenerateMoves' );
                 $toPoint = $game->Points->filter(
                     function( $entry ) use ( $game, $toPointNo ) {
                         return $entry->GetNumber( $game->CurrentPlayer ) == $toPointNo;
@@ -103,7 +104,7 @@ class BackgammonNormalEngine extends Engine
                     $move->From = $fromPoint;
                     $move->To = $toPoint;
                     
-                    if ( isset( $moves[$diceIndex] ) && $moves[$diceIndex]->isNull() ) {
+                    if ( ! isset( $moves[$diceIndex] ) || $moves[$diceIndex]->isNull() ) {
                         $moves[$diceIndex] = $move;
                     } else {
                         $newMoves = $moves;

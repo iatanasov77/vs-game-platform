@@ -872,7 +872,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         Async\await( $promise );
         
         $moves = $this->Engine->GetBestMoves();
-        $this->logger->log( 'EnginMoves: ' . print_r( $moves->toArray(), true ), 'EnginMoves' );
+        $this->logger->log( print_r( $moves->toArray(), true ), 'EnginMoves' );
         
         $noMoves = true;
         for ( $i = 0; $i < $moves->count(); $i++ ) {

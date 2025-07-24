@@ -353,7 +353,7 @@ export class BackgammonService extends AbstractGameService
         
         const dices = this.appState.dices.getValue();
         this.dicesHistory.push( dices );
-        console.log( 'Oponent DoMove Dices', dices );
+        //console.log( 'Oponent DoMove Dices', dices );
         
         const diceClone = JSON.parse( JSON.stringify( dices ) ) as DiceDto[];
         
@@ -412,7 +412,7 @@ export class BackgammonService extends AbstractGameService
             moves: this.userMoves.filter( ( m ) => m.color === myColor )
         };
         this.sendMessage( JSON.stringify( action ) );
-        //console.log( 'Send Moves', action.moves );
+        console.log( 'Send Moves ' + new Date().toLocaleTimeString(), action.moves );
         
         this.userMoves = [];
         this.dicesHistory = [];

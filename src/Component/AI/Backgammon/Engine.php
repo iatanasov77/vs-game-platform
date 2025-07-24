@@ -60,7 +60,7 @@ abstract class Engine
             return new ArrayCollection();
         }
         
-        $this->logger->log( 'BestMoves Before Filter: ' . print_r( $bestMoveSequence->toArray(), true ), 'EnginMoves' );
+        //$this->logger->log( 'BestMoves Before Filter: ' . print_r( $bestMoveSequence->toArray(), true ), 'EnginMoves' );
         $bestMoveSequence   = $bestMoveSequence->filter(
             function( $entry ) {
                 return $entry != null && ! $entry->isNull();

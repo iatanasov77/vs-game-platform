@@ -269,7 +269,11 @@ abstract class AbstractGameManager implements GameManagerInterface
             }
             
             $this->DoMoves( $action );
-            $this->NewTurn( $socket );
+            $promise = Async\async( function () use ( $action, $socket ) {
+                $this->NewTurn( $socket );
+            })();
+            Async\await( $promise );
+            
         } else if ( $actionName == ActionNames::opponentMove ) {
             $action = $this->serializer->deserialize( $actionText, OpponentMoveActionDto::class, JsonEncoder::FORMAT );
             $this->Send( $otherSocket, $action );
@@ -704,6 +708,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         //$this->logger->debug( $this->Game->ValidMoves, 'GameValidMoves.txt' );
         //$this->debugGetCheckerFromPoint();
         
+        $this->logger->log( "Points Before DoMoves: " . \print_r( $this->Game->Points->toArray(), true ), 'DoMoves' );
         for ( $i = 0; $i < count( $action->moves ); $i++ ) {
             $moveDto = $action->moves[$i];
             if ( $validMove == null ) {
@@ -728,6 +733,7 @@ abstract class AbstractGameManager implements GameManagerInterface
             $move   = Mapper::MoveToMove( $moveDto, $this->Game );
             $this->Game->MakeMove( $move );
         }
+        $this->logger->log( "Points After DoMoves: " . \print_r( $this->Game->Points->toArray(), true ), 'DoMoves' );
         //$this->logger->log( "Black Player Points Left: " . $this->Game->BlackPlayer->PointsLeft, 'EndGame' );
     }
     
@@ -843,11 +849,8 @@ abstract class AbstractGameManager implements GameManagerInterface
             $this->SendNewRoll();
             
             if ( $this->AisTurn() ) {
-                $promise = Async\async( function () use ( $socket ) {
-                    $this->logger->log( "NewTurn for AI", 'SwitchPlayer' );
-                    $this->EnginMoves( $socket );
-                })();
-                Async\await( $promise );
+                $this->logger->log( "NewTurn for AI", 'SwitchPlayer' );
+                $this->EnginMoves( $socket );
             }
         }
     }
@@ -872,9 +875,10 @@ abstract class AbstractGameManager implements GameManagerInterface
         Async\await( $promise );
         
         $moves = $this->Engine->GetBestMoves();
-        $this->logger->log( print_r( $moves->toArray(), true ), 'EnginMoves' );
+        //$this->logger->log( print_r( $moves->toArray(), true ), 'EnginMoves' );
         
         $noMoves = true;
+        $this->logger->log( "Points Before EnginMoves: " . \print_r( $this->Game->Points->toArray(), true ), 'EnginMoves' );
         for ( $i = 0; $i < $moves->count(); $i++ ) {
             $move = $moves[$i];
             if ( $move->isNull() ) {
@@ -890,7 +894,11 @@ abstract class AbstractGameManager implements GameManagerInterface
                 $dto = new OpponentMoveActionDto();
                 $dto->move = $moveDto;
                 
-                $this->Game->MakeMove( $move );
+                $hit = $this->Game->MakeMove( $move );
+                if ( $hit ) {
+                    $this->logger->log( "Has a Hit at BlackNumber Point: " . $move->To->BlackNumber, 'EnginMoves' );
+                }
+                
                 if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {
                     $this->Game->BlackPlayer->FirstMoveMade = true;
                 } else {
@@ -902,6 +910,7 @@ abstract class AbstractGameManager implements GameManagerInterface
             })();
             Async\await( $promise );
         }
+        $this->logger->log( "Points After EnginMoves: " . \print_r( $this->Game->Points->toArray(), true ), 'EnginMoves' );
         
         if ( $noMoves ) {
             $promise = Async\async( function () {
@@ -910,7 +919,10 @@ abstract class AbstractGameManager implements GameManagerInterface
             Async\await( $promise );
         }
         
-        $this->NewTurn( $client );
+        $promise = Async\async( function () use ( $client ) {
+            $this->NewTurn( $client );
+        })();
+        Async\await( $promise );
     }
     
     protected function debugGetCheckerFromPoint()

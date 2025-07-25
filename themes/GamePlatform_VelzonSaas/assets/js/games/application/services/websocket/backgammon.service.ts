@@ -248,7 +248,7 @@ export class BackgammonService extends AbstractGameService
                 break;
             }
             case ActionNames.gamePlayStarted: {
-                //console.log( 'WebSocket Action Game Play Started', action.actionName );
+                console.log( 'WebSocket Action Game Play Started', action.actionName );
                 //this.appState.showBusy();
                 
                 this.store.dispatch( playGame() );

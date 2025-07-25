@@ -1,10 +1,7 @@
 import { Component, Inject, OnInit, OnChanges, SimpleChanges, EventEmitter, Input, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable } from 'rxjs';
 
 import { Keys } from '../../../../utils/keys';
-import { AppStateService } from '../../../../state/app-state.service';
-import UserDto from '_@/GamePlatform/Model/BoardGame/userDto';
 
 import cssString from './board-buttons.component.scss';
 import templateString from './board-buttons.component.html';
@@ -31,25 +28,22 @@ export class BoardButtonsComponent implements OnInit, OnChanges
     @Output() onNew = new EventEmitter<void>();
     @Output() onExit = new EventEmitter<void>();
     
-    @Output() onPlayGame = new EventEmitter<void>();
+    @Output() onPlayGame = new EventEmitter<string>();
     @Output() onInviteFriend = new EventEmitter<void>();
-    @Output() onAcceptInvite = new EventEmitter<void>();
+    @Output() onAcceptInvite = new EventEmitter<string>();
     @Output() onCancelInvite = new EventEmitter<void>();
     
     @Output() onRotate = new EventEmitter<void>();
     @Output() onFlip = new EventEmitter<void>();
     @Output() onResign = new EventEmitter<void>();
     
-    inviteId = '';
+    inviteId = null;
     acceptInviteVisible: boolean = false;
-    
-    user$: Observable<UserDto>;
     
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,
-        @Inject( AppStateService ) private appState: AppStateService
     ) {
-        this.user$ = this.appState.user.observe();
+        
     }
     
     ngOnInit(): void
@@ -57,11 +51,10 @@ export class BoardButtonsComponent implements OnInit, OnChanges
         this.inviteId = window.gamePlatformSettings.queryParams[
             Keys.inviteId
         ];
-        //alert( this.inviteId );
         
-        this.user$.subscribe( ( user ) => {
-            if ( user && this.inviteId ) this.acceptInviteVisible = true;
-        });
+        if ( this.isLoggedIn && this.inviteId ) {
+            this.acceptInviteVisible = true;
+        }
     }
     
     ngOnChanges( changes: SimpleChanges ): void
@@ -72,6 +65,9 @@ export class BoardButtonsComponent implements OnInit, OnChanges
             switch ( propName ) {
                 case 'isLoggedIn':
                     this.isLoggedIn = changedProp.currentValue;
+                    if ( this.isLoggedIn && this.inviteId ) {
+                        this.acceptInviteVisible = true;
+                    }
                     break;
                 case 'lobbyButtonsVisible':
                     this.lobbyButtonsVisible = changedProp.currentValue;
@@ -103,7 +99,7 @@ export class BoardButtonsComponent implements OnInit, OnChanges
     
     playGame(): void
     {
-        this.onPlayGame.emit();
+        this.onPlayGame.emit( '' );
     }
     
     inviteFriendClick(): void
@@ -113,7 +109,7 @@ export class BoardButtonsComponent implements OnInit, OnChanges
     
     startInvitedGame( id: string ): void
     {
-        this.onAcceptInvite.emit();
+        this.onAcceptInvite.emit( id );
     }
     
     cancelInvite(): void

@@ -181,6 +181,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         this.gameString$ = this.appStateService.gameString.observe();
         
         this.user$.subscribe( ( user ) => {
+            //alert( 'User: ' + user );
             if ( user ) this.introMuted = user.muteIntro;
         });
         
@@ -190,6 +191,9 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         }
         
         //console.log( 'Game Settings: ', window.gamePlatformSettings );
+        const inviteId = window.gamePlatformSettings.queryParams.inviteId;
+        //alert( '[In Game Container]Invite ID: ' + inviteId );
+        
         const gameId = window.gamePlatformSettings.queryParams.gameId;
         const playAi = window.gamePlatformSettings.queryParams.playAi;
         const forGold = window.gamePlatformSettings.queryParams.forGold;
@@ -207,8 +211,12 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
             setTimeout( () => {
                 this.tutorialService.start();
             }, 1 );
-        } else if ( ! this.editing ) {
+        } else if ( ! this.editing && ! inviteId ) {
             this.wsService.connect( gameId, playAi, forGold );
+            if ( gameId ) {
+                //alert( 'Game ID: ' + gameId );
+                this.playGame( gameId );
+            }
         }
         
         if ( this.editing ) {
@@ -715,22 +723,21 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
             modalRef.dismiss();
         });
         
-        modalRef.componentInstance.onPlayGame.subscribe( () => {
+        modalRef.componentInstance.onPlayGame.subscribe( ( gameId: string ) => {
             modalRef.close();
-            this.playGame();
+            
+            this.wsService.connect( gameId, this.playAiFlag, this.forGoldFlag );
+            this.playGame( gameId );
         });
     }
     
-    acceptInvite(): void
+    acceptInvite( inviteId: string ): void
     {
-        const inviteId = window.gamePlatformSettings.queryParams.inviteId;
-        if ( inviteId ) {
-            this.wsService.acceptInvite( inviteId );
-            
-            this.wsService.resetGame();
-            this.wsService.connect( inviteId, this.playAiFlag, this.forGoldFlag );
-            this.waitForOpponent();
-        }
+        this.wsService.acceptInvite( inviteId );
+        
+        this.wsService.resetGame();
+        this.wsService.connect( inviteId, this.playAiFlag, this.forGoldFlag );
+        this.waitForOpponent();
     }
     
     cancelInvite(): void
@@ -788,13 +795,16 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         this.authService.toggleIntro();
     }
     
-    playGame(): void
+    playGame( gameId: string ): void
     {
         const game      = this.appStateService.game.getValue();
         const myColor   = this.appStateService.myColor.getValue();
         //console.log( 'GameDto Object: ', game );
         
-        this.gamePlayService.startBoardGame( 'normal' );
+        if ( ! gameId.length ) {
+            this.gamePlayService.startBoardGame( 'normal' );
+        }
+        
         //this.wsService.connect( '', this.playAiFlag, this.forGoldFlag );
         this.wsService.startGamePlay( game, myColor, this.playAiFlag, this.forGoldFlag );
         

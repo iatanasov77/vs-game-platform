@@ -25,7 +25,7 @@ export class GameService
         @Inject( AuthService ) private authService: AuthService,
         @Inject( LocalStorageService ) private localStorageService: LocalStorageService,
     ) {
-        this.url        = `${context.backendURL}`;
+        this.url        = `${context.apiURL}`;
         this.hasPlayer$ = new BehaviorSubject<boolean>( false );
     }
     

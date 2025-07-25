@@ -26,7 +26,7 @@ export class EditorService
         @Inject( HttpClient ) private httpClient: HttpClient,
         @Inject( AppStateService ) private appState: AppStateService
     ) {
-        this.url    = `${context.backendURL}`;
+        this.url    = `${context.apiURL}`;
     }
     
     doMove( move: MoveDto )

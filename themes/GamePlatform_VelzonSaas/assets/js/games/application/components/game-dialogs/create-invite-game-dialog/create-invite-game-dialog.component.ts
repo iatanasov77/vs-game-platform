@@ -28,7 +28,7 @@ export class CreateInviteGameDialogComponent
 {
     @Output() closeModal: EventEmitter<any> = new EventEmitter();
     @Output() cancel = new EventEmitter<string>();
-    @Output() onPlayGame = new EventEmitter<void>();
+    @Output() onPlayGame = new EventEmitter<string>();
     @ViewChild( 'linkText', { static: false } ) linkText: ElementRef | undefined;
     
     invite$: Observable<InviteResponseDto> | null = null;
@@ -52,14 +52,20 @@ export class CreateInviteGameDialogComponent
             this.gameId = res.gameId;
             
             const currentUrlparams = new URLSearchParams( window.location.search );
+            
+            let url = new URL( window.location.href );
+            url.searchParams.delete( 'gameId' );
+            url.searchParams.delete( 'playAi' );
+            url.searchParams.delete( 'forGold' );
+            
             let variant = currentUrlparams.get( 'variant' );
             if ( variant == null ) {
                 variant = 'normal';
+                url.searchParams.append( 'variant', variant );
             }
             
-            let url = new URL( window.location.href );
-            url.searchParams.append( 'variant', variant );
             url.searchParams.append( Keys.inviteId, this.gameId );
+            
             this.link = url.href;
         });
     }
@@ -74,13 +80,13 @@ export class CreateInviteGameDialogComponent
             }
             
             const urlTree = this.router.createUrlTree([], {
-                queryParams: { variant: variant, gameId: this.gameId },
+                queryParams: { variant: variant, playAi: null, forGold: null, gameId: this.gameId },
                 queryParamsHandling: "merge",
                 preserveFragment: true
             });
             this.router.navigateByUrl( urlTree );
             
-            this.onPlayGame.emit();
+            this.onPlayGame.emit( this.gameId );
         }
     }
     

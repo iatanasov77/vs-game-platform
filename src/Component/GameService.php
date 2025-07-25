@@ -132,6 +132,11 @@ final class GameService
             }
         );
         
+        // Debug Found Games
+        foreach( $managers as $game ) {
+            $this->logger->log( "On Connect Found Game with ID: {$game->Game->Id}", 'GameService' );
+        }
+        
         if ( self::GameAlreadyStarted( $managers, $userId ) ) {
             $warning = "The user {$userId} has already started a game";
             $this->logger->log( $warning, 'GameService' );
@@ -386,6 +391,7 @@ final class GameService
             $connection->connected = false;
             $action->connection = $connection;
             
+            $this->logger->log( "SendConnectionLost for PlayerColor: {$color->value}", 'GameService' );
             $manager->Send( $socket, $action );
         }
     }

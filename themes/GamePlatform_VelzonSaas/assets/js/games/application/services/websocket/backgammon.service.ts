@@ -2,10 +2,7 @@ import { Injectable, Inject, Injector } from '@angular/core';
 import { AbstractGameService } from './abstract-game.service';
 
 // NGRX Store
-import {
-    loadGameRooms,
-    playGame
-} from '../../+store/game.actions';
+import { loadGameRooms } from '../../+store/game.actions';
 
 // Board Interfaces
 import CheckerDto from '_@/GamePlatform/Model/BoardGame/checkerDto';
@@ -244,14 +241,6 @@ export class BackgammonService extends AbstractGameService
             }
             case ActionNames.serverWasTerminated: {
                 this.cookieService.deleteAll( Keys.gameIdKey );
-                
-                break;
-            }
-            case ActionNames.gamePlayStarted: {
-                console.log( 'WebSocket Action Game Play Started', action.actionName );
-                //this.appState.showBusy();
-                
-                this.store.dispatch( playGame() );
                 
                 break;
             }

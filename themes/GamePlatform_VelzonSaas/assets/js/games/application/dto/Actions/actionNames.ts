@@ -15,9 +15,7 @@
     requestHint,
     hintMoves,
     
-    serverWasTerminated,
-    startGamePlay,
-    gamePlayStarted
+    serverWasTerminated
 }
 
 export default ActionNames;

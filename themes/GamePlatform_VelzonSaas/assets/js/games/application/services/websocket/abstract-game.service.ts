@@ -30,7 +30,6 @@ import UndoActionDto from '../../dto/Actions/undoActionDto';
 import StartGamePlayActionDto from '../../dto/Actions/startGamePlayActionDto';
 
 // Unused Actions but part of the TypeScript compilation
-import GamePlayStartedActionDto from '../../dto/Actions/gamePlayStartedActionDto';
 import ServerWasTerminatedActionDto from '../../dto/Actions/serverWasTerminatedActionDto';
 
 import { Keys } from '../../utils/keys';
@@ -101,6 +100,7 @@ export abstract class AbstractGameService
     
     connect( gameId: string, playAi: boolean, forGold: boolean ): void
     {
+        //alert( 'Called Websocket Connect !!!' );
         if ( this.socket ) {
             this.socket.close();
         }
@@ -180,7 +180,7 @@ export abstract class AbstractGameService
         // Set Status Message
         const cnn = this.appState.myConnection.getValue();
         this.appState.myConnection.setValue( { ...cnn, connected: false } );
-        this.statusMessageService.setMyConnectionLost( event.reason );
+        //this.statusMessageService.setMyConnectionLost( event.reason );
     }
     
     abstract onMessage( message: MessageEvent<string> ): void;
@@ -260,23 +260,6 @@ export abstract class AbstractGameService
         const action: ActionDto = {
             actionName: ActionNames.requestHint
         };
-        this.sendMessage( JSON.stringify( action ) );
-    }
-    
-    startGamePlay( game: GameDto, myColor: PlayerColor, playAi: boolean, forGold: boolean ): void
-    {
-        /**
-         * Delete Cookie on Every Browser Refresh,
-         * May be later this should on DEV Environement Only.
-         */
-        //this.cookieService.deleteAll( Keys.gameIdKey );
-        
-        const action: StartGamePlayActionDto = {
-            actionName: ActionNames.startGamePlay,
-            game: game,
-            myColor: myColor
-        };
-        
         this.sendMessage( JSON.stringify( action ) );
     }
     

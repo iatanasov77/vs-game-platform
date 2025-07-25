@@ -211,10 +211,9 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
             setTimeout( () => {
                 this.tutorialService.start();
             }, 1 );
-        } else if ( ! this.editing && ! inviteId ) {
-            this.wsService.connect( gameId, playAi, forGold );
+        } else if ( ! this.editing && gameId ) {
+            //this.wsService.connect( gameId, playAi, forGold );
             if ( gameId ) {
-                //alert( 'Game ID: ' + gameId );
                 this.playGame( gameId );
             }
         }
@@ -726,7 +725,6 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         modalRef.componentInstance.onPlayGame.subscribe( ( gameId: string ) => {
             modalRef.close();
             
-            this.wsService.connect( gameId, this.playAiFlag, this.forGoldFlag );
             this.playGame( gameId );
         });
     }
@@ -804,9 +802,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         if ( ! gameId.length ) {
             this.gamePlayService.startBoardGame( 'normal' );
         }
-        
-        //this.wsService.connect( '', this.playAiFlag, this.forGoldFlag );
-        this.wsService.startGamePlay( game, myColor, this.playAiFlag, this.forGoldFlag );
+        this.wsService.connect( gameId, this.playAiFlag, this.forGoldFlag );
         
         this.lobbyButtonsVisibleChanged.emit( false );
         this.waitForOpponent();

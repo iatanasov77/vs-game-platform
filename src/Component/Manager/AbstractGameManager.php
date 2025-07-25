@@ -45,8 +45,6 @@ use App\Component\Dto\Actions\GameRestoreActionDto;
 use App\Component\Dto\Actions\DoublingActionDto;
 use App\Component\Dto\Actions\OpponentMoveActionDto;
 use App\Component\Dto\Actions\RolledActionDto;
-use App\Component\Dto\Actions\StartGamePlayActionDto;
-use App\Component\Dto\Actions\GamePlayStartedActionDto;
 use App\Component\Dto\Actions\HintMovesActionDto;
 
 use App\Entity\GamePlayer;
@@ -337,9 +335,6 @@ abstract class AbstractGameManager implements GameManagerInterface
         } else if ( $actionName == ActionNames::exitGame ) {
             $this->logger->log( 'exitGame action recieved from GameManager.', 'GameManager' );
             $this->CloseConnections( $socket );
-        } else if ( $actionName == ActionNames::startGamePlay ) {
-            $this->logger->log( 'startGamePlay action recieved from GameManager.', 'GameManager' );
-            $this->StartGamePlay();
         }
         
         //$this->logger->debug( $this->Game->Points, 'AfterDoAction.txt' );
@@ -425,18 +420,6 @@ abstract class AbstractGameManager implements GameManagerInterface
                     }
                 });
             })();
-        }
-    }
-    
-    public function StartGamePlay(): void
-    {
-        $action = new GamePlayStartedActionDto();
-        if ( $this->Client1 && ! $this->Game->BlackPlayer->IsAi() ) {
-            $this->Send( $this->Client1, $action );
-        }
-        
-        if ( $this->Client2 && ! $this->Game->WhitePlayer->IsAi() ) {
-            $this->Send( $this->Client2, $action );
         }
     }
     

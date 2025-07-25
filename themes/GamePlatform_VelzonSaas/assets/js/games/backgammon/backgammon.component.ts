@@ -4,7 +4,6 @@ import { switchMap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
 import { loginBySignatureSuccess } from '../application/+store/login.actions';
-import { playGame } from '../application/+store/game.actions';
 
 import { IAuth } from '../application/interfaces/auth';
 import { Busy } from '../application/state/busy';

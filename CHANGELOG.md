@@ -1,3 +1,17 @@
+0.15.3	|	Release date: **25.07.2025**
+============================================
+* Bug-Fixes and Improvements:
+  - Improve Ending a Game.
+  - Add a Feature to Remove a Game When Total Think Time Elapsed.
+  - Fixing New Game Action
+  - Make Start and Accept Invited Game.
+  - Fixing and Improving Backgammon Board Styles for Flipped and Rotated Boards.
+  - Some Fixes on Backgammon AI Engine When Generationg Moves.
+  - Add More Fixes for Backgammon AI Engine and Fix Setting Opponent Winner.
+  - Improve Status Message Styling and add Some Debug Logs For Game Moves and Points.
+  - Fix Create and Accept Invite Games.
+
+
 0.15.2	|	Release date: **19.07.2025**
 ============================================
 * Bug-Fixes and Improvements:

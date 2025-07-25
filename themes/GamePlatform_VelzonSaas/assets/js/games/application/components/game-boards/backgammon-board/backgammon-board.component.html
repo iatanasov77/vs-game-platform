@@ -1,15 +1,11 @@
-<div id="game-board" align="center">
-    <div id="board-table">
-        <canvas
-            #canvas
-            class="game-board"
-            [ngClass]="{ rotated: rotated, flipped: flipped }"
-            (mousedown)="onMouseDown($event)"
-            (mousemove)="onMouseMove($event)"
-            (mouseup)="onMouseUp($event)"
-            (touchstart)="onTouchStart($event)"
-            (touchend)="onTouchEnd($event)"
-            (touchmove)="onTouchMove($event)"
-        ></canvas>
-    </div>
-</div>
+<canvas
+    #canvas
+    class="game-board"
+    [ngClass]="{ rotated: rotated, flipped: flipped }"
+    (mousedown)="onMouseDown($event)"
+    (mousemove)="onMouseMove($event)"
+    (mouseup)="onMouseUp($event)"
+    (touchstart)="onTouchStart($event)"
+    (touchend)="onTouchEnd($event)"
+    (touchmove)="onTouchMove($event)"
+></canvas>

@@ -29,27 +29,27 @@ use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Websocket\WebSocketState;
 use App\Entity\GamePlayer;
 
-class GameService
+final class GameService
 {
     use GameHelper;
     
     /** @var GameLogger */
-    protected $logger;
+    private $logger;
     
     /** @var SerializerInterface */
-    protected $serializer;
+    private $serializer;
     
     /** @var RepositoryInterface */
-    protected $usersRepository;
+    private $usersRepository;
     
     /** @var SecurityBridge */
-    protected $securityBridge;
+    private $securityBridge;
     
     /** @var GameManagerFactory */
-    protected $managerFactory;
+    private $managerFactory;
     
     /** @var Collection | GameManagerInterface[] */
-    protected $AllGames;
+    private $AllGames;
     
     public function __construct(
         GameLogger $logger,
@@ -117,7 +117,7 @@ class GameService
         
         if ( ! empty ( $gameId ) ) {
             $this->logger->log( 'Invite to Game', 'GameService' );
-            $this->ConnectInvite( $webSocket, $gamePlayer, $gameId );
+            $gameGuid = $this->ConnectInvite( $webSocket, $gamePlayer, $gameId, $gameCode, $gameVariant );
             
             // Game disconnected here.
             return $gameGuid;
@@ -153,15 +153,14 @@ class GameService
             $this->logger->log( "Possibly Play AI !!!", 'GameService' );
             $manager            = $this->managerFactory->createWebsocketGameManager( $forGold, $gameCode, $gameVariant );
             //manager.Ended += Game_Ended;
-            $manager->Client1   = $webSocket;
-            
             $manager->dispatchGameEnded();
             
+            $manager->Client1   = $webSocket;
             $manager->SearchingOpponent = ! $playAi;
             $gameGuid                   =  $manager->Game->Id;
             
             $this->AllGames->set( $gameGuid, $manager );
-            $this->logger->log( "Added a new game and waiting for opponent. Game id {$manager->Game->Id}", 'GameService' );
+            $this->logger->log( "Added a new game and waiting for opponent. Game id {$gameGuid}", 'GameService' );
             
             // entering socket loop
             $manager->ConnectAndListen( $webSocket, PlayerColor::Black, $gamePlayer, $playAi );
@@ -170,6 +169,7 @@ class GameService
             
         } else {
             $manager->SearchingOpponent = false;
+            $gameGuid                   =  $manager->Game->Id;
             
             $this->logger->log( "Found a game and added a second player. Game id {$manager->Game->Id}", 'GameService' );
             $color = $manager->Client1 == null ? PlayerColor::Black : PlayerColor::White;
@@ -218,11 +218,11 @@ class GameService
         }
     }
     
-    public function CreateInvite( string $userId, string $gameCode ): string
+    public function CreateInvite( int $playerId, string $gameCode, string $gameVariant ): string
     {
         $existing = $this->AllGames->filter(
-            function( $entry ) use ( $userId ) {
-                return $entry->Inviter == $userId;
+            function( $entry ) use ( $playerId ) {
+                return $entry->Inviter == $playerId;
             }
         );
             
@@ -230,29 +230,32 @@ class GameService
             $this->AllGames->removeElement( $existing[$i] );
         }
             
-        $manager    = $this->managerFactory->createWebsocketGameManager( true, $gameCode );
+        $manager = $this->managerFactory->createWebsocketGameManager( true, $gameCode, $gameVariant );
         //$manager.Ended += Game_Ended;
-        $manager->Inviter = $userId;
-        $manager->SearchingOpponent = false;
-        $this->AllGames[]   = $manager;
+        $manager->dispatchGameEnded();
         
-        return $manager->Game->Id;
+        $manager->Inviter = $playerId;
+        $manager->SearchingOpponent = false;
+        
+        $gameGuid  = $manager->Game->Id;
+        $this->AllGames->set( $gameGuid, $manager );
+        $this->logger->log( "Added an Invite Game with ID: {$gameGuid}", 'GameService' );
+        
+        // Debug Existing Games
+        foreach( $this->AllGames as $game ) {
+            $this->logger->log( "On Invite Exist Game with ID: {$game->Game->Id}", 'GameService' );
+        }
+        
+        return $gameGuid;
     }
     
     public function Game_Ended( GameManagerInterface $sender ): void
     {
-        if ( $sender->Client1 ) {
-            $sender->Client1->close( Frame::CLOSE_NORMAL );
-        }
-        
-        if ( $sender->Client2 ) {
-            $sender->Client2->close( Frame::CLOSE_NORMAL );
-        }
-        
+        $this->logger->log( "Game_Ended for Game: {$sender->Game->Id}", 'GameService' );
         $this->AllGames->removeElement( $sender );
     }
     
-    protected function TryReConnect( WebsocketClientInterface $webSocket, ?string $gameCookie, ?GamePlayer $dbUser ): ?string
+    private function TryReConnect( WebsocketClientInterface $webSocket, ?string $gameCookie, ?GamePlayer $dbUser ): ?string
     {
         $this->logger->log( 'Try Reconnect with cookie: '. $gameCookie, 'GameService' );
         
@@ -303,7 +306,7 @@ class GameService
         return null;
     }
     
-    protected function GameAlreadyStarted( Collection $managers, $userId ): bool
+    private function GameAlreadyStarted( Collection $managers, $userId ): bool
     {
         foreach ( $managers as $m ) {
             // Guest vs guest must be allowed. When guest games are enabled.
@@ -320,7 +323,7 @@ class GameService
         return false;
     }
     
-    protected function RemoveDissconnected( GameManagerInterface $manager ): void
+    private function RemoveDissconnected( GameManagerInterface $manager ): void
     {
         if (
             ( $manager->Client1 == null || $manager->Client1->State != WebSocketState::Open ) &&
@@ -331,19 +334,30 @@ class GameService
         }
     }
     
-    protected function ConnectInvite( WebsocketClientInterface $webSocket, GamePlayer $dbUser, string $gameInviteId ): void
-    {
+    private function ConnectInvite(
+        WebsocketClientInterface $webSocket,
+        GamePlayer $dbUser,
+        string $gameInviteId,
+        string $gameCode,
+        string $gameVariant
+    ): ?string {
         $manager = $this->AllGames->filter(
-            function( $entry ) use ( $cookie ) {
+            function( $entry ) use ( $gameInviteId ) {
                 return $entry->Game->Id == $gameInviteId && ( $entry->Client1 == null || $entry->Client2 == null );
             }
         )->first();
         
         if ( $manager == null ) {
-            //$webSocket->close( WebSocketCloseStatus.InvalidPayloadData, "Invite link has expired", CancellationToken.None );
-            $webSocket->close();
+            /* Recreate Invited Games Because When Created From a Rest Controller are Missing in Game Service
+             * ==============================================================================================
+            $webSocket->close( Frame::CLOSE_NORMAL );
             
-            return;
+            $this->logger->log( "ConnectInvite: Not Existing Game", 'GameService' );
+            return null;
+            */
+            
+            $this->logger->log( "Not Existing Game Will be Recreated", 'GameService' );
+            $manager = $this->ReCreateInvite( $dbUser->getId(), $gameCode, $gameVariant, $gameInviteId );
         }
         
         $color = PlayerColor::Black;
@@ -355,9 +369,11 @@ class GameService
         
         $this->RemoveDissconnected( $manager );
         $this->SendConnectionLost( PlayerColor::White, $manager );
+        
+        return $manager->Game->Id;
     }
     
-    protected function SendConnectionLost( PlayerColor $color, GameManagerInterface &$manager )
+    private function SendConnectionLost( PlayerColor $color, GameManagerInterface &$manager )
     {
         $socket = $manager->Client1;
         if ( $color == PlayerColor::White ) {
@@ -374,7 +390,7 @@ class GameService
         }
     }
     
-    protected static function MyColor( GameManagerInterface $manager, GamePlayer $dbUser, PlayerColor $color ): bool
+    private static function MyColor( GameManagerInterface $manager, GamePlayer $dbUser, PlayerColor $color ): bool
     {
         //prevents someone with same game id, get someone elses side in the game.
         $player = $manager->Game->BlackPlayer;
@@ -385,8 +401,34 @@ class GameService
         return $dbUser != null && $dbUser->getId() == $player->Id;
     }
     
-    protected function GetDbUser( $userId ): ?UserInterface
+    private function GetDbUser( $userId ): ?UserInterface
     {
         return $userId ? $this->usersRepository->find( $userId ) : $this->securityBridge->getUser();
+    }
+    
+    /**
+     * Workaround Method To Recreate Invited Games Because When Created From a Rest Controller are Missing in Game Service
+     * 
+     * @TODO Maybe When Creating an Invite from a Rest Controller The Game Guid Should be Saved in Database
+     *          and When Recreating here to Check if it was really created before
+     * 
+     * @param int $playerId
+     * @param string $gameCode
+     * @param string $gameVariant
+     * @param string $gameInviteId
+     * 
+     * @return GameManagerInterface
+     */
+    private function ReCreateInvite( int $playerId, string $gameCode, string $gameVariant, string $gameInviteId ): GameManagerInterface
+    {
+        $newGuid    = $this->CreateInvite( $playerId, $gameCode, $gameVariant );
+        $manager    = $this->AllGames->get( $newGuid );
+        
+        $manager->Game->Id = $gameInviteId;
+        $this->AllGames->set( $gameInviteId, $manager );
+        $this->logger->log( "ReCreate an Invite Game with ID: {$gameInviteId}", 'GameService' );
+        
+        $this->AllGames->remove( $newGuid );
+        return $this->AllGames->get( $gameInviteId );
     }
 }

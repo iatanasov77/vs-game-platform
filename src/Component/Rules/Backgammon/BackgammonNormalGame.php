@@ -250,7 +250,7 @@ class BackgammonNormalGame extends Game
                     $this->logger->log( "IsBearingOff !!!", 'GenerateMoves' );
                     
                     // The furthest away checker can be moved beyond home
-                    $minPoint = $this->calcMinPoint( $currentPlayer );
+                    $minPoint = $this->calcMinPoint( $this->Points, $currentPlayer );
                     $toPointNo = $fromPointNo == $minPoint ? \min( 25, $fromPointNo + $dice->Value ) : $fromPointNo + $dice->Value;
                     $toPoint = $this->Points->filter(
                         function( $entry ) use ( $currentPlayer, $toPointNo ) {

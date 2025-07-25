@@ -43,7 +43,7 @@ export class AuthService
         @Inject( SoundService ) private sound: SoundService,
         @Inject( LocalStorageService ) private localStorageService: LocalStorageService,
     ) {
-        this.url        = `${context.backendURL}`;
+        this.url        = `${context.apiURL}`;
         
         let auth        = this.getAuth();
         this.loggedIn   = auth && auth.apiToken ? true : false;

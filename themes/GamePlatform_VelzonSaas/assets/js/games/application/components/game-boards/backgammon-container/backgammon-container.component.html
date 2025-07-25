@@ -111,8 +111,10 @@
             (onNew)="newGame()"
             (onExit)="exitGame()"
             
-            (onPlayGame)="playGame()"
+            (onPlayGame)="playGame($event)"
             (onInviteFriend)="inviteFriend()"
+            (onAcceptInvite)="acceptInvite( $event )"
+            (onCancelInvite)="cancelInvite()"
             
             (onRotate)="onRotated()"
             (onFlip)="onFlipped()"

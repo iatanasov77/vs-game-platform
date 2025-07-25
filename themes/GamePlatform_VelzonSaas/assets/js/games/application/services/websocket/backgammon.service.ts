@@ -63,7 +63,7 @@ export class BackgammonService extends AbstractGameService
                 //console.log( 'WebSocket Action Game Created', action.actionName );
                 
                 const dto = JSON.parse( message.data ) as GameCreatedActionDto;
-                console.log( 'WebSocket Action Game Created', dto.game );
+                //console.log( 'WebSocket Action Game Created', dto.game );
                 this.appState.myColor.setValue( dto.myColor );
                 this.appState.game.setValue( dto.game );
                 
@@ -88,7 +88,7 @@ export class BackgammonService extends AbstractGameService
             }
             case ActionNames.dicesRolled: {
                 const dicesAction = JSON.parse( message.data ) as DicesRolledActionDto;
-                //console.log( 'Dices Rolled Action' + new Date().toLocaleTimeString(), dicesAction );
+                console.log( 'Dices Rolled Action' + new Date().toLocaleTimeString(), dicesAction );
                 
                 this.appState.dices.setValue( dicesAction.dices );
                 const cGame = {
@@ -116,7 +116,7 @@ export class BackgammonService extends AbstractGameService
                 
                 const endedAction = JSON.parse( message.data ) as GameEndedActionDto;
                 //console.log( 'game ended', endedAction.game.winner );
-                console.log( 'WebSocket Action Game Ended', endedAction.game );
+                //console.log( 'WebSocket Action Game Ended', endedAction.game );
                 this.appState.game.setValue({
                     ...endedAction.game,
                     playState: GameState.ended
@@ -248,7 +248,7 @@ export class BackgammonService extends AbstractGameService
                 break;
             }
             case ActionNames.gamePlayStarted: {
-                //console.log( 'WebSocket Action Game Play Started', action.actionName );
+                console.log( 'WebSocket Action Game Play Started', action.actionName );
                 //this.appState.showBusy();
                 
                 this.store.dispatch( playGame() );
@@ -353,6 +353,7 @@ export class BackgammonService extends AbstractGameService
         
         const dices = this.appState.dices.getValue();
         this.dicesHistory.push( dices );
+        //console.log( 'Oponent DoMove Dices', dices );
         
         const diceClone = JSON.parse( JSON.stringify( dices ) ) as DiceDto[];
         
@@ -411,7 +412,7 @@ export class BackgammonService extends AbstractGameService
             moves: this.userMoves.filter( ( m ) => m.color === myColor )
         };
         this.sendMessage( JSON.stringify( action ) );
-        //console.log( 'Send Moves', action.moves );
+        console.log( 'Send Moves ' + new Date().toLocaleTimeString(), action.moves );
         
         this.userMoves = [];
         this.dicesHistory = [];

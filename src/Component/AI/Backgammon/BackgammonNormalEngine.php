@@ -77,33 +77,24 @@ class BackgammonNormalEngine extends Engine
                     $game->UndoMove( $move, $hit );
                 }
             } else if ( $game->IsBearingOff( $game->CurrentPlayer ) ) {
+                $this->logger->log( "IsBearingOff !!!", 'EngineGenerateMoves' );
+                
                 // The furthest away checker can be moved beyond home
-                $currentPlayerPoints = $game->Points->filter(
-                    function( $entry ) use ( $game ) {
-                        return $entry->Checkers->filter(
-                            function( $entry ) use ( $game ) {
-                                return $entry && $entry->Color === $game->CurrentPlayer;
-                            }
-                        );
-                    }
-                );
-                
-                $orderedCurrentPlayerPoints = $this->orderPlayerPoints( $currentPlayerPoints, $game, AbstractGameManager::COLLECTION_ORDER_ASC );
-                $minPoint = $orderedCurrentPlayerPoints->first()->GetNumber( $game->CurrentPlayer );
-                
+                $minPoint = $this->calcMinPoint( $game->Points, $game->CurrentPlayer );
                 $toPointNo = $fromPointNo == $minPoint ? \min( 25, $fromPointNo + $dice->Value ) : $fromPointNo + $dice->Value;
                 $toPoint = $game->Points->filter(
                     function( $entry ) use ( $game, $toPointNo ) {
                         return $entry->GetNumber( $game->CurrentPlayer ) == $toPointNo;
                     }
                 )->first();
+                
                 if ( $toPoint != null && $toPoint->IsOpen( $game->CurrentPlayer ) ) {
                     $move = new Move();
                     $move->Color = $game->CurrentPlayer;
                     $move->From = $fromPoint;
                     $move->To = $toPoint;
                     
-                    if ( isset( $moves[$diceIndex] ) && $moves[$diceIndex]->isNull() ) {
+                    if ( ! isset( $moves[$diceIndex] ) || $moves[$diceIndex]->isNull() ) {
                         $moves[$diceIndex] = $move;
                     } else {
                         $newMoves = $moves;

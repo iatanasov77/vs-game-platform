@@ -130,6 +130,8 @@ abstract class Game
     
     abstract public function GenerateMoves(): array;
     
+    abstract public function MakeMove( Move &$move ): ?Checker;
+    
     public function SwitchPlayer(): void
     {
         $this->logger->log( 'SwitchPlayer Called !!!', 'SwitchPlayer' );

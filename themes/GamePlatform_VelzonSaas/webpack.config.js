@@ -103,6 +103,8 @@ Encore.configureDefinePlugin( ( options ) => {
     options.THEME_BUILD_PATH    = JSON.stringify( '/build/gameplatform-velzonsaas-theme' );
     options.PROD_API_URL        = JSON.stringify( process.env.PROD_API_URL );
     options.DEV_API_URL         = JSON.stringify( process.env.DEV_API_URL );
+    options.PROD_BACKEND_URL    = JSON.stringify( process.env.PROD_BACKEND_URL );
+    options.DEV_BACKEND_URL     = JSON.stringify( process.env.DEV_BACKEND_URL );
 });
 
 const config = Encore.getWebpackConfig();

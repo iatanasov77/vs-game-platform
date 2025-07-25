@@ -17,6 +17,7 @@ use Ratchet\WebSocket\WsServer;
 use Ratchet\MessageComponentInterface;
 use React\EventLoop\Factory as EventLoopFactory;
 use React\Socket\SocketServer;
+use App\Component\GameService;
 use App\Component\GameLogger;
 use App\Component\Websocket\Server\WebsocketGamesHandler;
 
@@ -42,6 +43,9 @@ use App\Component\Websocket\Server\WebsocketGamesHandler;
 )]
 final class WebsocketGameServer extends ContainerAwareCommand
 {
+    /** @var GameService */
+    private $gameService;
+    
     /** @var GameLogger */
     private $logger;
     
@@ -58,12 +62,14 @@ final class WebsocketGameServer extends ContainerAwareCommand
         ContainerInterface $container,
         ManagerRegistry $doctrine,
         ValidatorInterface $validator,
+        GameService $gameService,
         GameLogger $logger,
         SerializerInterface $serializer,
         array $parrameters
     ) {
         parent::__construct( $container, $doctrine, $validator );
         
+        $this->gameService  = $gameService;
         $this->logger       = $logger;
         $this->serializer   = $serializer;
         $this->parrameters  = $parrameters;
@@ -117,7 +123,7 @@ final class WebsocketGameServer extends ContainerAwareCommand
             $this->serializer,
             $this->get( 'vs_users.repository.users' ),
             $this->get( 'app_websocket_client_factory' ),
-            $this->get( 'app_game_service' ),
+            $this->gameService,
             $this->parrameters['logExceptionTrace']
         );
         

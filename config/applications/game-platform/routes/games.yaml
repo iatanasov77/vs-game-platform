@@ -10,6 +10,10 @@ app_ajax_create_player:
     path: /ajax/create-player-for-user/{userId}
     controller: App\Controller\GamePlatform\AjaxController::createPlayerForUser
 
+app_create_invite:
+    path: /ajax/invite/create/{gameCode}-{gameVariant}
+    controller: App\Controller\GamePlatform\InviteController::createInviteAction
+
 ###################################################################################
 # Social Media Login
 ###################################################################################

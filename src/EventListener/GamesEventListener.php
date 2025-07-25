@@ -29,6 +29,6 @@ final class GamesEventListener implements EventSubscriberInterface
     public function onGameEnded( GameEndedEvent $event ): void
     {
         $this->logger->log( "GamesEventListener Game Ended !!!", 'GamesEventListener' );
-        //$this->gameService->Game_Ended( $event->getSender() );
+        $this->gameService->Game_Ended( $event->getSender() );
     }
 }

@@ -1,7 +1,8 @@
 export const context    =  {
     isProduction: IS_PRODUCTION,
-    //backendURL: IS_PRODUCTION ? 'http://api.game-platform.vankosoft.org/api' : 'http://api.game-platform.lh/api',
-    backendURL: IS_PRODUCTION ? PROD_API_URL : DEV_API_URL,
+    apiURL: IS_PRODUCTION ? PROD_API_URL : DEV_API_URL,
+    backendURL: IS_PRODUCTION ? PROD_BACKEND_URL : DEV_BACKEND_URL,
+    
     themeBuildPath: THEME_BUILD_PATH
 }
 

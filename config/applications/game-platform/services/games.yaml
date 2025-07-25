@@ -18,6 +18,8 @@ parameters:
     #######################################################################################################################
     env(WEBSOCKET_GAME_LOGGER_CONTEXTS): '[]'
 
+    app_end_game_on_total_think_time_elapse: '%env(bool:END_GAME_ON_TOTAL_THINK_TIME_ELAPSE)%'
+    
 services:
     _defaults:
         autowire: true
@@ -72,6 +74,7 @@ services:
             - '@service_container'
             - '@doctrine'
             - '@validator'
+            - '@app_game_service'
             - '@app_game_logger'
             - '@serializer'
             - {
@@ -93,6 +96,7 @@ services:
     app_game_service:
         class: App\Component\GameService
         public: true
+        shared: true
         arguments:
             - '@app_game_logger'
             - '@serializer'
@@ -118,6 +122,7 @@ services:
             - '@vsapp.repository.game_players'
             - '@vsapp.repository.temp_players'
             - '@vsapp.factory.temp_players'
+            - '%app_end_game_on_total_think_time_elapse%'
     
     app_games_event_listener:
         class: App\EventListener\GamesEventListener
@@ -137,6 +142,13 @@ services:
     ##############################################################
     # Game Controllers
     ##############################################################
+    App\Controller\GamePlatform\InviteController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@vs_users.security_bridge'
+            - '@app_game_service'
+    
     App\Controller\Games\SvaraController:
         tags: ['controller.service_arguments']
         autowire: true

@@ -48,6 +48,9 @@ final class GameManagerFactory
     /** @var FactoryInterface */
     private $tempPlayersFactory;
     
+    /** @var bool */
+    private $EndGameOnTotalThinkTimeElapse;
+    
     public function __construct(
         GameLogger $logger,
         SerializerInterface $serializer,
@@ -60,7 +63,8 @@ final class GameManagerFactory
         FactoryInterface $gamePlayFactory,
         RepositoryInterface $playersRepository,
         RepositoryInterface $tempPlayersRepository,
-        FactoryInterface $tempPlayersFactory
+        FactoryInterface $tempPlayersFactory,
+        bool $EndGameOnTotalThinkTimeElapse
     ) {
         $this->logger                   = $logger;
         $this->serializer               = $serializer;
@@ -74,6 +78,8 @@ final class GameManagerFactory
         $this->playersRepository        = $playersRepository;
         $this->tempPlayersRepository    = $tempPlayersRepository;
         $this->tempPlayersFactory       = $tempPlayersFactory;
+        
+        $this->EndGameOnTotalThinkTimeElapse = $EndGameOnTotalThinkTimeElapse;
     }
     
     public function createWebsocketGameManager( bool $forGold, string $gameCode, string $gameVariant ): GameManagerInterface
@@ -93,11 +99,13 @@ final class GameManagerFactory
             $this->tempPlayersFactory,
             $forGold,
             $gameCode,
-            $gameVariant
+            $gameVariant,
+            
+            $this->EndGameOnTotalThinkTimeElapse
         );
     }
     
-    public function createThruwayGameManager( bool $forGold, string $gameCode ): GameManagerInterface
+    public function createThruwayGameManager( bool $forGold, string $gameCode, string $gameVariant ): GameManagerInterface
     {
         return new ThruwayGameManager(
             $this->logger,
@@ -113,11 +121,14 @@ final class GameManagerFactory
             $this->tempPlayersRepository,
             $this->tempPlayersFactory,
             $forGold,
-            $gameCode
+            $gameCode,
+            $gameVariant,
+            
+            $this->EndGameOnTotalThinkTimeElapse
         );
     }
     
-    public function createZmqGameManager( bool $forGold, string $gameCode ): GameManagerInterface
+    public function createZmqGameManager( bool $forGold, string $gameCode, string $gameVariant ): GameManagerInterface
     {
         return new ZmqGameManager(
             $this->logger,
@@ -133,7 +144,10 @@ final class GameManagerFactory
             $this->tempPlayersRepository,
             $this->tempPlayersFactory,
             $forGold,
-            $gameCode
+            $gameCode,
+            $gameVariant,
+            
+            $this->EndGameOnTotalThinkTimeElapse
         );
     }
 }

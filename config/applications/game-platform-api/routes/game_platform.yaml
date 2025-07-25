@@ -29,7 +29,3 @@ vs_api_backgamon_editor_game_string:
 vs_api_select_game_room:
     path: /api/select-game-room/{gameId}
     controller: App\Controller\Api\Games\SelectGameRoomController::selectGameRoomAction
-
-vs_api_create_invite:
-    path: /api/invite/create
-    controller: App\Controller\Api\InviteController::createInviteAction

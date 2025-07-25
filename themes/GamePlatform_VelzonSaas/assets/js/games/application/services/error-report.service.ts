@@ -17,7 +17,7 @@ export class ErrorReportService
         @Inject( HttpClient ) private httpClient: HttpClient,
         @Inject( AuthService ) private authService: AuthService
     ) {
-        this.url    = `${context.backendURL}`;
+        this.url    = `${context.apiURL}`;
     }
     
     saveErrorReport( dto: ErrorReportDto ): void

@@ -9,7 +9,12 @@ use Doctrine\Persistence\ManagerRegistry;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager as LiipImagineCacheManager;
+use React\Async;
+use React\EventLoop\Loop;
+use React\EventLoop\TimerInterface;
+use Amp\DeferredCancellation;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
+
 use App\Component\GameLogger;
 use App\Component\Rules\Backgammon\GameFactory as BackgammonRulesFactory;
 
@@ -103,8 +108,15 @@ abstract class AbstractGameManager implements GameManagerInterface
     /** @var FactoryInterface */
     protected $tempPlayersFactory;
     
-    /** @var DeferredCancellation */
+    /**
+     * CancellationTokenSource has been renamed to DeferredCancellation in AMPHP Version 3.0.0
+     * 
+     * @var DeferredCancellation
+     */
     protected $moveTimeOut;
+    
+    /** @var bool */
+    protected $EndGameOnTotalThinkTimeElapse;
     
     /** @var Game */
     public $Game;
@@ -148,7 +160,8 @@ abstract class AbstractGameManager implements GameManagerInterface
         FactoryInterface $tempPlayersFactory,
         bool $forGold,
         string $gameCode,
-        string $gameVariant
+        string $gameVariant,
+        bool $EndGameOnTotalThinkTimeElapse
     ) {
         $this->logger                   = $logger;
         $this->serializer               = $serializer;
@@ -166,6 +179,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         $this->GameCode                 = $gameCode;
         $this->GameVariant              = $gameVariant;
         
+        $this->EndGameOnTotalThinkTimeElapse = $EndGameOnTotalThinkTimeElapse;
         $this->InitializeGame( $gameCode, $gameVariant );
     }
     
@@ -255,7 +269,11 @@ abstract class AbstractGameManager implements GameManagerInterface
             }
             
             $this->DoMoves( $action );
-            $this->NewTurn( $socket );
+            $promise = Async\async( function () use ( $action, $socket ) {
+                $this->NewTurn( $socket );
+            })();
+            Async\await( $promise );
+            
         } else if ( $actionName == ActionNames::opponentMove ) {
             $action = $this->serializer->deserialize( $actionText, OpponentMoveActionDto::class, JsonEncoder::FORMAT );
             $this->Send( $otherSocket, $action );
@@ -395,21 +413,19 @@ abstract class AbstractGameManager implements GameManagerInterface
             $this->Send( $this->Client2, $rollAction );
         }
         
-        /** 
-         * This Used to END Game When Player Not Create an Action in Game TotalThinkTime Seconds
-         * ------------------------------------------------------------------------------------------
-         * 
-         * Create This on Frontend
-         * =========================
-         * https://stackoverflow.com/questions/33185302/how-to-make-a-php-function-loop-every-5-seconds
-         */
-        /*
-        $this->moveTimeOut = new CancellationTokenSource();
-        Utils::RepeatEvery( 500, () =>
-        {
-            TimeTick();
-        }, $this->moveTimeOut );
-        */
+        $this->moveTimeOut = new DeferredCancellation();
+        if ( $this->EndGameOnTotalThinkTimeElapse ) {
+            Async\async( function () {
+                $loop = Loop::get();
+                $loop->addPeriodicTimer( 0.5, function ( TimerInterface $timer ) use ( $loop ) {
+                    if ( ! $this->moveTimeOut->isCancelled() ) {
+                        $this->TimeTick();
+                    } else {
+                        $loop->cancelTimer( $timer );
+                    }
+                });
+            })();
+        }
     }
     
     public function StartGamePlay(): void
@@ -453,10 +469,12 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     protected function TimeTick(): void
     {
-        if ( ! $this->moveTimeOut->IsCancellationRequested ) {
-            $ellapsed = ( new \DateTime( 'now' ) ) - $this->Game->ThinkStart;
-            if ( $ellapsed->TotalSeconds > Game::TotalThinkTime ) {
-                $this->logger->log( "The time run out for {$this->Game->CurrentPlayer}", 'GameManager' );
+        if ( ! $this->moveTimeOut->isCancelled() ) {
+            $ellapsed = ( new \DateTime( 'now' ) )->getTimestamp() - $this->Game->ThinkStart->getTimestamp();
+            if ( $ellapsed > Game::TotalThinkTime ) {
+                $CurrentPlayerColor = $this->Game->CurrentPlayer == PlayerColor::Black ? 'Black' : 'White';
+                $this->logger->log( "The time run out for {$CurrentPlayerColor}", 'GameManager' );
+                
                 $this->moveTimeOut->cancel();
                 $winner = $this->Game->CurrentPlayer == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
                 $this->EndGame( $winner );
@@ -466,13 +484,12 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     protected function EndGame( PlayerColor $winner )
     {
-        //$this->moveTimeOut->cancel();
+        $this->moveTimeOut->cancel();
         $this->Game->PlayState = GameState::ended;
         $this->logger->log( "The winner is {$winner->value}", 'EndGame' );
         
         $newScore = $this->SaveWinner( $winner );
         $this->SendWinner( $winner, $newScore );
-        $this->dispatchGameEnded();
     }
     
     protected function SendNewRoll(): void
@@ -653,7 +670,7 @@ abstract class AbstractGameManager implements GameManagerInterface
             }
         } else {
             if (
-                $this->Game->GetHome( PlayerColor::Black )->Checkers->filter(
+                $this->Game->GetHome( PlayerColor::White )->Checkers->filter(
                     function( $entry ) {
                         return $entry->Color == PlayerColor::White;
                     }
@@ -691,6 +708,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         //$this->logger->debug( $this->Game->ValidMoves, 'GameValidMoves.txt' );
         //$this->debugGetCheckerFromPoint();
         
+        $this->logger->log( "Points Before DoMoves: " . \print_r( $this->Game->Points->toArray(), true ), 'DoMoves' );
         for ( $i = 0; $i < count( $action->moves ); $i++ ) {
             $moveDto = $action->moves[$i];
             if ( $validMove == null ) {
@@ -715,6 +733,7 @@ abstract class AbstractGameManager implements GameManagerInterface
             $move   = Mapper::MoveToMove( $moveDto, $this->Game );
             $this->Game->MakeMove( $move );
         }
+        $this->logger->log( "Points After DoMoves: " . \print_r( $this->Game->Points->toArray(), true ), 'DoMoves' );
         //$this->logger->log( "Black Player Points Left: " . $this->Game->BlackPlayer->PointsLeft, 'EndGame' );
     }
     
@@ -830,11 +849,8 @@ abstract class AbstractGameManager implements GameManagerInterface
             $this->SendNewRoll();
             
             if ( $this->AisTurn() ) {
-                $promise = \React\Async\async( function () use ( $socket ) {
-                    $this->logger->log( "NewTurn for AI", 'SwitchPlayer' );
-                    $this->EnginMoves( $socket );
-                })();
-                \React\Async\await( $promise );
+                $this->logger->log( "NewTurn for AI", 'SwitchPlayer' );
+                $this->EnginMoves( $socket );
             }
         }
     }
@@ -849,35 +865,40 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     protected function EnginMoves( WebsocketClientInterface $client )
     {
-        $promise = \React\Async\async( function () use ( $client ) {
+        $promise = Async\async( function () use ( $client ) {
             $sleepMileseconds   = \rand( 700, 1200 );
-            \React\Async\delay( $sleepMileseconds / 1000 );
+            Async\delay( $sleepMileseconds / 1000 );
             
             $action = new RolledActionDto();
             $this->Send( $client, $action );
         })();
-        \React\Async\await( $promise );
+        Async\await( $promise );
         
         $moves = $this->Engine->GetBestMoves();
-        $this->logger->log( 'EnginMoves: ' . print_r( $moves->toArray(), true ), 'EnginMoves' );
+        //$this->logger->log( print_r( $moves->toArray(), true ), 'EnginMoves' );
         
         $noMoves = true;
+        $this->logger->log( "Points Before EnginMoves: " . \print_r( $this->Game->Points->toArray(), true ), 'EnginMoves' );
         for ( $i = 0; $i < $moves->count(); $i++ ) {
             $move = $moves[$i];
             if ( $move->isNull() ) {
                 continue;
             }
             
-            $promise = \React\Async\async( function () use ( $client, $move, &$noMoves ) {
+            $promise = Async\async( function () use ( $client, $move, &$noMoves ) {
                 $sleepMileseconds   = \rand( 700, 1200 );
-                \React\Async\delay( $sleepMileseconds / 1000 );
+                Async\delay( $sleepMileseconds / 1000 );
                 
                 $moveDto = Mapper::MoveToDto( $move );
                 $moveDto->animate = true;
                 $dto = new OpponentMoveActionDto();
                 $dto->move = $moveDto;
                 
-                $this->Game->MakeMove( $move );
+                $hit = $this->Game->MakeMove( $move );
+                if ( $hit ) {
+                    $this->logger->log( "Has a Hit at BlackNumber Point: " . $move->To->BlackNumber, 'EnginMoves' );
+                }
+                
                 if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {
                     $this->Game->BlackPlayer->FirstMoveMade = true;
                 } else {
@@ -887,17 +908,21 @@ abstract class AbstractGameManager implements GameManagerInterface
                 $noMoves = false;
                 $this->Send( $client, $dto );
             })();
-            \React\Async\await( $promise );
+            Async\await( $promise );
         }
+        $this->logger->log( "Points After EnginMoves: " . \print_r( $this->Game->Points->toArray(), true ), 'EnginMoves' );
         
         if ( $noMoves ) {
-            $promise = \React\Async\async( function () {
-                \React\Async\delay( 2.5 );
+            $promise = Async\async( function () {
+                Async\delay( 2.5 );
             })();
-            \React\Async\await( $promise );
+            Async\await( $promise );
         }
         
-        $this->NewTurn( $client );
+        $promise = Async\async( function () use ( $client ) {
+            $this->NewTurn( $client );
+        })();
+        Async\await( $promise );
     }
     
     protected function debugGetCheckerFromPoint()

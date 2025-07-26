@@ -6,6 +6,7 @@ import { Router, UrlSerializer } from '@angular/router';
 import { StatusMessageService } from '../status-message.service';
 import { SoundService } from '../sound.service';
 import { AppStateService } from '../../state/app-state.service';
+import { QueryParamsService } from '../../state/query-params.service';
 import { GameService } from '../game.service';
 
 // NGRX Store
@@ -49,6 +50,7 @@ export abstract class AbstractGameService
     protected serializer: UrlSerializer;
     protected sound: SoundService;
     protected appState: AppStateService;
+    protected queryParamsService: QueryParamsService;
     protected gameService: GameService;
     protected store: Store;
         
@@ -71,6 +73,7 @@ export abstract class AbstractGameService
         this.serializer = injector.get( UrlSerializer );
         this.sound = injector.get( SoundService );
         this.appState = injector.get( AppStateService );
+        this.queryParamsService = injector.get( QueryParamsService );
         this.gameService = injector.get( GameService );
         this.store = injector.get( Store );
     
@@ -270,6 +273,12 @@ export abstract class AbstractGameService
         if ( variant == null ) {
             variant = 'normal';
         }
+        
+        this.queryParamsService.variant.setValue( variant );
+        this.queryParamsService.gameId.setValue( inviteId );
+        this.queryParamsService.inviteId.clearValue();
+        this.queryParamsService.playAi.clearValue();
+        this.queryParamsService.forGold.clearValue();
         
         const urlTree = this.router.createUrlTree([], {
             queryParams: { variant: variant, gameId: inviteId },

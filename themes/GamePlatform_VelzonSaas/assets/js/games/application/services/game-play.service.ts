@@ -15,6 +15,8 @@ import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounce
 import IGame from '_@/GamePlatform/Model/GameInterface';
 import { InviteResponseDto } from '../dto/rest/inviteResponseDto';
 
+import { QueryParamsService } from '../state/query-params.service';
+
 @Injectable({
     providedIn: 'root'
 })
@@ -27,10 +29,10 @@ export class GamePlayService
         @Inject( Router ) private router: Router,
         @Inject( HttpClient ) private httpClient: HttpClient,
         @Inject( AuthService ) private authService: AuthService,
+        @Inject( QueryParamsService ) private queryParamsService: QueryParamsService,
     ) {
         this.apiUrl     = `${context.apiURL}`;
         this.backendUrl = `${context.backendURL}`;
-        
     }
     
     selectGameRoom( inputProps: any ): Observable<IGame>
@@ -86,8 +88,16 @@ export class GamePlayService
             urlVariant = variant;
         }
         
+        const playAi = false;
+        const forGold = true;
+        this.queryParamsService.gameId.clearValue();
+        
+        this.queryParamsService.variant.setValue( urlVariant );
+        this.queryParamsService.playAi.setValue( playAi );
+        this.queryParamsService.forGold.setValue( forGold );
+        
         const urlTree = this.router.createUrlTree([], {
-            queryParams: { variant: urlVariant, playAi: false, forGold: true },
+            queryParams: { variant: urlVariant, playAi: playAi, forGold: forGold, gameId: null },
             queryParamsHandling: "merge",
             preserveFragment: true
         });
@@ -101,6 +111,11 @@ export class GamePlayService
         if ( urlVariant == null ) {
             return;
         }
+        
+        this.queryParamsService.variant.setValue( urlVariant );
+        this.queryParamsService.gameId.clearValue();
+        this.queryParamsService.playAi.clearValue();
+        this.queryParamsService.forGold.clearValue();
         
         const urlTree = this.router.createUrlTree([], {
             queryParams: { variant: urlVariant, playAi: null, forGold: null, gameId: null },

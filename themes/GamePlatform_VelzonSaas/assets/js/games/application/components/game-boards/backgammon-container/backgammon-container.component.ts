@@ -48,6 +48,7 @@ import { Keys } from '../../../utils/keys';
 
 // App State
 import { AppStateService } from '../../../state/app-state.service';
+import { QueryParamsService } from '../../../state/query-params.service';
 import { StatusMessage } from '../../../utils/status-message';
 import { Busy } from '../../../state/busy';
 
@@ -114,6 +115,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
     messageCenter = 0;
     rotated = false;
     flipped = false;
+    gameId = "";
     playAiFlag = false;
     forGoldFlag = false;
     PlayerColor = PlayerColor;
@@ -156,6 +158,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         @Inject( BackgammonService ) private wsService: BackgammonService,
         @Inject( StatusMessageService ) private statusMessageService: StatusMessageService,
         @Inject( AppStateService ) private appStateService: AppStateService,
+        @Inject( QueryParamsService ) private queryParamsService: QueryParamsService,
         @Inject( SoundService ) private sound: SoundService,
         @Inject( EditorService ) private editService: EditorService,
         @Inject( TutorialService ) private tutorialService: TutorialService,
@@ -190,33 +193,16 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
             this.authService.repair();
         }
         
-        //console.log( 'Game Settings: ', window.gamePlatformSettings );
-        const inviteId = window.gamePlatformSettings.queryParams.inviteId;
-        //alert( '[In Game Container]Invite ID: ' + inviteId );
+        this.initFlags();
         
-        const gameId = window.gamePlatformSettings.queryParams.gameId;
-        const playAi = window.gamePlatformSettings.queryParams.playAi;
-        const forGold = window.gamePlatformSettings.queryParams.forGold;
-        const tutorial = window.gamePlatformSettings.queryParams.tutorial;
-        const editing = window.gamePlatformSettings.queryParams.editing;
-    
-        this.playAiFlag = playAi === 'true';
-        this.forGoldFlag = forGold === 'true';
-        this.lokalStake = 0;
-        this.tutorial = tutorial === 'true';
-        this.editing = editing === 'true';
-        
-        if ( tutorial ) {
+        if ( this.tutorial ) {
             // Waiting for everything else before starting makes Input data update components.
             setTimeout( () => {
                 this.tutorialService.start();
             }, 1 );
-        } else if ( ! this.editing && ! inviteId ) {
-            this.wsService.connect( gameId, playAi, forGold );
-            if ( gameId ) {
-                //alert( 'Game ID: ' + gameId );
-                this.playGame( gameId );
-            }
+        } else if ( ! this.editing && this.gameId.length ) {
+            //this.wsService.connect( this.gameId, this.playAiFlag, this.forGoldFlag );
+            this.playGame( this.gameId );
         }
         
         if ( this.editing ) {
@@ -726,7 +712,6 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         modalRef.componentInstance.onPlayGame.subscribe( ( gameId: string ) => {
             modalRef.close();
             
-            this.wsService.connect( gameId, this.playAiFlag, this.forGoldFlag );
             this.playGame( gameId );
         });
     }
@@ -805,8 +790,8 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
             this.gamePlayService.startBoardGame( 'normal' );
         }
         
-        //this.wsService.connect( '', this.playAiFlag, this.forGoldFlag );
-        this.wsService.startGamePlay( game, myColor, this.playAiFlag, this.forGoldFlag );
+        this.initFlags();
+        this.wsService.connect( gameId, this.playAiFlag, this.forGoldFlag );
         
         this.lobbyButtonsVisibleChanged.emit( false );
         this.waitForOpponent();
@@ -814,5 +799,18 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         
         this.statusMessageService.setWaitingForConnect();
         this.exitVisible = true;
+    }
+    
+    initFlags(): void
+    {
+        if ( this.queryParamsService.gameId.getValue() ) {
+            this.gameId = this.queryParamsService.gameId.getValue();
+        }
+        
+        this.playAiFlag = this.queryParamsService.playAi.getValue() === true;
+        this.forGoldFlag = this.queryParamsService.forGold.getValue() === true;
+        this.lokalStake = 0;
+        this.tutorial = this.queryParamsService.tutorial.getValue() === true;
+        this.editing = this.queryParamsService.editing.getValue() === true;
     }
 }

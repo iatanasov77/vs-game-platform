@@ -6,6 +6,7 @@ import { Router, UrlSerializer } from '@angular/router';
 import { StatusMessageService } from '../status-message.service';
 import { SoundService } from '../sound.service';
 import { AppStateService } from '../../state/app-state.service';
+import { QueryParamsService } from '../../state/query-params.service';
 import { GameService } from '../game.service';
 
 // NGRX Store
@@ -30,7 +31,6 @@ import UndoActionDto from '../../dto/Actions/undoActionDto';
 import StartGamePlayActionDto from '../../dto/Actions/startGamePlayActionDto';
 
 // Unused Actions but part of the TypeScript compilation
-import GamePlayStartedActionDto from '../../dto/Actions/gamePlayStartedActionDto';
 import ServerWasTerminatedActionDto from '../../dto/Actions/serverWasTerminatedActionDto';
 
 import { Keys } from '../../utils/keys';
@@ -50,6 +50,7 @@ export abstract class AbstractGameService
     protected serializer: UrlSerializer;
     protected sound: SoundService;
     protected appState: AppStateService;
+    protected queryParamsService: QueryParamsService;
     protected gameService: GameService;
     protected store: Store;
         
@@ -72,6 +73,7 @@ export abstract class AbstractGameService
         this.serializer = injector.get( UrlSerializer );
         this.sound = injector.get( SoundService );
         this.appState = injector.get( AppStateService );
+        this.queryParamsService = injector.get( QueryParamsService );
         this.gameService = injector.get( GameService );
         this.store = injector.get( Store );
     
@@ -101,6 +103,7 @@ export abstract class AbstractGameService
     
     connect( gameId: string, playAi: boolean, forGold: boolean ): void
     {
+        //alert( 'Called Websocket Connect !!!' );
         if ( this.socket ) {
             this.socket.close();
         }
@@ -180,7 +183,7 @@ export abstract class AbstractGameService
         // Set Status Message
         const cnn = this.appState.myConnection.getValue();
         this.appState.myConnection.setValue( { ...cnn, connected: false } );
-        this.statusMessageService.setMyConnectionLost( event.reason );
+        //this.statusMessageService.setMyConnectionLost( event.reason );
     }
     
     abstract onMessage( message: MessageEvent<string> ): void;
@@ -263,23 +266,6 @@ export abstract class AbstractGameService
         this.sendMessage( JSON.stringify( action ) );
     }
     
-    startGamePlay( game: GameDto, myColor: PlayerColor, playAi: boolean, forGold: boolean ): void
-    {
-        /**
-         * Delete Cookie on Every Browser Refresh,
-         * May be later this should on DEV Environement Only.
-         */
-        //this.cookieService.deleteAll( Keys.gameIdKey );
-        
-        const action: StartGamePlayActionDto = {
-            actionName: ActionNames.startGamePlay,
-            game: game,
-            myColor: myColor
-        };
-        
-        this.sendMessage( JSON.stringify( action ) );
-    }
-    
     acceptInvite( inviteId: string ): void
     {
         const currentUrlparams = new URLSearchParams( window.location.search );
@@ -287,6 +273,12 @@ export abstract class AbstractGameService
         if ( variant == null ) {
             variant = 'normal';
         }
+        
+        this.queryParamsService.variant.setValue( variant );
+        this.queryParamsService.gameId.setValue( inviteId );
+        this.queryParamsService.inviteId.clearValue();
+        this.queryParamsService.playAi.clearValue();
+        this.queryParamsService.forGold.clearValue();
         
         const urlTree = this.router.createUrlTree([], {
             queryParams: { variant: variant, gameId: inviteId },

@@ -1,4 +1,4 @@
-﻿<?php namespace App\Component\Dto\Actions;
+<?php namespace App\Component\Dto\Actions;
 
 class DoublingActionDto extends ActionDto
 {

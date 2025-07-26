@@ -785,10 +785,12 @@ abstract class AbstractGameManager implements GameManagerInterface
         
         $hintMovesAction->moves = $moves->map(
             function( $entry ) {
-                $entry->hint = true;
-                return $entry;
+                $moveDto = Mapper::MoveToDto( $entry );
+                $moveDto->hint = true;
+                
+                return $moveDto;
             }
-        );
+        )->toArray();
         
         return $hintMovesAction;
     }

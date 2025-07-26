@@ -1,3 +1,13 @@
+0.15.4	|	Release date: **26.07.2025**
+============================================
+* New Features:
+  - Create a QueryParamsService in Frontend to Store and Retrieve Query Params.
+* Bug-Fixes and Improvements:
+  - Improve Game Start Process.
+  - Fix HintMovesActionDto and DoublingActionDto .
+  - Fix DoublingAction .
+
+
 0.15.3	|	Release date: **25.07.2025**
 ============================================
 * Bug-Fixes and Improvements:

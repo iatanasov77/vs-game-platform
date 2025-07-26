@@ -234,7 +234,7 @@ abstract class Game
             );
             
             if ( $checker ) {
-                $lastBlack = Points[i].GetNumber( PlayerColor::Black );
+                $lastBlack = $this->Points[$i]->GetNumber( PlayerColor::Black );
                 break;
             }
         }
@@ -248,7 +248,7 @@ abstract class Game
             );
             
             if ( $checker ) {
-                $lastWhite = $this->Points[$i].GetNumber( PlayerColor::Black );
+                $lastWhite = $this->Points[$i]->GetNumber( PlayerColor::Black );
                 break;
             }
         }

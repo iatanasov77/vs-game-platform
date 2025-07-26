@@ -811,12 +811,12 @@ abstract class AbstractGameManager implements GameManagerInterface
         $em = $this->doctrine->getManager();
         if ( ! $this->IsAi( $blackUser->getGuid() ) ) { // gold for ai remains in the db
             $blackUser->setGold( $this->Game->BlackPlayer->Gold ); // non gold games guarded earlier in block.
-            $em->persists( $blackUser );
+            $em->persist( $blackUser );
         }
         
         if ( ! $this->IsAi( $whiteUser->getGuid() ) ) {
             $whiteUser->setGold( $this->Game->WhitePlayer->Gold );
-            $em->persists( $whiteUser );
+            $em->persist( $whiteUser );
         }
         $em->flush();
         

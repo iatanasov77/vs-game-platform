@@ -1,3 +1,9 @@
+0.15.5	|	Release date: **02.08.2025**
+============================================
+* New Features:
+  - Update AdminPanel Theme Webpack Config About New Path Aliases.
+
+
 0.15.4	|	Release date: **26.07.2025**
 ============================================
 * New Features:

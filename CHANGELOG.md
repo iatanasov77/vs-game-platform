@@ -1,3 +1,9 @@
+0.15.6	|	Release date: **03.08.2025**
+============================================
+* Bug-Fixes:
+  - Fix a Production Exception in Websocket Game Server.
+
+
 0.15.5	|	Release date: **02.08.2025**
 ============================================
 * New Features:

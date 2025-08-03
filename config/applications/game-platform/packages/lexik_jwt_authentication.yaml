@@ -1,0 +1,8 @@
+#######################################################################################
+# In Production Has Eaxception Without This Config
+#   No identifier/primary key specified for Entity "App\Entity\Api\RefreshToken"
+#######################################################################################
+lexik_jwt_authentication:
+    secret_key: '%env(resolve:JWT_SECRET_KEY)%'
+    public_key: '%env(resolve:JWT_PUBLIC_KEY)%'
+    pass_phrase: '%env(JWT_PASSPHRASE)%'

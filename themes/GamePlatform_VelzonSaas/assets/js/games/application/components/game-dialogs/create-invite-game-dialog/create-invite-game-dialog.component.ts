@@ -11,6 +11,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 
+import { GameVariant } from "../../../game.variant";
 import { Keys } from '../../../utils/keys';
 import { GamePlayService } from '../../../services/game-play.service';
 import { InviteResponseDto } from '../../../dto/rest/inviteResponseDto';
@@ -44,7 +45,7 @@ export class CreateInviteGameDialogComponent
         const variant = currentUrlparams.get( 'variant' );
         
         const gameCode: string =  window.gamePlatformSettings.gameSlug;
-        const gameVariant: string = variant !== null ? variant : 'normal';
+        const gameVariant: string = variant !== null ? variant : GameVariant.BACKGAMMON_NORMAL;
         
         this.invite$ = this.inviteService.createInvite( gameCode, gameVariant );
         
@@ -60,7 +61,7 @@ export class CreateInviteGameDialogComponent
             
             let variant = currentUrlparams.get( 'variant' );
             if ( variant == null ) {
-                variant = 'normal';
+                variant = GameVariant.BACKGAMMON_NORMAL;
                 url.searchParams.append( 'variant', variant );
             }
             
@@ -76,7 +77,7 @@ export class CreateInviteGameDialogComponent
             const currentUrlparams = new URLSearchParams( window.location.search );
             let variant = currentUrlparams.get( 'variant' );
             if ( variant == null ) {
-                variant = 'normal';
+                variant = GameVariant.BACKGAMMON_NORMAL;
             }
             
             const urlTree = this.router.createUrlTree([], {

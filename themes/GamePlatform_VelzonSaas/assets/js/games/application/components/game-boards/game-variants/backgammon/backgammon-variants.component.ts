@@ -1,5 +1,6 @@
 import { Component, Inject, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { GameVariant } from "../../../../game.variant";
 
 import templateString from './backgammon-variants.component.html'
 import cssString from './backgammon-variants.component.scss'
@@ -19,6 +20,11 @@ declare global {
 export class BackgammonVariantsComponent implements OnChanges
 {
     @Input() lobbyButtonsVisible: boolean   = false;
+    
+    readonly BACKGAMMON_NORMAL  = GameVariant.BACKGAMMON_NORMAL;
+    readonly BACKGAMMON_TAPA    = GameVariant.BACKGAMMON_TAPA;
+    readonly BACKGAMMON_GULBARA = GameVariant.BACKGAMMON_GULBARA;
+    
     game: string;
     
     constructor(
@@ -27,7 +33,7 @@ export class BackgammonVariantsComponent implements OnChanges
         const currentUrlparams = new URLSearchParams( window.location.search );
         let variant = currentUrlparams.get( 'variant' );
         if ( variant == null ) {
-            variant = 'normal';
+            variant = GameVariant.BACKGAMMON_NORMAL;
         }
         
         this.game   = variant;

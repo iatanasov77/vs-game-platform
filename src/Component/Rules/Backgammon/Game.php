@@ -132,6 +132,8 @@ abstract class Game
     
     abstract public function MakeMove( Move &$move ): ?Checker;
     
+    abstract public function UndoMove( Move &$move, ?Checker $hitChecker ): void;
+    
     public function SwitchPlayer(): void
     {
         $this->logger->log( 'SwitchPlayer Called !!!', 'SwitchPlayer' );

@@ -30,6 +30,9 @@ import OpponentMoveActionDto from '../../dto/Actions/opponentMoveActionDto';
 import UndoActionDto from '../../dto/Actions/undoActionDto';
 import StartGamePlayActionDto from '../../dto/Actions/startGamePlayActionDto';
 
+// Game Variants
+import { GameVariant } from "../../game.variant";
+
 // Unused Actions but part of the TypeScript compilation
 import ServerWasTerminatedActionDto from '../../dto/Actions/serverWasTerminatedActionDto';
 
@@ -111,7 +114,7 @@ export abstract class AbstractGameService
         const currentUrlparams = new URLSearchParams( window.location.search );
         let variant = currentUrlparams.get( 'variant' );
         if ( variant == null ) {
-            variant = 'normal';
+            variant = GameVariant.BACKGAMMON_NORMAL;
         }
         
         let gameCookie  = this.cookieService.get( Keys.gameIdKey );
@@ -271,7 +274,7 @@ export abstract class AbstractGameService
         const currentUrlparams = new URLSearchParams( window.location.search );
         let variant = currentUrlparams.get( 'variant' );
         if ( variant == null ) {
-            variant = 'normal';
+            variant = GameVariant.BACKGAMMON_NORMAL;
         }
         
         this.queryParamsService.variant.setValue( variant );

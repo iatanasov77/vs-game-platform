@@ -1,6 +1,6 @@
 <?php namespace App\Component\AI\Backgammon;
 
-use App\Component\Utils\Keys;
+use App\Component\GameVariant;
 use App\Component\GameLogger;
 use App\Component\Rules\Backgammon\Game;
 
@@ -9,13 +9,13 @@ final class EngineFactory
     public static function CreateBackgammonEngine( string $gameCode, string $gameVariant, GameLogger $logger, Game $game ): Engine
     {
         switch ( $gameVariant ) {
-            case Keys::BACKGAMMON_NORMAL_KEY:
+            case GameVariant::BACKGAMMON_NORMAL:
                 $engine = new BackgammonNormalEngine( $logger, $game );
                 break;
-            case Keys::BACKGAMMON_TAPA_KEY:
+            case GameVariant::BACKGAMMON_TAPA:
                 $engine = new BackgammonTapaEngine( $logger, $game );
                 break;
-            case Keys::BACKGAMMON_GULBARA_KEY:
+            case GameVariant::BACKGAMMON_GULBARA:
                 $engine = new BackgammonGulBaraEngine( $logger, $game );
                 break;
             default:

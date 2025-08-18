@@ -9,7 +9,7 @@ use App\Component\Manager\AbstractGameManager;
 
 class BackgammonGulBaraEngine extends Engine
 {
-    protected function _GenerateMovesSequence( Collection &$sequences, Collection $moves, int $diceIndex, Game $game ): void
+    protected function _GenerateMovesSequence( Collection &$sequences, Collection &$moves, int $diceIndex, Game $game ): void
     {
         $current = $game->CurrentPlayer;
         $bar = $game->Bars[$current->value];

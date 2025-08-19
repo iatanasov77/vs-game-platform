@@ -24,6 +24,7 @@ import {
     loadGameRooms
 } from '../../../+store/game.actions';
 import { GameState as MyGameState } from '../../../+store/game.reducers';
+import { GameVariant } from "../../../game.variant";
 
 // Dialogs
 import { RequirementsDialogComponent } from '../../game-dialogs/requirements-dialog/requirements-dialog.component';
@@ -65,6 +66,12 @@ import templateString from './backgammon-container.component.html';
 
 declare var $: any;
 
+declare global {
+    interface Window {
+        gamePlatformSettings: any;
+    }
+}
+
 /**
  * Forked From: https://www.codeproject.com/Articles/5297405/Online-Backgammon
  * Play Original Game: https://backgammon.azurewebsites.net/
@@ -89,6 +96,9 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
     @ViewChild( 'dices' ) dices: ElementRef | undefined;
     @ViewChild( 'backgammonBoardButtons' ) backgammonBoardButtons: ElementRef | undefined;
     @ViewChild( 'messages' ) messages: ElementRef | undefined;
+    
+    readonly BACKGAMMON_GULBARA = GameVariant.BACKGAMMON_GULBARA;
+    game: string;
     
     gameDto$: Observable<GameDto>;
     dices$: Observable<DiceDto[]>;
@@ -165,6 +175,13 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         @Inject( CookieService ) private cookieService: CookieService,
         @Inject( GamePlayService ) private gamePlayService: GamePlayService,
     ) {
+        const currentUrlparams = new URLSearchParams( window.location.search );
+        let variant = currentUrlparams.get( 'variant' );
+        if ( variant == null ) {
+            variant = GameVariant.BACKGAMMON_NORMAL;
+        }
+        this.game   = variant;
+        
         this.gameDto$ = this.appStateService.game.observe();
         this.dices$ = this.appStateService.dices.observe();
         this.diceSubs = this.appStateService.dices.observe().subscribe( this.diceChanged.bind( this ) );

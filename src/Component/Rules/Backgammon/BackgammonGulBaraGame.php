@@ -21,7 +21,7 @@ class BackgammonGulBaraGame extends Game
         }
         
         $this->AddCheckers( 15, PlayerColor::Black, 1 );
-        $this->AddCheckers( 15, PlayerColor::White, 1 );
+        $this->AddCheckers( 15, PlayerColor::White, 12 );
         
         // CloseToVictory();
         // DebugBar();

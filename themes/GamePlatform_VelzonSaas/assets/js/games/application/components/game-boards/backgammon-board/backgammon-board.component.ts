@@ -34,6 +34,8 @@ import {
     PinkTheme
 } from './themes';
 
+import { GameVariant } from "../../../game.variant";
+
 import cssGameString from './backgammon-board.component.scss';
 import templateString from './backgammon-board.component.html';
 
@@ -61,6 +63,7 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
     @Input() tutorialStep: number | null = 0;
     @Input() editing: boolean = false;
     @Input() lobbyButtonsVisible: boolean = false;
+    @Input() variant: string = GameVariant.BACKGAMMON_NORMAL;
     
     @Output() addMove = new EventEmitter<MoveDto>();
     @Output() addEditMove = new EventEmitter<MoveDto>();
@@ -252,8 +255,12 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
         );
         
         //white home
+        let whiteHomeX: number = this.width - this.sideBoardWidth - this.borderWidth / 2;
+        if ( this.variant === GameVariant.BACKGAMMON_GULBARA ) {
+            whiteHomeX = this.sideBoardWidth - this.borderWidth / 2 - this.sideBoardWidth + 25;
+        }
         this.whiteHome.set(
-            this.width - this.sideBoardWidth - this.borderWidth / 2,
+            whiteHomeX,
             this.borderWidth / 2,
             this.getCheckerWidth() * 2 + this.borderWidth + 2,
             this.height * 0.44,
@@ -479,7 +486,8 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
         if ( ! this.timeLeft || this.timeLeft < 0 ) return;
         
         cx.beginPath();
-        const x = this.whiteHome.x + this.whiteHome.width / 2 + this.borderWidth - 5;
+        let baseHomeArea = this.variant === GameVariant.BACKGAMMON_GULBARA ? this.blackHome : this.whiteHome;
+        const x = baseHomeArea.x + baseHomeArea.width / 2 + this.borderWidth - 5;
         const y = this.height / 2;
         const a = ( ( this.timeLeft ?? 0 ) / 40 ) * 2;
         const s = this.height * 0.04;
@@ -1063,7 +1071,8 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
         
         cx.save();
         cx.translate( this.whiteHome.x, this.whiteHome.y );
-        cx.rotate( Math.PI / 2 );
+        let rotateAngle = this.variant === GameVariant.BACKGAMMON_GULBARA ? Math.PI / 2 : Math.PI / 2;
+        cx.rotate( rotateAngle );
         if ( this.flipped ) {
             cx.scale( -1, 1 );
             cx.translate( -this.whiteHome.height, 0 );
@@ -1072,7 +1081,8 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
         if ( ! this.lobbyButtonsVisible ) {
             //cx.fillStyle = this.theme.textColor;
             cx.fillStyle = '#000';
-            cx.fillText( this.whitesName, 0, -this.whiteHome.width - 11 );
+            let whiteHomeY = this.variant === GameVariant.BACKGAMMON_GULBARA ? 20 : -this.whiteHome.width - 11;
+            cx.fillText( this.whitesName, 0, whiteHomeY );
         }
         cx.fillStyle = this.theme.border;
         cx.font = homeFntSize;

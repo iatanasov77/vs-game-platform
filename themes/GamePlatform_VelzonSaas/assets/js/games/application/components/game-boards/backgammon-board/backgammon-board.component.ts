@@ -587,6 +587,7 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
         
         if ( moveDto.color === PlayerColor.black ) {
             if ( moveDto.to === 0 ) {
+                alert( 'Why Move to Bar in Tapa Game ?' );
                 return this.blackBar.getCenter();
             }
             if ( moveDto.to === 25 ) {
@@ -595,6 +596,7 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
             }
         } else {
             if ( moveDto.to === 0 ) {
+                alert( 'Why Move to Bar in Tapa Game ?' );
                 return this.whiteBar.getCenter();
             }
             if ( moveDto.to === 25 ) {

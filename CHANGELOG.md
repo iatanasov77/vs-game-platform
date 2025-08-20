@@ -1,3 +1,13 @@
+0.16.0	|	Release date: **20.08.2025**
+============================================
+* New Features:
+  - Begin Creating Backgammon Tapa Variant.
+  - Improve Creting Backgammon Variant Games.
+  - Prepare Backgammon Game for Gulbara Variant.
+  - Improve Backgammon Rules for Tapa Variant.
+  - Backgammon Gulbara Variant Has No hitting.
+
+
 0.15.6	|	Release date: **03.08.2025**
 ============================================
 * Bug-Fixes:

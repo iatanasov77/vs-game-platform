@@ -219,7 +219,7 @@ class BackgammonGulBaraGame extends Game
                 // no creation of bearing off moves here. See next block.
                 if (
                     $toPoint != null &&
-                    $toPoint->IsOpen( $currentPlayer ) &&
+                    ! $toPoint->HasOponentChecker( $currentPlayer ) &&
                     ! $hasMove &&
                     ! $toPoint->IsHome( $currentPlayer )
                 ) {
@@ -261,7 +261,7 @@ class BackgammonGulBaraGame extends Game
                     
                     if (
                         $toPoint != null &&
-                        $toPoint->IsOpen( $currentPlayer ) &&
+                        ! $toPoint->HasOponentChecker( $currentPlayer ) &&
                         ! $hasMove
                     ) {
                         $this->logger->log( 'To Point Number: ' . $shouldPointTo, 'GenerateMoves' );

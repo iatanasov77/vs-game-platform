@@ -75,4 +75,15 @@ class Point
             }
         )->count() == 1;
     }
+    
+    // Check for Gulbara Game
+    public function HasOponentChecker( PlayerColor $myColor ): bool
+    {
+        // Do I have a block? Home doesnt count.
+        return $this->Checkers->filter(
+            function( $entry ) use ( $myColor ) {
+                return $entry && $entry->Color != $myColor;
+            }
+        )->count() >= 1;
+    }
 }

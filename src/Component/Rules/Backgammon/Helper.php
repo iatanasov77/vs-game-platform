@@ -27,8 +27,10 @@ trait Helper
         //$this->logger->debug( $game->Points , 'BeforeFilteringPoints.txt' );
         $points = $game->Points->filter(
             function( $entry ) use ( $currentPlayer ) {
-                return $entry->Checkers->first() &&
-                $entry->Checkers->first()->Color === $currentPlayer;
+                return $entry->Checkers->first() && 
+                    $entry->Checkers->first()->Color === $currentPlayer &&
+                    $entry->Checkers->last()->Color === $currentPlayer // Check For Tapa
+                ;
             }
         );
         //$this->logger->debug( $points , 'BeforeOrderingPoints.txt' );
@@ -37,9 +39,8 @@ trait Helper
         $pointsIterator->uasort( function ( $a, $b ) use ( $currentPlayer ) {
             return $a->GetNumber( $currentPlayer ) <=> $b->GetNumber( $currentPlayer );
         });
-        $orderedPoints  = new ArrayCollection( \iterator_to_array( $pointsIterator ) );
         
-        return $orderedPoints;
+        return new ArrayCollection( \iterator_to_array( $pointsIterator ) );
     }
     
     /*

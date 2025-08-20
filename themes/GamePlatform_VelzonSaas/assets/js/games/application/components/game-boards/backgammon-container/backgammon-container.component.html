@@ -23,7 +23,7 @@
     </div>
     
     <div
-        *ngIf="(gameDto$ | async)?.isGoldGame && ! lobbyButtonsVisible"
+        *ngIf="(gameDto$ | async)?.isGoldGame && ! lobbyButtonsVisible && game !== BACKGAMMON_GULBARA"
         class="players"
         [ngStyle]="{ height: height + 'px' }"
         [ngClass]="{ rotated: rotated, flipped: flipped }"
@@ -65,6 +65,7 @@
         [tutorialStep]="tutorialStep$ | async"
         [editing]="editing"
         [lobbyButtonsVisible]="lobbyButtonsVisible"
+        [variant]="game"
         (addMove)="doMove($event)"
         (moveAnimFinished)="moveAnimFinished()"
         (addEditMove)="doEditMove($event)"

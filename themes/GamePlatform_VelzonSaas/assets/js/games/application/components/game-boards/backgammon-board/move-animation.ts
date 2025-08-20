@@ -18,7 +18,7 @@ export class MoveAnimation
         private to: Point,
         private theme: IThemes,
         private flipped: boolean,
-        finished: (move: MoveDto) => void,
+        finished: ( move: MoveDto ) => void,
         step: () => void
     ) {
         if ( move.hint ) {

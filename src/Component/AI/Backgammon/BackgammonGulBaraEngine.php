@@ -9,7 +9,7 @@ use App\Component\Manager\AbstractGameManager;
 
 class BackgammonGulBaraEngine extends Engine
 {
-    protected function _GenerateMovesSequence( Collection &$sequences, Collection $moves, int $diceIndex, Game $game ): void
+    protected function _GenerateMovesSequence( Collection &$sequences, Collection &$moves, int $diceIndex, Game $game ): void
     {
         $current = $game->CurrentPlayer;
         $bar = $game->Bars[$current->value];
@@ -41,7 +41,7 @@ class BackgammonGulBaraEngine extends Engine
             )->first();
             if (
                 $toPoint != null &&
-                $toPoint->IsOpen( $game->CurrentPlayer ) &&
+                ! $toPoint->HasOponentChecker( $game->CurrentPlayer ) &&
                 ! $toPoint->IsHome( $game->CurrentPlayer )
             ) {
                 // no creation of bearing off moves here. See next block.
@@ -97,7 +97,7 @@ class BackgammonGulBaraEngine extends Engine
                         return $entry->GetNumber( $game->CurrentPlayer ) == $toPointNo;
                     }
                 )->first();
-                if ( $toPoint != null && $toPoint->IsOpen( $game->CurrentPlayer ) ) {
+                if ( $toPoint != null && ! $toPoint->HasOponentChecker( $game->CurrentPlayer ) ) {
                     $move = new Move();
                     $move->Color = $game->CurrentPlayer;
                     $move->From = $fromPoint;

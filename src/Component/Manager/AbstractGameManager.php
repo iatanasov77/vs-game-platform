@@ -28,7 +28,7 @@ use App\Component\Websocket\WebSocketState;
 // Types
 use App\Component\Type\PlayerColor;
 use App\Component\Type\GameState;
-use App\Component\Utils\Keys;
+use App\Component\GameVariant;
 
 // DTO Actions
 use App\Component\Dto\Mapper;
@@ -925,13 +925,13 @@ abstract class AbstractGameManager implements GameManagerInterface
     private function InitializeGame( string $gameCode, string $gameVariant ): void
     {
         switch ( $gameVariant ) {
-            case Keys::BACKGAMMON_NORMAL_KEY:
+            case GameVariant::BACKGAMMON_NORMAL:
                 $this->Game = $this->backgammonRulesFactory->createBackgammonNormalGame( $this->ForGold );
                 break;
-            case Keys::BACKGAMMON_TAPA_KEY:
+            case GameVariant::BACKGAMMON_TAPA:
                 $this->Game = $this->backgammonRulesFactory->createBackgammonTapaGame( $this->ForGold );
                 break;
-            case Keys::BACKGAMMON_GULBARA_KEY:
+            case GameVariant::BACKGAMMON_GULBARA:
                 $this->Game = $this->backgammonRulesFactory->createBackgammonGulBaraGame( $this->ForGold );
                 break;
             default:

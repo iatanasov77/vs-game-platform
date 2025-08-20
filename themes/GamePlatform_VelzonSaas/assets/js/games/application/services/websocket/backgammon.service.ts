@@ -31,6 +31,7 @@ import GameRestoreActionDto from '../../dto/Actions/gameRestoreActionDto';
 import RolledActionDto from '../../dto/Actions/rolledActionDto';
 
 import { Keys } from '../../utils/keys';
+import { GameVariant } from "../../game.variant";
 
 @Injectable({
     providedIn: 'root'
@@ -319,7 +320,9 @@ export class BackgammonService extends AbstractGameService
             ( c ) => c.color !== move.color
         );
         
-        if ( hit ) {
+        const currentUrlparams = new URLSearchParams( window.location.search );
+        let variant = currentUrlparams.get( 'variant' );
+        if ( hit && variant !== GameVariant.BACKGAMMON_TAPA ) {
             if ( move.to < 25 ) {
                 this.sound.playCheckerWood();
             }

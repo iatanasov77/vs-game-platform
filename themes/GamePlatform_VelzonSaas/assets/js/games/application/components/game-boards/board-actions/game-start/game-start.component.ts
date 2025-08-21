@@ -11,14 +11,21 @@ import {
     selectGameRoomSuccess,
     startCardGame,
     startCardGameSuccess,
+    loadGameBySlug,
     loadGameRooms
 } from '../../../../+store/game.actions';
 import { GameState } from '../../../../+store/game.reducers';
 
 import { RequirementsDialogComponent } from '../../../game-dialogs/requirements-dialog/requirements-dialog.component';
 
-import templateString from './game-start.component.html'
 declare var $: any;
+declare global {
+    interface Window {
+        gamePlatformSettings: any;
+    }
+}
+
+import templateString from './game-start.component.html'
 
 @Component({
     selector: 'game-start',
@@ -85,8 +92,12 @@ export class GameStartComponent implements OnInit, OnChanges
             return;
         }
         
-        if ( this.appState && this.appState.game ) {
-            if ( ! this.appState.game.room ) {
+        if ( this.appState ) {
+            if ( ! this.appState.game ) {
+                this.store.dispatch( loadGameBySlug( { slug: window.gamePlatformSettings.gameSlug } ) );
+            }
+            
+            if ( this.appState.game && ! this.appState.game.room ) {
                 // Try With This Room Only For Now
                 let gameRoom    = this?.appState?.rooms?.find( ( item: any ) => item?.slug === 'test-bridge-belote-room' );
                 //console.log( gameRoom );

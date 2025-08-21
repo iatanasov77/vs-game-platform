@@ -43,6 +43,7 @@ export class GameService
     
     loadGameBySlug( slug: string ): Observable<IGame>
     {
+        alert( 'loadGameBySlug Called !' );
         const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
         var url         = `${this.url}/games-ext/${slug}`;
         

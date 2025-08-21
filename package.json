@@ -32,9 +32,7 @@
         "highlight.js": "^11.0.1",
         "intl-messageformat": "^9.11.3",
         "jquery": "3.6.3",
-        "jquery-duplicate-fields": "^1.1",
         "jquery-easyui": "^1.5.21",
-        "jquery-easyui-extensions": "^1.0.4",
         "jquery-slimscroll": "^1.3.8",
         "jquery-ui": "^1.13",
         "jquery-ui-dist": "^1.12.1",
@@ -71,6 +69,9 @@
         "@lordicon/element": "^1.10",
         "lottie-web": "^5.12",
         "flatpickr": "^4.6",
+        
+        "@vankosoft/jquery-duplicate-fields": "^2.0",
+        "@vankosoft/jquery-easyui-extensions": "^2.0",
         
         "code-prettify-google": "^1.0.1",
         "@stripe/stripe-js": "^2.1",

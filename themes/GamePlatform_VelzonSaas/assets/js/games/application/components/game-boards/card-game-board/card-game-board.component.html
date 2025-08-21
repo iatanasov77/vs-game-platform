@@ -1,5 +1,5 @@
 <div id="game-board" align="center">
-    <div id="card-table">
+    <div id="card-table" class="card-table">
         <ng-container *ngFor="let player of gamePlayers | async; let i = index">
             <div [ngClass]="developementClass"
                 class="{{ player.containerId.charAt( 0 ).toLowerCase() + player.containerId.slice( 1 ) }}"
@@ -14,7 +14,7 @@
 	    </ng-container>
     </div>
     
-    <div id="card-actions">
+    <div id="card-actions" class="card-actions">
         <game-start *ngIf="gameStarted != true"
             [isLoggedIn]="isLoggedIn"
             [hasPlayer]="hasPlayer"

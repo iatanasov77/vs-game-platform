@@ -44,7 +44,7 @@ export const loadPlayers                = createAction( actionTypes.loadPlayers 
 export const loadPlayersSuccess         = createAction( actionTypes.loadPlayersSuccess, props<{ players: IPlayer[] }>() );
 export const loadPlayersFailure         = createAction( actionTypes.loadPlayersFailure, props<{ error: any }>() );
 
-export const loadGameRooms              = createAction( actionTypes.loadGameRooms );
+export const loadGameRooms              = createAction( actionTypes.loadGameRooms, props<{ gameSlug: string }>() );
 export const loadGameRoomsSuccess       = createAction( actionTypes.loadGameRoomsSuccess, props<{ rooms: IGameRoom[] }>() );
 export const loadGameRoomsFailure       = createAction( actionTypes.loadGameRoomsFailure, props<{ error: any }>() );
 
@@ -52,7 +52,7 @@ export const selectGameRoom             = createAction( actionTypes.selectGameRo
 export const selectGameRoomSuccess      = createAction( actionTypes.selectGameRoomSuccess, props<{ game: IGame }>() );
 export const selectGameRoomFailure      = createAction( actionTypes.selectGameRoomFailure, props<{ error: any }>() );
 
-export const startCardGame              = createAction( actionTypes.startCardGame, props<{ game: any }>() );
+export const startCardGame              = createAction( actionTypes.startCardGame, props<{ game: IGame }>() );
 export const startCardGameSuccess       = createAction( actionTypes.startCardGameSuccess, props<{ gamePlay: IGamePlay }>() );
 export const startCardGameFailure       = createAction( actionTypes.startCardGameFailure, props<{ error: any }>() );
 

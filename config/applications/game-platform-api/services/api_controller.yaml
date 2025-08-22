@@ -51,6 +51,13 @@ services:
             - '@vsapp.repository.game_sessions'
         autowire: true
         tags: ['controller.service_arguments']
+    
+    App\Controller\Api\Games\GetGamePlayByGameController:
+        arguments:
+            - '@vsapp.repository.games'
+            - '@vsapp.repository.game_sessions'
+        autowire: true
+        tags: ['controller.service_arguments']
         
     App\Controller\Api\Games\StartGameController:
         tags: ['controller.service_arguments']

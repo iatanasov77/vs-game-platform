@@ -16,10 +16,11 @@
     
     <div id="card-actions" class="card-actions">
         <game-start *ngIf="gameStarted != true"
-            [isLoggedIn]="isLoggedIn"
-            [hasPlayer]="hasPlayer"
             [isRoomSelected]="isRoomSelected"
-            [game]="game"
+            
+            (onSelectGameRoom)="selectGameRoom()"
+            (onPlayWithComputer)="playWithComputer()"
+            (onPlayWithFriends)="playWithFriends()"
         ></game-start>
         
         <card-game-announce *ngIf="gameStarted == true"

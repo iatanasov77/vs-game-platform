@@ -1,12 +1,27 @@
 import { Component, Inject, OnInit, OnDestroy, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
-import { of } from 'rxjs';
+import { of, Observable, map, merge, take } from 'rxjs';
 
-import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
-import { selectGameRoomSuccess } from '../../../+store/game.actions';
+import {
+    selectGameRoom,
+    selectGameRoomSuccess,
+    startCardGame,
+    startCardGameSuccess,
+    loadGameBySlug,
+    loadGameRooms
+} from '../../../+store/game.actions';
 import { GameState } from '../../../+store/game.reducers';
+
+import IGame from '_@/GamePlatform/Model/GameInterface';
+import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
+
+import { GamePlayService } from '../../../services/game-play.service';
+import { BridgeBeloteService } from '../../../services/websocket/bridge-belote.service';
+
+import { RequirementsDialogComponent } from '../../game-dialogs/requirements-dialog/requirements-dialog.component';
 
 import templateString from './card-game-board.component.html'
 import styleString from './card-game-board.component.scss'
@@ -38,8 +53,11 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
     
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,
+        @Inject( GamePlayService ) private gamePlayService: GamePlayService,
+        @Inject( BridgeBeloteService ) private wsService: BridgeBeloteService,
         @Inject( Store ) private store: Store,
-        @Inject( Actions ) private actions$: Actions
+        @Inject( Actions ) private actions$: Actions,
+        @Inject( NgbModal ) private ngbModal: NgbModal,
     ) {
         this.gameAnnounceIcon   = null;
     }
@@ -53,9 +71,15 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
         this.store.subscribe( ( state: any ) => {
             this.appState   = state.app.main;
             
+            if ( ! state.app.main.game ) {
+                //this.store.dispatch( loadGameBySlug( { slug: window.gamePlatformSettings.gameSlug } ) );
+            }
+            
             if ( state.app.main.gamePlay ) {
                 this.gameStarted    = true;
             }
+            
+            console.log( state.app.main );
         });
         
         this.actions$.pipe( ofType( selectGameRoomSuccess ) ).subscribe( () => {
@@ -63,6 +87,11 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
             
             this.gamePlayers    = of( this.game.getPlayers() );
             this.isRoomSelected = true;
+        });
+        
+        this.actions$.pipe( ofType( startCardGameSuccess ) ).subscribe( () => {
+            this.store.dispatch( loadGameRooms( { gameSlug: window.gamePlatformSettings.gameSlug } ) );
+            this.game.startGame();
         });
     }
     
@@ -99,6 +128,69 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
             
             $( '#AnnounceContainer' ).hide();
             $( '#GameAnnounce' ).show();
+        });
+    }
+    
+    async playWithComputer(): Promise<void>
+    {
+        if ( this.appState && this.appState.game ) {
+//             const x = await this.createGameRoom( this.appState.game );
+//             alert( x );
+            
+            const room = await this.gamePlayService.createGameRoom( this.appState.game );
+            alert( room );
+            
+            this.store.dispatch( startCardGame( { game: this.appState.game } ) );
+        }
+    }
+    
+    playWithFriends(): void
+    {
+        if ( this.appState && this.appState.game ) {
+            this.store.dispatch( startCardGame( { game: this.appState.game } ) );
+        }
+    }
+    
+    selectGameRoom(): void
+    {
+        if ( ! this.isLoggedIn || ! this.hasPlayer ) {
+            this.openRequirementsDialog();
+            return;
+        }
+        
+        if ( this.appState ) {
+            if ( this.appState.game && ! this.appState.game.room ) {
+                // Try With This Room Only For Now
+                let gameRoom    = this?.appState?.rooms?.find( ( item: any ) => item?.slug === 'test-bridge-belote-room' );
+                //console.log( 'Available Game Rooms', this?.appState?.rooms );
+                //console.log( 'Selected Game Room', gameRoom );
+                
+                if ( gameRoom ) {
+                    this.store.dispatch( selectGameRoom( { game: this.appState.game, room:  gameRoom } ) );
+                }
+            }
+        }
+    }
+    
+    openRequirementsDialog(): void
+    {
+        const modalRef = this.ngbModal.open( RequirementsDialogComponent );
+        
+        modalRef.componentInstance.isLoggedIn   = this.isLoggedIn;
+        modalRef.componentInstance.hasPlayer    = this.hasPlayer;
+        
+        modalRef.componentInstance.closeModal.subscribe( () => {
+            // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
+            modalRef.dismiss();
+        });
+    }
+    
+    createGameRoom( game: IGame )
+    {
+        return new Promise( ( resolve ) => {
+            setTimeout( () => {
+                resolve( game );
+            }, 2000 );
         });
     }
 }

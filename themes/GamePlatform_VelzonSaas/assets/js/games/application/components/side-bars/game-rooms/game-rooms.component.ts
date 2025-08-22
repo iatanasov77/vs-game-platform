@@ -20,6 +20,11 @@ import templateString from './game-rooms.component.html'
 import cssString from './game-rooms.component.scss'
 
 declare var $: any;
+declare global {
+    interface Window {
+        gamePlatformSettings: any
+    }
+}
 
 @Component({
     selector: 'game-rooms',
@@ -55,7 +60,8 @@ export class GameRoomsComponent implements OnInit, OnDestroy
         @Inject( Store ) private store: Store,
         @Inject( Actions ) private actions$: Actions
     ) {
-        this.store.dispatch( loadGameRooms() );
+        //alert( window.gamePlatformSettings.gameSlug );
+        this.store.dispatch( loadGameRooms( { gameSlug: window.gamePlatformSettings.gameSlug } ) );
         this.store.subscribe( ( state: any ) => {
             this.showSpinner    = state.app.main.rooms == null;
             this.rooms          = state.app.main.rooms;
@@ -96,6 +102,6 @@ export class GameRoomsComponent implements OnInit, OnDestroy
     updateRooms( action: IMercureAction ): void
     {
         //console.log( action );
-        this.store.dispatch( loadGameRooms() );
+        this.store.dispatch( loadGameRooms( { gameSlug: window.gamePlatformSettings.gameSlug } ) );
     }
 }

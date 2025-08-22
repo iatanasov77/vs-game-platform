@@ -76,7 +76,7 @@ export class BackgammonService extends AbstractGameService
                 this.cookieService.set( Keys.gameIdKey, JSON.stringify( cookie ), 2 );
                 this.statusMessageService.setTextMessage( dto.game );
                 
-                this.store.dispatch( loadGameRooms() );
+                this.store.dispatch( loadGameRooms( { gameSlug: window.gamePlatformSettings.gameSlug } ) );
                 
                 this.appState.moveTimer.setValue( dto.game.thinkTime );
                 this.sound.fadeIntro();

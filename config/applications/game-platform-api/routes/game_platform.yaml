@@ -14,6 +14,10 @@ vs_api_game_by_slug:
     path: /api/games-ext/{slug}
     controller: App\Controller\Api\Games\ShowGameBySlugController::index
 
+vs_api_game_play_by_game:
+    path: /api/game-sessions/{gameSlug}
+    controller: App\Controller\Api\Games\GetGamePlayByGameController::index
+
 vs_api_mercure_game_message:
     path: /api/game-message
     controller: App\Controller\Api\MercureController::index

@@ -89,8 +89,8 @@ export class GameEffects
     loadGameRooms = createEffect( (): any =>
         this.actions$.pipe(
             ofType( loadGameRooms ),
-            switchMap( () =>
-                this.gameService.loadGameRooms().pipe(
+            switchMap( ( { gameSlug } ) =>
+                this.gameService.loadGameRooms( gameSlug ).pipe(
                     map( ( rooms: IGameRoom[] ) => loadGameRoomsSuccess( { rooms } ) ),
                     catchError( error => [loadGameRoomsFailure( { error } )] )
                 )

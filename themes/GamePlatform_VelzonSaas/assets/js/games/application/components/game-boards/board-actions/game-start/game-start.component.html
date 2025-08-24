@@ -9,9 +9,6 @@
     </ng-container>
     
     <ng-container *ngIf="isRoomSelected">
-        <a class="btn btn-primary me-2" id="btnStartGame" (click)="clickPlayWithComputer( $event )">
-            {{ 'game_board.play_with_computer' | translate }}
-        </a>
         <a class="btn btn-primary" id="btnPlayWithFriends" (click)="clickPlayWithFriends( $event )">
             {{ 'game_board.play_with_friends' | translate }}
         </a>

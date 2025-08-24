@@ -68,7 +68,6 @@ export function HttpLoaderFactory( http: HttpClient ) {
     ],
     bootstrap: [BridgeBeloteComponent],
     providers: [
-        //{ provide: Window, useValue: window },
         { provide: APP_BASE_HREF, useValue: window.location.pathname },
         { provide: FEATURE_REDUCER_TOKEN, useFactory: getReducers },
         { provide: ErrorHandler, useClass: GlobalErrorService }

@@ -30,6 +30,20 @@ vs_api_backgamon_editor_game_string:
     path: /api/backgamon/editor/gamestring
     controller: App\Controller\Api\BackgammonEditorController::gameString
 
+vs_api_create_game_room:
+    path: /api/create-game-room/{gameId}
+    controller: App\Controller\Api\Games\CreateGameRoomController::createGameRoomAction
+
 vs_api_select_game_room:
     path: /api/select-game-room/{gameId}
     controller: App\Controller\Api\Games\SelectGameRoomController::selectGameRoomAction
+
+vs_api_start_game:
+    path: /api/start-game/{gamePlayId}
+    controller: App\Controller\Api\Games\StartGameController::startGameAction
+    defaults:
+        gamePlayId: 0
+
+vs_api_finish_game:
+    path: /api/finish-game/{gamePlayId}
+    controller: App\Controller\Api\Games\FinishGameController::finishGameAction

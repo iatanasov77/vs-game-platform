@@ -31,7 +31,7 @@ class FinishGameController extends AbstractController
         $this->hub                  = $hub;
     }
     
-    public function __invoke( Request $request ): JsonResponse
+    public function finishGameAction( $gamePlayId, Request $request ): JsonResponse
     {
         $gamePlay   = $this->gamePlayRepository->find( $request->request->get( 'game_play' ) );
         $em         = $this->doctrine->getManager();

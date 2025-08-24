@@ -71,16 +71,13 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
         this.store.subscribe( ( state: any ) => {
             this.appState   = state.app.main;
             
-            if ( ! state.app.main.game ) {
-                //this.store.dispatch( loadGameBySlug( { slug: window.gamePlatformSettings.gameSlug } ) );
-            }
-            
             if ( state.app.main.gamePlay ) {
                 this.gameStarted    = true;
             }
-            
             console.log( state.app.main );
         });
+        
+        this.store.dispatch( loadGameBySlug( { slug: window.gamePlatformSettings.gameSlug } ) );
         
         this.actions$.pipe( ofType( selectGameRoomSuccess ) ).subscribe( () => {
             this.game.setRoom( this?.appState?.game?.room );
@@ -134,13 +131,13 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
     async playWithComputer(): Promise<void>
     {
         if ( this.appState && this.appState.game ) {
-//             const x = await this.createGameRoom( this.appState.game );
-//             alert( x );
-            
-            const room = await this.gamePlayService.createGameRoom( this.appState.game );
-            alert( room );
-            
-            this.store.dispatch( startCardGame( { game: this.appState.game } ) );
+            this.gamePlayService.createGameRoom( this.appState.game ).subscribe( gamePlay => {
+                //console.log( gamePlay );
+                if ( this.appState && this.appState.game && gamePlay.room ) {
+                    this.store.dispatch( selectGameRoom( { game: this.appState.game, room: gamePlay.room } ) );
+                    this.store.dispatch( startCardGame( { game: this.appState.game } ) );
+                }
+            });
         }
     }
     
@@ -182,15 +179,6 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
         modalRef.componentInstance.closeModal.subscribe( () => {
             // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
             modalRef.dismiss();
-        });
-    }
-    
-    createGameRoom( game: IGame )
-    {
-        return new Promise( ( resolve ) => {
-            setTimeout( () => {
-                resolve( game );
-            }, 2000 );
         });
     }
 }

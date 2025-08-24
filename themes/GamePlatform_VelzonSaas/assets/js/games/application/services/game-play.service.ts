@@ -47,9 +47,9 @@ export class GamePlayService
     createGameRoom( game: IGame ): Observable<IGamePlay>
     {
         const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
-        var url         = `${this.apiUrl}/create-game-room`;
+        var url         = `${this.apiUrl}/create-game-room/${game.id}`;
         
-        return this.httpClient.post<IGamePlay>( url, {game: game.id}, {headers} ).pipe(
+        return this.httpClient.get<IGamePlay>( url, {headers} ).pipe(
             map( ( response: any ) => this.mapGamePlay( response ) )
         );
     }
@@ -57,9 +57,9 @@ export class GamePlayService
     startCardGame( game: IGame ): Observable<IGamePlay>
     {
         const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
-        var url         = `${this.apiUrl}/start-game`;
+        var url         = `${this.apiUrl}/start-game/${game.room.id}`;
         
-        return this.httpClient.post<IGamePlay>( url, {game_room: game.room.id}, {headers} ).pipe(
+        return this.httpClient.get<IGamePlay>( url, {headers} ).pipe(
             map( ( response: any ) => this.mapGamePlay( response ) )
         );
     }

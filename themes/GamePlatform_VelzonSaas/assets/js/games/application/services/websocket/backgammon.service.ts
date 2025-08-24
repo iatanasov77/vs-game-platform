@@ -4,7 +4,7 @@ import { AbstractGameService } from './abstract-game.service';
 // NGRX Store
 import { loadGameRooms } from '../../+store/game.actions';
 
-// Board Interfaces
+// BoardGame Interfaces
 import CheckerDto from '_@/GamePlatform/Model/BoardGame/checkerDto';
 import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
 import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
@@ -12,6 +12,9 @@ import DiceDto from '_@/GamePlatform/Model/BoardGame/diceDto';
 import GameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
 import GameCookieDto from '_@/GamePlatform/Model/BoardGame/gameCookieDto';
 import GameState from '_@/GamePlatform/Model/BoardGame/gameState';
+
+// CardGame Interfaces
+import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
 
 // Action Interfaces
 import ActionDto from '../../dto/Actions/actionDto';
@@ -67,8 +70,9 @@ export class BackgammonService extends AbstractGameService
                 
                 const cookie: GameCookieDto = {
                     id: dto.game.id,
-                    color: dto.myColor,
                     game: window.gamePlatformSettings.gameSlug,
+                    color: dto.myColor,
+                    position: PlayerPosition.neither,
                     roomSelected: false
                 };
                 this.cookieService.deleteAll( Keys.gameIdKey );

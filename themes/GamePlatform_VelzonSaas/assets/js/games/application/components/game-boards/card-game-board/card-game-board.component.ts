@@ -18,10 +18,17 @@ import { GameState } from '../../../+store/game.reducers';
 import IGame from '_@/GamePlatform/Model/GameInterface';
 import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
 
-import { GamePlayService } from '../../../services/game-play.service';
-import { BridgeBeloteService } from '../../../services/websocket/bridge-belote.service';
+// App State
+import { AppStateService } from '../../../state/app-state.service';
 
+// Services
+import { BridgeBeloteService } from '../../../services/websocket/bridge-belote.service';
+import { GamePlayService } from '../../../services/game-play.service';
+
+// Dialogs
 import { RequirementsDialogComponent } from '../../game-dialogs/requirements-dialog/requirements-dialog.component';
+
+import { Helper } from '../../../utils/helper';
 
 import templateString from './card-game-board.component.html'
 import styleString from './card-game-board.component.scss'
@@ -53,8 +60,9 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
     
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,
-        @Inject( GamePlayService ) private gamePlayService: GamePlayService,
+        @Inject( AppStateService ) private appStateService: AppStateService,
         @Inject( BridgeBeloteService ) private wsService: BridgeBeloteService,
+        @Inject( GamePlayService ) private gamePlayService: GamePlayService,
         @Inject( Store ) private store: Store,
         @Inject( Actions ) private actions$: Actions,
         @Inject( NgbModal ) private ngbModal: NgbModal,
@@ -128,8 +136,9 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
         });
     }
     
-    async playWithComputer(): Promise<void>
+    async playWithComputer()
     {
+        /*
         if ( this.appState && this.appState.game ) {
             this.gamePlayService.createGameRoom( this.appState.game ).subscribe( gamePlay => {
                 //console.log( gamePlay );
@@ -139,6 +148,17 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
                 }
             });
         }
+        */
+        
+        /*
+        this.wsService.exitGame();
+        
+        while ( this.appStateService.myConnection.getValue().connected ) {
+            await Helper.delay( 500 );
+        }
+        */
+        
+        this.wsService.connect( '', true, false );
     }
     
     playWithFriends(): void

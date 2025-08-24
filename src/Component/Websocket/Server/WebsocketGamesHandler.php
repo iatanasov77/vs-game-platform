@@ -12,6 +12,7 @@ use App\Component\GameLogger;
 use App\Component\Websocket\WebsocketClientFactory;
 use App\Component\Websocket\WebSocketState;
 use App\Component\GameService;
+use App\Component\Type\PlayerColor;
 
 use App\Component\Dto\Actions\ActionDto;
 use App\Component\Dto\Actions\ActionNames;
@@ -115,7 +116,9 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         $this->logger->log( "Recieved Action: " . $action->actionName, 'GameServer' );
         
         try {
-            $otherClient    = $socket == $gameManager->Client1 ? $gameManager->Client2 : $gameManager->Client1;
+            $otherClient    = $socket == $gameManager->Clients->get( PlayerColor::Black->value ) ?
+                                $gameManager->Clients->get( PlayerColor::White->value ) :
+                                $gameManager->Clients->get( PlayerColor::Black->value );
             $gameManager->DoAction( ActionNames::from( $action->actionName ), $msg, $socket, $otherClient );
         } catch ( \Exception $e ) {
             $this->logger->log( "Game Manager Do Action Error: '{$e->getMessage()}' in file {$e->getFile()} at line {$e->getLine()}", 'GameServer' );

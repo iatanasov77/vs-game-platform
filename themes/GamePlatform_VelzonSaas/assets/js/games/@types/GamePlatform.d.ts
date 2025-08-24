@@ -95,11 +95,13 @@ declare module '_@/GamePlatform/Model/BoardGame/gameDto' {
 
 declare module '_@/GamePlatform/Model/BoardGame/gameCookieDto' {
     import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
+    import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
     
     interface GameCookieDto {
         id: string;
-        color: PlayerColor;
         game: string;
+        color: PlayerColor;
+        position: PlayerPosition;
         roomSelected: boolean;
     }
     
@@ -201,6 +203,19 @@ declare module '_@/GamePlatform/Model/BoardGame/newScoreDto' {
     }
     
     export = NewScoreDto;
+}
+
+declare module '_@/GamePlatform/Model/CardGame/playerPosition' {
+    enum PlayerPosition
+    {
+        north,
+        south,
+        east,
+        west,
+        neither
+    }
+    
+    export = PlayerPosition;
 }
 
 declare module '_@/GamePlatform/Game/GameSettings' {

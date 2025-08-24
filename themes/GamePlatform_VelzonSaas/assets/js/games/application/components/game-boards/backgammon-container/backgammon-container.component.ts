@@ -34,6 +34,12 @@ import { PlayAiQuestionComponent } from '../../game-dialogs/play-ai-question/pla
 import { CreateInviteGameDialogComponent } from '../../game-dialogs/create-invite-game-dialog/create-invite-game-dialog.component';
 import { UserLoginDialogComponent } from '../../game-dialogs/user-login-dialog/user-login-dialog.component';
 
+// App State
+import { AppStateService } from '../../../state/app-state.service';
+import { QueryParamsService } from '../../../state/query-params.service';
+import { StatusMessage } from '../../../utils/status-message';
+import { Busy } from '../../../state/busy';
+
 // Services
 import { AuthService } from '../../../services/auth.service';
 import { BackgammonService } from '../../../services/websocket/backgammon.service';
@@ -47,12 +53,6 @@ import GameCookieDto from '_@/GamePlatform/Model/BoardGame/gameCookieDto';
 import { CookieService } from 'ngx-cookie-service';
 import { Keys } from '../../../utils/keys';
 
-// App State
-import { AppStateService } from '../../../state/app-state.service';
-import { QueryParamsService } from '../../../state/query-params.service';
-import { StatusMessage } from '../../../utils/status-message';
-import { Busy } from '../../../state/busy';
-
 // Board Interfaces
 import UserDto from '_@/GamePlatform/Model/BoardGame/userDto';
 import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
@@ -60,6 +60,8 @@ import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
 import DiceDto from '_@/GamePlatform/Model/BoardGame/diceDto';
 import GameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
 import GameState from '_@/GamePlatform/Model/BoardGame/gameState';
+
+import { Helper } from '../../../utils/helper';
 
 import cssGameString from './backgammon-container.component.scss';
 import templateString from './backgammon-container.component.html';
@@ -687,15 +689,10 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         this.wsService.exitGame();
         
         while ( this.appStateService.myConnection.getValue().connected ) {
-            await this.delay( 500 );
+            await Helper.delay( 500 );
         }
         
         this.wsService.connect( '', true, this.forGoldFlag );
-    }
-    
-    delay( ms: number )
-    {
-        return new Promise( ( resolve ) => setTimeout( resolve, ms ) );
     }
     
     keepWaiting(): void

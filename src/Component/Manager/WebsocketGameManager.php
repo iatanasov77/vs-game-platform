@@ -3,20 +3,25 @@
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Type\PlayerColor;
+use App\Component\Type\PlayerPosition;
 use App\Component\AI\Backgammon\EngineFactory as AiEngineFactory;
 use App\Entity\GamePlayer;
 use App\Component\System\Guid;
+use App\Component\Websocket\WebSocketState;
+
+// DTO Actions
+use App\Component\Dto\Mapper;
+use App\Component\Dto\Actions\GameRestoreActionDto;
 
 final class WebsocketGameManager extends AbstractGameManager
 {
-    public function ConnectAndListen( WebsocketClientInterface $webSocket, PlayerColor $color, GamePlayer $dbUser, bool $playAi ): void
+    public function ConnectAndListenBoardGame( WebsocketClientInterface $webSocket, PlayerColor $color, GamePlayer $dbUser, bool $playAi ): void
     {
         $this->logger->log( "Connecting Game Manager ...", 'GameManager' );
         $this->Game->CurrentPlayer  = $color;
         
         if ( $color == PlayerColor::Black ) {
-            $this->Client1 = $webSocket;
-            
+            $this->Clients->set( PlayerColor::Black->value, $webSocket );
             
             $this->Game->BlackPlayer->Id = $dbUser != null ? $dbUser->getId() : 0;
             $this->Game->BlackPlayer->Guid = $dbUser != null ? $dbUser->getGuid() : Guid::Empty();
@@ -57,7 +62,7 @@ final class WebsocketGameManager extends AbstractGameManager
                 if ( $this->Game->CurrentPlayer == PlayerColor::White ) {
                     $promise = \React\Async\async( function () {
                         $this->logger->log( "GameManager CurrentPlayer: White", 'GameManager' );
-                        $this->EnginMoves( $this->Client1 );
+                        $this->EnginMoves( $this->Clients->get( PlayerColor::Black->value ) );
                     })();
                     \React\Async\await( $promise );
                 }
@@ -66,7 +71,7 @@ final class WebsocketGameManager extends AbstractGameManager
             if ( $playAi ) {
                 throw new \Exception( "Ai always plays as white. This is not expected" );
             }
-            $this->Client2 = $webSocket;
+            $this->Clients->set( PlayerColor::White->value, $webSocket );
             
             $this->Game->WhitePlayer->Id = $dbUser != null ? $dbUser->getId() : 0;
             $this->Game->BlackPlayer->Guid = $dbUser != null ? $dbUser->getGuid() : Guid::Empty();
@@ -82,5 +87,45 @@ final class WebsocketGameManager extends AbstractGameManager
             
             //$this->dispatchGameEnded();
         }
+    }
+    
+    public function RestoreBoardGame( PlayerColor $color, WebsocketClientInterface $socket ): void
+    {
+        $gameDto = Mapper::GameToDto( $this->Game );
+        $restoreAction = new GameRestoreActionDto();
+        $restoreAction->game = $gameDto;
+        $restoreAction->color = $color;
+        $restoreAction->dices = $this->Game->Roll->map(
+            function( $entry ) {
+                return Mapper::DiceToDto( $entry );
+            }
+            )->toArray();
+            
+            if ( $color == PlayerColor::Black ) {
+                $this->Clients->set( PlayerColor::Black->value, $socket );
+                $otherSocket = $this->Clients->get( PlayerColor::White->value );
+            } else {
+                $this->Clients->set( PlayerColor::White->value, $socket );
+                $otherSocket = $this->Clients->get( PlayerColor::Black->value );
+            }
+            
+            $this->Send( $socket, $restoreAction );
+            //Also send the state to the other client in case it has made moves.
+            if ( $otherSocket != null && $otherSocket->State == WebSocketState::Open ) {
+                $restoreAction->color = $color == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
+                $this->Send( $otherSocket, $restoreAction );
+            } else {
+                $this->logger->log( "Failed to send restore to other client", 'GameManager' );
+            }
+    }
+    
+    public function ConnectAndListenCardGame( WebsocketClientInterface $webSocket, PlayerPosition $position, GamePlayer $dbUser, bool $playAi ): void
+    {
+        
+    }
+    
+    public function RestoreCardGame( PlayerPosition $position, WebsocketClientInterface $socket ): void
+    {
+        
     }
 }

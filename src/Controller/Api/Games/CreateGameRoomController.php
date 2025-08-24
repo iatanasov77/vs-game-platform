@@ -114,25 +114,25 @@ class CreateGameRoomController extends AbstractController
         // First Player
         $gameRoom->addGamePlayer( $this->createGamePlayer( $currentUser->getPlayer(), [
             'name' => $currentUser->getUsername(),
-            'position' => PlayerPosition::North->value,
+            'position' => PlayerPosition::North->toString(),
         ]));
         
         // Second Player
         $gameRoom->addGamePlayer( $this->createGamePlayer( $aiPlayer, [
             'name' => 'Computer_1',
-            'position' => PlayerPosition::East->value,
+            'position' => PlayerPosition::East->toString(),
         ]));
         
         // Third Player
         $gameRoom->addGamePlayer( $this->createGamePlayer( $aiPlayer, [
             'name' => 'Computer_2',
-            'position' => PlayerPosition::South->value,
+            'position' => PlayerPosition::South->toString(),
         ]));
         
         // Fourth Player
         $gameRoom->addGamePlayer( $this->createGamePlayer( $aiPlayer, [
             'name' => 'Computer_3',
-            'position' => PlayerPosition::West->value,
+            'position' => PlayerPosition::West->toString(),
         ]));
     }
     

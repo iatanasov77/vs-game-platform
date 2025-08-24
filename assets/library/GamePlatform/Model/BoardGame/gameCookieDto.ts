@@ -1,10 +1,12 @@
 ﻿import PlayerColor from './playerColor';
+import PlayerPosition from '../CardGame/playerPosition';
 
 interface GameCookieDto
 {
     id: string;
-    color: PlayerColor;
     game: string;
+    color: PlayerColor;
+    position: PlayerPosition;
     roomSelected: boolean;
 }
 

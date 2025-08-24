@@ -6,6 +6,8 @@ use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Ratchet\RFC6455\Messaging\Frame;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager as LiipImagineCacheManager;
@@ -41,7 +43,6 @@ use App\Component\Dto\toplist\NewScoreDto;
 use App\Component\Dto\Actions\GameCreatedActionDto;
 use App\Component\Dto\Actions\DicesRolledActionDto;
 use App\Component\Dto\Actions\GameEndedActionDto;
-use App\Component\Dto\Actions\GameRestoreActionDto;
 use App\Component\Dto\Actions\DoublingActionDto;
 use App\Component\Dto\Actions\OpponentMoveActionDto;
 use App\Component\Dto\Actions\RolledActionDto;
@@ -63,12 +64,6 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     /** @const int */
     const firstBet = 50;
-    
-    /** @var \DateTime */
-    public $Created;
-    
-    /** @var bool */
-    public $RoomSelected = false;
     
     /** @var GameLogger */
     protected $logger;
@@ -125,11 +120,8 @@ abstract class AbstractGameManager implements GameManagerInterface
     /** @var bool */
     public $SearchingOpponent;
     
-    /** @var WebsocketClientInterface */
-    public $Client1;
-    
-    /** @var WebsocketClientInterface */
-    public $Client2;
+    /** @var Collection | WebsocketClientInterface[] */
+    public $Clients;
     
     /** @var string */
     public $Inviter;
@@ -142,6 +134,12 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     /** @var bool */
     public $ForGold;
+    
+    /** @var \DateTime */
+    public $Created;
+    
+    /** @var bool */
+    public $RoomSelected = false;
     
     public function __construct(
         GameLogger $logger,
@@ -178,6 +176,8 @@ abstract class AbstractGameManager implements GameManagerInterface
         $this->GameVariant              = $gameVariant;
         
         $this->EndGameOnTotalThinkTimeElapse = $EndGameOnTotalThinkTimeElapse;
+        
+        $this->Clients                  = new ArrayCollection();
         $this->InitializeGame( $gameCode, $gameVariant );
     }
     
@@ -188,14 +188,11 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     public function getClient( $clientId ): ?WebsocketClientInterface
     {
-        if ( $this->Client1 && $this->Client1->getClientId() == $clientId ) {
-            $this->logger->log( 'GameManager Websocket Client 1 Found !!!', 'GameManager' );
-            return $this->Client1;
-        }
-        
-        if ( $this->Client2 && $this->Client2->getClientId() == $clientId ) {
-            $this->logger->log( 'GameManager Websocket Client 2 Found !!!', 'GameManager' );
-            return $this->Client2;
+        foreach ( $this->Clients as $client ) {
+            if ( $client && $client->getClientId() == $clientId ) {
+                $this->logger->log( 'Websocket Client Found !!!', 'GameManager' );
+                return $client;
+            }
         }
         
         $this->logger->log( 'GameManager Websocket Client Not Found !!!', 'GameManager' );
@@ -221,36 +218,6 @@ abstract class AbstractGameManager implements GameManagerInterface
         $this->eventDispatcher->dispatch( new GameEndedEvent( $this ), GameEndedEvent::NAME );
     }
     
-    public function Restore( PlayerColor $color, WebsocketClientInterface $socket ): void
-    {
-        $gameDto = Mapper::GameToDto( $this->Game );
-        $restoreAction = new GameRestoreActionDto();
-        $restoreAction->game = $gameDto;
-        $restoreAction->color = $color;
-        $restoreAction->dices = $this->Game->Roll->map(
-            function( $entry ) {
-                return Mapper::DiceToDto( $entry );
-            }
-        )->toArray();
-        
-        if ( $color == PlayerColor::Black ) {
-            $this->Client1 = $socket;
-            $otherSocket = $this->Client2;
-        } else {
-            $this->Client2 = $socket;
-            $otherSocket = $this->Client1;
-        }
-        
-        $this->Send( $socket, $restoreAction );
-        //Also send the state to the other client in case it has made moves.
-        if ( $otherSocket != null && $otherSocket->State == WebSocketState::Open ) {
-            $restoreAction->color = $color == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
-            $this->Send( $otherSocket, $restoreAction );
-        } else {
-            $this->logger->log( "Failed to send restore to other client", 'GameManager' );
-        }
-    }
-    
     public function DoAction( ActionNames $actionName, string $actionText, WebsocketClientInterface $socket, ?WebsocketClientInterface $otherSocket )
     {
         $this->logger->log( "Doing action: {$actionName->value}", 'GameManager' );
@@ -260,7 +227,7 @@ abstract class AbstractGameManager implements GameManagerInterface
             $this->Game->ThinkStart = new \DateTime( 'now' );
             $action = $this->serializer->deserialize( $actionText, MovesMadeActionDto::class, JsonEncoder::FORMAT );
             
-            if ( $socket == $this->Client1 ) {
+            if ( $socket == $this->Clients->get( PlayerColor::Black->value ) ) {
                 $this->Game->BlackPlayer->FirstMoveMade = true;
             } else {
                 $this->Game->WhitePlayer->FirstMoveMade = true;
@@ -330,7 +297,7 @@ abstract class AbstractGameManager implements GameManagerInterface
             $action = $this->serializer->deserialize( $actionText, ConnectionInfoActionDto::class, JsonEncoder::FORMAT );
             $this->Send( $otherSocket, $action );
         } else if ( $actionName == ActionNames::resign ) {
-            $winner = $this->Client1 == $otherSocket ? PlayerColor::Black : PlayerColor::White;
+            $winner = $this->Clients->get( PlayerColor::Black->value ) == $otherSocket ? PlayerColor::Black : PlayerColor::White;
             $this->Resign( $winner );
         } else if ( $actionName == ActionNames::exitGame ) {
             $this->logger->log( 'exitGame action recieved from GameManager.', 'GameManager' );
@@ -373,10 +340,10 @@ abstract class AbstractGameManager implements GameManagerInterface
         $action->game = $gameDto;
         
         $action->myColor = PlayerColor::Black;
-        $this->Send( $this->Client1, $action );
+        $this->Send( $this->Clients->get( PlayerColor::Black->value ), $action );
         
         $action->myColor = PlayerColor::White;
-        $this->Send( $this->Client2, $action );
+        $this->Send( $this->Clients->get( PlayerColor::White->value ), $action );
         
         $this->Game->PlayState = GameState::firstThrow;
         
@@ -404,8 +371,8 @@ abstract class AbstractGameManager implements GameManagerInterface
             //$this->logger->log( 'First Throw Valid Moves: ' . \print_r( $rollAction->validMoves, true ), 'FirstThrowState' );
             //$this->logger->debug( $rollAction, 'FirstRoll.txt' );
             
-            $this->Send( $this->Client1, $rollAction );
-            $this->Send( $this->Client2, $rollAction );
+            $this->Send( $this->Clients->get( PlayerColor::Black->value ), $rollAction );
+            $this->Send( $this->Clients->get( PlayerColor::White->value ), $rollAction );
         }
         
         $this->moveTimeOut = new DeferredCancellation();
@@ -494,14 +461,14 @@ abstract class AbstractGameManager implements GameManagerInterface
         )->toArray();
         $rollAction->moveTimer = Game::ClientCountDown;
         
-        if ( $this->Client1 && ! $this->Game->BlackPlayer->IsAi() ) {
+        if ( $this->Clients->get( PlayerColor::Black->value ) && ! $this->Game->BlackPlayer->IsAi() ) {
             $this->logger->log( "Sending NewRoll to Client1 !!!", 'NewRoll' );
-            $this->Send( $this->Client1, $rollAction );
+            $this->Send( $this->Clients->get( PlayerColor::Black->value ), $rollAction );
         }
         
-        if ( $this->Client2 && ! $this->Game->WhitePlayer->IsAi() ) {
+        if ( $this->Clients->get( PlayerColor::White->value ) && ! $this->Game->WhitePlayer->IsAi() ) {
             $this->logger->log( "Sending NewRoll to Client2 !!!", 'NewRoll' );
-            $this->Send( $this->Client2, $rollAction );
+            $this->Send( $this->Clients->get( PlayerColor::White->value ), $rollAction );
         }
     }
     
@@ -728,10 +695,10 @@ abstract class AbstractGameManager implements GameManagerInterface
         $gameEndedAction->game = $game;
         
         $gameEndedAction->newScore = $newScore ? $newScore[0] : null;
-        $this->Send( $this->Client1, $gameEndedAction );
+        $this->Send( $this->Clients->get( PlayerColor::Black->value ), $gameEndedAction );
         
         $gameEndedAction->newScore = $newScore ? $newScore[1] : null;
-        $this->Send( $this->Client2, $gameEndedAction );
+        $this->Send( $this->Clients->get( PlayerColor::White->value ), $gameEndedAction );
     }
     
     protected function ReturnStakes(): void
@@ -764,10 +731,10 @@ abstract class AbstractGameManager implements GameManagerInterface
             $socket->close( Frame::CLOSE_NORMAL );
             
             // Dispose Websocket
-            if ( $socket == $this->Client1 ) {
-                $this->Client1 = null;
+            if ( $socket == $this->Clients->get( PlayerColor::Black->value ) ) {
+                $this->Clients->set( PlayerColor::Black->value, null );
             } else {
-                $this->Client2 = null;
+                $this->Clients->set( PlayerColor::White->value, null );
             }
         }
     }

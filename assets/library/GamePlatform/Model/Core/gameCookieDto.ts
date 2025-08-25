@@ -5,8 +5,10 @@ interface GameCookieDto
 {
     id: string;
     game: string;
-    color: PlayerColor;
-    position: PlayerPosition;
+    
+    color?: PlayerColor;
+    position?: PlayerPosition;
+    
     roomSelected: boolean;
 }
 

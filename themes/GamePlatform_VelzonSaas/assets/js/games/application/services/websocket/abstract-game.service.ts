@@ -14,13 +14,15 @@ import { Store } from '@ngrx/store';
 import { selectGameRoom } from '../../+store/game.actions';
 import IGameRoom from '_@/GamePlatform/Model/GameRoomInterface';
 
+// Core Interfaces
+import GameState from '_@/GamePlatform/Model/Core/gameState';
+import GameDto from '_@/GamePlatform/Model/Core/gameDto';
+import GameCookieDto from '_@/GamePlatform/Model/Core/gameCookieDto';
+
 // Board Interfaces
 import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
 import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
 import DiceDto from '_@/GamePlatform/Model/BoardGame/diceDto';
-import GameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
-import GameCookieDto from '_@/GamePlatform/Model/BoardGame/gameCookieDto';
-import GameState from '_@/GamePlatform/Model/BoardGame/gameState';
 
 // Action Interfaces
 import ActionDto from '../../dto/Actions/actionDto';
@@ -104,71 +106,8 @@ export abstract class AbstractGameService
         }
     }
     
-    connect( gameId: string, playAi: boolean, forGold: boolean ): void
-    {
-        //alert( 'Called Websocket Connect !!!' );
-        if ( this.socket ) {
-            this.socket.close();
-        }
-        
-        const currentUrlparams = new URLSearchParams( window.location.search );
-        let variant = currentUrlparams.get( 'variant' );
-        if ( variant == null ) {
-            variant = GameVariant.BACKGAMMON_NORMAL;
-        }
-        
-        let gameCookie  = this.cookieService.get( Keys.gameIdKey );
-        let b64Cookie;
-        if ( gameCookie ) {
-            b64Cookie   = window.btoa( gameCookie );
-        }
-        
-        this.url        = window.gamePlatformSettings.socketGameUrl;
-        
-        const user      = this.appState.user.getValue();
-        const userId    = user ? user.id : '';
-        const tree      = this.router.createUrlTree([], {
-            queryParams: {
-                token: window.gamePlatformSettings.apiVerifySiganature,
-                gameCode: window.gamePlatformSettings.gameSlug,
-                gameVariant: variant,
-                gameCookie: b64Cookie,
-                
-                userId: userId,
-                gameId: gameId,
-                playAi: playAi,
-                forGold: forGold
-            }
-        });
-        const url = this.url + this.serializer.serialize( tree );
-        
-        //alert( url );
-        this.socket = new WebSocket( url );
-        this.socket.onmessage   = this.onMessage.bind( this );
-        this.socket.onerror     = this.onError.bind( this );
-        this.socket.onopen      = this.onOpen.bind( this );
-        this.socket.onclose     = this.onClose.bind( this );
-    }
-    
-    onOpen(): void
-    {
-        // console.log('Open', { event });
-        const now = new Date();
-        const ping = now.getTime() - this.connectTime.getTime();
-        
-        //console.log( 'User in State', this.appState.user );
-        if ( this.appState.user.getValue() ) {
-            //this.statusMessageService.setWaitingForConnect();
-            this.statusMessageService.setNotGameStarted();
-        } else {
-            this.statusMessageService.setNotLoggedIn();
-            this.appState.hideBusy();
-        }
-        
-        this.appState.myConnection.setValue( { connected: true, pingMs: ping } );
-        this.appState.game.clearValue();
-        this.appState.dices.clearValue();
-    }
+    abstract connect( gameId: string, playAi: boolean, forGold: boolean ): void;
+    abstract onOpen(): void;
     
     onError( event: Event ): void
     {

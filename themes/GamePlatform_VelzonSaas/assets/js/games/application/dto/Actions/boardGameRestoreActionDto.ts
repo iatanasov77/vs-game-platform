@@ -1,13 +1,13 @@
 ﻿import ActionDto from './actionDto';
 
-import GameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
+import BoardGameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
 import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
 import DiceDto from '_@/GamePlatform/Model/BoardGame/diceDto';
 
-interface GameRestoreActionDto extends ActionDto {
-    game: GameDto;
+interface BoardGameRestoreActionDto extends ActionDto {
+    game: BoardGameDto;
     color: PlayerColor;
     dices: DiceDto[];
 }
 
-export default GameRestoreActionDto;
+export default BoardGameRestoreActionDto;

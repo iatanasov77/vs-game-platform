@@ -17,11 +17,13 @@ import { Subscription } from 'rxjs';
 // App State
 import { AppStateService } from '../../../state/app-state.service';
 
-// Board Interfaces
-import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
-import GameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
+// Core Interfaces
+import GameState from '_@/GamePlatform/Model/Core/gameState';
+
+// BoardGame Interfaces
+import BoardGameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
 import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
-import GameState from '_@/GamePlatform/Model/BoardGame/gameState';
+import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
 
 import { CheckerArea, CheckerDrag, Point, MoveAnimation } from './';
 import { Checker } from './checker';
@@ -53,7 +55,7 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
     
     @Input() public width = 600;
     @Input() public height = 400;
-    @Input() game: GameDto | null = null;
+    @Input() game: BoardGameDto | null = null;
     @Input() myColor: PlayerColor | null = PlayerColor.black;
     @Input() dicesVisible: boolean | null = false;
     @Input() rotated = false;

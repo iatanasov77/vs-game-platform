@@ -1,4 +1,4 @@
-<?php namespace App\Component\Rules\Backgammon;
+<?php namespace App\Component\Rules\BridgeBelote;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -8,7 +8,7 @@ use App\Component\GameLogger;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerColor;
 
-abstract class Game implements GameInterface
+class Game implements GameInterface
 {
     /** @var int */
     const ClientCountDown = 40;

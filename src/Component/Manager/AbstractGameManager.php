@@ -18,11 +18,13 @@ use Amp\DeferredCancellation;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 
 use App\Component\GameLogger;
+use App\Component\Rules\GameInterface;
 use App\Component\Rules\Backgammon\GameFactory as BackgammonRulesFactory;
 
 use App\Component\System\Guid;
 use App\Component\Rules\Backgammon\Game;
 use App\Component\Rules\Backgammon\Score;
+use App\Component\AI\AiEngineInterface;
 use App\Component\AI\Backgammon\Engine as AiEngine;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Websocket\WebSocketState;
@@ -111,10 +113,10 @@ abstract class AbstractGameManager implements GameManagerInterface
     /** @var bool */
     protected $EndGameOnTotalThinkTimeElapse;
     
-    /** @var Game */
+    /** @var GameInterface */
     public $Game;
     
-    /** @var AiEngine | null */
+    /** @var AiEngineInterface | null */
     public $Engine = null;
     
     /** @var bool */
@@ -891,18 +893,35 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     private function InitializeGame( string $gameCode, string $gameVariant ): void
     {
-        switch ( $gameVariant ) {
-            case GameVariant::BACKGAMMON_NORMAL:
-                $this->Game = $this->backgammonRulesFactory->createBackgammonNormalGame( $this->ForGold );
+        switch ( $gameCode ) {
+            case GameVariant::BACKGAMMON_CODE:
+                $this->Game = $this->InitializeBackgammonGame( $gameVariant );
                 break;
-            case GameVariant::BACKGAMMON_TAPA:
+            case GameVariant::BRIDGE_BELOTE_CODE:
                 $this->Game = $this->backgammonRulesFactory->createBackgammonTapaGame( $this->ForGold );
-                break;
-            case GameVariant::BACKGAMMON_GULBARA:
-                $this->Game = $this->backgammonRulesFactory->createBackgammonGulBaraGame( $this->ForGold );
                 break;
             default:
                 throw new \RuntimeException( 'Unknown Game Code !!!' );
+        }
+        
+        $this->Game->ThinkStart = new \DateTime( 'now' );
+        $this->Created          = new \DateTime( 'now' );
+    }
+    
+    private function InitializeBackgammonGame( string $gameVariant ): GameInterface
+    {
+        switch ( $gameVariant ) {
+            case GameVariant::BACKGAMMON_NORMAL:
+                return $this->backgammonRulesFactory->createBackgammonNormalGame( $this->ForGold );
+                break;
+            case GameVariant::BACKGAMMON_TAPA:
+                return $this->backgammonRulesFactory->createBackgammonTapaGame( $this->ForGold );
+                break;
+            case GameVariant::BACKGAMMON_GULBARA:
+                return $this->backgammonRulesFactory->createBackgammonGulBaraGame( $this->ForGold );
+                break;
+            default:
+                throw new \RuntimeException( 'Unknown Game Variant !!!' );
         }
         
         $this->Game->ThinkStart = new \DateTime( 'now' );

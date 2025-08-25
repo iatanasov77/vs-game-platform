@@ -1,4 +1,4 @@
-<?php namespace App\Component\AI\Backgammon;
+<?php namespace App\Component\AI\BridgeBelote;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

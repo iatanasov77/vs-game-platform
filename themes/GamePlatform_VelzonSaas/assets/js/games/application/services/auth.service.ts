@@ -17,7 +17,7 @@ import { StatusMessageService } from './status-message.service';
 import { AppStateService } from '../state/app-state.service';
 import { Busy } from '../state/busy';
 import { Keys } from '../utils/keys';
-import UserDto from '_@/GamePlatform/Model/BoardGame/userDto';
+import UserDto from '_@/GamePlatform/Model/Core/userDto';
 
 /**
  * Manual: https://blog.jscrambler.com/working-with-angular-local-storage/

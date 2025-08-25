@@ -1,4 +1,17 @@
-declare module '_@/GamePlatform/Model/BoardGame/errorReportDto' {
+/**
+ * Core Interfaces
+ */
+declare module '_@/GamePlatform/Model/Core/connectionDto' {
+    interface ConnectionDto
+    {
+        connected: boolean;
+        pingMs: number;
+    }
+    
+    export = ConnectionDto;
+}
+
+declare module '_@/GamePlatform/Model/Core/errorReportDto' {
     interface ErrorReportDto
     {
         error: string;
@@ -8,30 +21,7 @@ declare module '_@/GamePlatform/Model/BoardGame/errorReportDto' {
     export = ErrorReportDto;
 }
 
-declare module '_@/GamePlatform/Model/BoardGame/toplist' {
-    import ToplistResult from '_@/GamePlatform/Model/BoardGame/toplistResult';
-    
-    interface Toplist
-    {
-        results: ToplistResult[];
-        you: ToplistResult;
-    }
-    
-    export = Toplist;
-}
-
-declare module '_@/GamePlatform/Model/BoardGame/toplistResult' {
-    interface ToplistResult {
-        place: number;
-        name: string;
-        elo: number;
-        you: boolean;
-    }
-    
-    export = ToplistResult;
-}
-
-declare module '_@/GamePlatform/Model/BoardGame/userDto' {
+declare module '_@/GamePlatform/Model/Core/userDto' {
     interface UserDto {
         id: string;
         name: string;
@@ -57,30 +47,112 @@ declare module '_@/GamePlatform/Model/BoardGame/userDto' {
     export = UserDto;
 }
 
-declare module '_@/GamePlatform/Model/BoardGame/connectionDto' {
-    interface ConnectionDto
-    {
-        connected: boolean;
-        pingMs: number;
+declare module '_@/GamePlatform/Model/Core/gameState' {
+    enum GameState {
+        opponentConnectWaiting,
+        firstThrow,
+        playing,
+        requestedDoubling,
+        ended
     }
     
-    export = ConnectionDto;
+    export = GameState;
+}
+
+declare module '_@/GamePlatform/Model/Core/gameDto' {
+    import GameState from '_@/GamePlatform/Model/Core/gameState';
+    
+    interface GameDto
+    {
+        id: string;
+        playState: GameState;
+    }
+    
+    export = GameDto;
+}
+
+declare module '_@/GamePlatform/Model/Core/gameCookieDto' {
+    import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
+    import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
+    
+    interface GameCookieDto
+    {
+        id: string;
+        game: string;
+        
+        color?: PlayerColor;
+        position?: PlayerPosition;
+        
+        roomSelected: boolean;
+    }
+    
+    export = GameCookieDto;
+}
+
+declare module '_@/GamePlatform/Model/Core/playerDto' {
+    interface PlayerDto
+    {
+        name: string;
+        photoUrl: string;
+        
+        // My Property to Detect If Player is AI in Frontend
+        isAi: boolean;
+    }
+    
+    export = PlayerDto;
+}
+
+declare module '_@/GamePlatform/Model/Core/newScoreDto' {
+    interface NewScoreDto {
+        score: number;
+        increase: number;
+    }
+    
+    export = NewScoreDto;
+}
+
+/**
+ * BoardGame Interfaces
+ */
+declare module '_@/GamePlatform/Model/BoardGame/toplist' {
+    import ToplistResult from '_@/GamePlatform/Model/BoardGame/toplistResult';
+    
+    interface Toplist
+    {
+        results: ToplistResult[];
+        you: ToplistResult;
+    }
+    
+    export = Toplist;
+}
+
+declare module '_@/GamePlatform/Model/BoardGame/toplistResult' {
+    interface ToplistResult
+    {
+        place: number;
+        name: string;
+        elo: number;
+        you: boolean;
+    }
+    
+    export = ToplistResult;
 }
 
 declare module '_@/GamePlatform/Model/BoardGame/gameDto' {
-    import PlayerDto from '_@/GamePlatform/Model/BoardGame/playerDto';
+    import GameDto from '_@/GamePlatform/Model/Core/gameDto';
+    import GameState from '_@/GamePlatform/Model/Core/gameState';
+    
+    import BoardGamePlayerDto from '_@/GamePlatform/Model/BoardGame/playerDto';
     import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
-    import GameState from '_@/GamePlatform/Model/BoardGame/gameState';
     import PointDto from '_@/GamePlatform/Model/BoardGame/pointDto';
     import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
 
-    interface GameDto {
-        id: string;
-        blackPlayer: PlayerDto;
-        whitePlayer: PlayerDto;
+    interface BoardGameDto extends GameDto
+    {
+        blackPlayer: BoardGamePlayerDto;
+        whitePlayer: BoardGamePlayerDto;
         currentPlayer: PlayerColor;
         winner: PlayerColor;
-        playState: GameState;
         points: PointDto[];
         validMoves: MoveDto[];
         thinkTime: number;
@@ -90,22 +162,7 @@ declare module '_@/GamePlatform/Model/BoardGame/gameDto' {
         stake: number;
     }
     
-    export = GameDto;
-}
-
-declare module '_@/GamePlatform/Model/BoardGame/gameCookieDto' {
-    import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
-    import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
-    
-    interface GameCookieDto {
-        id: string;
-        game: string;
-        color: PlayerColor;
-        position: PlayerPosition;
-        roomSelected: boolean;
-    }
-    
-    export = GameCookieDto;
+    export = BoardGameDto;
 }
 
 declare module '_@/GamePlatform/Model/BoardGame/moveDto' {
@@ -125,21 +182,18 @@ declare module '_@/GamePlatform/Model/BoardGame/moveDto' {
 }
 
 declare module '_@/GamePlatform/Model/BoardGame/playerDto' {
+    import PlayerDto from '_@/GamePlatform/Model/Core/playerDto';
     import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
 
-    interface PlayerDto {
-        name: string;
+    interface BoardGamePlayerDto extends PlayerDto
+    {
         playerColor: PlayerColor;
         pointsLeft: number;
-        photoUrl: string;
         elo: number;
         gold: number;
-        
-        // My Property to Detect If Player is AI in Frontend
-        isAi: boolean;
     }
     
-    export = PlayerDto;
+    export = BoardGamePlayerDto;
 }
 
 declare module '_@/GamePlatform/Model/BoardGame/playerColor' {
@@ -184,25 +238,25 @@ declare module '_@/GamePlatform/Model/BoardGame/diceDto' {
     export = DiceDto;
 }
 
-declare module '_@/GamePlatform/Model/BoardGame/gameState' {
-    enum GameState {
-        opponentConnectWaiting,
-        firstThrow,
-        playing,
-        requestedDoubling,
-        ended
-    }
+/**
+ * CardGame Interfaces
+ */
+declare module '_@/GamePlatform/Model/CardGame/gameDto' {
+    import GameDto from '_@/GamePlatform/Model/Core/gameDto';
+    import GameState from '_@/GamePlatform/Model/Core/gameState';
     
-    export = GameState;
-}
+    import CardGamePlayerDto from '_@/GamePlatform/Model/CardGame/playerDto';
+    import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
 
-declare module '_@/GamePlatform/Model/BoardGame/newScoreDto' {
-    interface NewScoreDto {
-        score: number;
-        increase: number;
+    interface CardGameDto extends GameDto {
+        northPlayer: CardGamePlayerDto;
+        southPlayer: CardGamePlayerDto;
+        eastPlayer: CardGamePlayerDto;
+        westPlayer: CardGamePlayerDto;
+        currentPlayer: PlayerPosition;
     }
     
-    export = NewScoreDto;
+    export = CardGameDto;
 }
 
 declare module '_@/GamePlatform/Model/CardGame/playerPosition' {
@@ -218,6 +272,19 @@ declare module '_@/GamePlatform/Model/CardGame/playerPosition' {
     export = PlayerPosition;
 }
 
+declare module '_@/GamePlatform/Model/CardGame/playerDto' {
+    import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
+
+    interface CardGamePlayerDto {
+        playerPosition: PlayerPosition;
+    }
+    
+    export default CardGamePlayerDto;
+}
+
+/**
+ * Common Interfaces
+ */
 declare module '_@/GamePlatform/Game/GameSettings' {
     type GameSettings = {
         id: string;

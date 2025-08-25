@@ -9,7 +9,7 @@ import { AuthService } from './auth.service';
 import { AppConstants } from "../constants";
 import { Keys } from '../utils/keys';
 
-import GameCookieDto from '_@/GamePlatform/Model/BoardGame/gameCookieDto';
+import GameCookieDto from '_@/GamePlatform/Model/Core/gameCookieDto';
 import IGamePlay from '_@/GamePlatform/Model/GamePlayInterface';
 import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
 import IGame from '_@/GamePlatform/Model/GameInterface';

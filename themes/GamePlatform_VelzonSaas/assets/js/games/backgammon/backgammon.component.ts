@@ -16,7 +16,7 @@ import { GameBaseComponent } from '../application/components/game-base/game-base
 import { AppStateService } from '../application/state/app-state.service';
 import { ErrorState } from '../application/state/ErrorState';
 import { ErrorReportService } from '../application/services/error-report.service';
-import ErrorReportDto from '_@/GamePlatform/Model/BoardGame/errorReportDto';
+import ErrorReportDto from '_@/GamePlatform/Model/Core/errorReportDto';
 
 import cssGameString from './backgammon.component.scss'
 import templateString from './backgammon.component.html'

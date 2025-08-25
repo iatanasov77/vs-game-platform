@@ -1,15 +1,11 @@
-﻿import PlayerColor from './playerColor';
+﻿import PlayerDto from '../Core/playerDto';
+import PlayerColor from './playerColor';
 
-interface PlayerDto {
-    name: string;
+interface BoardGamePlayerDto extends PlayerDto {
     playerColor: PlayerColor;
     pointsLeft: number;
-    photoUrl: string;
     elo: number;
     gold: number;
-    
-    // My Property to Detect If Player is AI in Frontend
-    isAi: boolean;
 }
 
-export default PlayerDto;
+export default BoardGamePlayerDto;

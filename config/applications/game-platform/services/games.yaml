@@ -115,7 +115,8 @@ services:
             - '@liip_imagine.cache.manager'
             - '@event_dispatcher'
             - '@doctrine'
-            - '@app_backgammon_game_factory'
+            - '@app_boardgame_factory'
+            - '@app_cardgame_factory'
             - '@vsapp.repository.games'
             - '@vsapp.repository.game_sessions'
             - '@vsapp.factory.game_sessions'
@@ -133,11 +134,15 @@ services:
     ##############################################################
     # Game Rules
     ##############################################################
-    app_backgammon_game_factory:
-        class: App\Component\Rules\Backgammon\GameFactory
+    app_boardgame_factory:
+        class: App\Component\Rules\BoardGame\GameFactory
         arguments:
             - '@app_game_logger'
     
+    app_cardgame_factory:
+        class: App\Component\Rules\CardGame\GameFactory
+        arguments:
+            - '@app_game_logger'
     
     ##############################################################
     # Game Controllers

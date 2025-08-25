@@ -8,7 +8,8 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use App\Component\GameLogger;
-use App\Component\Rules\Backgammon\GameFactory as BackgammonRulesFactory;
+use App\Component\Rules\BoardGame\GameFactory as BoardGameRulesFactory;
+use App\Component\Rules\CardGame\GameFactory as CardGameRulesFactory;
 
 final class GameManagerFactory
 {
@@ -27,8 +28,11 @@ final class GameManagerFactory
     /** @var ManagerRegistry */
     private $doctrine;
     
-    /** @var BackgammonRulesFactory */
-    private $backgammonRulesFactory;
+    /** @var BoardGameRulesFactory */
+    private $boardGameRulesFactory;
+    
+    /** @var CardGameRulesFactory */
+    private $cardGameRulesFactory;
     
     /** @var RepositoryInterface */
     private $gameRepository;
@@ -57,7 +61,8 @@ final class GameManagerFactory
         LiipImagineCacheManager $imagineCacheManager,
         EventDispatcherInterface $eventDispatcher,
         ManagerRegistry $doctrine,
-        BackgammonRulesFactory $backgammonRulesFactory,
+        BoardGameRulesFactory $boardGameRulesFactory,
+        CardGameRulesFactory $cardGameRulesFactory,
         RepositoryInterface $gameRepository,
         RepositoryInterface $gamePlayRepository,
         FactoryInterface $gamePlayFactory,
@@ -71,7 +76,8 @@ final class GameManagerFactory
         $this->imagineCacheManager      = $imagineCacheManager;
         $this->eventDispatcher          = $eventDispatcher;
         $this->doctrine                 = $doctrine;
-        $this->backgammonRulesFactory   = $backgammonRulesFactory;
+        $this->boardGameRulesFactory    = $boardGameRulesFactory;
+        $this->cardGameRulesFactory     = $cardGameRulesFactory;
         $this->gameRepository           = $gameRepository;
         $this->gamePlayRepository       = $gamePlayRepository;
         $this->gamePlayFactory          = $gamePlayFactory;
@@ -82,7 +88,7 @@ final class GameManagerFactory
         $this->EndGameOnTotalThinkTimeElapse = $EndGameOnTotalThinkTimeElapse;
     }
     
-    public function createWebsocketGameManager( bool $forGold, string $gameCode, string $gameVariant ): GameManagerInterface
+    public function createWebsocketGameManager( bool $forGold, string $gameCode, ?string $gameVariant ): GameManagerInterface
     {
         return new WebsocketGameManager(
             $this->logger,
@@ -90,53 +96,8 @@ final class GameManagerFactory
             $this->imagineCacheManager,
             $this->eventDispatcher,
             $this->doctrine,
-            $this->backgammonRulesFactory,
-            $this->gameRepository,
-            $this->gamePlayRepository,
-            $this->gamePlayFactory,
-            $this->playersRepository,
-            $this->tempPlayersRepository,
-            $this->tempPlayersFactory,
-            $forGold,
-            $gameCode,
-            $gameVariant,
-            
-            $this->EndGameOnTotalThinkTimeElapse
-        );
-    }
-    
-    public function createThruwayGameManager( bool $forGold, string $gameCode, string $gameVariant ): GameManagerInterface
-    {
-        return new ThruwayGameManager(
-            $this->logger,
-            $this->serializer,
-            $this->imagineCacheManager,
-            $this->eventDispatcher,
-            $this->doctrine,
-            $this->backgammonRulesFactory,
-            $this->gameRepository,
-            $this->gamePlayRepository,
-            $this->gamePlayFactory,
-            $this->playersRepository,
-            $this->tempPlayersRepository,
-            $this->tempPlayersFactory,
-            $forGold,
-            $gameCode,
-            $gameVariant,
-            
-            $this->EndGameOnTotalThinkTimeElapse
-        );
-    }
-    
-    public function createZmqGameManager( bool $forGold, string $gameCode, string $gameVariant ): GameManagerInterface
-    {
-        return new ZmqGameManager(
-            $this->logger,
-            $this->serializer,
-            $this->imagineCacheManager,
-            $this->eventDispatcher,
-            $this->doctrine,
-            $this->backgammonRulesFactory,
+            $this->boardGameRulesFactory,
+            $this->cardGameRulesFactory,
             $this->gameRepository,
             $this->gamePlayRepository,
             $this->gamePlayFactory,

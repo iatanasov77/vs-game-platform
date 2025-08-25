@@ -190,8 +190,8 @@ final class WebsocketGamesHandler implements MessageComponentInterface
             
             $gameCode   = isset( $queryParameters['gameCode'] ) ? $queryParameters['gameCode'] : null;
             $gameVariant    = isset( $queryParameters['gameVariant'] ) ? $queryParameters['gameVariant'] : null;
-            if ( ! $gameCode || ! $gameVariant ) {
-                $this->logger->log( "Game Code OR Game Variant Missing When Connecting Game.", 'GameServer' );
+            if ( ! $gameCode ) {
+                $this->logger->log( "Game Code Missing When Connecting Game.", 'GameServer' );
                 return;
             }
             

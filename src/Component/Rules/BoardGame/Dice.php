@@ -1,4 +1,4 @@
-<?php namespace App\Component\Rules\Backgammon;
+<?php namespace App\Component\Rules\BoardGame;
 
 class Dice
 {

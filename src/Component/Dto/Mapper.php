@@ -3,12 +3,12 @@
 use Doctrine\Common\Collections\ArrayCollection;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use App\Component\Type\PlayerColor;
-use App\Component\Rules\Backgammon\Game;
-use App\Component\Rules\Backgammon\Player;
-use App\Component\Rules\Backgammon\Point;
-use App\Component\Rules\Backgammon\Checker;
-use App\Component\Rules\Backgammon\Dice;
-use App\Component\Rules\Backgammon\Move;
+use App\Component\Rules\BoardGame\Game;
+use App\Component\Rules\BoardGame\Player;
+use App\Component\Rules\BoardGame\Point;
+use App\Component\Rules\BoardGame\Checker;
+use App\Component\Rules\BoardGame\Dice;
+use App\Component\Rules\BoardGame\Move;
 
 final class Mapper
 {

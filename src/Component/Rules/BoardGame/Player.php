@@ -1,4 +1,4 @@
-<?php namespace App\Component\Rules\Backgammon;
+<?php namespace App\Component\Rules\BoardGame;
 
 use App\Component\Type\PlayerColor;
 use App\Component\System\Guid;
@@ -24,7 +24,17 @@ class Player
     /** @var int */
     public $Gold;
     
-    /** @var int */
+    /**
+     * Backgammon ELO is a player rating system similar to the one used in chess, 
+     * which assigns a numerical score to players based on their performance in rated matches. 
+     * A higher ELO indicates a stronger player, and your rating increases with wins 
+     * and decreases with losses, with larger changes for upsets or defeats against stronger opponents. 
+     * While there isn't a single international backgammon ELO system, 
+     * many online platforms use their own ELO-based ratings, 
+     * which are used to match players of similar skill levels. 
+     * 
+     * @var int
+     */
     public $Elo;
     
     /**
@@ -39,7 +49,6 @@ class Player
     
     public function __toString(): string
     {
-        $playerColor;
         switch ( $this->PlayerColor->value ) {
             case 0:
                 $playerColor = 'Black';

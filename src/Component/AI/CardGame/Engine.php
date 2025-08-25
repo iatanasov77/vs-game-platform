@@ -1,13 +1,13 @@
-<?php namespace App\Component\AI\Backgammon;
+<?php namespace App\Component\AI\CardGame;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use App\Component\AI\AiEngineInterface;
 use App\Component\GameLogger;
 use App\Component\Type\PlayerColor;
-use App\Component\Rules\Backgammon\Game;
-use App\Component\Rules\Backgammon\Move;
-use App\Component\Rules\Backgammon\Helper as GameHelper;
+use App\Component\Rules\BoardGame\Game;
+use App\Component\Rules\BoardGame\Move;
+use App\Component\Rules\BoardGame\Helper as GameHelper;
 use App\Component\Manager\AbstractGameManager;
 
 abstract class Engine implements AiEngineInterface

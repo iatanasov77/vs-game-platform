@@ -1,8 +1,8 @@
-<?php namespace App\Component\AI\Backgammon;
+<?php namespace App\Component\AI\BoardGame;
 
 use App\Component\GameVariant;
 use App\Component\GameLogger;
-use App\Component\Rules\Backgammon\Game;
+use App\Component\Rules\BoardGame\Game;
 
 final class EngineFactory
 {

@@ -1,13 +1,13 @@
-<?php namespace App\Component\AI\Backgammon;
+<?php namespace App\Component\AI\BoardGame;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use App\Component\Type\PlayerColor;
-use App\Component\Rules\Backgammon\Game;
-use App\Component\Rules\Backgammon\Move;
+use App\Component\Rules\BoardGame\Game;
+use App\Component\Rules\BoardGame\Move;
 use App\Component\Manager\AbstractGameManager;
 
-class BackgammonGulBaraEngine extends Engine
+class BackgammonTapaEngine extends Engine
 {
     protected function _GenerateMovesSequence( Collection &$sequences, Collection &$moves, int $diceIndex, Game $game ): void
     {
@@ -41,7 +41,7 @@ class BackgammonGulBaraEngine extends Engine
             )->first();
             if (
                 $toPoint != null &&
-                ! $toPoint->HasOponentChecker( $game->CurrentPlayer ) &&
+                $toPoint->IsOpen( $game->CurrentPlayer ) &&
                 ! $toPoint->IsHome( $game->CurrentPlayer )
             ) {
                 // no creation of bearing off moves here. See next block.
@@ -97,7 +97,7 @@ class BackgammonGulBaraEngine extends Engine
                         return $entry->GetNumber( $game->CurrentPlayer ) == $toPointNo;
                     }
                 )->first();
-                if ( $toPoint != null && ! $toPoint->HasOponentChecker( $game->CurrentPlayer ) ) {
+                if ( $toPoint != null && $toPoint->IsOpen( $game->CurrentPlayer ) ) {
                     $move = new Move();
                     $move->Color = $game->CurrentPlayer;
                     $move->From = $fromPoint;

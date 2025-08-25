@@ -1,4 +1,4 @@
-<?php namespace App\Component\AI\Backgammon;
+<?php namespace App\Component\AI\BoardGame;
 
 class Config
 {

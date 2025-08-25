@@ -1,4 +1,4 @@
-<?php namespace App\Component\Rules\Backgammon;
+<?php namespace App\Component\Rules\BoardGame;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -7,11 +7,11 @@ use App\Component\System\Guid;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerColor;
 use App\Entity\GamePlayer;
-use App\Component\Rules\Backgammon\Helper as GameHelper;
+use App\Component\Rules\BoardGame\Helper as GameHelper;
 use App\Component\Manager\AbstractGameManager;
 
-class BackgammonGulBaraGame extends Game
-{
+class BackgammonNormalGame extends Game
+{   
     use GameHelper;
     
     public function SetStartPosition(): void
@@ -20,8 +20,17 @@ class BackgammonGulBaraGame extends Game
             $point->Checkers->clear();
         }
         
-        $this->AddCheckers( 15, PlayerColor::Black, 1 );
-        $this->AddCheckers( 15, PlayerColor::White, 12 );
+        $this->AddCheckers( 2, PlayerColor::Black, 1 );
+        $this->AddCheckers( 2, PlayerColor::White, 1 );
+        
+        $this->AddCheckers( 5, PlayerColor::Black, 12 );
+        $this->AddCheckers( 5, PlayerColor::White, 12 );
+        
+        $this->AddCheckers( 3, PlayerColor::Black, 17 );
+        $this->AddCheckers( 3, PlayerColor::White, 17 );
+        
+        $this->AddCheckers( 5, PlayerColor::Black, 19 );
+        $this->AddCheckers( 5, PlayerColor::White, 19 );
         
         // CloseToVictory();
         // DebugBar();
@@ -88,52 +97,52 @@ class BackgammonGulBaraGame extends Game
             function( $entry ) use ( $move ) {
                 return $entry && $entry->Color === $move->Color;
             }
-            )->last();
+        )->last();
             
-            if ( $checker == null ) {
-                /*
-                 $this->logger->debug(
-                 print_r( $move, true ),
-                 $this->CurrentPlayer === PlayerColor::Black ? 'MakeMove_Black.txt' : 'MakeMove_White.txt'
-                 );
-                 */
-                
-                throw new \RuntimeException( "There should be a checker on this point. Something is very wrong" );
+        if ( $checker == null ) {
+            /*
+            $this->logger->debug(
+                print_r( $move, true ),
+                $this->CurrentPlayer === PlayerColor::Black ? 'MakeMove_Black.txt' : 'MakeMove_White.txt'
+            );
+            */
+            
+            throw new \RuntimeException( "There should be a checker on this point. Something is very wrong" );
+        }
+        
+        $move->From->Checkers->removeElement( $checker );
+        $move->To->Checkers[]   = $checker;
+        if ( $move->Color == PlayerColor::Black ) {
+            $this->BlackPlayer->PointsLeft -= ( $move->To->BlackNumber - $move->From->BlackNumber);
+        } else {
+            $this->WhitePlayer->PointsLeft -= ( $move->To->WhiteNumber - $move->From->WhiteNumber );
+        }
+            
+        // Feels wrong that now that own home is same point as opponent bar
+        // Todo: Try to change it some day
+        $hit = $move->To->IsHome( $move->Color ) ? null : $move->To->Checkers->filter(
+            function( $entry ) use ( $checker ) {
+                return $entry && $entry->Color !== $checker->Color;
             }
+        )->first();
             
-            $move->From->Checkers->removeElement( $checker );
-            $move->To->Checkers[]   = $checker;
+        if ( $hit ) {
+            $move->To->Checkers->removeElement( $hit );
+            $bar = $this->Points->filter(
+                function( $entry ) {
+                    return $entry->GetNumber( $this->OtherPlayer() ) == 0;
+                }
+            )->first();
+                
+            $bar->Checkers[]    = $hit;
             if ( $move->Color == PlayerColor::Black ) {
-                $this->BlackPlayer->PointsLeft -= ( $move->To->BlackNumber - $move->From->BlackNumber);
+                $this->WhitePlayer->PointsLeft += ( $move->To->WhiteNumber );
             } else {
-                $this->WhitePlayer->PointsLeft -= ( $move->To->WhiteNumber - $move->From->WhiteNumber );
+                $this->BlackPlayer->PointsLeft += ( $move->To->BlackNumber );
             }
+        }
             
-            // Feels wrong that now that own home is same point as opponent bar
-            // Todo: Try to change it some day
-            $hit = $move->To->IsHome( $move->Color ) ? null : $move->To->Checkers->filter(
-                function( $entry ) use ( $checker ) {
-                    return $entry && $entry->Color !== $checker->Color;
-                }
-                )->first();
-                
-                if ( $hit ) {
-                    $move->To->Checkers->removeElement( $hit );
-                    $bar = $this->Points->filter(
-                        function( $entry ) {
-                            return $entry->GetNumber( $this->OtherPlayer() ) == 0;
-                        }
-                        )->first();
-                        
-                        $bar->Checkers[]    = $hit;
-                        if ( $move->Color == PlayerColor::Black ) {
-                            $this->WhitePlayer->PointsLeft += ( $move->To->WhiteNumber );
-                        } else {
-                            $this->BlackPlayer->PointsLeft += ( $move->To->BlackNumber );
-                        }
-                }
-                
-                return $hit ?: null;
+        return $hit ?: null;
     }
     
     public function UndoMove( Move &$move, ?Checker $hitChecker ): void
@@ -142,31 +151,31 @@ class BackgammonGulBaraGame extends Game
             function( $entry ) use ( $move ) {
                 return $entry && $entry->Color === $move->Color;
             }
+        )->first();
+            
+        $move->To->Checkers->removeElement( $checker );
+        $move->From->Checkers[] = $checker;
+        if ( $move->Color == PlayerColor::Black ) {
+            $this->BlackPlayer->PointsLeft += ( $move->To->BlackNumber - $move->From->BlackNumber );
+        } else {
+            $this->WhitePlayer->PointsLeft += ( $move->To->WhiteNumber - $move->From->WhiteNumber );
+        }
+        
+        if ( $hitChecker != null ) {
+            $move->To->Checkers[]   = $hitChecker;
+            $bar = $this->Points->filter(
+                function( $entry ) {
+                    return $entry->GetNumber( $this->OtherPlayer() ) == 0;
+                }
             )->first();
             
-            $move->To->Checkers->removeElement( $checker );
-            $move->From->Checkers[] = $checker;
+            $bar->Checkers->removeElement( $hitChecker );
             if ( $move->Color == PlayerColor::Black ) {
-                $this->BlackPlayer->PointsLeft += ( $move->To->BlackNumber - $move->From->BlackNumber );
+                $this->WhitePlayer->PointsLeft -= ( $move->To->WhiteNumber );
             } else {
-                $this->WhitePlayer->PointsLeft += ( $move->To->WhiteNumber - $move->From->WhiteNumber );
+                $this->BlackPlayer->PointsLeft -= ( $move->To->BlackNumber );
             }
-            
-            if ( $hitChecker != null ) {
-                $move->To->Checkers[]   = $hitChecker;
-                $bar = $this->Points->filter(
-                    function( $entry ) {
-                        return $entry->GetNumber( $this->OtherPlayer() ) == 0;
-                    }
-                    )->first();
-                    
-                    $bar->Checkers->removeElement( $hitChecker );
-                    if ( $move->Color == PlayerColor::Black ) {
-                        $this->WhitePlayer->PointsLeft -= ( $move->To->WhiteNumber );
-                    } else {
-                        $this->BlackPlayer->PointsLeft -= ( $move->To->BlackNumber );
-                    }
-            }
+        }
     }
     
     protected function _GenerateMoves( Collection &$moves ): void
@@ -191,9 +200,9 @@ class BackgammonGulBaraGame extends Game
             
             $points = $barHasCheckers ? $bar : $this->getPointsForPlayer( $currentPlayer, $this );
             /*
-             $debugFile  = $currentPlayer === PlayerColor::Black ? 'OrderedPoints_Black.txt' : 'OrderedPoints_White.txt';
-             $this->logger->debug( $points, $debugFile );
-             */
+            $debugFile  = $currentPlayer === PlayerColor::Black ? 'OrderedPoints_Black.txt' : 'OrderedPoints_White.txt';
+            $this->logger->debug( $points, $debugFile );
+            */
             
             foreach ( $points as $fromPoint ) {
                 $fromPointNo = $fromPoint->GetNumber( $currentPlayer );
@@ -209,7 +218,7 @@ class BackgammonGulBaraGame extends Game
                     }
                 )->first();
                 // $this->logger->log( "GenerateMoves toPoint: " . print_r( $toPoint, true ), 'GenerateMoves' );
-                    
+                
                 $hasMove = $moves->exists(
                     function( $key, $entry ) use ( $fromPoint, $toPoint ) {
                         return $entry->From == $fromPoint && $entry->To == $toPoint;
@@ -219,7 +228,7 @@ class BackgammonGulBaraGame extends Game
                 // no creation of bearing off moves here. See next block.
                 if (
                     $toPoint != null &&
-                    ! $toPoint->HasOponentChecker( $currentPlayer ) &&
+                    $toPoint->IsOpen( $currentPlayer ) &&
                     ! $hasMove &&
                     ! $toPoint->IsHome( $currentPlayer )
                 ) {
@@ -236,19 +245,19 @@ class BackgammonGulBaraGame extends Game
                     
                     $moves[]    = $move;
                 }
-                
+                    
                 if ( $this->IsBearingOff( $currentPlayer ) ) {
                     $this->logger->log( "IsBearingOff !!!", 'GenerateMoves' );
                     
                     // The furthest away checker can be moved beyond home
-                    $minPoint = $this->calcMinPoint( $currentPlayer );
+                    $minPoint = $this->calcMinPoint( $this->Points, $currentPlayer );
                     $toPointNo = $fromPointNo == $minPoint ? \min( 25, $fromPointNo + $dice->Value ) : $fromPointNo + $dice->Value;
                     $toPoint = $this->Points->filter(
                         function( $entry ) use ( $currentPlayer, $toPointNo ) {
                             return $entry->GetNumber( $currentPlayer ) == $toPointNo;
                         }
                     )->first();
-                        
+                    
                     $hasMove = $moves->exists(
                         function( $key, $entry ) use ( $fromPoint, $toPoint ) {
                             return $entry->From == $fromPoint && $entry->To == $toPoint;
@@ -261,7 +270,7 @@ class BackgammonGulBaraGame extends Game
                     
                     if (
                         $toPoint != null &&
-                        ! $toPoint->HasOponentChecker( $currentPlayer ) &&
+                        $toPoint->IsOpen( $currentPlayer ) &&
                         ! $hasMove
                     ) {
                         $this->logger->log( 'To Point Number: ' . $shouldPointTo, 'GenerateMoves' );

@@ -4,7 +4,7 @@ use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Type\PlayerColor;
 use App\Component\Type\PlayerPosition;
-use App\Component\AI\Backgammon\EngineFactory as AiEngineFactory;
+use App\Component\AI\BoardGame\EngineFactory as AiEngineFactory;
 use App\Entity\GamePlayer;
 use App\Component\System\Guid;
 use App\Component\Websocket\WebSocketState;

@@ -19,13 +19,14 @@ use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 
 use App\Component\GameLogger;
 use App\Component\Rules\GameInterface;
-use App\Component\Rules\Backgammon\GameFactory as BackgammonRulesFactory;
+use App\Component\Rules\BoardGame\GameFactory as BoardGameRulesFactory;
+use App\Component\Rules\CardGame\GameFactory as CardGameRulesFactory;
 
 use App\Component\System\Guid;
-use App\Component\Rules\Backgammon\Game;
-use App\Component\Rules\Backgammon\Score;
+use App\Component\Rules\BoardGame\Game;
+use App\Component\Rules\BoardGame\Score;
 use App\Component\AI\AiEngineInterface;
-use App\Component\AI\Backgammon\Engine as AiEngine;
+use App\Component\AI\BoardGame\Engine as AiEngine;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Websocket\WebSocketState;
 
@@ -82,8 +83,11 @@ abstract class AbstractGameManager implements GameManagerInterface
     /** @var ManagerRegistry */
     protected $doctrine;
     
-    /** @var BackgammonRulesFactory */
-    protected $backgammonRulesFactory;
+    /** @var BoardGameRulesFactory */
+    protected $boardGameRulesFactory;
+    
+    /** @var CardGameRulesFactory */
+    protected $cardGameRulesFactory;
     
     /** @var RepositoryInterface */
     protected $gameRepository;
@@ -131,7 +135,7 @@ abstract class AbstractGameManager implements GameManagerInterface
     /** @var string */
     public $GameCode;
     
-    /** @var string */
+    /** @var string | null */
     public $GameVariant;
     
     /** @var bool */
@@ -149,7 +153,8 @@ abstract class AbstractGameManager implements GameManagerInterface
         LiipImagineCacheManager $imagineCacheManager,
         EventDispatcherInterface $eventDispatcher,
         ManagerRegistry $doctrine,
-        BackgammonRulesFactory $backgammonRulesFactory,
+        BoardGameRulesFactory $boardGameRulesFactory,
+        CardGameRulesFactory $cardGameRulesFactory,
         RepositoryInterface $gameRepository,
         RepositoryInterface $gamePlayRepository,
         FactoryInterface $gamePlayFactory,
@@ -158,7 +163,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         FactoryInterface $tempPlayersFactory,
         bool $forGold,
         string $gameCode,
-        string $gameVariant,
+        ?string $gameVariant,
         bool $EndGameOnTotalThinkTimeElapse
     ) {
         $this->logger                   = $logger;
@@ -166,7 +171,8 @@ abstract class AbstractGameManager implements GameManagerInterface
         $this->imagineCacheManager      = $imagineCacheManager;
         $this->eventDispatcher          = $eventDispatcher;
         $this->doctrine                 = $doctrine;
-        $this->backgammonRulesFactory   = $backgammonRulesFactory;
+        $this->boardGameRulesFactory    = $boardGameRulesFactory;
+        $this->cardGameRulesFactory     = $cardGameRulesFactory;
         $this->gameRepository           = $gameRepository;
         $this->gamePlayRepository       = $gamePlayRepository;
         $this->gamePlayFactory          = $gamePlayFactory;
@@ -891,14 +897,14 @@ abstract class AbstractGameManager implements GameManagerInterface
         //$this->logger->debug( $checkerFromPoint, 'CheckerFromPoint.txt' );
     }
     
-    private function InitializeGame( string $gameCode, string $gameVariant ): void
+    private function InitializeGame( string $gameCode, ?string $gameVariant ): void
     {
         switch ( $gameCode ) {
             case GameVariant::BACKGAMMON_CODE:
                 $this->Game = $this->InitializeBackgammonGame( $gameVariant );
                 break;
             case GameVariant::BRIDGE_BELOTE_CODE:
-                $this->Game = $this->backgammonRulesFactory->createBackgammonTapaGame( $this->ForGold );
+                $this->Game = $this->cardGameRulesFactory->createBridgeBeloteGame( $this->ForGold );
                 break;
             default:
                 throw new \RuntimeException( 'Unknown Game Code !!!' );
@@ -912,13 +918,13 @@ abstract class AbstractGameManager implements GameManagerInterface
     {
         switch ( $gameVariant ) {
             case GameVariant::BACKGAMMON_NORMAL:
-                return $this->backgammonRulesFactory->createBackgammonNormalGame( $this->ForGold );
+                return $this->boardGameRulesFactory->createBackgammonNormalGame( $this->ForGold );
                 break;
             case GameVariant::BACKGAMMON_TAPA:
-                return $this->backgammonRulesFactory->createBackgammonTapaGame( $this->ForGold );
+                return $this->boardGameRulesFactory->createBackgammonTapaGame( $this->ForGold );
                 break;
             case GameVariant::BACKGAMMON_GULBARA:
-                return $this->backgammonRulesFactory->createBackgammonGulBaraGame( $this->ForGold );
+                return $this->boardGameRulesFactory->createBackgammonGulBaraGame( $this->ForGold );
                 break;
             default:
                 throw new \RuntimeException( 'Unknown Game Variant !!!' );

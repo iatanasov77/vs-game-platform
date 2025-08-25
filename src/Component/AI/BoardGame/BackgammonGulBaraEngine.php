@@ -1,13 +1,13 @@
-<?php namespace App\Component\AI\Backgammon;
+<?php namespace App\Component\AI\BoardGame;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use App\Component\Type\PlayerColor;
-use App\Component\Rules\Backgammon\Game;
-use App\Component\Rules\Backgammon\Move;
+use App\Component\Rules\BoardGame\Game;
+use App\Component\Rules\BoardGame\Move;
 use App\Component\Manager\AbstractGameManager;
 
-class BackgammonNormalEngine extends Engine
+class BackgammonGulBaraEngine extends Engine
 {
     protected function _GenerateMovesSequence( Collection &$sequences, Collection &$moves, int $diceIndex, Game $game ): void
     {
@@ -41,7 +41,7 @@ class BackgammonNormalEngine extends Engine
             )->first();
             if (
                 $toPoint != null &&
-                $toPoint->IsOpen( $game->CurrentPlayer ) &&
+                ! $toPoint->HasOponentChecker( $game->CurrentPlayer ) &&
                 ! $toPoint->IsHome( $game->CurrentPlayer )
             ) {
                 // no creation of bearing off moves here. See next block.
@@ -51,7 +51,7 @@ class BackgammonNormalEngine extends Engine
                 $move->To = $toPoint;
                 
                 //copy and make a new list for first dice
-                if ( ! isset( $moves[$diceIndex] ) || $moves[$diceIndex]->isNull() ) {
+                if ( ! isset( $moves[$diceIndex] ) || $moves[$diceIndex] == null ) {
                     $moves[$diceIndex] = $move;
                 } else { // a move is already generated for this dice in this sequence. branch off a new.
                     $newMoves = new ArrayCollection();
@@ -77,24 +77,33 @@ class BackgammonNormalEngine extends Engine
                     $game->UndoMove( $move, $hit );
                 }
             } else if ( $game->IsBearingOff( $game->CurrentPlayer ) ) {
-                $this->logger->log( "IsBearingOff !!!", 'EngineGenerateMoves' );
-                
                 // The furthest away checker can be moved beyond home
-                $minPoint = $this->calcMinPoint( $game->Points, $game->CurrentPlayer );
+                $currentPlayerPoints = $game->Points->filter(
+                    function( $entry ) use ( $game ) {
+                        return $entry->Checkers->filter(
+                            function( $entry ) use ( $game ) {
+                                return $entry && $entry->Color === $game->CurrentPlayer;
+                            }
+                        );
+                    }
+                );
+                
+                $orderedCurrentPlayerPoints = $this->orderPlayerPoints( $currentPlayerPoints, $game, AbstractGameManager::COLLECTION_ORDER_ASC );
+                $minPoint = $orderedCurrentPlayerPoints->first()->GetNumber( $game->CurrentPlayer );
+                
                 $toPointNo = $fromPointNo == $minPoint ? \min( 25, $fromPointNo + $dice->Value ) : $fromPointNo + $dice->Value;
                 $toPoint = $game->Points->filter(
                     function( $entry ) use ( $game, $toPointNo ) {
                         return $entry->GetNumber( $game->CurrentPlayer ) == $toPointNo;
                     }
                 )->first();
-                
-                if ( $toPoint != null && $toPoint->IsOpen( $game->CurrentPlayer ) ) {
+                if ( $toPoint != null && ! $toPoint->HasOponentChecker( $game->CurrentPlayer ) ) {
                     $move = new Move();
                     $move->Color = $game->CurrentPlayer;
                     $move->From = $fromPoint;
                     $move->To = $toPoint;
                     
-                    if ( ! isset( $moves[$diceIndex] ) || $moves[$diceIndex]->isNull() ) {
+                    if ( isset( $moves[$diceIndex] ) && $moves[$diceIndex] == null ) {
                         $moves[$diceIndex] = $move;
                     } else {
                         $newMoves = $moves;

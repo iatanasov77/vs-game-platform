@@ -14,7 +14,7 @@ use Vankosoft\UsersBundle\Security\SecurityBridge;
 use App\Component\Manager\GameManagerInterface;
 use App\Component\Manager\GameManagerFactory;
 use App\Component\Manager\AbstractGameManager;
-use App\Component\AI\Backgammon\EngineFactory as AiEngineFactory;
+use App\Component\AI\BoardGame\EngineFactory as AiEngineFactory;
 use App\Component\System\Guid;
 
 // DTO Objects
@@ -22,7 +22,7 @@ use App\Component\Dto\GameCookieDto;
 use App\Component\Dto\Actions\ConnectionInfoActionDto;
 use App\Component\Dto\ConnectionDto;
 
-use App\Component\Rules\Backgammon\Helper as GameHelper;
+use App\Component\Rules\BoardGame\Helper as GameHelper;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerColor;
 use App\Component\Type\PlayerPosition;
@@ -90,7 +90,7 @@ final class GameService
     public function Connect(
         WebsocketClientInterface $webSocket,
         string $gameCode,
-        string $gameVariant,
+        ?string $gameVariant,
         int $userId,
         ?string $gameId,
         bool $playAi,
@@ -239,7 +239,7 @@ final class GameService
         }
     }
     
-    public function CreateInvite( int $playerId, string $gameCode, string $gameVariant ): string
+    public function CreateInvite( int $playerId, string $gameCode, ?string $gameVariant ): string
     {
         $existing = $this->AllGames->filter(
             function( $entry ) use ( $playerId ) {
@@ -284,9 +284,6 @@ final class GameService
         if ( $gameCookie ) {
             //$cookie = GameCookieDto::TryParse( $gameCookie );
             $cookie = $this->serializer->deserialize( $gameCookie, GameCookieDto::class, JsonEncoder::FORMAT );
-            $color = $cookie->color;
-            $position = $cookie->position;
-            
             if ( $cookie != null && $cookie->game == $gameCode ) {
                 $this->logger->log( 'Try Reconnect: Cookie Parsed', 'GameService' );
                 
@@ -304,6 +301,7 @@ final class GameService
                 
                 switch ( $cookie->game ) {
                     case GameVariant::BACKGAMMON_CODE:
+                        $color = $cookie->color;
                         if ( $gameManager && self::MyColor( $gameManager, $dbUser, $color ) ) {
                             $gameManager->Engine = AiEngineFactory::CreateBackgammonEngine(
                                 $gameManager->GameCode,
@@ -326,6 +324,7 @@ final class GameService
                         }
                         break;
                     case GameVariant::BRIDGE_BELOTE_CODE:
+                        $position = $cookie->position;
                         if ( $gameManager && self::MyPosition( $gameManager, $dbUser, $position ) ) {
                             $gameManager->RestoreCardGame( $position, $webSocket );
                         }
@@ -373,7 +372,7 @@ final class GameService
         GamePlayer $dbUser,
         string $gameInviteId,
         string $gameCode,
-        string $gameVariant
+        ?string $gameVariant
     ): ?string {
         $manager = $this->AllGames->filter(
             function( $entry ) use ( $gameInviteId ) {
@@ -457,12 +456,12 @@ final class GameService
      * 
      * @param int $playerId
      * @param string $gameCode
-     * @param string $gameVariant
+     * @param string | null $gameVariant
      * @param string $gameInviteId
      * 
      * @return GameManagerInterface
      */
-    private function ReCreateInvite( int $playerId, string $gameCode, string $gameVariant, string $gameInviteId ): GameManagerInterface
+    private function ReCreateInvite( int $playerId, string $gameCode, ?string $gameVariant, string $gameInviteId ): GameManagerInterface
     {
         $newGuid    = $this->CreateInvite( $playerId, $gameCode, $gameVariant );
         $manager    = $this->AllGames->get( $newGuid );

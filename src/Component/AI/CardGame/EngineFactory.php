@@ -1,22 +1,16 @@
-<?php namespace App\Component\AI\BoardGame;
+<?php namespace App\Component\AI\CardGame;
 
 use App\Component\GameVariant;
 use App\Component\GameLogger;
-use App\Component\Rules\BoardGame\Game;
+use App\Component\Rules\CardGame\Game;
 
 final class EngineFactory
 {
-    public static function CreateBackgammonEngine( string $gameCode, string $gameVariant, GameLogger $logger, Game $game ): Engine
+    public static function CreateCardGameEngine( string $gameCode, ?string $gameVariant, GameLogger $logger, Game $game ): Engine
     {
-        switch ( $gameVariant ) {
-            case GameVariant::BACKGAMMON_NORMAL:
-                $engine = new BackgammonNormalEngine( $logger, $game );
-                break;
-            case GameVariant::BACKGAMMON_TAPA:
-                $engine = new BackgammonTapaEngine( $logger, $game );
-                break;
-            case GameVariant::BACKGAMMON_GULBARA:
-                $engine = new BackgammonGulBaraEngine( $logger, $game );
+        switch ( $gameCode ) {
+            case GameVariant::BRIDGE_BELOTE_CODE:
+                $engine = new BridgeBeloteEngine( $logger, $game );
                 break;
             default:
                 throw new \RuntimeException( 'Unknown Game Code !!!' );

@@ -22,6 +22,9 @@ final class GameFactory
         
         $game->Id           = Guid::NewGuid();
         
+        $game->cardDeck     = Deck::shuffle( Deck::cards( 32 ) );
+        $game->cardPiles    = [[], []];
+        
         $game->NorthPlayer = new Player();
         $game->NorthPlayer->PlayerPosition = PlayerPosition::North;
         $game->NorthPlayer->Name = "Guest";

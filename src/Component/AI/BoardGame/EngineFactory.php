@@ -6,7 +6,20 @@ use App\Component\Rules\BoardGame\Game;
 
 final class EngineFactory
 {
-    public static function CreateBackgammonEngine( string $gameCode, string $gameVariant, GameLogger $logger, Game $game ): Engine
+    public static function CreateBoardGameEngine( string $gameCode, string $gameVariant, GameLogger $logger, Game $game ): Engine
+    {
+        switch ( $gameCode ) {
+            case GameVariant::BACKGAMMON_GULBARA:
+                $engine = self::CreateBackgammonEngine( $gameVariant, $logger, $game );
+                break;
+            default:
+                throw new \RuntimeException( 'Unknown Game Code !!!' );
+        }
+        
+        return $engine;
+    }
+    
+    private static function CreateBackgammonEngine( string $gameVariant, GameLogger $logger, Game $game ): Engine
     {
         switch ( $gameVariant ) {
             case GameVariant::BACKGAMMON_NORMAL:
@@ -19,7 +32,7 @@ final class EngineFactory
                 $engine = new BackgammonGulBaraEngine( $logger, $game );
                 break;
             default:
-                throw new \RuntimeException( 'Unknown Game Code !!!' );
+                throw new \RuntimeException( 'Unknown Backgammon Variant !!!' );
         }
         
         return $engine;

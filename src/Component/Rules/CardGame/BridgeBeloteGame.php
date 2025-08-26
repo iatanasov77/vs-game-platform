@@ -14,7 +14,13 @@ class BridgeBeloteGame extends Game
     
     public function DealCards( int $count, Player $player ): void
     {
+        if ( ! isset( $this->playerCards[$player->PlayerPosition->toString()] ) ) {
+            $this->playerCards[$player->PlayerPosition->toString()] = [];
+        }
         
+        for ( $i = 0; $i < $count; $i++ ) {
+            $this->playerCards[$player->PlayerPosition->toString()][] = array_shift( $this->cardDeck );
+        }
     }
     
     public function NextPlayer(): PlayerPosition

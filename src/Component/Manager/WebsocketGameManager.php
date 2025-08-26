@@ -4,7 +4,8 @@ use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Type\PlayerColor;
 use App\Component\Type\PlayerPosition;
-use App\Component\AI\BoardGame\EngineFactory as AiEngineFactory;
+use App\Component\AI\BoardGame\EngineFactory as BoardGameAiEngineFactory;
+use App\Component\AI\CardGame\EngineFactory as CardGameAiEngineFactory;
 use App\Entity\GamePlayer;
 use App\Component\System\Guid;
 use App\Component\Websocket\WebSocketState;
@@ -50,7 +51,7 @@ final class WebsocketGameManager extends AbstractGameManager
                     $this->Game->WhitePlayer->Gold = $aiUser->getGold();
                 }
                 
-                $this->Engine = AiEngineFactory::CreateBackgammonEngine(
+                $this->Engine = BoardGameAiEngineFactory::CreateBoardGameEngine(
                     $this->GameCode,
                     $this->GameVariant,
                     $this->logger,
@@ -99,33 +100,163 @@ final class WebsocketGameManager extends AbstractGameManager
             function( $entry ) {
                 return Mapper::DiceToDto( $entry );
             }
-            )->toArray();
-            
-            if ( $color == PlayerColor::Black ) {
-                $this->Clients->set( PlayerColor::Black->value, $socket );
-                $otherSocket = $this->Clients->get( PlayerColor::White->value );
-            } else {
-                $this->Clients->set( PlayerColor::White->value, $socket );
-                $otherSocket = $this->Clients->get( PlayerColor::Black->value );
-            }
-            
-            $this->Send( $socket, $restoreAction );
-            //Also send the state to the other client in case it has made moves.
-            if ( $otherSocket != null && $otherSocket->State == WebSocketState::Open ) {
-                $restoreAction->color = $color == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
-                $this->Send( $otherSocket, $restoreAction );
-            } else {
-                $this->logger->log( "Failed to send restore to other client", 'GameManager' );
-            }
+        )->toArray();
+        
+        if ( $color == PlayerColor::Black ) {
+            $this->Clients->set( PlayerColor::Black->value, $socket );
+            $otherSocket = $this->Clients->get( PlayerColor::White->value );
+        } else {
+            $this->Clients->set( PlayerColor::White->value, $socket );
+            $otherSocket = $this->Clients->get( PlayerColor::Black->value );
+        }
+        
+        $this->Send( $socket, $restoreAction );
+        //Also send the state to the other client in case it has made moves.
+        if ( $otherSocket != null && $otherSocket->State == WebSocketState::Open ) {
+            $restoreAction->color = $color == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
+            $this->Send( $otherSocket, $restoreAction );
+        } else {
+            $this->logger->log( "Failed to send restore to other client", 'GameManager' );
+        }
     }
     
     public function ConnectAndListenCardGame( WebsocketClientInterface $webSocket, PlayerPosition $position, GamePlayer $dbUser, bool $playAi ): void
     {
+        $this->logger->log( "Connecting Game Manager ...", 'GameManager' );
+        $this->Game->CurrentPlayer  = $position;
         
+        if ( $position == PlayerPosition::North ) {
+            $this->Clients->set( PlayerPosition::North->value, $webSocket );
+            
+            $this->Game->NorthPlayer->Id = $dbUser != null ? $dbUser->getId() : 0;
+            $this->Game->NorthPlayer->Guid = $dbUser != null ? $dbUser->getGuid() : Guid::Empty();
+            $this->Game->NorthPlayer->Name = $dbUser != null ? $dbUser->getName() : "Guest";
+            $this->Game->NorthPlayer->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $this->getPlayerPhotoUrl( $dbUser ) : "";
+            $this->Game->NorthPlayer->Elo = $dbUser != null ? $dbUser->getElo() : 0;
+            
+            if ( $this->Game->IsGoldGame ) {
+                $this->Game->NorthPlayer->Gold = $dbUser != null ? $dbUser->getGold() - self::firstBet : 0;
+                $this->Game->Stake = self::firstBet * 2;
+            }
+            
+            if ( $playAi ) {
+                $this->logger->log( "Play AI is TRUE !!!", 'GameManager' );
+                
+                /*
+                $aiUser = $this->playersRepository->findOneBy( ['guid' => GamePlayer::AiUser] );
+                
+                $this->Game->WhitePlayer->Id = $aiUser->getId();
+                $this->Game->WhitePlayer->Guid = $aiUser->getGuid();
+                $this->Game->WhitePlayer->Name = $aiUser->getName();
+                $this->Game->WhitePlayer->Photo = $aiUser->getPhotoUrl();
+                $this->Game->WhitePlayer->Elo = $aiUser->getElo();
+                
+                if ( $this->Game->IsGoldGame ) {
+                    $this->Game->WhitePlayer->Gold = $aiUser->getGold();
+                }
+                */
+                
+                $this->Engine = CardGameAiEngineFactory::CreateCardGameEngine(
+                    $this->GameCode,
+                    $this->GameVariant,
+                    $this->logger,
+                    $this->Game
+                );
+                $this->CreateDbGame();
+                $this->StartGame();
+                
+                if ( $this->Game->CurrentPlayer != PlayerPosition::North ) {
+                    $promise = \React\Async\async( function () {
+                        $this->logger->log( "GameManager CurrentPlayer: White", 'GameManager' );
+                        $this->EnginMoves( $this->Clients->get( PlayerPosition::North->value ) );
+                    })();
+                    \React\Async\await( $promise );
+                }
+            }
+        } else if( $position == PlayerPosition::East ) {
+            if ( $playAi ) {
+                throw new \Exception( "Ai always plays as white. This is not expected" );
+            }
+            
+            // East Player
+            $this->Clients->set( PlayerPosition::East->value, $webSocket );
+            $this->Game->EastPlayer->Id = $dbUser != null ? $dbUser->getId() : 0;
+            $this->Game->EastPlayer->Guid = $dbUser != null ? $dbUser->getGuid() : Guid::Empty();
+            $this->Game->EastPlayer->Name = $dbUser != null ? $dbUser->getName() : "Guest";
+            $this->Game->EastPlayer->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $this->getPlayerPhotoUrl( $dbUser ) : "";
+            $this->Game->EastPlayer->Elo = $dbUser != null ? $dbUser->getElo() : 0;
+            if ( $this->Game->IsGoldGame ) {
+                $this->Game->EastPlayer->Gold = $dbUser != null ? $dbUser->getGold() - self::firstBet : 0;
+            }
+                
+        } else if( $position == PlayerPosition::South ) {
+            if ( $playAi ) {
+                throw new \Exception( "Ai always plays as white. This is not expected" );
+            }
+            
+            // South Player
+            $this->Clients->set( PlayerPosition::South->value, $webSocket );
+            $this->Game->SouthPlayer->Id = $dbUser != null ? $dbUser->getId() : 0;
+            $this->Game->SouthPlayer->Guid = $dbUser != null ? $dbUser->getGuid() : Guid::Empty();
+            $this->Game->SouthPlayer->Name = $dbUser != null ? $dbUser->getName() : "Guest";
+            $this->Game->SouthPlayer->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $this->getPlayerPhotoUrl( $dbUser ) : "";
+            $this->Game->SouthPlayer->Elo = $dbUser != null ? $dbUser->getElo() : 0;
+            if ( $this->Game->IsGoldGame ) {
+                $this->Game->SouthPlayer->Gold = $dbUser != null ? $dbUser->getGold() - self::firstBet : 0;
+            }
+            
+        } else {
+            if ( $playAi ) {
+                throw new \Exception( "Ai always plays as white. This is not expected" );
+            }
+        
+            // West Player
+            $this->Clients->set( PlayerPosition::West->value, $webSocket );
+            $this->Game->WestPlayer->Id = $dbUser != null ? $dbUser->getId() : 0;
+            $this->Game->WestPlayer->Guid = $dbUser != null ? $dbUser->getGuid() : Guid::Empty();
+            $this->Game->WestPlayer->Name = $dbUser != null ? $dbUser->getName() : "Guest";
+            $this->Game->WestPlayer->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $this->getPlayerPhotoUrl( $dbUser ) : "";
+            $this->Game->WestPlayer->Elo = $dbUser != null ? $dbUser->getElo() : 0;
+            if ( $this->Game->IsGoldGame ) {
+                $this->Game->WestPlayer->Gold = $dbUser != null ? $dbUser->getGold() - self::firstBet : 0;
+            }
+            
+            $this->CreateDbGame();
+            $this->StartGame();
+            
+            //$this->dispatchGameEnded();
+        }
     }
     
     public function RestoreCardGame( PlayerPosition $position, WebsocketClientInterface $socket ): void
     {
+        $gameDto = Mapper::GameToDto( $this->Game );
+        $restoreAction = new GameRestoreActionDto();
+        $restoreAction->game = $gameDto;
+        $restoreAction->position = $position;
+//         $restoreAction->dices = $this->Game->Roll->map(
+//             function( $entry ) {
+//                 return Mapper::DiceToDto( $entry );
+//             }
+//         )->toArray();
         
+        
+        $this->Clients->set( $position->value, $socket );
+        $otherSockets = [];
+        foreach ( $this->Clients->toArray() as $key => $client ) {
+            if ( $key !== $position->value ) {
+                $otherSockets[$key] = $client;
+            }
+        }
+        
+        $this->Send( $socket, $restoreAction );
+        
+        //Also send the state to the other clients in case it has made moves.
+        foreach ( $otherSockets as $key => $otherSocket ) {
+            if ( $otherSocket != null && $otherSocket->State == WebSocketState::Open ) {
+                $restoreAction->position = PlayerPosition::from( $key );
+                $this->Send( $otherSocket, $restoreAction );
+            }
+        }
     }
 }

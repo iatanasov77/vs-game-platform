@@ -1,9 +1,14 @@
 <?php namespace App\Component\Rules\CardGame;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use App\Component\Type\PlayerPosition;
 
 class BridgeBeloteGame extends Game
 {
+    /** @var Collection | BridgeBeloteDeclaration[] */
+    public $Declarations;
+    
     public function SetStartPosition(): void
     {
         $this->DealCards( 5, $this->NorthPlayer );

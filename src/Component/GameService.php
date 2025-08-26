@@ -359,9 +359,6 @@ final class GameService
     
     private function RemoveDissconnected( GameManagerInterface $manager ): void
     {
-        $this->logger->log( "Game Manager Clients Count: {$manager->Clients->count()}", 'GameService' );
-        return;
-        
         $notActiveManagers = $manager->Clients->filter(
             function( $entry ) {
                 return $entry == null || $entry->State != WebSocketState::Open;

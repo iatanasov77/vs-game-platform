@@ -21,6 +21,9 @@ import { BoardButtonsComponent } from './board-actions/board-buttons/board-butto
 import { BoardPlayerComponent } from './board-player/board-player.component';
 import { BackgammonVariantsComponent } from './game-variants/backgammon/backgammon-variants.component';
 
+import { ChessContainerComponent } from './chess-container/chess-container.component';
+import { NgxChessBoardModule } from 'ngx-chess-board';
+
 @NgModule({
     declarations: [
         PlayerAnnounceComponent,
@@ -34,7 +37,8 @@ import { BackgammonVariantsComponent } from './game-variants/backgammon/backgamm
         DicesComponent,
         BoardButtonsComponent,
         BoardPlayerComponent,
-        BackgammonVariantsComponent
+        BackgammonVariantsComponent,
+        ChessContainerComponent
     ],
     imports: [
         CommonModule,
@@ -42,7 +46,8 @@ import { BackgammonVariantsComponent } from './game-variants/backgammon/backgamm
         NgbModule,
         TranslateModule.forChild(),
         SharedModule,
-        GameDialogsModule
+        GameDialogsModule,
+        NgxChessBoardModule.forRoot(),
     ],
     exports: [
         PlayerAnnounceComponent,
@@ -56,7 +61,8 @@ import { BackgammonVariantsComponent } from './game-variants/backgammon/backgamm
         DicesComponent,
         BoardButtonsComponent,
         BoardPlayerComponent,
-        BackgammonVariantsComponent
+        BackgammonVariantsComponent,
+        ChessContainerComponent
     ]
 })
 export class GameBoardsModule { }

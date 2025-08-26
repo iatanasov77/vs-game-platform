@@ -5,8 +5,7 @@ use Doctrine\Common\Collections\Collection;
 use App\Component\AI\AiEngineInterface;
 use App\Component\GameLogger;
 use App\Component\Type\PlayerColor;
-use App\Component\Rules\BoardGame\Game;
-use App\Component\Rules\BoardGame\Move;
+use App\Component\Rules\CardGame\Game;
 use App\Component\Rules\BoardGame\Helper as GameHelper;
 use App\Component\Manager\AbstractGameManager;
 

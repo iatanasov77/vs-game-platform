@@ -57,8 +57,8 @@ final class WebsocketGameManager extends AbstractGameManager
                     $this->logger,
                     $this->Game
                 );
-                $this->CreateDbGame();
-                $this->StartGame();
+                $this->CreateDbBoardGame();
+                $this->StartBoardGame();
                 
                 if ( $this->Game->CurrentPlayer == PlayerColor::White ) {
                     $promise = \React\Async\async( function () {
@@ -83,8 +83,8 @@ final class WebsocketGameManager extends AbstractGameManager
             if ( $this->Game->IsGoldGame ) {
                 $this->Game->WhitePlayer->Gold = $dbUser != null ? $dbUser->getGold() - self::firstBet : 0;
             }
-            $this->CreateDbGame();
-            $this->StartGame();
+            $this->CreateDbBoardGame();
+            $this->StartBoardGame();
             
             //$this->dispatchGameEnded();
         }
@@ -162,8 +162,8 @@ final class WebsocketGameManager extends AbstractGameManager
                     $this->logger,
                     $this->Game
                 );
-                $this->CreateDbGame();
-                $this->StartGame();
+                $this->CreateDbCardGame();
+                $this->StartCardGame();
                 
                 if ( $this->Game->CurrentPlayer != PlayerPosition::North ) {
                     $promise = \React\Async\async( function () {
@@ -221,8 +221,8 @@ final class WebsocketGameManager extends AbstractGameManager
                 $this->Game->WestPlayer->Gold = $dbUser != null ? $dbUser->getGold() - self::firstBet : 0;
             }
             
-            $this->CreateDbGame();
-            $this->StartGame();
+            $this->CreateDbCardGame();
+            $this->StartCardGame();
             
             //$this->dispatchGameEnded();
         }

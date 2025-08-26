@@ -338,7 +338,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         }
     }
     
-    public function StartGame(): void
+    public function StartBoardGame(): void
     {
         $this->Game->ThinkStart = new \DateTime( 'now' );
         $gameDto = Mapper::GameToDto( $this->Game );
@@ -396,6 +396,11 @@ abstract class AbstractGameManager implements GameManagerInterface
                 });
             })();
         }
+    }
+    
+    public function StartCardGame(): void
+    {
+        
     }
     
     public static function GetJsonError()
@@ -485,7 +490,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         return $guid == GamePlayer::AiUser;
     }
     
-    protected function CreateDbGame(): void
+    protected function CreateDbBoardGame(): void
     {
         $blackUser = $this->playersRepository->find( $this->Game->BlackPlayer->Id );
         
@@ -534,6 +539,11 @@ abstract class AbstractGameManager implements GameManagerInterface
         $em = $this->doctrine->getManager();
         $em->persist( $game );
         $em->flush();
+    }
+    
+    protected function CreateDbCardGame(): void
+    {
+        
     }
     
     protected function SaveWinner( PlayerColor $color ): ?array

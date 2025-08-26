@@ -2,6 +2,7 @@
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use App\Component\Rules\CardGame\Game;
 
 class BridgeBeloteEngine extends Engine
 {

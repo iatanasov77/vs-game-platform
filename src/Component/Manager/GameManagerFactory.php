@@ -7,6 +7,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
+use App\Component\GameVariant;
 use App\Component\GameLogger;
 use App\Component\Rules\GameFactory as GameRulesFactory;
 
@@ -82,7 +83,27 @@ final class GameManagerFactory
         $this->EndGameOnTotalThinkTimeElapse = $EndGameOnTotalThinkTimeElapse;
     }
     
-    public function createBackgammonGameManager( bool $forGold, string $gameCode, ?string $gameVariant ): GameManagerInterface
+    public function createGameManager( bool $forGold, string $gameCode, ?string $gameVariant ): GameManagerInterface
+    {
+        switch ( $gameCode ) {
+            case GameVariant::BACKGAMMON_CODE:
+                return $this->createBackgammonGameManager( $forGold, $gameCode, $gameVariant );
+                break;
+            case GameVariant::CHESS_CODE:
+                return $this->createChessGameManager( $forGold, $gameCode, $gameVariant );
+                break;
+            case GameVariant::BRIDGE_BELOTE_CODE:
+                return $this->createBridgeBeloteGameManager( $forGold, $gameCode, $gameVariant );
+                break;
+            case GameVariant::CONTRACT_BRIDGE_CODE:
+                return $this->createContractBridgeGameManager( $forGold, $gameCode, $gameVariant );
+                break;
+            default:
+                throw new \RuntimeException( 'Unknown Game Code !' );
+        }
+    }
+    
+    private function createBackgammonGameManager( bool $forGold, string $gameCode, ?string $gameVariant ): GameManagerInterface
     {
         return new BackgammonGameManager(
             $this->logger,
@@ -105,7 +126,7 @@ final class GameManagerFactory
         );
     }
     
-    public function createChessGameManager( bool $forGold, string $gameCode, ?string $gameVariant ): GameManagerInterface
+    private function createChessGameManager( bool $forGold, string $gameCode, ?string $gameVariant ): GameManagerInterface
     {
         return new ChessGameManager(
             $this->logger,
@@ -128,7 +149,7 @@ final class GameManagerFactory
         );
     }
     
-    public function createBridgeBeloteGameManager( bool $forGold, string $gameCode, ?string $gameVariant ): GameManagerInterface
+    private function createBridgeBeloteGameManager( bool $forGold, string $gameCode, ?string $gameVariant ): GameManagerInterface
     {
         return new BridgeBeloteGameManager(
             $this->logger,
@@ -151,7 +172,7 @@ final class GameManagerFactory
         );
     }
     
-    public function createContractBridgeGameManager( bool $forGold, string $gameCode, ?string $gameVariant ): GameManagerInterface
+    private function createContractBridgeGameManager( bool $forGold, string $gameCode, ?string $gameVariant ): GameManagerInterface
     {
         return new ContractBridgeGameManager(
             $this->logger,

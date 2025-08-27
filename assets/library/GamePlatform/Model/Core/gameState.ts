@@ -3,7 +3,10 @@
     firstThrow,
     playing,
     requestedDoubling,
-    ended
+    ended,
+    
+    // Card Games States
+    firstAnnounce
 }
 
 export default GameState;

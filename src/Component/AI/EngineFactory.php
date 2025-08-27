@@ -2,7 +2,7 @@
 
 use App\Component\GameVariant;
 use App\Component\GameLogger;
-use App\Component\Rules\BoardGame\Game;
+use App\Component\Rules\GameInterface;
 
 // Game AI Engines
 use App\Component\AI\BoardGame\BackgammonNormalEngine;
@@ -12,7 +12,7 @@ use App\Component\AI\CardGame\BridgeBeloteEngine;
 
 final class EngineFactory
 {
-    public static function CreateAiEngine( string $gameCode, string $gameVariant, GameLogger $logger, Game $game ): AiEngineInterface
+    public static function CreateAiEngine( string $gameCode, ?string $gameVariant, GameLogger $logger, GameInterface $game ): AiEngineInterface
     {
         switch ( $gameCode ) {
             case GameVariant::BACKGAMMON_CODE:
@@ -28,7 +28,7 @@ final class EngineFactory
         return $engine;
     }
     
-    private static function CreateBackgammonEngine( string $gameVariant, GameLogger $logger, Game $game ): AiEngineInterface
+    private static function CreateBackgammonEngine( string $gameVariant, GameLogger $logger, GameInterface $game ): AiEngineInterface
     {
         switch ( $gameVariant ) {
             case GameVariant::BACKGAMMON_NORMAL:

@@ -127,7 +127,7 @@ final class GameService
         //todo: pair with someone equal ranking?
         
         // Search any game, oldest first.
-        $managers = $this->orderAllGames( $this, AbstractGameManager::COLLECTION_ORDER_DESC )->filter(
+        $managers = $this->orderAllGames( $gameCode, AbstractGameManager::COLLECTION_ORDER_DESC )->filter(
             function( $entry ) {
                 return $entry->Clients->contains( null ) && $entry->SearchingOpponent;
             }
@@ -157,7 +157,7 @@ final class GameService
         $manager = $managers->first();
         if ( $manager == null || $playAi ) {
             $this->logger->log( "Possibly Play AI !!!", 'GameService' );
-            $manager            = $this->managerFactory->createBackgammonGameManager( $forGold, $gameCode, $gameVariant );
+            $manager            = $this->managerFactory->createGameManager( $forGold, $gameCode, $gameVariant );
             //manager.Ended += Game_Ended;
             $manager->dispatchGameEnded();
             
@@ -259,7 +259,7 @@ final class GameService
             $this->AllGames->removeElement( $existing[$i] );
         }
             
-        $manager = $this->managerFactory->createBackgammonGameManager( true, $gameCode, $gameVariant );
+        $manager = $this->managerFactory->createGameManager( true, $gameCode, $gameVariant );
         //$manager.Ended += Game_Ended;
         $manager->dispatchGameEnded();
         

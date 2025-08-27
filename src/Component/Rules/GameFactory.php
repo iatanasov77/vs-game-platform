@@ -29,7 +29,7 @@ final class GameFactory
         $this->logger   = $logger;
     }
     
-    public function createGame( $gameCode, $gameVariant, bool $ForGold ): GameInterface
+    public function createGame( string $gameCode, ?string $gameVariant, bool $ForGold ): GameInterface
     {
         switch ( $gameCode ) {
             case GameVariant::BACKGAMMON_CODE:

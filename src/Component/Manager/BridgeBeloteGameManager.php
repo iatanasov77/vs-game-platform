@@ -4,9 +4,10 @@ use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Rules\CardGame\Game;
 use App\Component\AI\EngineFactory as AiEngineFactory;
-use App\Entity\GamePlayer;
 use App\Component\System\Guid;
 use App\Component\Websocket\WebSocketState;
+use App\Entity\GamePlayer;
+use App\Entity\TempPlayer;
 
 // Types
 use App\Component\Type\PlayerPosition;
@@ -61,8 +62,8 @@ class BridgeBeloteGameManager extends AbstractGameManager
                     $this->logger,
                     $this->Game
                 );
-                $this->CreateDbCardGame();
-                $this->StartCardGame();
+                $this->CreateDbGame();
+                $this->StartGame();
                 
                 if ( $this->Game->CurrentPlayer != PlayerPosition::North ) {
                     $promise = \React\Async\async( function () {
@@ -120,8 +121,8 @@ class BridgeBeloteGameManager extends AbstractGameManager
                 $this->Game->WestPlayer->Gold = $dbUser != null ? $dbUser->getGold() - self::firstBet : 0;
             }
             
-            $this->CreateDbCardGame();
-            $this->StartCardGame();
+            $this->CreateDbGame();
+            $this->StartGame();
             
             //$this->dispatchGameEnded();
         }
@@ -163,12 +164,54 @@ class BridgeBeloteGameManager extends AbstractGameManager
     
     public function StartGame(): void
     {
+        $this->Game->ThinkStart = new \DateTime( 'now' );
+        $gameDto = Mapper::GameToDto( $this->Game );
+        $this->logger->log( 'Begin Start Game: ' . \print_r( $gameDto, true ), 'GameManager' );
         
+        $action = new GameCreatedActionDto();
+        $action->game = $gameDto;
+        
+        $action->myColor = PlayerPosition::North;
+        $this->Send( $this->Clients->get( PlayerPosition::North->value ), $action );
+        
+        $action->myColor = PlayerPosition::East;
+        $this->Send( $this->Clients->get( PlayerPosition::East->value ), $action );
+        
+        $action->myColor = PlayerPosition::South;
+        $this->Send( $this->Clients->get( PlayerPosition::South->value ), $action );
+        
+        $action->myColor = PlayerPosition::West;
+        $this->Send( $this->Clients->get( PlayerPosition::West->value ), $action );
+        
+        $this->Game->PlayState = GameState::firstAnnounce;
     }
     
     protected function CreateDbGame(): void
     {
+        $northPlayer = $this->CreateTempPlayer( $this->Game->NorthPlayer->Id, PlayerPosition::North->value );
+        $eastPlayer = $this->CreateTempPlayer( $this->Game->EastPlayer->Id, PlayerPosition::East->value );
+        $southPlayer = $this->CreateTempPlayer( $this->Game->SouthPlayer->Id, PlayerPosition::South->value );
+        $westPlayer = $this->CreateTempPlayer( $this->Game->WestPlayer->Id, PlayerPosition::West->value );
         
+        // Create Game Session
+        $gameBase   = $this->gameRepository->findOneBy(['slug' => $this->GameCode]);
+        $game       = $this->gamePlayFactory->createNew();
+        $game->setGame( $gameBase );
+        $game->setGuid( $this->Game->Id );
+        
+        $northPlayer->setGame( $game );
+        $eastPlayer->setGame( $game );
+        $southPlayer->setGame( $game );
+        $westPlayer->setGame( $game );
+        
+        $game->addGamePlayer( $northPlayer );
+        $game->addGamePlayer( $eastPlayer );
+        $game->addGamePlayer( $southPlayer );
+        $game->addGamePlayer( $westPlayer );
+        
+        $em = $this->doctrine->getManager();
+        $em->persist( $game );
+        $em->flush();
     }
     
     protected function IsAi( ?string $guid ): bool
@@ -260,5 +303,27 @@ class BridgeBeloteGameManager extends AbstractGameManager
             $this->NewTurn( $client );
         })();
         Async\await( $promise );
+    }
+    
+    private function CreateTempPlayer( int $playerId, int $playerPositionId ): TempPlayer
+    {
+        $player = $this->playersRepository->find( $playerId );
+        
+        if ( $this->Game->IsGoldGame && $player->getGold() < self::firstBet ) {
+            throw new \RuntimeException( "Black player dont have enough gold" ); // Should be guarder earlier
+        }
+        
+        if ( $this->Game->IsGoldGame && ! $this->IsAi( $player->getGuid() ) ) {
+            $player->setGold( self::firstBet );
+        }
+        
+        $tempPlayer = $this->tempPlayersFactory->createNew();
+        $tempPlayer->setGuid( Guid::NewGuid() );
+        $tempPlayer->setPlayer( $player );
+        $tempPlayer->setPosition( $playerPositionId );
+        $tempPlayer->setName( $player->getName() );
+        $player->addGamePlayer( $tempPlayer );
+        
+        return $tempPlayer;
     }
 }

@@ -9,9 +9,10 @@ use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Rules\BoardGame\Game;
 use App\Component\AI\EngineFactory as AiEngineFactory;
-use App\Entity\GamePlayer;
 use App\Component\System\Guid;
 use App\Component\Websocket\WebSocketState;
+use App\Entity\GamePlayer;
+use App\Entity\TempPlayer;
 
 // Types
 use App\Component\Type\PlayerColor;
@@ -194,49 +195,19 @@ final class BackgammonGameManager extends AbstractGameManager
     
     protected function CreateDbGame(): void
     {
-        $blackUser = $this->playersRepository->find( $this->Game->BlackPlayer->Id );
-        
-        if ( $this->Game->IsGoldGame && $blackUser->getGold() < self::firstBet ) {
-            throw new \RuntimeException( "Black player dont have enough gold" ); // Should be guarder earlier
-        }
-        
-        if ( $this->Game->IsGoldGame && ! $this->IsAi( $blackUser->getGuid() ) ) {
-            $blackUser->setGold( self::firstBet );
-        }
-        
-        $black = $this->tempPlayersFactory->createNew();
-        $black->setGuid( Guid::NewGuid() );
-        $black->setPlayer( $blackUser );
-        $black->setColor( PlayerColor::Black->value );
-        $black->setName( $blackUser->getName() );
-        $blackUser->addGamePlayer( $black );
-        
-        $whiteUser = $this->playersRepository->find( $this->Game->WhitePlayer->Id );
-        if ( $this->Game->IsGoldGame && $whiteUser->getGold() < self::firstBet ) {
-            throw new \RuntimeException( "White player dont have enough gold" ); // Should be guarder earlier
-        }
-        
-        if ( $this->Game->IsGoldGame && ! $this->IsAi( $whiteUser->getGuid() ) ) {
-            $whiteUser->setGold( self::firstBet );
-        }
-        
-        $white = $this->tempPlayersFactory->createNew();
-        $white->setGuid( Guid::NewGuid() );
-        $white->setPlayer( $whiteUser );
-        $white->setColor( PlayerColor::White->value );
-        $white->setName( $whiteUser->getName() );
-        $whiteUser->addGamePlayer( $white );
+        $blackPlayer = $this->CreateTempPlayer( $this->Game->BlackPlayer->Id, PlayerColor::Black->value );
+        $whitePlayer = $this->CreateTempPlayer( $this->Game->WhitePlayer->Id, PlayerColor::White->value );
         
         $gameBase   = $this->gameRepository->findOneBy(['slug' => $this->GameCode]);
         $game       = $this->gamePlayFactory->createNew();
         $game->setGame( $gameBase );
         $game->setGuid( $this->Game->Id );
         
-        $black->setGame( $game );
-        $white->setGame( $game );
+        $blackPlayer->setGame( $game );
+        $whitePlayer->setGame( $game );
         
-        $game->addGamePlayer( $black );
-        $game->addGamePlayer( $white );
+        $game->addGamePlayer( $blackPlayer );
+        $game->addGamePlayer( $whitePlayer );
         
         $em = $this->doctrine->getManager();
         $em->persist( $game );
@@ -390,5 +361,27 @@ final class BackgammonGameManager extends AbstractGameManager
             }
             )->first();
             //$this->logger->debug( $checkerFromPoint, 'CheckerFromPoint.txt' );
+    }
+    
+    private function CreateTempPlayer( int $playerId, int $playerPositionId ): TempPlayer
+    {
+        $player = $this->playersRepository->find( $playerId );
+        
+        if ( $this->Game->IsGoldGame && $player->getGold() < self::firstBet ) {
+            throw new \RuntimeException( "Black player dont have enough gold" ); // Should be guarder earlier
+        }
+        
+        if ( $this->Game->IsGoldGame && ! $this->IsAi( $player->getGuid() ) ) {
+            $player->setGold( self::firstBet );
+        }
+        
+        $tempPlayer = $this->tempPlayersFactory->createNew();
+        $tempPlayer->setGuid( Guid::NewGuid() );
+        $tempPlayer->setPlayer( $player );
+        $tempPlayer->setColor( $playerPositionId );
+        $tempPlayer->setName( $player->getName() );
+        $player->addGamePlayer( $tempPlayer );
+        
+        return $tempPlayer;
     }
 }

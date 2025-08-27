@@ -9,9 +9,14 @@ use App\Component\Manager\AbstractGameManager;
 
 trait Helper
 {
-    protected function orderAllGames( GameService $service, string $direction ): Collection
+    protected function orderAllGames( string $gameCode, string $direction ): Collection
     {
-        $gamesIterator  = $this->AllGames->getIterator();
+        $gamesIterator = $this->AllGames->filter(
+            function( $entry ) use ( $gameCode ) {
+                return $entry->GameCode === $gameCode;
+            }
+        )->getIterator();
+        
         $gamesIterator->uasort( function ( $a, $b ) use ( $direction ) {
             return $direction == AbstractGameManager::COLLECTION_ORDER_ASC ?
                 $a->Created <=> $b->Created :

@@ -171,11 +171,13 @@ abstract class AbstractGameManager implements GameManagerInterface
         $this->ForGold                  = $forGold;
         $this->GameCode                 = $gameCode;
         $this->GameVariant              = $gameVariant;
-        
         $this->EndGameOnTotalThinkTimeElapse = $EndGameOnTotalThinkTimeElapse;
-        
         $this->Clients                  = new ArrayCollection();
-        $this->InitializeGame( $gameCode, $gameVariant );
+        
+        // Initialize Game
+        $this->Game = $this->gameRulesFactory->createGame( $gameCode, $gameVariant, $this->ForGold );
+        $this->Game->ThinkStart = new \DateTime( 'now' );
+        $this->Created          = new \DateTime( 'now' );
     }
     
     public function setLogger( LoggerInterface $logger ): void
@@ -626,11 +628,13 @@ abstract class AbstractGameManager implements GameManagerInterface
         $this->logger->log( "{$winner} won Game {$this->Game->Id} by resignition.", 'GameManager' );
     }
     
-    private function InitializeGame( string $gameCode, ?string $gameVariant ): void
-    {
-        $this->Game = $this->gameRulesFactory->createGame( $gameCode, $gameVariant, $this->ForGold );
-        
-        $this->Game->ThinkStart = new \DateTime( 'now' );
-        $this->Created          = new \DateTime( 'now' );
-    }
+    abstract protected function CreateDbGame(): void;
+    
+    abstract protected function IsAi( ?string $guid ): bool;
+    
+    abstract protected function NewTurn( WebsocketClientInterface $socket ): void;
+    
+    abstract protected function AisTurn(): bool;
+    
+    abstract protected function EnginMoves( WebsocketClientInterface $client );
 }

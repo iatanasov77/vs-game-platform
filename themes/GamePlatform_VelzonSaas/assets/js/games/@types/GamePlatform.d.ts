@@ -48,12 +48,16 @@ declare module '_@/GamePlatform/Model/Core/userDto' {
 }
 
 declare module '_@/GamePlatform/Model/Core/gameState' {
-    enum GameState {
+    enum GameState
+    {
         opponentConnectWaiting,
         firstThrow,
         playing,
         requestedDoubling,
-        ended
+        ended,
+        
+        // Card Games States
+        firstAnnounce
     }
     
     export = GameState;

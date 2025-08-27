@@ -1,10 +1,23 @@
-<?php namespace App\Component\Rules\BoardGame;
+<?php namespace App\Component\Rules;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use App\Component\GameLogger;
 use App\Component\System\Guid;
-use App\Component\Type\GameState;
+use App\Component\GameVariant;
 use App\Component\Type\PlayerColor;
+use App\Component\Type\PlayerPosition;
+
+// Games
+use App\Component\Rules\BoardGame\BackgammonNormalGame;
+use App\Component\Rules\BoardGame\BackgammonTapaGame;
+use App\Component\Rules\BoardGame\BackgammonGulBaraGame;
+use App\Component\Rules\CardGame\BridgeBeloteGame;
+
+use App\Component\Rules\BoardGame\Player as BoardGamePlayer;
+use App\Component\Rules\BoardGame\Point;
+
+use App\Component\Rules\CardGame\Player as CardGamePlayer;
+use App\Component\Rules\CardGame\Deck;
 
 final class GameFactory
 {
@@ -16,7 +29,41 @@ final class GameFactory
         $this->logger   = $logger;
     }
     
-    public function createBackgammonNormalGame( bool $forGold ): Game
+    public function createGame( $gameCode, $gameVariant, bool $ForGold ): GameInterface
+    {
+        switch ( $gameCode ) {
+            case GameVariant::BACKGAMMON_CODE:
+                return $this->createBackgammonGame( $gameVariant, $ForGold );
+                break;
+            case GameVariant::BRIDGE_BELOTE_CODE:
+                return $this->createBridgeBeloteGame( $ForGold );
+                break;
+            default:
+                throw new \RuntimeException( 'Unknown Game Code !!!' );
+        }
+        
+        $this->Game->ThinkStart = new \DateTime( 'now' );
+        $this->Created          = new \DateTime( 'now' );
+    }
+    
+    private function createBackgammonGame( string $gameVariant, bool $ForGold ): GameInterface
+    {
+        switch ( $gameVariant ) {
+            case GameVariant::BACKGAMMON_NORMAL:
+                return $this->createBackgammonNormalGame( $ForGold );
+                break;
+            case GameVariant::BACKGAMMON_TAPA:
+                return $this->createBackgammonTapaGame( $ForGold );
+                break;
+            case GameVariant::BACKGAMMON_GULBARA:
+                return $this->createBackgammonGulBaraGame( $ForGold );
+                break;
+            default:
+                throw new \RuntimeException( 'Unknown Game Variant !!!' );
+        }
+    }
+    
+    private function createBackgammonNormalGame( bool $forGold ): GameInterface
     {
         $game = new BackgammonNormalGame( $this->logger );
         
@@ -24,11 +71,11 @@ final class GameFactory
         $game->Roll         = new ArrayCollection();
         $game->ValidMoves   = new ArrayCollection();
         
-        $game->BlackPlayer = new Player();
+        $game->BlackPlayer = new BoardGamePlayer();
         $game->BlackPlayer->PlayerColor = PlayerColor::Black;
         $game->BlackPlayer->Name = "Guest";
         
-        $game->WhitePlayer = new Player();
+        $game->WhitePlayer = new BoardGamePlayer();
         $game->WhitePlayer->PlayerColor = PlayerColor::White;
         $game->WhitePlayer->Name = "Guest";
         
@@ -54,12 +101,12 @@ final class GameFactory
         
         $game->SetStartPosition();
         
-        Game::CalcPointsLeft( $game );
+        BackgammonNormalGame::CalcPointsLeft( $game );
         
         return $game;
     }
     
-    public function createBackgammonGulBaraGame( bool $forGold ): Game
+    private function createBackgammonGulBaraGame( bool $forGold ): GameInterface
     {
         $game = new BackgammonGulBaraGame( $this->logger );
         
@@ -68,11 +115,11 @@ final class GameFactory
         $game->Roll         = new ArrayCollection();
         $game->ValidMoves   = new ArrayCollection();
         
-        $game->BlackPlayer = new Player();
+        $game->BlackPlayer = new BoardGamePlayer();
         $game->BlackPlayer->PlayerColor = PlayerColor::Black;
         $game->BlackPlayer->Name = "Guest";
         
-        $game->WhitePlayer = new Player();
+        $game->WhitePlayer = new BoardGamePlayer();
         $game->WhitePlayer->PlayerColor = PlayerColor::White;
         $game->WhitePlayer->Name = "Guest";
         
@@ -98,12 +145,12 @@ final class GameFactory
         
         $game->SetStartPosition();
         
-        Game::CalcPointsLeft( $game );
+        BackgammonGulBaraGame::CalcPointsLeft( $game );
         
         return $game;
     }
     
-    public function createBackgammonTapaGame( bool $forGold ): Game
+    private function createBackgammonTapaGame( bool $forGold ): GameInterface
     {
         $game = new BackgammonTapaGame( $this->logger );
         
@@ -112,11 +159,11 @@ final class GameFactory
         $game->Roll         = new ArrayCollection();
         $game->ValidMoves   = new ArrayCollection();
         
-        $game->BlackPlayer = new Player();
+        $game->BlackPlayer = new BoardGamePlayer();
         $game->BlackPlayer->PlayerColor = PlayerColor::Black;
         $game->BlackPlayer->Name = "Guest";
         
-        $game->WhitePlayer = new Player();
+        $game->WhitePlayer = new BoardGamePlayer();
         $game->WhitePlayer->PlayerColor = PlayerColor::White;
         $game->WhitePlayer->Name = "Guest";
         
@@ -142,7 +189,42 @@ final class GameFactory
         
         $game->SetStartPosition();
         
-        Game::CalcPointsLeft( $game );
+        BackgammonTapaGame::CalcPointsLeft( $game );
+        
+        return $game;
+    }
+    
+    private function createBridgeBeloteGame( bool $forGold ): GameInterface
+    {
+        $game = new BridgeBeloteGame( $this->logger );
+        
+        $game->Id           = Guid::NewGuid();
+        
+        $game->cardDeck     = Deck::shuffle( Deck::cards( 32 ) );
+        $game->cardPiles    = [[], []];
+        
+        $game->NorthPlayer = new CardGamePlayer();
+        $game->NorthPlayer->PlayerPosition = PlayerPosition::North;
+        $game->NorthPlayer->Name = "Guest";
+        
+        $game->WestPlayer = new CardGamePlayer();
+        $game->WestPlayer->PlayerPosition = PlayerPosition::West;
+        $game->WestPlayer->Name = "Guest";
+        
+        $game->SouthPlayer = new CardGamePlayer();
+        $game->SouthPlayer->PlayerPosition = PlayerPosition::South;
+        $game->SouthPlayer->Name = "Guest";
+        
+        $game->EastPlayer = new CardGamePlayer();
+        $game->EastPlayer->PlayerPosition = PlayerPosition::East;
+        $game->EastPlayer->Name = "Guest";
+        
+        $game->Created = new \DateTime( 'now' );
+        
+        $game->GoldMultiplier = 1;
+        $game->IsGoldGame = $forGold;
+        
+        $game->SetStartPosition();
         
         return $game;
     }

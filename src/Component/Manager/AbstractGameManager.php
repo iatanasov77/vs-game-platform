@@ -12,28 +12,22 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager as LiipImagineCacheManager;
 use React\Async;
-use React\EventLoop\Loop;
-use React\EventLoop\TimerInterface;
 use Amp\DeferredCancellation;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 
 use App\Component\GameLogger;
 use App\Component\Rules\GameInterface;
-use App\Component\Rules\BoardGame\GameFactory as BoardGameRulesFactory;
-use App\Component\Rules\CardGame\GameFactory as CardGameRulesFactory;
 
-use App\Component\System\Guid;
 use App\Component\Rules\BoardGame\Game;
 use App\Component\Rules\BoardGame\Score;
 use App\Component\AI\AiEngineInterface;
-use App\Component\AI\BoardGame\Engine as AiEngine;
+use App\Component\Rules\GameFactory;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Websocket\WebSocketState;
 
 // Types
 use App\Component\Type\PlayerColor;
 use App\Component\Type\GameState;
-use App\Component\GameVariant;
 
 // DTO Actions
 use App\Component\Dto\Mapper;
@@ -83,11 +77,8 @@ abstract class AbstractGameManager implements GameManagerInterface
     /** @var ManagerRegistry */
     protected $doctrine;
     
-    /** @var BoardGameRulesFactory */
-    protected $boardGameRulesFactory;
-    
-    /** @var CardGameRulesFactory */
-    protected $cardGameRulesFactory;
+    /** @var GameFactory */
+    protected $gameRulesFactory;
     
     /** @var RepositoryInterface */
     protected $gameRepository;
@@ -153,8 +144,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         LiipImagineCacheManager $imagineCacheManager,
         EventDispatcherInterface $eventDispatcher,
         ManagerRegistry $doctrine,
-        BoardGameRulesFactory $boardGameRulesFactory,
-        CardGameRulesFactory $cardGameRulesFactory,
+        GameFactory $gameRulesFactory,
         RepositoryInterface $gameRepository,
         RepositoryInterface $gamePlayRepository,
         FactoryInterface $gamePlayFactory,
@@ -171,8 +161,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         $this->imagineCacheManager      = $imagineCacheManager;
         $this->eventDispatcher          = $eventDispatcher;
         $this->doctrine                 = $doctrine;
-        $this->boardGameRulesFactory    = $boardGameRulesFactory;
-        $this->cardGameRulesFactory     = $cardGameRulesFactory;
+        $this->gameRulesFactory         = $gameRulesFactory;
         $this->gameRepository           = $gameRepository;
         $this->gamePlayRepository       = $gamePlayRepository;
         $this->gamePlayFactory          = $gamePlayFactory;
@@ -338,71 +327,6 @@ abstract class AbstractGameManager implements GameManagerInterface
         }
     }
     
-    public function StartBoardGame(): void
-    {
-        $this->Game->ThinkStart = new \DateTime( 'now' );
-        $gameDto = Mapper::GameToDto( $this->Game );
-        $this->logger->log( 'Begin Start Game: ' . \print_r( $gameDto, true ), 'GameManager' );
-        
-        $action = new GameCreatedActionDto();
-        $action->game = $gameDto;
-        
-        $action->myColor = PlayerColor::Black;
-        $this->Send( $this->Clients->get( PlayerColor::Black->value ), $action );
-        
-        $action->myColor = PlayerColor::White;
-        $this->Send( $this->Clients->get( PlayerColor::White->value ), $action );
-        
-        $this->Game->PlayState = GameState::firstThrow;
-        
-        // todo: visa på clienten även när det blir samma
-        // English: visa for clients who are not allowed to contact them
-        while ( $this->Game->PlayState == GameState::firstThrow ) {
-            $this->logger->log( 'First Throw State !!!', 'FirstThrowState' );
-            
-            $this->Game->RollDice();
-            
-            $rollAction = new DicesRolledActionDto();
-            $rollAction->dices = $this->Game->Roll->map(
-                function( $entry ) {
-                    return Mapper::DiceToDto( $entry );
-                }
-            )->toArray();
-            $rollAction->playerToMove = $this->Game->CurrentPlayer;
-            $rollAction->validMoves = $this->Game->ValidMoves->map(
-                function( $entry ) {
-                    return Mapper::MoveToDto( $entry );
-                }
-            )->toArray();
-            $rollAction->moveTimer = Game::ClientCountDown;
-            
-            //$this->logger->log( 'First Throw Valid Moves: ' . \print_r( $rollAction->validMoves, true ), 'FirstThrowState' );
-            //$this->logger->debug( $rollAction, 'FirstRoll.txt' );
-            
-            $this->Send( $this->Clients->get( PlayerColor::Black->value ), $rollAction );
-            $this->Send( $this->Clients->get( PlayerColor::White->value ), $rollAction );
-        }
-        
-        $this->moveTimeOut = new DeferredCancellation();
-        if ( $this->EndGameOnTotalThinkTimeElapse ) {
-            Async\async( function () {
-                $loop = Loop::get();
-                $loop->addPeriodicTimer( 0.5, function ( TimerInterface $timer ) use ( $loop ) {
-                    if ( ! $this->moveTimeOut->isCancelled() ) {
-                        $this->TimeTick();
-                    } else {
-                        $loop->cancelTimer( $timer );
-                    }
-                });
-            })();
-        }
-    }
-    
-    public function StartCardGame(): void
-    {
-        
-    }
-    
     public static function GetJsonError()
     {
         switch ( \json_last_error() ) {
@@ -483,67 +407,6 @@ abstract class AbstractGameManager implements GameManagerInterface
             $this->logger->log( "Sending NewRoll to Client2 !!!", 'NewRoll' );
             $this->Send( $this->Clients->get( PlayerColor::White->value ), $rollAction );
         }
-    }
-    
-    protected function IsAi( ?string $guid ): bool
-    {
-        return $guid == GamePlayer::AiUser;
-    }
-    
-    protected function CreateDbBoardGame(): void
-    {
-        $blackUser = $this->playersRepository->find( $this->Game->BlackPlayer->Id );
-        
-        if ( $this->Game->IsGoldGame && $blackUser->getGold() < self::firstBet ) {
-            throw new \RuntimeException( "Black player dont have enough gold" ); // Should be guarder earlier
-        }
-            
-        if ( $this->Game->IsGoldGame && ! $this->IsAi( $blackUser->getGuid() ) ) {
-            $blackUser->setGold( self::firstBet );
-        }
-                
-        $black = $this->tempPlayersFactory->createNew();
-        $black->setGuid( Guid::NewGuid() );
-        $black->setPlayer( $blackUser );
-        $black->setColor( PlayerColor::Black->value );
-        $black->setName( $blackUser->getName() );
-        $blackUser->addGamePlayer( $black );
-        
-        $whiteUser = $this->playersRepository->find( $this->Game->WhitePlayer->Id );
-        if ( $this->Game->IsGoldGame && $whiteUser->getGold() < self::firstBet ) {
-            throw new \RuntimeException( "White player dont have enough gold" ); // Should be guarder earlier
-        }
-        
-        if ( $this->Game->IsGoldGame && ! $this->IsAi( $whiteUser->getGuid() ) ) {
-            $whiteUser->setGold( self::firstBet );
-        }
-            
-        $white = $this->tempPlayersFactory->createNew();
-        $white->setGuid( Guid::NewGuid() );
-        $white->setPlayer( $whiteUser );
-        $white->setColor( PlayerColor::White->value );
-        $white->setName( $whiteUser->getName() );
-        $whiteUser->addGamePlayer( $white );
-        
-        $gameBase   = $this->gameRepository->findOneBy(['slug' => $this->GameCode]);
-        $game       = $this->gamePlayFactory->createNew();
-        $game->setGame( $gameBase );
-        $game->setGuid( $this->Game->Id );
-        
-        $black->setGame( $game );
-        $white->setGame( $game );
-        
-        $game->addGamePlayer( $black );
-        $game->addGamePlayer( $white );
-        
-        $em = $this->doctrine->getManager();
-        $em->persist( $game );
-        $em->flush();
-    }
-    
-    protected function CreateDbCardGame(): void
-    {
-        
     }
     
     protected function SaveWinner( PlayerColor $color ): ?array
@@ -763,182 +626,9 @@ abstract class AbstractGameManager implements GameManagerInterface
         $this->logger->log( "{$winner} won Game {$this->Game->Id} by resignition.", 'GameManager' );
     }
     
-    protected function GetHintAction(): HintMovesActionDto
-    {
-        $moves              = $this->Engine->GetBestMoves();
-        $hintMovesAction    = new HintMovesActionDto();
-        
-        $hintMovesAction->moves = $moves->map(
-            function( $entry ) {
-                $moveDto = Mapper::MoveToDto( $entry );
-                $moveDto->hint = true;
-                
-                return $moveDto;
-            }
-        )->toArray();
-        
-        return $hintMovesAction;
-    }
-    
-    protected function DoDoubling(): void
-    {
-        $this->Game->GoldMultiplier *= 2;
-        $this->Game->BlackPlayer->Gold -= $this->Game->Stake / 2;
-        $this->Game->WhitePlayer->Gold -= $this->Game->Stake / 2;
-        
-        if ( $this->Game->WhitePlayer->Gold < 0 || $this->Game->BlackPlayer->Gold < 0 ) {
-            throw new \RuntimeException( "Player out of gold. Should not be allowd." );
-        }
-        
-        $blackUser = $this->playersRepository->find( $this->Game->BlackPlayer->Id );
-        $whiteUser = $this->playersRepository->find( $this->Game->WhitePlayer->Id );
-        
-        $em = $this->doctrine->getManager();
-        if ( ! $this->IsAi( $blackUser->getGuid() ) ) { // gold for ai remains in the db
-            $blackUser->setGold( $this->Game->BlackPlayer->Gold ); // non gold games guarded earlier in block.
-            $em->persist( $blackUser );
-        }
-        
-        if ( ! $this->IsAi( $whiteUser->getGuid() ) ) {
-            $whiteUser->setGold( $this->Game->WhitePlayer->Gold );
-            $em->persist( $whiteUser );
-        }
-        $em->flush();
-        
-        $this->Game->Stake += $this->Game->Stake;
-        $this->Game->LastDoubler = $this->Game->CurrentPlayer;
-    }
-    
-    protected function NewTurn( WebsocketClientInterface $socket ): void
-    {
-        $winner = $this->GetWinner();
-        $this->Game->SwitchPlayer();
-        if ( $winner ) {
-            $this->EndGame( $winner );
-        } else {
-            $this->SendNewRoll();
-            
-            if ( $this->AisTurn() ) {
-                $this->logger->log( "NewTurn for AI", 'SwitchPlayer' );
-                $this->EnginMoves( $socket );
-            }
-        }
-    }
-    
-    protected function AisTurn(): bool
-    {
-        $plyr = $this->Game->CurrentPlayer == PlayerColor::Black ? $this->Game->BlackPlayer : $this->Game->WhitePlayer;
-        $this->logger->log( "AisTurn CurrentPlayer: " . \print_r( $plyr, true ) , 'SwitchPlayer' );
-        
-        return $plyr->IsAi();
-    }
-    
-    protected function EnginMoves( WebsocketClientInterface $client )
-    {
-        $promise = Async\async( function () use ( $client ) {
-            $sleepMileseconds   = \rand( 700, 1200 );
-            Async\delay( $sleepMileseconds / 1000 );
-            
-            $action = new RolledActionDto();
-            $this->Send( $client, $action );
-        })();
-        Async\await( $promise );
-        
-        $moves = $this->Engine->GetBestMoves();
-        //$this->logger->log( print_r( $moves->toArray(), true ), 'EnginMoves' );
-        
-        $noMoves = true;
-        $this->logger->log( "Points Before EnginMoves: " . \print_r( $this->Game->Points->toArray(), true ), 'EnginMoves' );
-        for ( $i = 0; $i < $moves->count(); $i++ ) {
-            $move = $moves[$i];
-            if ( $move->isNull() ) {
-                continue;
-            }
-            
-            $promise = Async\async( function () use ( $client, $move, &$noMoves ) {
-                $sleepMileseconds   = \rand( 700, 1200 );
-                Async\delay( $sleepMileseconds / 1000 );
-                
-                $moveDto = Mapper::MoveToDto( $move );
-                $moveDto->animate = true;
-                $dto = new OpponentMoveActionDto();
-                $dto->move = $moveDto;
-                
-                $hit = $this->Game->MakeMove( $move );
-                if ( $hit ) {
-                    $this->logger->log( "Has a Hit at BlackNumber Point: " . $move->To->BlackNumber, 'EnginMoves' );
-                }
-                
-                if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {
-                    $this->Game->BlackPlayer->FirstMoveMade = true;
-                } else {
-                    $this->Game->WhitePlayer->FirstMoveMade = true;
-                }
-                
-                $noMoves = false;
-                $this->Send( $client, $dto );
-            })();
-            Async\await( $promise );
-        }
-        $this->logger->log( "Points After EnginMoves: " . \print_r( $this->Game->Points->toArray(), true ), 'EnginMoves' );
-        
-        if ( $noMoves ) {
-            $promise = Async\async( function () {
-                Async\delay( 2.5 );
-            })();
-            Async\await( $promise );
-        }
-        
-        $promise = Async\async( function () use ( $client ) {
-            $this->NewTurn( $client );
-        })();
-        Async\await( $promise );
-    }
-    
-    protected function debugGetCheckerFromPoint()
-    {
-        //$this->logger->debug( $this->Game->Points, 'GamePoints.txt' );
-        
-        $checkerFromPoint = $this->Game->Points->filter(
-            function( $entry ) {
-                return $entry->GetNumber( PlayerColor::Black ) == 1;
-            }
-        )->first();
-        //$this->logger->debug( $checkerFromPoint, 'CheckerFromPoint.txt' );
-    }
-    
     private function InitializeGame( string $gameCode, ?string $gameVariant ): void
     {
-        switch ( $gameCode ) {
-            case GameVariant::BACKGAMMON_CODE:
-                $this->Game = $this->InitializeBackgammonGame( $gameVariant );
-                break;
-            case GameVariant::BRIDGE_BELOTE_CODE:
-                $this->Game = $this->cardGameRulesFactory->createBridgeBeloteGame( $this->ForGold );
-                break;
-            default:
-                throw new \RuntimeException( 'Unknown Game Code !!!' );
-        }
-        
-        $this->Game->ThinkStart = new \DateTime( 'now' );
-        $this->Created          = new \DateTime( 'now' );
-    }
-    
-    private function InitializeBackgammonGame( string $gameVariant ): GameInterface
-    {
-        switch ( $gameVariant ) {
-            case GameVariant::BACKGAMMON_NORMAL:
-                return $this->boardGameRulesFactory->createBackgammonNormalGame( $this->ForGold );
-                break;
-            case GameVariant::BACKGAMMON_TAPA:
-                return $this->boardGameRulesFactory->createBackgammonTapaGame( $this->ForGold );
-                break;
-            case GameVariant::BACKGAMMON_GULBARA:
-                return $this->boardGameRulesFactory->createBackgammonGulBaraGame( $this->ForGold );
-                break;
-            default:
-                throw new \RuntimeException( 'Unknown Game Variant !!!' );
-        }
+        $this->Game = $this->gameRulesFactory->createGame( $gameCode, $gameVariant, $this->ForGold );
         
         $this->Game->ThinkStart = new \DateTime( 'now' );
         $this->Created          = new \DateTime( 'now' );

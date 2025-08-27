@@ -8,8 +8,7 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use App\Component\GameLogger;
-use App\Component\Rules\BoardGame\GameFactory as BoardGameRulesFactory;
-use App\Component\Rules\CardGame\GameFactory as CardGameRulesFactory;
+use App\Component\Rules\GameFactory as GameRulesFactory;
 
 final class GameManagerFactory
 {
@@ -28,11 +27,8 @@ final class GameManagerFactory
     /** @var ManagerRegistry */
     private $doctrine;
     
-    /** @var BoardGameRulesFactory */
-    private $boardGameRulesFactory;
-    
-    /** @var CardGameRulesFactory */
-    private $cardGameRulesFactory;
+    /** @var GameRulesFactory */
+    private $gameRulesFactory;
     
     /** @var RepositoryInterface */
     private $gameRepository;
@@ -61,8 +57,7 @@ final class GameManagerFactory
         LiipImagineCacheManager $imagineCacheManager,
         EventDispatcherInterface $eventDispatcher,
         ManagerRegistry $doctrine,
-        BoardGameRulesFactory $boardGameRulesFactory,
-        CardGameRulesFactory $cardGameRulesFactory,
+        GameRulesFactory $gameRulesFactory,
         RepositoryInterface $gameRepository,
         RepositoryInterface $gamePlayRepository,
         FactoryInterface $gamePlayFactory,
@@ -76,8 +71,7 @@ final class GameManagerFactory
         $this->imagineCacheManager      = $imagineCacheManager;
         $this->eventDispatcher          = $eventDispatcher;
         $this->doctrine                 = $doctrine;
-        $this->boardGameRulesFactory    = $boardGameRulesFactory;
-        $this->cardGameRulesFactory     = $cardGameRulesFactory;
+        $this->gameRulesFactory         = $gameRulesFactory;
         $this->gameRepository           = $gameRepository;
         $this->gamePlayRepository       = $gamePlayRepository;
         $this->gamePlayFactory          = $gamePlayFactory;
@@ -88,16 +82,84 @@ final class GameManagerFactory
         $this->EndGameOnTotalThinkTimeElapse = $EndGameOnTotalThinkTimeElapse;
     }
     
-    public function createWebsocketGameManager( bool $forGold, string $gameCode, ?string $gameVariant ): GameManagerInterface
+    public function createBackgammonGameManager( bool $forGold, string $gameCode, ?string $gameVariant ): GameManagerInterface
     {
-        return new WebsocketGameManager(
+        return new BackgammonGameManager(
             $this->logger,
             $this->serializer,
             $this->imagineCacheManager,
             $this->eventDispatcher,
             $this->doctrine,
-            $this->boardGameRulesFactory,
-            $this->cardGameRulesFactory,
+            $this->gameRulesFactory,
+            $this->gameRepository,
+            $this->gamePlayRepository,
+            $this->gamePlayFactory,
+            $this->playersRepository,
+            $this->tempPlayersRepository,
+            $this->tempPlayersFactory,
+            $forGold,
+            $gameCode,
+            $gameVariant,
+            
+            $this->EndGameOnTotalThinkTimeElapse
+        );
+    }
+    
+    public function createChessGameManager( bool $forGold, string $gameCode, ?string $gameVariant ): GameManagerInterface
+    {
+        return new ChessGameManager(
+            $this->logger,
+            $this->serializer,
+            $this->imagineCacheManager,
+            $this->eventDispatcher,
+            $this->doctrine,
+            $this->gameRulesFactory,
+            $this->gameRepository,
+            $this->gamePlayRepository,
+            $this->gamePlayFactory,
+            $this->playersRepository,
+            $this->tempPlayersRepository,
+            $this->tempPlayersFactory,
+            $forGold,
+            $gameCode,
+            $gameVariant,
+            
+            $this->EndGameOnTotalThinkTimeElapse
+        );
+    }
+    
+    public function createBridgeBeloteGameManager( bool $forGold, string $gameCode, ?string $gameVariant ): GameManagerInterface
+    {
+        return new BridgeBeloteGameManager(
+            $this->logger,
+            $this->serializer,
+            $this->imagineCacheManager,
+            $this->eventDispatcher,
+            $this->doctrine,
+            $this->gameRulesFactory,
+            $this->gameRepository,
+            $this->gamePlayRepository,
+            $this->gamePlayFactory,
+            $this->playersRepository,
+            $this->tempPlayersRepository,
+            $this->tempPlayersFactory,
+            $forGold,
+            $gameCode,
+            $gameVariant,
+            
+            $this->EndGameOnTotalThinkTimeElapse
+        );
+    }
+    
+    public function createContractBridgeGameManager( bool $forGold, string $gameCode, ?string $gameVariant ): GameManagerInterface
+    {
+        return new ContractBridgeGameManager(
+            $this->logger,
+            $this->serializer,
+            $this->imagineCacheManager,
+            $this->eventDispatcher,
+            $this->doctrine,
+            $this->gameRulesFactory,
             $this->gameRepository,
             $this->gamePlayRepository,
             $this->gamePlayFactory,

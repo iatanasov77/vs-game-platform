@@ -8,8 +8,7 @@ use App\Entity\GamePlayer;
 
 interface GameManagerInterface
 {
-    public function ConnectAndListenBoardGame( WebsocketClientInterface $webSocket, PlayerColor $color, GamePlayer $dbUser, bool $playAi ): void;
-    public function RestoreBoardGame( PlayerColor $color, WebsocketClientInterface $socket ): void;
-    public function ConnectAndListenCardGame( WebsocketClientInterface $webSocket, PlayerPosition $position, GamePlayer $dbUser, bool $playAi ): void;
-    public function RestoreCardGame( PlayerPosition $position, WebsocketClientInterface $socket ): void;
+    public function ConnectAndListen( WebsocketClientInterface $webSocket, GamePlayer $dbUser, bool $playAi ): void;
+    public function Restore( int $playerPositionId, WebsocketClientInterface $socket ): void;
+    public function StartGame(): void;
 }

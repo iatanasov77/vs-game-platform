@@ -14,7 +14,7 @@ use Vankosoft\UsersBundle\Security\SecurityBridge;
 use App\Component\Manager\GameManagerInterface;
 use App\Component\Manager\GameManagerFactory;
 use App\Component\Manager\AbstractGameManager;
-use App\Component\AI\BoardGame\EngineFactory as AiEngineFactory;
+use App\Component\AI\EngineFactory as AiEngineFactory;
 use App\Component\System\Guid;
 
 // DTO Objects
@@ -157,7 +157,7 @@ final class GameService
         $manager = $managers->first();
         if ( $manager == null || $playAi ) {
             $this->logger->log( "Possibly Play AI !!!", 'GameService' );
-            $manager            = $this->managerFactory->createWebsocketGameManager( $forGold, $gameCode, $gameVariant );
+            $manager            = $this->managerFactory->createBackgammonGameManager( $forGold, $gameCode, $gameVariant );
             //manager.Ended += Game_Ended;
             $manager->dispatchGameEnded();
             
@@ -170,14 +170,16 @@ final class GameService
             // entering socket loop
             switch ( $gameCode ) {
                 case GameVariant::BACKGAMMON_CODE:
-                    $manager->ConnectAndListenBoardGame( $webSocket, PlayerColor::Black, $gamePlayer, $playAi );
-                    $this->SendConnectionLostBoardGame( PlayerColor::White, $manager );
+                    $manager->Game->CurrentPlayer = PlayerColor::Black;
+                    $manager->ConnectAndListen( $webSocket, $gamePlayer, $playAi );
+                    $this->SendConnectionLost( $manager, PlayerColor::White->value );
                     break;
                 case GameVariant::BRIDGE_BELOTE_CODE:
-                    $manager->ConnectAndListenCardGame( $webSocket, PlayerPosition::North, $gamePlayer, $playAi );
-                    $this->SendConnectionLostCardGame( PlayerPosition::East, $manager );
-                    $this->SendConnectionLostCardGame( PlayerPosition::South, $manager );
-                    $this->SendConnectionLostCardGame( PlayerPosition::West, $manager );
+                    $manager->Game->CurrentPlayer = PlayerPosition::North;
+                    $manager->ConnectAndListen( $webSocket, $gamePlayer, $playAi );
+                    $this->SendConnectionLost( $manager, PlayerPosition::East->value );
+                    $this->SendConnectionLost( $manager, PlayerPosition::South->value );
+                    $this->SendConnectionLost( $manager, PlayerPosition::West->value );
                     break;
             }
             //This is the end of the connection
@@ -192,14 +194,16 @@ final class GameService
             // entering socket loop
             switch ( $gameCode ) {
                 case GameVariant::BACKGAMMON_CODE:
-                    $manager->ConnectAndListenBoardGame( $webSocket, PlayerColor::Black, $gamePlayer, $playAi );
-                    $this->SendConnectionLostBoardGame( PlayerColor::White, $manager );
+                    $manager->Game->CurrentPlayer = PlayerColor::Black;
+                    $manager->ConnectAndListen( $webSocket, $gamePlayer, $playAi );
+                    $this->SendConnectionLost( $manager, PlayerColor::White->value );
                     break;
                 case GameVariant::BRIDGE_BELOTE_CODE:
-                    $manager->ConnectAndListenCardGame( $webSocket, PlayerPosition::North, $gamePlayer, $playAi );
-                    $this->SendConnectionLostCardGame( PlayerPosition::East, $manager );
-                    $this->SendConnectionLostCardGame( PlayerPosition::South, $manager );
-                    $this->SendConnectionLostCardGame( PlayerPosition::West, $manager );
+                    $manager->Game->CurrentPlayer = PlayerPosition::North;
+                    $manager->ConnectAndListen( $webSocket, $gamePlayer, $playAi );
+                    $this->SendConnectionLost( $manager, PlayerPosition::East->value );
+                    $this->SendConnectionLost( $manager, PlayerPosition::South->value );
+                    $this->SendConnectionLost( $manager, PlayerPosition::West->value );
                     break;
             }
             //This is the end of the connection
@@ -255,7 +259,7 @@ final class GameService
             $this->AllGames->removeElement( $existing[$i] );
         }
             
-        $manager = $this->managerFactory->createWebsocketGameManager( true, $gameCode, $gameVariant );
+        $manager = $this->managerFactory->createBackgammonGameManager( true, $gameCode, $gameVariant );
         //$manager.Ended += Game_Ended;
         $manager->dispatchGameEnded();
         
@@ -312,14 +316,14 @@ final class GameService
                                 $gameManager->GameVariant,
                                 $this->logger,
                                 $gameManager->Game
-                                );
+                            );
                             $this->logger->log( "Restoring game {$cookie->id} for {$color->value}", 'GameService' );
                             
                             // entering socket loop
-                            $gameManager->RestoreBoardGame( $color, $webSocket );
+                            $gameManager->Restore( $color->value, $webSocket );
                             
                             $otherColor = $color == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
-                            $this->SendConnectionLostBoardGame( $otherColor, $gameManager );
+                            $this->SendConnectionLost( $gameManager, $otherColor->value );
                             
                             // socket loop exited
                             $this->RemoveDissconnected( $gameManager );
@@ -402,17 +406,18 @@ final class GameService
             $color = PlayerColor::White;
         }
         
-        $manager->ConnectAndListenBoardGame( $webSocket, $color, $dbUser, false );
+        $manager->Game->CurrentPlayer = $color;
+        $manager->ConnectAndListen( $webSocket, $dbUser, false );
         
         $this->RemoveDissconnected( $manager );
-        $this->SendConnectionLostBoardGame( PlayerColor::White, $manager );
+        $this->SendConnectionLost( $manager, PlayerColor::White->value );
         
         return $manager->Game->Id;
     }
     
-    private function SendConnectionLostBoardGame( PlayerColor $color, GameManagerInterface &$manager )
+    private function SendConnectionLost( GameManagerInterface &$manager, int $clientId )
     {
-        $socket = $manager->Clients->get( $color->value );
+        $socket = $manager->Clients->get( $clientId );
         
         if ( $socket != null && $socket->State == WebSocketState::Open ) {
             $action     = new ConnectionInfoActionDto();
@@ -420,22 +425,7 @@ final class GameService
             $connection->connected = false;
             $action->connection = $connection;
             
-            $this->logger->log( "SendConnectionLost for PlayerColor: {$color->value}", 'GameService' );
-            $manager->Send( $socket, $action );
-        }
-    }
-    
-    private function SendConnectionLostCardGame( PlayerPosition $position, GameManagerInterface &$manager )
-    {
-        $socket = $manager->Clients->get( $position->value );
-        
-        if ( $socket != null && $socket->State == WebSocketState::Open ) {
-            $action     = new ConnectionInfoActionDto();
-            $connection = new ConnectionDto();
-            $connection->connected = false;
-            $action->connection = $connection;
-            
-            $this->logger->log( "SendConnectionLost for PlayerPosition: {$position->value}", 'GameService' );
+            $this->logger->log( "SendConnectionLost for PlayerColor: {$clientId}", 'GameService' );
             $manager->Send( $socket, $action );
         }
     }
@@ -454,7 +444,7 @@ final class GameService
     private static function MyPosition( GameManagerInterface $manager, GamePlayer $dbUser, PlayerPosition $position ): bool
     {
         //prevents someone with same game id, get someone elses side in the game.
-        $player = $manager->Game->BlackPlayer;
+        $player = $manager->Game->NorthPlayer;
         if ( $position == PlayerPosition::East ) {
             $player = $manager->Game->WhitePlayer;
         }

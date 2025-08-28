@@ -1,11 +1,12 @@
-<?php namespace App\Component\Manager;
+<?php namespace App\Component\Manager\Games;
 
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
+use App\Component\Manager\AbstractGameManager;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Type\PlayerPosition;
 use App\Component\AI\EngineFactory as AiEngineFactory;
 use App\Entity\GamePlayer;
-use App\Component\System\Guid;
+use App\Component\Utils\Guid;
 use App\Component\Websocket\WebSocketState;
 
 // DTO Actions

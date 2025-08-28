@@ -1,10 +1,13 @@
-<?php namespace App\Component\Manager;
+<?php namespace App\Component\Manager\Games;
 
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
+use App\Component\Manager\AbstractGameManager;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Rules\CardGame\Game;
+use App\Component\Rules\CardGame\Player;
 use App\Component\AI\EngineFactory as AiEngineFactory;
-use App\Component\System\Guid;
+use App\Component\Utils\Guid;
+use App\Component\Utils\HumanName;
 use App\Component\Websocket\WebSocketState;
 use App\Entity\GamePlayer;
 use App\Entity\TempPlayer;
@@ -28,33 +31,18 @@ class BridgeBeloteGameManager extends AbstractGameManager
         if ( $this->Game->CurrentPlayer == PlayerPosition::North ) {
             $this->Clients->set( PlayerPosition::North->value, $webSocket );
             
-            $this->Game->NorthPlayer->Id = $dbUser != null ? $dbUser->getId() : 0;
-            $this->Game->NorthPlayer->Guid = $dbUser != null ? $dbUser->getGuid() : Guid::Empty();
-            $this->Game->NorthPlayer->Name = $dbUser != null ? $dbUser->getName() : "Guest";
-            $this->Game->NorthPlayer->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $this->getPlayerPhotoUrl( $dbUser ) : "";
-            $this->Game->NorthPlayer->Elo = $dbUser != null ? $dbUser->getElo() : 0;
-            
+            $this->InitializePlayer( $dbUser, false, $this->Game->NorthPlayer );
             if ( $this->Game->IsGoldGame ) {
-                $this->Game->NorthPlayer->Gold = $dbUser != null ? $dbUser->getGold() - self::firstBet : 0;
                 $this->Game->Stake = self::firstBet * 2;
             }
             
             if ( $playAi ) {
                 $this->logger->log( "Play AI is TRUE !!!", 'GameManager' );
                 
-                /*
-                 $aiUser = $this->playersRepository->findOneBy( ['guid' => GamePlayer::AiUser] );
-                 
-                 $this->Game->WhitePlayer->Id = $aiUser->getId();
-                 $this->Game->WhitePlayer->Guid = $aiUser->getGuid();
-                 $this->Game->WhitePlayer->Name = $aiUser->getName();
-                 $this->Game->WhitePlayer->Photo = $aiUser->getPhotoUrl();
-                 $this->Game->WhitePlayer->Elo = $aiUser->getElo();
-                 
-                 if ( $this->Game->IsGoldGame ) {
-                 $this->Game->WhitePlayer->Gold = $aiUser->getGold();
-                 }
-                 */
+                $aiUser = $this->playersRepository->findOneBy( ['guid' => GamePlayer::AiUser] );
+                $this->InitializePlayer( $aiUser, true, $this->Game->EastPlayer );
+                $this->InitializePlayer( $aiUser, true, $this->Game->SouthPlayer );
+                $this->InitializePlayer( $aiUser, true, $this->Game->WestPlayer );
                 
                 $this->Engine = AiEngineFactory::CreateAiEngine(
                     $this->GameCode,
@@ -73,53 +61,32 @@ class BridgeBeloteGameManager extends AbstractGameManager
                     \React\Async\await( $promise );
                 }
             }
-        } else if( $position == PlayerPosition::East ) {
+        } else if( $this->Game->CurrentPlayer == PlayerPosition::East ) {
             if ( $playAi ) {
-                throw new \Exception( "Ai always plays as white. This is not expected" );
+                throw new \Exception( "Ai always plays as north. This is not expected" );
             }
             
             // East Player
             $this->Clients->set( PlayerPosition::East->value, $webSocket );
-            $this->Game->EastPlayer->Id = $dbUser != null ? $dbUser->getId() : 0;
-            $this->Game->EastPlayer->Guid = $dbUser != null ? $dbUser->getGuid() : Guid::Empty();
-            $this->Game->EastPlayer->Name = $dbUser != null ? $dbUser->getName() : "Guest";
-            $this->Game->EastPlayer->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $this->getPlayerPhotoUrl( $dbUser ) : "";
-            $this->Game->EastPlayer->Elo = $dbUser != null ? $dbUser->getElo() : 0;
-            if ( $this->Game->IsGoldGame ) {
-                $this->Game->EastPlayer->Gold = $dbUser != null ? $dbUser->getGold() - self::firstBet : 0;
-            }
+            $this->InitializePlayer( $dbUser, false, $this->Game->EastPlayer );
             
-        } else if( $position == PlayerPosition::South ) {
+        } else if( $this->Game->CurrentPlayer == PlayerPosition::South ) {
             if ( $playAi ) {
-                throw new \Exception( "Ai always plays as white. This is not expected" );
+                throw new \Exception( "Ai always plays as north. This is not expected" );
             }
             
             // South Player
             $this->Clients->set( PlayerPosition::South->value, $webSocket );
-            $this->Game->SouthPlayer->Id = $dbUser != null ? $dbUser->getId() : 0;
-            $this->Game->SouthPlayer->Guid = $dbUser != null ? $dbUser->getGuid() : Guid::Empty();
-            $this->Game->SouthPlayer->Name = $dbUser != null ? $dbUser->getName() : "Guest";
-            $this->Game->SouthPlayer->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $this->getPlayerPhotoUrl( $dbUser ) : "";
-            $this->Game->SouthPlayer->Elo = $dbUser != null ? $dbUser->getElo() : 0;
-            if ( $this->Game->IsGoldGame ) {
-                $this->Game->SouthPlayer->Gold = $dbUser != null ? $dbUser->getGold() - self::firstBet : 0;
-            }
+            $this->InitializePlayer( $dbUser, false, $this->Game->SouthPlayer );
             
         } else {
             if ( $playAi ) {
-                throw new \Exception( "Ai always plays as white. This is not expected" );
+                throw new \Exception( "Ai always plays as north. This is not expected" );
             }
             
             // West Player
             $this->Clients->set( PlayerPosition::West->value, $webSocket );
-            $this->Game->WestPlayer->Id = $dbUser != null ? $dbUser->getId() : 0;
-            $this->Game->WestPlayer->Guid = $dbUser != null ? $dbUser->getGuid() : Guid::Empty();
-            $this->Game->WestPlayer->Name = $dbUser != null ? $dbUser->getName() : "Guest";
-            $this->Game->WestPlayer->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $this->getPlayerPhotoUrl( $dbUser ) : "";
-            $this->Game->WestPlayer->Elo = $dbUser != null ? $dbUser->getElo() : 0;
-            if ( $this->Game->IsGoldGame ) {
-                $this->Game->WestPlayer->Gold = $dbUser != null ? $dbUser->getGold() - self::firstBet : 0;
-            }
+            $this->InitializePlayer( $dbUser, false, $this->Game->WestPlayer );
             
             $this->CreateDbGame();
             $this->StartGame();
@@ -132,7 +99,7 @@ class BridgeBeloteGameManager extends AbstractGameManager
     {
         $position = PlayerPosition::from( $playerPositionId );
         
-        $gameDto = Mapper::GameToDto( $this->Game );
+        $gameDto = Mapper::CardGameToDto( $this->Game );
         $restoreAction = new GameRestoreActionDto();
         $restoreAction->game = $gameDto;
         $restoreAction->position = $position;
@@ -165,22 +132,22 @@ class BridgeBeloteGameManager extends AbstractGameManager
     public function StartGame(): void
     {
         $this->Game->ThinkStart = new \DateTime( 'now' );
-        $gameDto = Mapper::GameToDto( $this->Game );
+        $gameDto = Mapper::CardGameToDto( $this->Game );
         $this->logger->log( 'Begin Start Game: ' . \print_r( $gameDto, true ), 'GameManager' );
         
         $action = new GameCreatedActionDto();
         $action->game = $gameDto;
         
-        $action->myColor = PlayerPosition::North;
+        $action->myPosition = PlayerPosition::North;
         $this->Send( $this->Clients->get( PlayerPosition::North->value ), $action );
         
-        $action->myColor = PlayerPosition::East;
+        $action->myPosition = PlayerPosition::East;
         $this->Send( $this->Clients->get( PlayerPosition::East->value ), $action );
         
-        $action->myColor = PlayerPosition::South;
+        $action->myPosition = PlayerPosition::South;
         $this->Send( $this->Clients->get( PlayerPosition::South->value ), $action );
         
-        $action->myColor = PlayerPosition::West;
+        $action->myPosition = PlayerPosition::West;
         $this->Send( $this->Clients->get( PlayerPosition::West->value ), $action );
         
         $this->Game->PlayState = GameState::firstAnnounce;
@@ -325,5 +292,24 @@ class BridgeBeloteGameManager extends AbstractGameManager
         $player->addGamePlayer( $tempPlayer );
         
         return $tempPlayer;
+    }
+    
+    private function InitializePlayer( GamePlayer $dbUser, bool $aiUser, Player &$player ): void
+    {
+        if ( $aiUser ) {
+            $playerName = HumanName::generate();
+        } else {
+            $playerName = $dbUser != null ? $dbUser->getName() : "Guest";
+        }
+        
+        $player->Id = $dbUser != null ? $dbUser->getId() : 0;
+        $player->Guid = $dbUser != null ? $dbUser->getGuid() : Guid::Empty();
+        $player->Name = $playerName;
+        $player->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $this->getPlayerPhotoUrl( $dbUser ) : "";
+        $player->Elo = $dbUser != null ? $dbUser->getElo() : 0;
+        
+        if ( $this->Game->IsGoldGame ) {
+            $player->Gold = $dbUser != null ? $dbUser->getGold() - self::firstBet : 0;
+        }
     }
 }

@@ -15,7 +15,7 @@ use App\Component\Manager\GameManagerInterface;
 use App\Component\Manager\GameManagerFactory;
 use App\Component\Manager\AbstractGameManager;
 use App\Component\AI\EngineFactory as AiEngineFactory;
-use App\Component\System\Guid;
+use App\Component\Utils\Guid;
 
 // DTO Objects
 use App\Component\Dto\GameCookieDto;

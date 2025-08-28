@@ -11,6 +11,11 @@ use App\Component\GameVariant;
 use App\Component\GameLogger;
 use App\Component\Rules\GameFactory as GameRulesFactory;
 
+use App\Component\Manager\Games\BackgammonGameManager;
+use App\Component\Manager\Games\ChessGameManager;
+use App\Component\Manager\Games\BridgeBeloteGameManager;
+use App\Component\Manager\Games\ContractBridgeGameManager;
+
 final class GameManagerFactory
 {
     /** @var GameLogger */
@@ -43,9 +48,6 @@ final class GameManagerFactory
     /** @var RepositoryInterface */
     private $playersRepository;
     
-    /** @var RepositoryInterface */
-    private $tempPlayersRepository;
-    
     /** @var FactoryInterface */
     private $tempPlayersFactory;
     
@@ -63,7 +65,6 @@ final class GameManagerFactory
         RepositoryInterface $gamePlayRepository,
         FactoryInterface $gamePlayFactory,
         RepositoryInterface $playersRepository,
-        RepositoryInterface $tempPlayersRepository,
         FactoryInterface $tempPlayersFactory,
         bool $EndGameOnTotalThinkTimeElapse
     ) {
@@ -77,7 +78,6 @@ final class GameManagerFactory
         $this->gamePlayRepository       = $gamePlayRepository;
         $this->gamePlayFactory          = $gamePlayFactory;
         $this->playersRepository        = $playersRepository;
-        $this->tempPlayersRepository    = $tempPlayersRepository;
         $this->tempPlayersFactory       = $tempPlayersFactory;
         
         $this->EndGameOnTotalThinkTimeElapse = $EndGameOnTotalThinkTimeElapse;
@@ -116,7 +116,6 @@ final class GameManagerFactory
             $this->gamePlayRepository,
             $this->gamePlayFactory,
             $this->playersRepository,
-            $this->tempPlayersRepository,
             $this->tempPlayersFactory,
             $forGold,
             $gameCode,
@@ -139,7 +138,6 @@ final class GameManagerFactory
             $this->gamePlayRepository,
             $this->gamePlayFactory,
             $this->playersRepository,
-            $this->tempPlayersRepository,
             $this->tempPlayersFactory,
             $forGold,
             $gameCode,
@@ -162,7 +160,6 @@ final class GameManagerFactory
             $this->gamePlayRepository,
             $this->gamePlayFactory,
             $this->playersRepository,
-            $this->tempPlayersRepository,
             $this->tempPlayersFactory,
             $forGold,
             $gameCode,
@@ -185,7 +182,6 @@ final class GameManagerFactory
             $this->gamePlayRepository,
             $this->gamePlayFactory,
             $this->playersRepository,
-            $this->tempPlayersRepository,
             $this->tempPlayersFactory,
             $forGold,
             $gameCode,

@@ -3,21 +3,24 @@
 use Doctrine\Common\Collections\ArrayCollection;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use App\Component\Type\PlayerColor;
-use App\Component\Rules\BoardGame\Game;
-use App\Component\Rules\BoardGame\Player;
+use App\Component\Rules\BoardGame\Game as BoardGame;
+use App\Component\Rules\BoardGame\Player as BoardGamePlayer;
 use App\Component\Rules\BoardGame\Point;
 use App\Component\Rules\BoardGame\Checker;
 use App\Component\Rules\BoardGame\Dice;
 use App\Component\Rules\BoardGame\Move;
 
+use App\Component\Rules\CardGame\Game as CardGame;
+use App\Component\Rules\CardGame\Player as CardGamePlayer;
+
 final class Mapper
 {
-    public static function GameToDto( Game $game ): GameDto
+    public static function BoardGameToDto( BoardGame $game ): BoardGameDto
     {
-        $gameDto = new GameDto();
+        $gameDto = new BoardGameDto();
         $gameDto->id = $game->Id;
-        $gameDto->blackPlayer = self::PlayerToDto( $game->BlackPlayer );
-        $gameDto->whitePlayer = self::PlayerToDto( $game->WhitePlayer );
+        $gameDto->blackPlayer = self::BoardGamePlayerToDto( $game->BlackPlayer );
+        $gameDto->whitePlayer = self::BoardGamePlayerToDto( $game->WhitePlayer );
         $gameDto->currentPlayer = $game->CurrentPlayer;
         $gameDto->playState = $game->PlayState;
         
@@ -33,7 +36,7 @@ final class Mapper
             }
         );
         
-        $gameDto->thinkTime = Game::ClientCountDown - (
+        $gameDto->thinkTime = BoardGame::ClientCountDown - (
             ( new \DateTime( 'now' ) )->getTimestamp() - $game->ThinkStart->getTimestamp()
         );
         
@@ -45,13 +48,16 @@ final class Mapper
         return $gameDto;
     }
     
-    public static function PlayerToDto( Player $player ): PlayerDto
+    public static function BoardGamePlayerToDto( BoardGamePlayer $player ): PlayerDto
     {
         $playerDto = new PlayerDto();
+        
         // Do not mapp id, it should never be sent to opponent.
-        $playerDto->playerColor = $player->PlayerColor;
         $playerDto->name = $player->Name;
+        
+        $playerDto->playerColor = $player->PlayerColor;
         $playerDto->pointsLeft = $player->PointsLeft;
+        
         $playerDto->elo = $player->Elo;
         $playerDto->gold = $player->Gold;
         $playerDto->photoUrl = $player->Photo;
@@ -109,7 +115,7 @@ final class Mapper
         return $moveDto;
     }
     
-    public static function MoveToMove( MoveDto $dto, Game $game ): Move
+    public static function MoveToMove( MoveDto $dto, BoardGame $game ): Move
     {
         $color = $dto->color;
         
@@ -140,5 +146,46 @@ final class Mapper
         //$userDto->socialProviderId = $dbUser->ProviderId; // Feels more secure not to send this to the client.
         
         return $userDto;
+    }
+    
+    public static function CardGameToDto( CardGame $game ): CardGameDto
+    {
+        $gameDto = new CardGameDto();
+        $gameDto->id = $game->Id;
+        
+        $gameDto->northPlayer = self::CardGamePlayerToDto( $game->NorthPlayer );
+        $gameDto->eastPlayer = self::CardGamePlayerToDto( $game->EastPlayer );
+        $gameDto->southPlayer = self::CardGamePlayerToDto( $game->SouthPlayer );
+        $gameDto->westPlayer = self::CardGamePlayerToDto( $game->WestPlayer );
+        
+        $gameDto->currentPlayer = $game->CurrentPlayer;
+        $gameDto->playState = $game->PlayState;
+        
+        $gameDto->thinkTime = CardGame::ClientCountDown - (
+            ( new \DateTime( 'now' ) )->getTimestamp() - $game->ThinkStart->getTimestamp()
+        );
+        
+        $gameDto->goldMultiplier    = $game->GoldMultiplier;
+        $gameDto->isGoldGame        = $game->IsGoldGame;
+        
+        return $gameDto;
+    }
+    
+    public static function CardGamePlayerToDto( CardGamePlayer $player ): PlayerDto
+    {
+        $playerDto = new PlayerDto();
+        
+        // Do not mapp id, it should never be sent to opponent.
+        $playerDto->name = $player->Name;
+        
+        $playerDto->playerPosition = $player->PlayerPosition;
+        
+        $playerDto->elo = $player->Elo;
+        $playerDto->gold = $player->Gold;
+        $playerDto->photoUrl = $player->Photo;
+        
+        $playerDto->isAi = $player->IsAi();
+        
+        return $playerDto;
     }
 }

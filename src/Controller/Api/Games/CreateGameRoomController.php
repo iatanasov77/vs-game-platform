@@ -12,7 +12,7 @@ use Vankosoft\UsersBundle\Security\SecurityBridge;
 use App\Component\GameService;
 use App\Component\Type\PlayerType;
 use App\Component\Type\PlayerPosition;
-use App\Component\System\Guid;
+use App\Component\Utils\Guid;
 use App\Entity\GamePlay;
 use App\Entity\GamePlayer;
 use App\Entity\TempPlayer;

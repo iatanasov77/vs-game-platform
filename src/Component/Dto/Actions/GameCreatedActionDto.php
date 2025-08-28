@@ -2,6 +2,7 @@
 
 use App\Component\Dto\GameDto;
 use App\Component\Type\PlayerColor;
+use App\Component\Type\PlayerPosition;
 
 class GameCreatedActionDto extends ActionDto
 {
@@ -11,5 +12,6 @@ class GameCreatedActionDto extends ActionDto
     }
     
     public GameDto $game;
-    public PlayerColor $myColor;
+    public ?PlayerColor $myColor;
+    public ?PlayerPosition $myPosition;
 }

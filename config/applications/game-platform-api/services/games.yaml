@@ -46,7 +46,6 @@ services:
             - '@vsapp.repository.game_sessions'
             - '@vsapp.factory.game_sessions'
             - '@vsapp.repository.game_players'
-            - '@vsapp.repository.temp_players'
             - '@vsapp.factory.temp_players'
             - '%app_end_game_on_total_think_time_elapse%'
     

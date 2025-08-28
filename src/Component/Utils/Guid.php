@@ -1,4 +1,4 @@
-<?php namespace App\Component\System;
+<?php namespace App\Component\Utils;
 
 final class Guid
 {

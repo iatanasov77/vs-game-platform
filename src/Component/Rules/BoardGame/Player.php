@@ -1,7 +1,7 @@
 <?php namespace App\Component\Rules\BoardGame;
 
 use App\Component\Type\PlayerColor;
-use App\Component\System\Guid;
+use App\Component\Utils\Guid;
 use App\Entity\GamePlayer;
 
 class Player

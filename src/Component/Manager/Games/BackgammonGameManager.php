@@ -1,4 +1,4 @@
-<?php namespace App\Component\Manager;
+<?php namespace App\Component\Manager\Games;
 
 use React\Async;
 use React\EventLoop\Loop;
@@ -6,10 +6,12 @@ use React\EventLoop\TimerInterface;
 use Amp\DeferredCancellation;
 
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
+use App\Component\Manager\BoardGameManager;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Rules\BoardGame\Game;
+use App\Component\Rules\BoardGame\Player;
 use App\Component\AI\EngineFactory as AiEngineFactory;
-use App\Component\System\Guid;
+use App\Component\Utils\Guid;
 use App\Component\Websocket\WebSocketState;
 use App\Entity\GamePlayer;
 use App\Entity\TempPlayer;
@@ -23,11 +25,12 @@ use App\Component\Dto\Mapper;
 use App\Component\Dto\Actions\GameRestoreActionDto;
 use App\Component\Dto\Actions\GameCreatedActionDto;
 use App\Component\Dto\Actions\DicesRolledActionDto;
-use App\Component\Dto\Actions\OpponentMoveActionDto;
 use App\Component\Dto\Actions\RolledActionDto;
 use App\Component\Dto\Actions\HintMovesActionDto;
+use App\Component\Dto\Actions\MovesMadeActionDto;
+use App\Component\Dto\Actions\OpponentMoveActionDto;
 
-final class BackgammonGameManager extends AbstractGameManager
+final class BackgammonGameManager extends BoardGameManager
 {
     public function ConnectAndListen( WebsocketClientInterface $webSocket, GamePlayer $dbUser, bool $playAi ): void
     {
@@ -35,14 +38,8 @@ final class BackgammonGameManager extends AbstractGameManager
         if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {
             $this->Clients->set( PlayerColor::Black->value, $webSocket );
             
-            $this->Game->BlackPlayer->Id = $dbUser != null ? $dbUser->getId() : 0;
-            $this->Game->BlackPlayer->Guid = $dbUser != null ? $dbUser->getGuid() : Guid::Empty();
-            $this->Game->BlackPlayer->Name = $dbUser != null ? $dbUser->getName() : "Guest";
-            $this->Game->BlackPlayer->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $this->getPlayerPhotoUrl( $dbUser ) : "";
-            $this->Game->BlackPlayer->Elo = $dbUser != null ? $dbUser->getElo() : 0;
-            
+            $this->InitializePlayer( $dbUser, false, $this->Game->BlackPlayer );
             if ( $this->Game->IsGoldGame ) {
-                $this->Game->BlackPlayer->Gold = $dbUser != null ? $dbUser->getGold() - self::firstBet : 0;
                 $this->Game->Stake = self::firstBet * 2;
             }
             
@@ -50,17 +47,7 @@ final class BackgammonGameManager extends AbstractGameManager
                 $this->logger->log( "Play AI is TRUE !!!", 'GameManager' );
                 
                 $aiUser = $this->playersRepository->findOneBy( ['guid' => GamePlayer::AiUser] );
-                
-                $this->Game->WhitePlayer->Id = $aiUser->getId();
-                $this->Game->WhitePlayer->Guid = $aiUser->getGuid();
-                $this->Game->WhitePlayer->Name = $aiUser->getName();
-                /** @TODO: AI image */
-                $this->Game->WhitePlayer->Photo = $aiUser->getPhotoUrl();
-                $this->Game->WhitePlayer->Elo = $aiUser->getElo();
-                
-                if ( $this->Game->IsGoldGame ) {
-                    $this->Game->WhitePlayer->Gold = $aiUser->getGold();
-                }
+                $this->InitializePlayer( $aiUser, true, $this->Game->WhitePlayer );
                 
                 $this->Engine = AiEngineFactory::CreateAiEngine(
                     $this->GameCode,
@@ -85,15 +72,8 @@ final class BackgammonGameManager extends AbstractGameManager
             }
             $this->Clients->set( PlayerColor::White->value, $webSocket );
             
-            $this->Game->WhitePlayer->Id = $dbUser != null ? $dbUser->getId() : 0;
-            $this->Game->BlackPlayer->Guid = $dbUser != null ? $dbUser->getGuid() : Guid::Empty();
-            $this->Game->WhitePlayer->Name = $dbUser != null ? $dbUser->getName() : "Guest";
-            $this->Game->WhitePlayer->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $this->getPlayerPhotoUrl( $dbUser ) : "";
-            $this->Game->WhitePlayer->Elo = $dbUser != null ? $dbUser->getElo() : 0;
+            $this->InitializePlayer( $dbUser, false, $this->Game->WhitePlayer );
             
-            if ( $this->Game->IsGoldGame ) {
-                $this->Game->WhitePlayer->Gold = $dbUser != null ? $dbUser->getGold() - self::firstBet : 0;
-            }
             $this->CreateDbGame();
             $this->StartGame();
             
@@ -105,7 +85,7 @@ final class BackgammonGameManager extends AbstractGameManager
     {
         $color = PlayerColor::from( $playerPositionId );
         
-        $gameDto = Mapper::GameToDto( $this->Game );
+        $gameDto = Mapper::BoardGameToDto( $this->Game );
         $restoreAction = new GameRestoreActionDto();
         $restoreAction->game = $gameDto;
         $restoreAction->color = $color;
@@ -136,7 +116,7 @@ final class BackgammonGameManager extends AbstractGameManager
     public function StartGame(): void
     {
         $this->Game->ThinkStart = new \DateTime( 'now' );
-        $gameDto = Mapper::GameToDto( $this->Game );
+        $gameDto = Mapper::BoardGameToDto( $this->Game );
         $this->logger->log( 'Begin Start Game: ' . \print_r( $gameDto, true ), 'GameManager' );
         
         $action = new GameCreatedActionDto();
@@ -265,6 +245,89 @@ final class BackgammonGameManager extends AbstractGameManager
         $this->Game->LastDoubler = $this->Game->CurrentPlayer;
     }
     
+    protected function SendNewRoll(): void
+    {
+        $this->Game->RollDice();
+        $this->logger->log( "NewRoll: " . \print_r( $this->Game->Roll, true ), 'NewRoll' );
+        
+        $rollAction = new DicesRolledActionDto();
+        $rollAction->dices = $this->Game->Roll->map(
+            function( $entry ) {
+                return Mapper::DiceToDto( $entry );
+            }
+        )->toArray();
+        $rollAction->playerToMove = $this->Game->CurrentPlayer;
+        $rollAction->validMoves = $this->Game->ValidMoves->map(
+            function( $entry ) {
+                return Mapper::MoveToDto( $entry );
+            }
+        )->toArray();
+        $rollAction->moveTimer = Game::ClientCountDown;
+        
+        if ( $this->Clients->get( PlayerColor::Black->value ) && ! $this->Game->BlackPlayer->IsAi() ) {
+            $this->logger->log( "Sending NewRoll to Client1 !!!", 'NewRoll' );
+            $this->Send( $this->Clients->get( PlayerColor::Black->value ), $rollAction );
+        }
+        
+        if ( $this->Clients->get( PlayerColor::White->value ) && ! $this->Game->WhitePlayer->IsAi() ) {
+            $this->logger->log( "Sending NewRoll to Client2 !!!", 'NewRoll' );
+            $this->Send( $this->Clients->get( PlayerColor::White->value ), $rollAction );
+        }
+    }
+    
+    protected function DoMoves( MovesMadeActionDto $action ): void
+    {
+        if ( empty( $action->moves ) ) {
+            return;
+        }
+        
+        //$this->logger->debug( $action->moves[0], 'MoveDto.txt' );
+        $firstMove = Mapper::MoveToMove( $action->moves[0], $this->Game );
+        $validMove = $this->Game->ValidMoves->filter(
+            function( $entry ) use ( $firstMove ) {
+                //return $entry == $firstMove;
+                return
+                $entry->From->GetNumber( $firstMove->Color ) == $firstMove->From->GetNumber( $firstMove->Color ) &&
+                $entry->To->GetNumber( $firstMove->Color ) == $firstMove->To->GetNumber( $firstMove->Color )
+                ;
+            }
+        )->first();
+        
+        //$this->logger->log( \print_r( $firstMove, true ), 'DoMoves' );
+        //$this->logger->log( \print_r( $this->Game->ValidMoves, true ), 'DoMoves' );
+        //$this->logger->debug( $firstMove, 'DoMoves_FirstMove.txt' );
+        //$this->logger->debug( $this->Game->ValidMoves, 'GameValidMoves.txt' );
+        //$this->debugGetCheckerFromPoint();
+        
+        $this->logger->log( "Points Before DoMoves: " . \print_r( $this->Game->Points->toArray(), true ), 'DoMoves' );
+        for ( $i = 0; $i < count( $action->moves ); $i++ ) {
+            $moveDto = $action->moves[$i];
+            if ( $validMove == null ) {
+                // Preventing invalid moves to enter the state. Should not happen unless someones hacking the socket or serious bugs.
+                throw new \RuntimeException( "An attempt to make an invalid move was made" );
+            } else if ( $i < count( $action->moves ) - 1 ) {
+                $nextMove = Mapper::MoveToMove( $action->moves[$i + 1], $this->Game );
+                
+                // Going up the valid moves tree one step for every sent move.
+                $validMove = $validMove->NextMoves->filter(
+                    function( $entry ) use ( $nextMove ) {
+                        //return $entry == $nextMove;
+                        return
+                        $entry->From->GetNumber( $nextMove->Color ) == $nextMove->From->GetNumber( $nextMove->Color ) &&
+                        $entry->To->GetNumber( $nextMove->Color ) == $nextMove->To->GetNumber( $nextMove->Color )
+                        ;
+                    }
+                )->first();
+            }
+            
+            //$color  = $move->color;
+            $move   = Mapper::MoveToMove( $moveDto, $this->Game );
+            $this->Game->MakeMove( $move );
+        }
+        $this->logger->log( "Points After DoMoves: " . \print_r( $this->Game->Points->toArray(), true ), 'DoMoves' );
+        //$this->logger->log( "Black Player Points Left: " . $this->Game->BlackPlayer->PointsLeft, 'EndGame' );
+    }
+    
     protected function NewTurn( WebsocketClientInterface $socket ): void
     {
         $winner = $this->GetWinner();
@@ -383,5 +446,18 @@ final class BackgammonGameManager extends AbstractGameManager
         $player->addGamePlayer( $tempPlayer );
         
         return $tempPlayer;
+    }
+    
+    private function InitializePlayer( GamePlayer $dbUser, bool $aiUser, Player &$player ): void
+    {
+        $player->Id = $dbUser != null ? $dbUser->getId() : 0;
+        $player->Guid = $dbUser != null ? $dbUser->getGuid() : Guid::Empty();
+        $player->Name = $dbUser != null ? $dbUser->getName() : "Guest";
+        $player->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $this->getPlayerPhotoUrl( $dbUser ) : "";
+        $player->Elo = $dbUser != null ? $dbUser->getElo() : 0;
+        
+        if ( $this->Game->IsGoldGame ) {
+            $player->Gold = $dbUser != null ? $dbUser->getGold() - self::firstBet : 0;
+        }
     }
 }

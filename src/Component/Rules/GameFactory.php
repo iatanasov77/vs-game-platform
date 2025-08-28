@@ -2,7 +2,7 @@
 
 use Doctrine\Common\Collections\ArrayCollection;
 use App\Component\GameLogger;
-use App\Component\System\Guid;
+use App\Component\Utils\Guid;
 use App\Component\GameVariant;
 use App\Component\Type\PlayerColor;
 use App\Component\Type\PlayerPosition;

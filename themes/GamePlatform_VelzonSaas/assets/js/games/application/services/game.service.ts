@@ -43,6 +43,7 @@ export class GameService
     
     loadGameBySlug( slug: string ): Observable<IGame>
     {
+        //alert( 'loadGameBySlug Called !' );
         const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
         var url         = `${this.url}/games-ext/${slug}`;
         
@@ -60,9 +61,10 @@ export class GameService
         );
     }
     
-    loadGameRooms(): Observable<IGameRoom[]>
+    loadGameRooms( gameSlug: string ): Observable<IGameRoom[]>
     {
-        var url = `${this.url}/game-sessions`;
+        //alert( gameSlug );
+        var url = `${this.url}/game-sessions/${gameSlug}`;
         
         return this.httpClient.get<IGameRoom[]>( url );
     }

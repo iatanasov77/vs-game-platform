@@ -10,6 +10,18 @@ services:
             - '@vs_users.security_bridge'
             - '@vs_api.api_manager'
     
+    App\Controller\Api\Games\CreateGameRoomController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@doctrine'
+            - '@vs_users.security_bridge'
+            - '@app_game_service'
+            - '@vsapp.repository.games'
+            - '@vsapp.repository.game_players'
+            - '@vsapp.factory.game_sessions'
+            - '@vsapp.factory.temp_players'
+    
     App\Controller\Api\Games\SelectGameRoomController:
         tags: ['controller.service_arguments']
         autowire: true
@@ -51,12 +63,20 @@ services:
             - '@vsapp.repository.game_sessions'
         autowire: true
         tags: ['controller.service_arguments']
+    
+    App\Controller\Api\Games\GetGamePlayByGameController:
+        arguments:
+            - '@vsapp.repository.games'
+            - '@vsapp.repository.game_sessions'
+        autowire: true
+        tags: ['controller.service_arguments']
         
     App\Controller\Api\Games\StartGameController:
         tags: ['controller.service_arguments']
         autowire: true
         arguments:
             - '@doctrine'
+            - '@vsapp.repository.game_sessions'
             - '@vsapp.factory.game_sessions'
             - '@mercure.hub.default'
         

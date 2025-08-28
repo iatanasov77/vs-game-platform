@@ -7,8 +7,14 @@ use Doctrine\Persistence\ManagerRegistry;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
+use App\Component\GameVariant;
 use App\Component\GameLogger;
-use App\Component\Rules\Backgammon\GameFactory as BackgammonRulesFactory;
+use App\Component\Rules\GameFactory as GameRulesFactory;
+
+use App\Component\Manager\Games\BackgammonGameManager;
+use App\Component\Manager\Games\ChessGameManager;
+use App\Component\Manager\Games\BridgeBeloteGameManager;
+use App\Component\Manager\Games\ContractBridgeGameManager;
 
 final class GameManagerFactory
 {
@@ -27,8 +33,8 @@ final class GameManagerFactory
     /** @var ManagerRegistry */
     private $doctrine;
     
-    /** @var BackgammonRulesFactory */
-    private $backgammonRulesFactory;
+    /** @var GameRulesFactory */
+    private $gameRulesFactory;
     
     /** @var RepositoryInterface */
     private $gameRepository;
@@ -42,9 +48,6 @@ final class GameManagerFactory
     /** @var RepositoryInterface */
     private $playersRepository;
     
-    /** @var RepositoryInterface */
-    private $tempPlayersRepository;
-    
     /** @var FactoryInterface */
     private $tempPlayersFactory;
     
@@ -57,12 +60,11 @@ final class GameManagerFactory
         LiipImagineCacheManager $imagineCacheManager,
         EventDispatcherInterface $eventDispatcher,
         ManagerRegistry $doctrine,
-        BackgammonRulesFactory $backgammonRulesFactory,
+        GameRulesFactory $gameRulesFactory,
         RepositoryInterface $gameRepository,
         RepositoryInterface $gamePlayRepository,
         FactoryInterface $gamePlayFactory,
         RepositoryInterface $playersRepository,
-        RepositoryInterface $tempPlayersRepository,
         FactoryInterface $tempPlayersFactory,
         bool $EndGameOnTotalThinkTimeElapse
     ) {
@@ -71,31 +73,49 @@ final class GameManagerFactory
         $this->imagineCacheManager      = $imagineCacheManager;
         $this->eventDispatcher          = $eventDispatcher;
         $this->doctrine                 = $doctrine;
-        $this->backgammonRulesFactory   = $backgammonRulesFactory;
+        $this->gameRulesFactory         = $gameRulesFactory;
         $this->gameRepository           = $gameRepository;
         $this->gamePlayRepository       = $gamePlayRepository;
         $this->gamePlayFactory          = $gamePlayFactory;
         $this->playersRepository        = $playersRepository;
-        $this->tempPlayersRepository    = $tempPlayersRepository;
         $this->tempPlayersFactory       = $tempPlayersFactory;
         
         $this->EndGameOnTotalThinkTimeElapse = $EndGameOnTotalThinkTimeElapse;
     }
     
-    public function createWebsocketGameManager( bool $forGold, string $gameCode, string $gameVariant ): GameManagerInterface
+    public function createGameManager( bool $forGold, string $gameCode, ?string $gameVariant ): GameManagerInterface
     {
-        return new WebsocketGameManager(
+        switch ( $gameCode ) {
+            case GameVariant::BACKGAMMON_CODE:
+                return $this->createBackgammonGameManager( $forGold, $gameCode, $gameVariant );
+                break;
+            case GameVariant::CHESS_CODE:
+                return $this->createChessGameManager( $forGold, $gameCode, $gameVariant );
+                break;
+            case GameVariant::BRIDGE_BELOTE_CODE:
+                return $this->createBridgeBeloteGameManager( $forGold, $gameCode, $gameVariant );
+                break;
+            case GameVariant::CONTRACT_BRIDGE_CODE:
+                return $this->createContractBridgeGameManager( $forGold, $gameCode, $gameVariant );
+                break;
+            default:
+                throw new \RuntimeException( 'Unknown Game Code !' );
+        }
+    }
+    
+    private function createBackgammonGameManager( bool $forGold, string $gameCode, ?string $gameVariant ): GameManagerInterface
+    {
+        return new BackgammonGameManager(
             $this->logger,
             $this->serializer,
             $this->imagineCacheManager,
             $this->eventDispatcher,
             $this->doctrine,
-            $this->backgammonRulesFactory,
+            $this->gameRulesFactory,
             $this->gameRepository,
             $this->gamePlayRepository,
             $this->gamePlayFactory,
             $this->playersRepository,
-            $this->tempPlayersRepository,
             $this->tempPlayersFactory,
             $forGold,
             $gameCode,
@@ -105,20 +125,19 @@ final class GameManagerFactory
         );
     }
     
-    public function createThruwayGameManager( bool $forGold, string $gameCode, string $gameVariant ): GameManagerInterface
+    private function createChessGameManager( bool $forGold, string $gameCode, ?string $gameVariant ): GameManagerInterface
     {
-        return new ThruwayGameManager(
+        return new ChessGameManager(
             $this->logger,
             $this->serializer,
             $this->imagineCacheManager,
             $this->eventDispatcher,
             $this->doctrine,
-            $this->backgammonRulesFactory,
+            $this->gameRulesFactory,
             $this->gameRepository,
             $this->gamePlayRepository,
             $this->gamePlayFactory,
             $this->playersRepository,
-            $this->tempPlayersRepository,
             $this->tempPlayersFactory,
             $forGold,
             $gameCode,
@@ -128,20 +147,41 @@ final class GameManagerFactory
         );
     }
     
-    public function createZmqGameManager( bool $forGold, string $gameCode, string $gameVariant ): GameManagerInterface
+    private function createBridgeBeloteGameManager( bool $forGold, string $gameCode, ?string $gameVariant ): GameManagerInterface
     {
-        return new ZmqGameManager(
+        return new BridgeBeloteGameManager(
             $this->logger,
             $this->serializer,
             $this->imagineCacheManager,
             $this->eventDispatcher,
             $this->doctrine,
-            $this->backgammonRulesFactory,
+            $this->gameRulesFactory,
             $this->gameRepository,
             $this->gamePlayRepository,
             $this->gamePlayFactory,
             $this->playersRepository,
-            $this->tempPlayersRepository,
+            $this->tempPlayersFactory,
+            $forGold,
+            $gameCode,
+            $gameVariant,
+            
+            $this->EndGameOnTotalThinkTimeElapse
+        );
+    }
+    
+    private function createContractBridgeGameManager( bool $forGold, string $gameCode, ?string $gameVariant ): GameManagerInterface
+    {
+        return new ContractBridgeGameManager(
+            $this->logger,
+            $this->serializer,
+            $this->imagineCacheManager,
+            $this->eventDispatcher,
+            $this->doctrine,
+            $this->gameRulesFactory,
+            $this->gameRepository,
+            $this->gamePlayRepository,
+            $this->gamePlayFactory,
+            $this->playersRepository,
             $this->tempPlayersFactory,
             $forGold,
             $gameCode,

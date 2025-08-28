@@ -23,6 +23,7 @@ import { GlobalErrorService } from '../application/services/global-error-service
 import { BridgeBeloteComponent } from './bridge-belote.component';
 import { SharedModule } from '../application/components/shared/shared.module';
 import { GameBoardsModule } from '../application/components/game-boards/game-boards.module';
+import { SideBarsModule } from '../application/components/side-bars/side-bars.module';
 
 export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppState>>( 'Game Reducers' );
 
@@ -51,6 +52,7 @@ export function HttpLoaderFactory( http: HttpClient ) {
         
         SharedModule,
         GameBoardsModule,
+        SideBarsModule,
         
         StoreModule.forRoot([
             loginReducer,
@@ -66,7 +68,6 @@ export function HttpLoaderFactory( http: HttpClient ) {
     ],
     bootstrap: [BridgeBeloteComponent],
     providers: [
-        //{ provide: Window, useValue: window },
         { provide: APP_BASE_HREF, useValue: window.location.pathname },
         { provide: FEATURE_REDUCER_TOKEN, useFactory: getReducers },
         { provide: ErrorHandler, useClass: GlobalErrorService }

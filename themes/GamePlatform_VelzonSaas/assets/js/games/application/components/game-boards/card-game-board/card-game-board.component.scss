@@ -1,39 +1,22 @@
 @import "~@angular/material/prebuilt-themes/deeppurple-amber.css";
     
-#card-table {
+.card-table {
     background-color: green;
+    
+    /*
+     * Make it Responsive
+     */
     width: 710px;
     height: 510px;
-    border: solid 6px brown;
-    border-radius: 8px;
-    -webkit-border-radius: 8px;
-    -moz-border-radius: 8px;
-    -ms-border-radius: 8px;
-    -o-border-radius: 8px;
-    box-shadow: #111 1px 1px 2px;
-}
-
-#card-actions {
-    background-color: green;
-    width: 710px;
-    height: 70px;
-    border: solid 6px brown;
-    border-radius: 8px;
-    -webkit-border-radius: 8px;
-    -moz-border-radius: 8px;
-    -ms-border-radius: 8px;
-    -o-border-radius: 8px;
-    box-shadow: #111 1px 1px 2px;
     
-    margin: 15px auto auto auto;
-}
-
-@media (min-width: 576px) {
-    .modal-dialog {
-        max-width: 700px !important;
-    }
-}
-
-.modal-footer {
-    display: block !important;
+    max-width: 100vw;
+    max-height: calc(100vh - 20px);
+    
+    border: solid 6px brown;
+    border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    -ms-border-radius: 8px;
+    -o-border-radius: 8px;
+    box-shadow: #111 1px 1px 2px;
 }

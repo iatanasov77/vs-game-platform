@@ -4,14 +4,19 @@ import { AbstractGameService } from './abstract-game.service';
 // NGRX Store
 import { loadGameRooms } from '../../+store/game.actions';
 
-// Board Interfaces
+// Core Interfaces
+import GameCookieDto from '_@/GamePlatform/Model/Core/gameCookieDto';
+import GameState from '_@/GamePlatform/Model/Core/gameState';
+
+// BoardGame Interfaces
 import CheckerDto from '_@/GamePlatform/Model/BoardGame/checkerDto';
 import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
 import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
 import DiceDto from '_@/GamePlatform/Model/BoardGame/diceDto';
-import GameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
-import GameCookieDto from '_@/GamePlatform/Model/BoardGame/gameCookieDto';
-import GameState from '_@/GamePlatform/Model/BoardGame/gameState';
+import BoardGameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
+
+// CardGame Interfaces
+import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
 
 // Action Interfaces
 import ActionDto from '../../dto/Actions/actionDto';
@@ -19,13 +24,13 @@ import ActionNames from '../../dto/Actions/actionNames';
 import DoublingActionDto from '../../dto/Actions/doublingActionDto';
 import HintMovesActionDto from '../../dto/Actions/hintMovesActionDto';
 import DicesRolledActionDto from '../../dto/Actions/dicesRolledActionDto';
-import GameCreatedActionDto from '../../dto/Actions/gameCreatedActionDto';
-import GameEndedActionDto from '../../dto/Actions/gameEndedActionDto';
+import BoardGameCreatedActionDto from '../../dto/Actions/boardGameCreatedActionDto';
+import BoardGameEndedActionDto from '../../dto/Actions/boardGameEndedActionDto';
 import MovesMadeActionDto from '../../dto/Actions/movesMadeActionDto';
 import OpponentMoveActionDto from '../../dto/Actions/opponentMoveActionDto';
 import UndoActionDto from '../../dto/Actions/undoActionDto';
 import ConnectionInfoActionDto from '../../dto/Actions/connectionInfoActionDto';
-import GameRestoreActionDto from '../../dto/Actions/gameRestoreActionDto';
+import BoardGameRestoreActionDto from '../../dto/Actions/boardGameRestoreActionDto';
 
 // Unused Actions but part of the TypeScript compilation
 import RolledActionDto from '../../dto/Actions/rolledActionDto';
@@ -44,6 +49,72 @@ export class BackgammonService extends AbstractGameService
         super( injector );
     }
     
+    connect( gameId: string, playAi: boolean, forGold: boolean ): void
+    {
+        //alert( 'Called Websocket Connect !!!' );
+        if ( this.socket ) {
+            this.socket.close();
+        }
+        
+        const currentUrlparams = new URLSearchParams( window.location.search );
+        let variant = currentUrlparams.get( 'variant' );
+        if ( variant == null ) {
+            variant = GameVariant.BACKGAMMON_NORMAL;
+        }
+        
+        let gameCookie  = this.cookieService.get( Keys.gameIdKey );
+        let b64Cookie;
+        if ( gameCookie ) {
+            b64Cookie   = window.btoa( gameCookie );
+        }
+        
+        this.url        = window.gamePlatformSettings.socketGameUrl;
+        
+        const user      = this.appState.user.getValue();
+        const userId    = user ? user.id : '';
+        const tree      = this.router.createUrlTree([], {
+            queryParams: {
+                token: window.gamePlatformSettings.apiVerifySiganature,
+                gameCode: window.gamePlatformSettings.gameSlug,
+                gameVariant: variant,
+                gameCookie: b64Cookie,
+                
+                userId: userId,
+                gameId: gameId,
+                playAi: playAi,
+                forGold: forGold
+            }
+        });
+        const url = this.url + this.serializer.serialize( tree );
+        
+        //alert( url );
+        this.socket = new WebSocket( url );
+        this.socket.onmessage   = this.onMessage.bind( this );
+        this.socket.onerror     = this.onError.bind( this );
+        this.socket.onopen      = this.onOpen.bind( this );
+        this.socket.onclose     = this.onClose.bind( this );
+    }
+    
+    onOpen(): void
+    {
+        // console.log('Open', { event });
+        const now = new Date();
+        const ping = now.getTime() - this.connectTime.getTime();
+        
+        //console.log( 'User in State', this.appState.user );
+        if ( this.appState.user.getValue() ) {
+            //this.statusMessageService.setWaitingForConnect();
+            this.statusMessageService.setNotGameStarted();
+        } else {
+            this.statusMessageService.setNotLoggedIn();
+            this.appState.hideBusy();
+        }
+        
+        this.appState.myConnection.setValue( { connected: true, pingMs: ping } );
+        this.appState.boardGame.clearValue();
+        this.appState.dices.clearValue();
+    }
+    
     // Messages received from server.
     onMessage( message: MessageEvent<string> ): void
     {
@@ -52,7 +123,7 @@ export class BackgammonService extends AbstractGameService
         }
         
         const action = JSON.parse( message.data ) as ActionDto;
-        const game = this.appState.game.getValue();
+        const game = this.appState.boardGame.getValue();
         //console.log( 'Action', action );
         
         //console.log( 'Game in State', game );
@@ -60,15 +131,16 @@ export class BackgammonService extends AbstractGameService
             case ActionNames.gameCreated: {
                 //console.log( 'WebSocket Action Game Created', action.actionName );
                 
-                const dto = JSON.parse( message.data ) as GameCreatedActionDto;
+                const dto = JSON.parse( message.data ) as BoardGameCreatedActionDto;
                 console.log( 'WebSocket Action Game Created', dto.game );
                 this.appState.myColor.setValue( dto.myColor );
-                this.appState.game.setValue( dto.game );
+                this.appState.boardGame.setValue( dto.game );
                 
                 const cookie: GameCookieDto = {
                     id: dto.game.id,
-                    color: dto.myColor,
                     game: window.gamePlatformSettings.gameSlug,
+                    color: dto.myColor,
+                    //position: PlayerPosition.neither,
                     roomSelected: false
                 };
                 this.cookieService.deleteAll( Keys.gameIdKey );
@@ -76,7 +148,7 @@ export class BackgammonService extends AbstractGameService
                 this.cookieService.set( Keys.gameIdKey, JSON.stringify( cookie ), 2 );
                 this.statusMessageService.setTextMessage( dto.game );
                 
-                this.store.dispatch( loadGameRooms() );
+                this.store.dispatch( loadGameRooms( { gameSlug: window.gamePlatformSettings.gameSlug } ) );
                 
                 this.appState.moveTimer.setValue( dto.game.thinkTime );
                 this.sound.fadeIntro();
@@ -96,7 +168,7 @@ export class BackgammonService extends AbstractGameService
                     playState: GameState.playing
                 };
                 
-                this.appState.game.setValue( cGame );
+                this.appState.boardGame.setValue( cGame );
                 this.statusMessageService.setTextMessage( cGame );
                 this.appState.moveTimer.setValue( dicesAction.moveTimer );
                 this.appState.opponentDone.setValue( true );
@@ -112,10 +184,10 @@ export class BackgammonService extends AbstractGameService
             case ActionNames.gameEnded: {
                 //console.log( 'WebSocket Action Game Ended', action.actionName );
                 
-                const endedAction = JSON.parse( message.data ) as GameEndedActionDto;
+                const endedAction = JSON.parse( message.data ) as BoardGameEndedActionDto;
                 //console.log( 'game ended', endedAction.game.winner );
                 //console.log( 'WebSocket Action Game Ended', endedAction.game );
-                this.appState.game.setValue({
+                this.appState.boardGame.setValue({
                     ...endedAction.game,
                     playState: GameState.ended
                 });
@@ -134,7 +206,7 @@ export class BackgammonService extends AbstractGameService
                 const action = JSON.parse( message.data ) as DoublingActionDto;
                 this.appState.moveTimer.setValue( action.moveTimer );
                 
-                this.appState.game.setValue({
+                this.appState.boardGame.setValue({
                     ...game,
                     playState: GameState.requestedDoubling,
                     currentPlayer: this.appState.myColor.getValue()
@@ -149,7 +221,7 @@ export class BackgammonService extends AbstractGameService
                 const action = JSON.parse( message.data ) as DoublingActionDto;
                 this.appState.moveTimer.setValue( action.moveTimer );
                 // Opponent has accepted
-                this.appState.game.setValue({
+                this.appState.boardGame.setValue({
                     ...game,
                     playState: GameState.playing,
                     goldMultiplier: game.goldMultiplier * 2,
@@ -214,11 +286,11 @@ export class BackgammonService extends AbstractGameService
             case ActionNames.gameRestore: {
                 //console.log( 'WebSocket Action Game Restore', action.actionName );
                 
-                const dto = JSON.parse( message.data ) as GameRestoreActionDto;
+                const dto = JSON.parse( message.data ) as BoardGameRestoreActionDto;
                 //console.log( 'WebSocket Action Game Restore', dto );
                 
                 this.appState.myColor.setValue( dto.color );
-                this.appState.game.setValue( dto.game );
+                this.appState.boardGame.setValue( dto.game );
                 this.appState.dices.setValue( dto.dices );
                 this.appState.moveTimer.setValue( dto.game.thinkTime );
                 this.statusMessageService.setTextMessage( dto.game );
@@ -269,8 +341,8 @@ export class BackgammonService extends AbstractGameService
     
     doOpponentMove( move: MoveDto ): void
     {
-        const game = this.appState.game.getValue();
-        const gameClone = JSON.parse( JSON.stringify( game ) ) as GameDto;
+        const game = this.appState.boardGame.getValue();
+        const gameClone = JSON.parse( JSON.stringify( game ) ) as BoardGameDto;
         const isWhite = move.color === PlayerColor.white;
         const from = isWhite ? 25 - move.from : move.from;
         const to = isWhite ? 25 - move.to : move.to;
@@ -288,16 +360,16 @@ export class BackgammonService extends AbstractGameService
         
         //gameClone.points[to].checkers.push( checker );
         
-        this.appState.game.setValue( gameClone );
+        this.appState.boardGame.setValue( gameClone );
     }
     
     doMove( move: MoveDto ): void
     {
         this.userMoves.push( { ...move, nextMoves: [] } ); // server does not need to know nextMoves.
-        const prevGame = this.appState.game.getValue();
+        const prevGame = this.appState.boardGame.getValue();
         this.gameHistory.push( prevGame );
         
-        const gameClone = JSON.parse( JSON.stringify( prevGame ) ) as GameDto;
+        const gameClone = JSON.parse( JSON.stringify( prevGame ) ) as BoardGameDto;
         gameClone.validMoves = move.nextMoves;
         const isWhite = move.color === PlayerColor.white;
         const from = isWhite ? 25 - move.from : move.from;
@@ -341,7 +413,7 @@ export class BackgammonService extends AbstractGameService
         
         //push checker to new point
         gameClone.points[to].checkers.push( checker );
-        this.appState.game.setValue( gameClone );
+        this.appState.boardGame.setValue( gameClone );
         
         const dices = this.appState.dices.getValue();
         this.dicesHistory.push( dices );
@@ -383,8 +455,8 @@ export class BackgammonService extends AbstractGameService
         if ( ! move ) {
             return;
         }
-        const game = this.gameHistory.pop() as GameDto;
-        this.appState.game.setValue( game );
+        const game = this.gameHistory.pop() as BoardGameDto;
+        this.appState.boardGame.setValue( game );
         
         const dices = this.dicesHistory.pop() as DiceDto[];
         this.appState.dices.setValue( dices );
@@ -436,8 +508,8 @@ export class BackgammonService extends AbstractGameService
             actionName: ActionNames.acceptedDoubling,
             moveTimer: 0 // Set on the server
         };
-        const game = this.appState.game.getValue();
-        this.appState.game.setValue({
+        const game = this.appState.boardGame.getValue();
+        this.appState.boardGame.setValue({
             ...game,
             playState: GameState.playing,
             goldMultiplier: game.goldMultiplier * 2,
@@ -458,15 +530,15 @@ export class BackgammonService extends AbstractGameService
         // What is the best design here?
         this.appState.moveTimer.setValue( 40 );
         this.sendMessage( JSON.stringify( action ) );
-        this.statusMessageService.setTextMessage( this.appState.game.getValue() );
+        this.statusMessageService.setTextMessage( this.appState.boardGame.getValue() );
     }
     
     //This player requests doubling.
     requestDoubling(): void
     {
-        const game = this.appState.game.getValue();
+        const game = this.appState.boardGame.getValue();
         const otherPlyr = this.appState.getOtherPlayer();
-        this.appState.game.setValue({
+        this.appState.boardGame.setValue({
             ...game,
             playState: GameState.requestedDoubling,
             currentPlayer: otherPlyr

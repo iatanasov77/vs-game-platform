@@ -4,7 +4,7 @@ import { StatusMessage } from '../utils/status-message';
 
 import GameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
 import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
-import NewScoreDto from '_@/GamePlatform/Model/BoardGame/newScoreDto';
+import NewScoreDto from '_@/GamePlatform/Model/Core/newScoreDto';
 
 import { SoundService } from './sound.service'
 import { AppStateService } from '../state/app-state.service';

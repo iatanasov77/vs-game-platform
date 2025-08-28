@@ -41,12 +41,11 @@ services:
             - '@liip_imagine.cache.manager'
             - '@event_dispatcher'
             - '@doctrine'
-            - '@app_backgammon_game_factory'
+            - '@app_game_factory'
             - '@vsapp.repository.games'
             - '@vsapp.repository.game_sessions'
             - '@vsapp.factory.game_sessions'
             - '@vsapp.repository.game_players'
-            - '@vsapp.repository.temp_players'
             - '@vsapp.factory.temp_players'
             - '%app_end_game_on_total_think_time_elapse%'
     
@@ -63,7 +62,7 @@ services:
     ##############################################################
     # Game Rules
     ##############################################################
-    app_backgammon_game_factory:
-        class: App\Component\Rules\Backgammon\GameFactory
+    app_game_factory:
+        class: App\Component\Rules\GameFactory
         arguments:
             - '@app_game_logger'

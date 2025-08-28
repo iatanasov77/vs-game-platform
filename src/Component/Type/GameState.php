@@ -10,5 +10,8 @@ enum GameState: int
     case playing                = 2;
     case requestedDoubling      = 3;
     case ended                  = 4;
+    
+    // Card Games States
+    case firstAnnounce          = 5;
 }
     

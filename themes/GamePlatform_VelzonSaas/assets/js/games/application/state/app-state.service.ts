@@ -7,14 +7,22 @@ import { PlayedGameListDto } from '../dto/admin/playedGameListDto';
 import MessageDto from '../dto/message/messageDto';
 import ChatMessageDto from '../dto/chat/chatMessageDto';
 
-import ConnectionDto from '_@/GamePlatform/Model/BoardGame/connectionDto';
-import GameState from '_@/GamePlatform/Model/BoardGame/gameState';
-import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
+// Core Interfaces
+import ConnectionDto from '_@/GamePlatform/Model/Core/connectionDto';
+import UserDto from '_@/GamePlatform/Model/Core/userDto';
+import GameState from '_@/GamePlatform/Model/Core/gameState';
+import GameDto from '_@/GamePlatform/Model/Core/gameDto';
+
+// BoardGame Interfaces
+import BoardGameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
 import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
+import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
 import Toplist from '_@/GamePlatform/Model/BoardGame/toplist';
-import UserDto from '_@/GamePlatform/Model/BoardGame/userDto';
 import DiceDto from '_@/GamePlatform/Model/BoardGame/diceDto';
-import GameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
+
+// CardGame Interfaces
+import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
+import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
 
 // State
 import { StateObject } from './state-object';
@@ -31,8 +39,13 @@ export class AppStateService
     public static Themes = ['dark', 'light', 'blue', 'pink', 'green'];
     
     busy: StateObject<Busy>;
-    game: StateObject<GameDto>;
+    
+    boardGame: StateObject<BoardGameDto>;
     myColor: StateObject<PlayerColor>;
+    
+    cardGame: StateObject<CardGameDto>;
+    myPosition: StateObject<PlayerPosition>;
+    
     dices: StateObject<DiceDto[]>;
     moveAnimations: StateObject<MoveDto[]>;
     myConnection: StateObject<ConnectionDto>;
@@ -58,10 +71,14 @@ export class AppStateService
     constructor()
     {
         this.busy = new StateObject<Busy>();
-        this.game = new StateObject<GameDto>();
         
+        this.boardGame = new StateObject<BoardGameDto>();
         this.myColor = new StateObject<PlayerColor>();
         this.myColor.setValue( PlayerColor.neither );
+        
+        this.cardGame = new StateObject<CardGameDto>();
+        this.myPosition = new StateObject<PlayerPosition>();
+        this.myPosition.setValue( PlayerPosition.neither );
         
         this.dices = new StateObject<DiceDto[]>();
         this.dices.setValue( [] );
@@ -99,7 +116,7 @@ export class AppStateService
 
     myTurn(): boolean
     {
-        const game = this.game.getValue();
+        const game = this.boardGame.getValue();
         
         return (
             game &&
@@ -110,7 +127,7 @@ export class AppStateService
     
     doublingRequested(): boolean
     {
-        const game = this.game.getValue();
+        const game = this.boardGame.getValue();
         return game && game.playState === GameState.requestedDoubling;
     }
     

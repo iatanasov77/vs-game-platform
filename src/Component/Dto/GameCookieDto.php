@@ -1,6 +1,7 @@
 <?php namespace App\Component\Dto;
 
 use App\Component\Type\PlayerColor;
+use App\Component\Type\PlayerPosition;
 
 /**
  * Stored as a cookie on the client to enable reconnects.
@@ -10,11 +11,14 @@ class GameCookieDto
     /** @var string */
     public string $id;
     
+    /** @var string */
+    public string $game;
+    
     /** @var PlayerColor */
     public PlayerColor $color;
     
-    /** @var string */
-    public string $game;
+    /** @var PlayerPosition */
+    public PlayerPosition $position;
     
 //     public static function TryParse( ?string $v ): ?GameCookieDto
 //     {

@@ -1,5 +1,6 @@
 import { NgModule, InjectionToken, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { APP_BASE_HREF, Location } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -23,7 +24,7 @@ import { GlobalErrorService } from '../application/services/global-error-service
 import { ChessComponent } from './chess.component';
 import { SharedModule } from '../application/components/shared/shared.module';
 import { GameBoardsModule } from '../application/components/game-boards/game-boards.module';
-import { NgxChessBoardModule } from 'ngx-chess-board';
+import { SideBarsModule } from '../application/components/side-bars/side-bars.module';
 
 export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppState>>( 'Game Reducers' );
 
@@ -37,6 +38,7 @@ export function HttpLoaderFactory( http: HttpClient ) {
     ],
     imports: [
         BrowserModule,
+        BrowserAnimationsModule,
         MatTooltipModule,
         NgbModule,
         
@@ -52,7 +54,7 @@ export function HttpLoaderFactory( http: HttpClient ) {
         
         SharedModule,
         GameBoardsModule,
-        NgxChessBoardModule.forRoot(),
+        SideBarsModule,
         
         StoreModule.forRoot([
             loginReducer,
@@ -68,7 +70,6 @@ export function HttpLoaderFactory( http: HttpClient ) {
     ],
     bootstrap: [ChessComponent],
     providers: [
-        //{ provide: Window, useValue: window },
         { provide: APP_BASE_HREF, useValue: window.location.pathname },
         { provide: FEATURE_REDUCER_TOKEN, useFactory: getReducers },
         { provide: ErrorHandler, useClass: GlobalErrorService }

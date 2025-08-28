@@ -17,7 +17,7 @@ class StartGameController extends AbstractController
     private $doctrine;
     
     /** @var RepositoryInterface */
-    private $roomsRepository;
+    private $gamePlayRepository;
     
     /** @var FactoryInterface */
     private $gamePlayFactory;
@@ -27,25 +27,28 @@ class StartGameController extends AbstractController
     
     public function __construct(
         ManagerRegistry $doctrine,
+        RepositoryInterface $gamePlayRepository,
         FactoryInterface $gamePlayFactory,
         HubInterface $hub
     ) {
-        $this->doctrine         = $doctrine;
-        $this->gamePlayFactory  = $gamePlayFactory;
-        $this->hub              = $hub;
+        $this->doctrine             = $doctrine;
+        $this->gamePlayRepository   = $gamePlayRepository;
+        $this->gamePlayFactory      = $gamePlayFactory;
+        $this->hub                  = $hub;
     }
     
-    public function __invoke( Request $request ): JsonResponse
+    public function startGameAction( $gamePlayId, Request $request ): JsonResponse
     {
-        $gamePlay   = $this->gamePlayFactory->createNew();
-        $em         = $this->doctrine->getManager();
+        $gamePlay   = $this->gamePlayRepository->find( $gamePlayId );
+        if ( ! $gamePlay ) {
+            $gamePlay   = $this->gamePlayFactory->createNew();
+            $em         = $this->doctrine->getManager();
+            
+            $em->persist( $gamePlay );
+            $em->flush();
+        }
         
-        $gamePlay->setActive( true );
-        
-        $em->persist( $gamePlay );
-        $em->flush();
-        
-        $this->publishGamePlay( $gamePlay );
+        //$this->publishGamePlay( $gamePlay );
         
         return new JsonResponse([
             'status'    => Status::STATUS_OK,
@@ -64,7 +67,7 @@ class StartGameController extends AbstractController
         $publishData    = json_encode([
             'type'      => 'GamePlayRoomUpdate',
             'action'    => 'StartGame',
-            'target'    => $gamePlay->getGameRoom(),
+            'target'    => $gamePlay,
         ]);
         
         $update = new Update(

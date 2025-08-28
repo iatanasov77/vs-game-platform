@@ -50,7 +50,6 @@ export class GameBaseComponent implements OnInit, OnDestroy
         //alert( 'apiVerifySiganature: ' + window.gamePlatformSettings.apiVerifySiganature );
         if ( ! this.authService.getAuth() && window.gamePlatformSettings.apiVerifySiganature.length ) {
             this.store.dispatch( loginBySignature( { apiVerifySiganature: window.gamePlatformSettings.apiVerifySiganature } ) );
-            this.store.dispatch( loadGameBySlug( { slug: window.gamePlatformSettings.gameSlug } ) );
         }
     }
     

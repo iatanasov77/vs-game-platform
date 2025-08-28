@@ -37,6 +37,10 @@ class TempPlayer implements ResourceInterface
     #[ORM\Column(type: "string", columnDefinition: "ENUM('black', 'white')", nullable: true)]
     private $color;
     
+    /** @var string */
+    #[ORM\Column(type: "string", columnDefinition: "ENUM('north', 'south', 'east', 'west')", nullable: true)]
+    private $position;
+    
     public function getId(): ?int
     {
         return $this->id;
@@ -98,6 +102,18 @@ class TempPlayer implements ResourceInterface
     public function setColor( string $color ): self
     {
         $this->color = $color;
+        
+        return $this;
+    }
+    
+    public function getPosition(): ?string
+    {
+        return $this->position;
+    }
+    
+    public function setPosition( string $position ): self
+    {
+        $this->position = $position;
         
         return $this;
     }

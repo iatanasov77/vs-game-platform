@@ -12,7 +12,7 @@ import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 // App State
 import { AppStateService } from '../../../state/app-state.service';
 import { ErrorState } from '../../../state/ErrorState';
-import ErrorReportDto from '_@/GamePlatform/Model/BoardGame/errorReportDto';
+import ErrorReportDto from '_@/GamePlatform/Model/Core/errorReportDto';
 
 import cssString from './error-handler.component.scss';
 import templateString from './error-handler.component.html';

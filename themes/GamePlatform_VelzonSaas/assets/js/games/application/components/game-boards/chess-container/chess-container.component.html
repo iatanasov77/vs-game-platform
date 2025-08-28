@@ -1,0 +1,88 @@
+<div class="chess-container" id="GameBoardContainer">
+    <div class="messages" #messages>
+        <app-messages
+            [initial]="width"
+            [shown]="messageCenter"
+            [message]="message$ | async"
+        ></app-messages>
+    </div>
+    
+    <div *ngIf="introPlaying" class="mute-button">
+        <app-button [small]="true" (click)="toggleMuted()">
+          <i
+            [ngClass]="{
+                fas: true,
+                'fa-music': introMuted,
+                'fa-volume-off': ! introMuted
+            }"
+          >
+          </i>
+          <span class="x-char">{{ introMuted ? '' : 'x' }}</span>
+        </app-button>
+    </div>
+    
+    <div
+        *ngIf="(gameDto$ | async)?.isGoldGame && ! lobbyButtonsVisible && game !== BACKGAMMON_GULBARA"
+        class="players"
+        [ngStyle]="{ height: height + 'px' }"
+        [ngClass]="{ rotated: rotated, flipped: flipped }"
+    >
+        
+        <app-board-player
+            [playerDto]="gameDto.whitePlayer"
+            [doubling]="getDoubling(PlayerColor.white) | async"
+        >
+        </app-board-player>
+        
+        <div class="stake-container">
+            <div class="stake" [ngClass]="{ hilightStake: animatingStake }">
+                {{ lokalStake }}
+                <i class="fas fa-coins"></i>
+            </div>
+        </div>
+        
+        <app-board-player
+            [playerDto]="gameDto.blackPlayer"
+            [doubling]="getDoubling(PlayerColor.black) | async"
+        >
+        </app-board-player>
+        
+    </div>
+    
+    <ngx-chess-board #board
+        [size]="width"
+        [lightTileColor]="theme.lightTileColor"
+        [darkTileColor]="theme.darkTileColor"
+        
+        (moveChange)="onMakeMove( $event )"
+    ></ngx-chess-board>
+    
+    <div class="board-buttons" #boardButtons>
+        <app-board-buttons
+            [isLoggedIn]="isLoggedIn"
+            [lobbyButtonsVisible]="lobbyButtonsVisible"
+            
+            [newVisible]="newVisible"
+            [exitVisible]="exitVisible"
+            
+            (onNew)="newGame()"
+            (onExit)="exitGame()"
+            
+            (onPlayGame)="playGame($event)"
+            (onInviteFriend)="inviteFriend()"
+            (onAcceptInvite)="acceptInvite( $event )"
+            (onCancelInvite)="cancelInvite()"
+            
+            (onRotate)="onRotated()"
+            (onFlip)="onFlipped()"
+            (onResign)="resignGame()"
+        ></app-board-buttons>
+    </div>
+    
+    <div *ngIf="playAiQuestion" class="playAiQuestion app-colors">
+        <app-play-ai-question
+            (onPlayAi)="playAi()"
+            (onKeepWaiting)="keepWaiting()"
+        ></app-play-ai-question>
+    </div>
+</div>

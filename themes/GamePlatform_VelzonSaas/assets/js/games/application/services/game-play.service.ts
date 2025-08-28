@@ -9,7 +9,7 @@ import { AuthService } from './auth.service';
 import { AppConstants } from "../constants";
 import { Keys } from '../utils/keys';
 
-import GameCookieDto from '_@/GamePlatform/Model/BoardGame/gameCookieDto';
+import GameCookieDto from '_@/GamePlatform/Model/Core/gameCookieDto';
 import IGamePlay from '_@/GamePlatform/Model/GamePlayInterface';
 import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
 import IGame from '_@/GamePlatform/Model/GameInterface';
@@ -44,16 +44,22 @@ export class GamePlayService
         })));
     }
     
-    startCardGame( game: any ): Observable<IGamePlay>
+    createGameRoom( game: IGame ): Observable<IGamePlay>
     {
-        if ( ! game ) {
-            return new Observable;
-        }
-        
         const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
-        var url         = `${this.apiUrl}/start-game`;
+        var url         = `${this.apiUrl}/create-game-room/${game.id}`;
         
-        return this.httpClient.post<IGamePlay>( url, {game_room: game.room.id}, {headers} ).pipe(
+        return this.httpClient.get<IGamePlay>( url, {headers} ).pipe(
+            map( ( response: any ) => this.mapGamePlay( response ) )
+        );
+    }
+    
+    startCardGame( game: IGame ): Observable<IGamePlay>
+    {
+        const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
+        var url         = `${this.apiUrl}/start-game/${game.room.id}`;
+        
+        return this.httpClient.get<IGamePlay>( url, {headers} ).pipe(
             map( ( response: any ) => this.mapGamePlay( response ) )
         );
     }

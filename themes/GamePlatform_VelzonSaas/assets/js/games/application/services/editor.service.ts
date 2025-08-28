@@ -5,11 +5,12 @@ import { Injectable, Inject } from '@angular/core';
 import { map, take } from 'rxjs/operators';
 
 // Board Interfaces
+import BoardGameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
+import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
 import CheckerDto from '_@/GamePlatform/Model/BoardGame/checkerDto';
 import DiceDto from '_@/GamePlatform/Model/BoardGame/diceDto';
-import GameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
 import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
-import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
+
 import { GameStringRequest } from '../dto/editor/gameStringRequest';
 import { GameStringResponseDto } from '../dto/editor/gameStringResponseDto';
 
@@ -31,8 +32,8 @@ export class EditorService
     
     doMove( move: MoveDto )
     {
-        const prevGame = this.appState.game.getValue();
-        const gameClone = JSON.parse( JSON.stringify( prevGame ) ) as GameDto;
+        const prevGame = this.appState.boardGame.getValue();
+        const gameClone = JSON.parse( JSON.stringify( prevGame ) ) as BoardGameDto;
         const from = move.from;
         const to = move.to;
         
@@ -52,12 +53,12 @@ export class EditorService
         //push checker to new point
         gameClone.points[to].checkers.push( checker );
         
-        this.appState.game.setValue( gameClone );
+        this.appState.boardGame.setValue( gameClone );
     }
     
     setStartPosition(): void
     {
-        const game: GameDto = {
+        const game: BoardGameDto = {
             id: '15f126cb-e84d-4fe7-9782-8767109eed49',
             blackPlayer: {
                 name: 'Guest',
@@ -318,7 +319,7 @@ export class EditorService
         };
         
         setTimeout( () => {
-            this.appState.game.setValue( game );
+            this.appState.boardGame.setValue( game );
             this.updateGameString();
         }, 1 );
     }
@@ -332,7 +333,7 @@ export class EditorService
             { value: 6, used: false }
         ];
         const dto: GameStringRequest = {
-            game: this.appState.game.getValue(),
+            game: this.appState.boardGame.getValue(),
             dice: dice
         };
         

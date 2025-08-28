@@ -9,33 +9,3 @@ resources:
                 normalizationContext:
                     groups: ['game-play:read']
                 forceEager: false
-            
-            start_game:
-                class: ApiPlatform\Metadata\Post
-                method: POST
-                uriTemplate: /start-game
-                controller: App\Controller\Api\Games\StartGameController
-                
-                read: false # Disable ReadListener
-                write: false
-                deserialize: false,
-                
-                normalizationContext:
-                    groups: ['game-play:read']
-                denormalizationContext:
-                    groups: ['game-play:create']
-            
-            finish_game:
-                class: ApiPlatform\Metadata\Put
-                method: PUT
-                uriTemplate: /finish-game
-                controller: App\Controller\Api\Games\FinishGameController
-                
-                read: false # Disable ReadListener
-                write: false
-                deserialize: false,
-                
-                normalizationContext:
-                    groups: ['game-play:read']
-                denormalizationContext:
-                    groups: ['game-play:update']

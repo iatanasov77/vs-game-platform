@@ -34,6 +34,12 @@ import { PlayAiQuestionComponent } from '../../game-dialogs/play-ai-question/pla
 import { CreateInviteGameDialogComponent } from '../../game-dialogs/create-invite-game-dialog/create-invite-game-dialog.component';
 import { UserLoginDialogComponent } from '../../game-dialogs/user-login-dialog/user-login-dialog.component';
 
+// App State
+import { AppStateService } from '../../../state/app-state.service';
+import { QueryParamsService } from '../../../state/query-params.service';
+import { StatusMessage } from '../../../utils/status-message';
+import { Busy } from '../../../state/busy';
+
 // Services
 import { AuthService } from '../../../services/auth.service';
 import { BackgammonService } from '../../../services/websocket/backgammon.service';
@@ -43,23 +49,19 @@ import { EditorService } from '../../../services/editor.service';
 import { TutorialService } from '../../../services/tutorial.service';
 import { GamePlayService } from '../../../services/game-play.service';
 
-import GameCookieDto from '_@/GamePlatform/Model/BoardGame/gameCookieDto';
+import GameCookieDto from '_@/GamePlatform/Model/Core/gameCookieDto';
 import { CookieService } from 'ngx-cookie-service';
 import { Keys } from '../../../utils/keys';
 
-// App State
-import { AppStateService } from '../../../state/app-state.service';
-import { QueryParamsService } from '../../../state/query-params.service';
-import { StatusMessage } from '../../../utils/status-message';
-import { Busy } from '../../../state/busy';
-
-// Board Interfaces
-import UserDto from '_@/GamePlatform/Model/BoardGame/userDto';
+// BoardGame Interfaces
+import UserDto from '_@/GamePlatform/Model/Core/userDto';
+import GameState from '_@/GamePlatform/Model/Core/gameState';
+import BoardGameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
 import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
 import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
 import DiceDto from '_@/GamePlatform/Model/BoardGame/diceDto';
-import GameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
-import GameState from '_@/GamePlatform/Model/BoardGame/gameState';
+
+import { Helper } from '../../../utils/helper';
 
 import cssGameString from './backgammon-container.component.scss';
 import templateString from './backgammon-container.component.html';
@@ -84,7 +86,7 @@ declare global {
         cssGameString || 'Game CSS Not Loaded !!!',
     ]
 })
-export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, OnChanges, OnInit
+export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges
 {
     @Input() lobbyButtonsVisible: boolean   = false;
     @Input() isLoggedIn: boolean            = false;
@@ -100,7 +102,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
     readonly BACKGAMMON_GULBARA = GameVariant.BACKGAMMON_GULBARA;
     game: string;
     
-    gameDto$: Observable<GameDto>;
+    gameDto$: Observable<BoardGameDto>;
     dices$: Observable<DiceDto[]>;
     playerColor$: Observable<PlayerColor>;
     message$: Observable<StatusMessage>;
@@ -137,6 +139,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
     nextDoublingFactor = 1;
     introMuted = this.appStateService.user.getValue()?.muteIntro ?? false;
     
+    gameDto: BoardGameDto | undefined;
     rollButtonVisible = false;
     sendVisible = false;
     undoVisible = false;
@@ -147,7 +150,6 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
     requestDoublingVisible = false;
     requestHintVisible = false;
     dicesDto: DiceDto[] | undefined;
-    gameDto: GameDto | undefined;
     
     appState?: MyGameState;
     gameStarted: boolean        = false;
@@ -182,13 +184,13 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         }
         this.game   = variant;
         
-        this.gameDto$ = this.appStateService.game.observe();
+        this.gameDto$ = this.appStateService.boardGame.observe();
         this.dices$ = this.appStateService.dices.observe();
         this.diceSubs = this.appStateService.dices.observe().subscribe( this.diceChanged.bind( this ) );
         this.playerColor$ = this.appStateService.myColor.observe();
         this.playerColor$.subscribe( this.gotPlayerColor.bind( this ) );
         
-        this.gameSubs = this.appStateService.game.observe().subscribe( this.gameChanged.bind( this ) );
+        this.gameSubs = this.appStateService.boardGame.observe().subscribe( this.gameChanged.bind( this ) );
         this.rolledSubs = this.appStateService.rolled.observe().subscribe( this.opponentRolled.bind( this ) );
         this.oponnetDoneSubs = this.appStateService.opponentDone.observe().subscribe( this.oponnentDone.bind( this ) );
       
@@ -251,7 +253,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         });
         
         this.store.subscribe( ( state: any ) => {
-            //console.log( state.app.main );
+            console.log( state.app.main );
             
             this.appState   = state.app.main;
             this.hasRooms   = this?.appState?.rooms?.length && this?.appState?.rooms?.length > 0 ? true : false;
@@ -302,7 +304,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         this.rolledSubs.unsubscribe();
         this.oponnetDoneSubs.unsubscribe();
         clearTimeout( this.startedHandle );
-        this.appStateService.game.clearValue();
+        this.appStateService.boardGame.clearValue();
         this.appStateService.myColor.clearValue();
         this.appStateService.dices.clearValue();
         this.appStateService.messages.clearValue();
@@ -397,7 +399,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         this.dicesVisible = false;
     }
     
-    gameChanged( dto: GameDto ): void
+    gameChanged( dto: BoardGameDto ): void
     {
         if ( this.editing ) {
             this.fireResize();
@@ -433,7 +435,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         this.animateStake( dto );
     }
     
-    animateStake( dto: GameDto )
+    animateStake( dto: BoardGameDto )
     {
         if ( dto && dto.isGoldGame && dto.stake !== this.lokalStake ) {
             this.animatingStake = true;
@@ -456,7 +458,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         }
     }
     
-    setDoublingVisible( gameDto: GameDto )
+    setDoublingVisible( gameDto: BoardGameDto )
     {
         if ( ! gameDto ) return;
         
@@ -478,7 +480,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
             this.hasFundsForDoubling( gameDto );
     }
     
-    hasFundsForDoubling( gameDto: GameDto ): boolean
+    hasFundsForDoubling( gameDto: BoardGameDto ): boolean
     {
         return (
             gameDto.blackPlayer.gold >= gameDto.stake / 2 &&
@@ -494,7 +496,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         this.setUndoVisible();
         this.fireResize();
         
-        const game = this.appStateService.game.getValue();
+        const game = this.appStateService.boardGame.getValue();
         this.exitVisible = game?.playState !== GameState.playing && game?.playState !== GameState.requestedDoubling;
     }
     
@@ -581,7 +583,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         this.fireResize();
         this.requestDoublingVisible = false;
         
-        const gme = this.appStateService.game.getValue();
+        const gme = this.appStateService.boardGame.getValue();
         if( ! gme.validMoves || gme.validMoves.length === 0 ) {
             this.statusMessageService.setBlockedMessage();
         }
@@ -612,7 +614,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
             return;
         }
         
-        const game = this.appStateService.game.getValue();
+        const game = this.appStateService.boardGame.getValue();
         this.sendVisible = ! game || game.validMoves.length == 0;
     }
     
@@ -687,15 +689,10 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
         this.wsService.exitGame();
         
         while ( this.appStateService.myConnection.getValue().connected ) {
-            await this.delay( 500 );
+            await Helper.delay( 500 );
         }
         
         this.wsService.connect( '', true, this.forGoldFlag );
-    }
-    
-    delay( ms: number )
-    {
-        return new Promise( ( resolve ) => setTimeout( resolve, ms ) );
     }
     
     keepWaiting(): void
@@ -777,7 +774,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
     timeTick( time: number )
     {
         if ( time < 30 && this.myTurn() ) {
-            const game = this.appStateService.game.getValue();
+            const game = this.appStateService.boardGame.getValue();
             if (
                 game &&
                 ! game.isGoldGame &&
@@ -799,7 +796,7 @@ export class BackgammonContainerComponent implements OnDestroy, AfterViewInit, O
     
     playGame( gameId: string ): void
     {
-        const game      = this.appStateService.game.getValue();
+        const game      = this.appStateService.boardGame.getValue();
         const myColor   = this.appStateService.myColor.getValue();
         //console.log( 'GameDto Object: ', game );
         

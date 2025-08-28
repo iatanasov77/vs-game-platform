@@ -1,8 +1,8 @@
 import { Injectable, Inject } from '@angular/core';
 //import { Router } from '@angular/router';
 
-import GameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
-import GameState from '_@/GamePlatform/Model/BoardGame/gameState';
+import GameState from '_@/GamePlatform/Model/Core/gameState';
+import BoardGameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
 import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
 
 import { AppStateService } from '../state/app-state.service';
@@ -69,9 +69,9 @@ export class TutorialService
         }, 1 );
     }
     
-    private emptyGame(): GameDto
+    private emptyGame(): BoardGameDto
     {
-        const game: GameDto = {
+        const game: BoardGameDto = {
             blackPlayer: {
                 name: 'You',
                 elo: 0,
@@ -112,7 +112,7 @@ export class TutorialService
         return game;
     }
     
-    addChecker( game: GameDto, color: PlayerColor, point: number, count: number )
+    addChecker( game: BoardGameDto, color: PlayerColor, point: number, count: number )
     {
         for ( let i = 0; i < count; i++ ) {
             game.points[point].checkers.push( { color: color } );
@@ -121,7 +121,7 @@ export class TutorialService
     
     startPosition()
     {
-        const game: GameDto = this.emptyGame();
+        const game: BoardGameDto = this.emptyGame();
         this.addChecker( game, PlayerColor.black, 1, 2 );
         this.addChecker( game, PlayerColor.black, 12, 5 );
         this.addChecker( game, PlayerColor.black, 17, 3 );
@@ -132,7 +132,7 @@ export class TutorialService
         this.addChecker( game, PlayerColor.white, 24, 2 );
         
         this.appState.myColor.setValue( PlayerColor.black );
-        this.appState.game.setValue( game );
+        this.appState.boardGame.setValue( game );
     }
     
     start()
@@ -143,7 +143,7 @@ export class TutorialService
     
     bearingOffExample()
     {
-        const game: GameDto = this.emptyGame();
+        const game: BoardGameDto = this.emptyGame();
         for ( let i = 0; i < 2; i++ ) {
             game.points[19].checkers.push( { color: PlayerColor.black } );
         }
@@ -174,12 +174,12 @@ export class TutorialService
         }
         
         this.appState.myColor.setValue( PlayerColor.black );
-        this.appState.game.setValue( game );
+        this.appState.boardGame.setValue( game );
     }
     
     lonelyCheckerExample() 
     {
-        const game: GameDto = this.emptyGame();
+        const game: BoardGameDto = this.emptyGame();
         this.addChecker( game, PlayerColor.black, 1, 2 );
         this.addChecker( game, PlayerColor.black, 25, 13 );
         
@@ -187,12 +187,12 @@ export class TutorialService
         this.addChecker( game, PlayerColor.white, 5, 1 );
         
         this.appState.myColor.setValue( PlayerColor.black );
-        this.appState.game.setValue( game );
+        this.appState.boardGame.setValue( game );
     }
     
     barExample()
     {
-        const game: GameDto = this.emptyGame();
+        const game: BoardGameDto = this.emptyGame();
         this.addChecker( game, PlayerColor.black, 1, 1 );
         this.addChecker( game, PlayerColor.black, 5, 1 );
         
@@ -202,12 +202,12 @@ export class TutorialService
         this.addChecker( game, PlayerColor.white, 25, 1 );
         
         this.appState.myColor.setValue( PlayerColor.black );
-        this.appState.game.setValue( game );
+        this.appState.boardGame.setValue( game );
     }
     
     blockedExample()
     {
-        const game: GameDto = this.emptyGame();
+        const game: BoardGameDto = this.emptyGame();
         this.addChecker( game, PlayerColor.black, 1, 2 );
         this.addChecker( game, PlayerColor.black, 25, 13 );
         
@@ -219,6 +219,6 @@ export class TutorialService
         this.addChecker( game, PlayerColor.white, 7, 5 );
         
         this.appState.myColor.setValue( PlayerColor.black );
-        this.appState.game.setValue( game );
+        this.appState.boardGame.setValue( game );
     }
 }

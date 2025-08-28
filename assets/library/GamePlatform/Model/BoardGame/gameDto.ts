@@ -1,16 +1,14 @@
-﻿import PlayerDto from './playerDto';
+﻿import GameDto from '../Core/gameDto';
+import BoardGamePlayerDto from './playerDto';
 import PlayerColor from './playerColor';
-import GameState from './gameState';
 import PointDto from './pointDto';
 import MoveDto from './moveDto';
 
-interface GameDto {
-    id: string;
-    blackPlayer: PlayerDto;
-    whitePlayer: PlayerDto;
+interface BoardGameDto extends GameDto {
+    blackPlayer: BoardGamePlayerDto;
+    whitePlayer: BoardGamePlayerDto;
     currentPlayer: PlayerColor;
     winner: PlayerColor;
-    playState: GameState;
     points: PointDto[];
     validMoves: MoveDto[];
     thinkTime: number;
@@ -20,4 +18,4 @@ interface GameDto {
     stake: number;
 }
 
-export default GameDto;
+export default BoardGameDto;

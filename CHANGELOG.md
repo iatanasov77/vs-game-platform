@@ -1,3 +1,17 @@
+0.16.1	|	Release date: **28.08.2025**
+============================================
+* New Features:
+  - Change Namespace of Vankosoft NPM Packages.
+  - Big Refactoring of Game Components and Create Some Components Needed for Card Games.
+  - Fix Start Bridge Belote for Playing with AI.
+  - Prepare to Use Websocket Communication in Card Games.
+  - Refactoring Frontend DTO Classes to Allow Creating of Card Games.
+  - Prepare for Creating BridgeBelote CardGame Rules.
+  - Create a Chess Container Component to Manage Chess Game.
+  - Updating CardGame Rules.
+  - Create Separate GameManager Classes for Games.
+
+
 0.16.0	|	Release date: **20.08.2025**
 ============================================
 * New Features:

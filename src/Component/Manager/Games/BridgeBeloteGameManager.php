@@ -28,10 +28,10 @@ class BridgeBeloteGameManager extends AbstractGameManager
     public function ConnectAndListen( WebsocketClientInterface $webSocket, GamePlayer $dbUser, bool $playAi ): void
     {
         $this->logger->log( "Connecting Game Manager ...", 'GameManager' );
-        if ( $this->Game->CurrentPlayer == PlayerPosition::North ) {
-            $this->Clients->set( PlayerPosition::North->value, $webSocket );
+        if ( $this->Game->CurrentPlayer == PlayerPosition::South ) {
+            $this->Clients->set( PlayerPosition::South->value, $webSocket );
             
-            $this->InitializePlayer( $dbUser, false, $this->Game->NorthPlayer );
+            $this->InitializePlayer( $dbUser, false, $this->Game->SouthPlayer );
             if ( $this->Game->IsGoldGame ) {
                 $this->Game->Stake = self::firstBet * 2;
             }
@@ -41,7 +41,7 @@ class BridgeBeloteGameManager extends AbstractGameManager
                 
                 $aiUser = $this->playersRepository->findOneBy( ['guid' => GamePlayer::AiUser] );
                 $this->InitializePlayer( $aiUser, true, $this->Game->EastPlayer );
-                $this->InitializePlayer( $aiUser, true, $this->Game->SouthPlayer );
+                $this->InitializePlayer( $aiUser, true, $this->Game->NorthPlayer );
                 $this->InitializePlayer( $aiUser, true, $this->Game->WestPlayer );
                 
                 $this->Engine = AiEngineFactory::CreateAiEngine(
@@ -53,10 +53,10 @@ class BridgeBeloteGameManager extends AbstractGameManager
                 $this->CreateDbGame();
                 $this->StartGame();
                 
-                if ( $this->Game->CurrentPlayer != PlayerPosition::North ) {
+                if ( $this->Game->CurrentPlayer != PlayerPosition::South ) {
                     $promise = \React\Async\async( function () {
-                        $this->logger->log( "GameManager CurrentPlayer: White", 'GameManager' );
-                        $this->EnginMoves( $this->Clients->get( PlayerPosition::North->value ) );
+                        $this->logger->log( "GameManager CurrentPlayer: Computer", 'GameManager' );
+                        $this->EnginMoves( $this->Clients->get( PlayerPosition::South->value ) );
                     })();
                     \React\Async\await( $promise );
                 }
@@ -70,14 +70,14 @@ class BridgeBeloteGameManager extends AbstractGameManager
             $this->Clients->set( PlayerPosition::East->value, $webSocket );
             $this->InitializePlayer( $dbUser, false, $this->Game->EastPlayer );
             
-        } else if( $this->Game->CurrentPlayer == PlayerPosition::South ) {
+        } else if( $this->Game->CurrentPlayer == PlayerPosition::North ) {
             if ( $playAi ) {
                 throw new \Exception( "Ai always plays as north. This is not expected" );
             }
             
             // South Player
-            $this->Clients->set( PlayerPosition::South->value, $webSocket );
-            $this->InitializePlayer( $dbUser, false, $this->Game->SouthPlayer );
+            $this->Clients->set( PlayerPosition::North->value, $webSocket );
+            $this->InitializePlayer( $dbUser, false, $this->Game->NorthPlayer );
             
         } else {
             if ( $playAi ) {
@@ -138,14 +138,14 @@ class BridgeBeloteGameManager extends AbstractGameManager
         $action = new GameCreatedActionDto();
         $action->game = $gameDto;
         
-        $action->myPosition = PlayerPosition::North;
-        $this->Send( $this->Clients->get( PlayerPosition::North->value ), $action );
+        $action->myPosition = PlayerPosition::South;
+        $this->Send( $this->Clients->get( PlayerPosition::South->value ), $action );
         
         $action->myPosition = PlayerPosition::East;
         $this->Send( $this->Clients->get( PlayerPosition::East->value ), $action );
         
-        $action->myPosition = PlayerPosition::South;
-        $this->Send( $this->Clients->get( PlayerPosition::South->value ), $action );
+        $action->myPosition = PlayerPosition::North;
+        $this->Send( $this->Clients->get( PlayerPosition::North->value ), $action );
         
         $action->myPosition = PlayerPosition::West;
         $this->Send( $this->Clients->get( PlayerPosition::West->value ), $action );
@@ -155,9 +155,9 @@ class BridgeBeloteGameManager extends AbstractGameManager
     
     protected function CreateDbGame(): void
     {
-        $northPlayer = $this->CreateTempPlayer( $this->Game->NorthPlayer->Id, PlayerPosition::North->value );
-        $eastPlayer = $this->CreateTempPlayer( $this->Game->EastPlayer->Id, PlayerPosition::East->value );
         $southPlayer = $this->CreateTempPlayer( $this->Game->SouthPlayer->Id, PlayerPosition::South->value );
+        $eastPlayer = $this->CreateTempPlayer( $this->Game->EastPlayer->Id, PlayerPosition::East->value );
+        $northPlayer = $this->CreateTempPlayer( $this->Game->NorthPlayer->Id, PlayerPosition::North->value );
         $westPlayer = $this->CreateTempPlayer( $this->Game->WestPlayer->Id, PlayerPosition::West->value );
         
         // Create Game Session
@@ -166,14 +166,14 @@ class BridgeBeloteGameManager extends AbstractGameManager
         $game->setGame( $gameBase );
         $game->setGuid( $this->Game->Id );
         
-        $northPlayer->setGame( $game );
-        $eastPlayer->setGame( $game );
         $southPlayer->setGame( $game );
+        $eastPlayer->setGame( $game );
+        $northPlayer->setGame( $game );
         $westPlayer->setGame( $game );
         
-        $game->addGamePlayer( $northPlayer );
-        $game->addGamePlayer( $eastPlayer );
         $game->addGamePlayer( $southPlayer );
+        $game->addGamePlayer( $eastPlayer );
+        $game->addGamePlayer( $northPlayer );
         $game->addGamePlayer( $westPlayer );
         
         $em = $this->doctrine->getManager();

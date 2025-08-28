@@ -1,7 +1,7 @@
 import { NgModule, InjectionToken, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { APP_BASE_HREF, Location } from '@angular/common';
+import { APP_BASE_HREF } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
@@ -9,14 +9,12 @@ import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 
-import { StoreModule, provideStore, ActionReducerMap } from '@ngrx/store';
+import { StoreModule, ActionReducerMap } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 
 import { loginReducer } from '../application/+store/login.reducers';
 import { LoginEffects } from '../application/+store/login.effects';
 
-import { gameReducer, GameState } from '../application/+store/game.reducers';
-import { CustomSerializer } from '../application/+store/router';
 import { GameEffects } from '../application/+store/game.effects';
 import { IAppState, getReducers } from '../application/+store/state';
 

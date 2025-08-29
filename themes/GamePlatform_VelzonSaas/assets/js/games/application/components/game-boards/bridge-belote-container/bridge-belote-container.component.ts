@@ -22,6 +22,7 @@ import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
 import { AppStateService } from '../../../state/app-state.service';
 
 // Services
+import { BridgeBeloteService } from '../../../services/websocket/bridge-belote.service';
 import { GamePlayService } from '../../../services/game-play.service';
 
 // Dialogs
@@ -29,19 +30,19 @@ import { RequirementsDialogComponent } from '../../game-dialogs/requirements-dia
 
 import { Helper } from '../../../utils/helper';
 
-import templateString from './card-game-container.component.html'
-import styleString from './card-game-container.component.scss'
+import templateString from './bridge-belote-container.component.html'
+import styleString from './bridge-belote-container.component.scss'
 declare var $: any;
 
 @Component({
-    selector: 'card-game-container',
+    selector: 'bridge-belote-container',
     
     template: templateString || 'Template Not Loaded !!!',
     styles: [
         styleString || 'CSS Not Loaded !!!'
     ]
 })
-export class CardGameContainerComponent implements OnInit, OnDestroy, OnChanges
+export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChanges
 {
     @Input() isLoggedIn: boolean        = false;
     @Input() hasPlayer: boolean         = false;
@@ -57,12 +58,15 @@ export class CardGameContainerComponent implements OnInit, OnDestroy, OnChanges
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,
         @Inject( AppStateService ) private appStateService: AppStateService,
+        @Inject( BridgeBeloteService ) private wsService: BridgeBeloteService,
         @Inject( GamePlayService ) private gamePlayService: GamePlayService,
         @Inject( Store ) private store: Store,
         @Inject( Actions ) private actions$: Actions,
         @Inject( NgbModal ) private ngbModal: NgbModal,
     ) {
         this.gameAnnounceIcon   = null;
+        
+        this.wsService.connect( '', false, false );
     }
     
     ngOnInit(): void
@@ -112,15 +116,15 @@ export class CardGameContainerComponent implements OnInit, OnDestroy, OnChanges
     
     async playWithComputer()
     {
-        if ( this.appState && this.appState.game ) {
-            this.gamePlayService.createGameRoom( this.appState.game ).subscribe( gamePlay => {
-                //console.log( gamePlay );
-                if ( this.appState && this.appState.game && gamePlay.room ) {
-                    this.store.dispatch( selectGameRoom( { game: this.appState.game, room: gamePlay.room } ) );
-                    this.store.dispatch( startCardGame( { game: this.appState.game } ) );
-                }
-            });
+        /*
+        this.wsService.exitGame();
+        
+        while ( this.appStateService.myConnection.getValue().connected ) {
+            await Helper.delay( 500 );
         }
+        */
+        
+        this.wsService.connect( '', true, false );
     }
     
     playWithFriends(): void

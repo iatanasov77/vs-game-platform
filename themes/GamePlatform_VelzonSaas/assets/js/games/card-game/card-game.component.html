@@ -4,13 +4,13 @@
     </div>
     
     <div class="col-8">
-        <bridge-belote-container
+        <card-game-container
             [isLoggedIn]="isLoggedIn"
             [hasPlayer]="hasPlayer"
             [developementClass]="developementClass"
             [game]="game"
             [gameProvider]="providerBridgeBelote"
-        ></bridge-belote-container>
+        ></card-game-container>
         
         <app-error-handler
             [errors]="errors$ | async"

@@ -44,6 +44,9 @@ qr_code_totp:
 ###################################################################################
 # Games
 ###################################################################################
+test_card_game:
+    path: /games/test-card-game
+    controller: App\Controller\Games\TestCardGameController::index
 svara:
     path: /games/svara
     controller: App\Controller\Games\SvaraController::index

@@ -59,7 +59,7 @@ class GameController extends AbstractCrudController
         $gamePicture->setOriginalName( $file->getClientOriginalName() );
         $gamePicture->setFile( $uploadedFile );
         
-        $this->get( 'vs_application.app_pictures_uploader' )->upload( $gamePicture );
+        $this->get( 'vs_cms.app_pictures_uploader' )->upload( $gamePicture );
         $gamePicture->setFile( null ); // reset File Because: Serialization of 'Symfony\Component\HttpFoundation\File\UploadedFile' is not allowed
         
         if ( ! $entity->getPicture() ) {

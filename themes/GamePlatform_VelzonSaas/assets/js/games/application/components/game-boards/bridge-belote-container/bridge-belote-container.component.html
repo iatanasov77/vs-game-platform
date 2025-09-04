@@ -1,9 +1,7 @@
 <div id="game-board" align="center">
-    <card-game-board
-        [developementClass]="developementClass"
+    <bridge-belote-board
         [game]="game"
-        [gameProvider]="providerBridgeBelote"
-    ></card-game-board>
+    ></bridge-belote-board>
     
     <div id="card-actions" class="card-actions">
         <game-start *ngIf="gameStarted != true"

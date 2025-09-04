@@ -1,0 +1,8 @@
+<canvas
+    #canvas
+    class="card-table"
+    [ngClass]="{ rotated: rotated, flipped: flipped }"
+    (mousedown)="onMouseDown($event)"
+    (mousemove)="onMouseMove($event)"
+    (mouseup)="onMouseUp($event)"
+></canvas>

@@ -3,7 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
-import { of, Observable, map, merge, take } from 'rxjs';
+import { Observable, of, map, merge, take } from 'rxjs';
 
 import {
     selectGameRoom,
@@ -16,6 +16,7 @@ import {
 import { GameState } from '../../../+store/game.reducers';
 
 import IGame from '_@/GamePlatform/Model/GameInterface';
+import IGamePlayer from '_@/GamePlatform/Model/GamePlayerModel';
 import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
 
 // App State
@@ -27,11 +28,8 @@ import { GamePlayService } from '../../../services/game-play.service';
 // Dialogs
 import { RequirementsDialogComponent } from '../../game-dialogs/requirements-dialog/requirements-dialog.component';
 
-import { Helper } from '../../../utils/helper';
-
 import templateString from './card-game-container.component.html'
 import styleString from './card-game-container.component.scss'
-declare var $: any;
 
 @Component({
     selector: 'card-game-container',
@@ -53,6 +51,7 @@ export class CardGameContainerComponent implements OnInit, OnDestroy, OnChanges
     gameStarted: boolean                = false;
     gameAnnounceIcon: any;
     announceSymbols: any;
+    gamePlayers: Observable<IGamePlayer[]>;
     
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,
@@ -63,6 +62,7 @@ export class CardGameContainerComponent implements OnInit, OnDestroy, OnChanges
         @Inject( NgbModal ) private ngbModal: NgbModal,
     ) {
         this.gameAnnounceIcon   = null;
+        this.gamePlayers        = new Observable;
     }
     
     ngOnInit(): void
@@ -75,7 +75,7 @@ export class CardGameContainerComponent implements OnInit, OnDestroy, OnChanges
             if ( state.app.main.gamePlay ) {
                 this.gameStarted    = true;
             }
-            console.log( state.app.main );
+            //console.log( state.app.main );
         });
         
         this.store.dispatch( loadGameBySlug( { slug: window.gamePlatformSettings.gameSlug } ) );
@@ -83,6 +83,10 @@ export class CardGameContainerComponent implements OnInit, OnDestroy, OnChanges
         this.actions$.pipe( ofType( startCardGameSuccess ) ).subscribe( () => {
             this.store.dispatch( loadGameRooms( { gameSlug: window.gamePlatformSettings.gameSlug } ) );
             this.game.startGame();
+        });
+        
+        this.gamePlayers.subscribe( () => {
+            console.log( 'Game Players', this.game.getPlayers() );
         });
     }
     
@@ -114,13 +118,22 @@ export class CardGameContainerComponent implements OnInit, OnDestroy, OnChanges
     {
         if ( this.appState && this.appState.game ) {
             this.gamePlayService.createGameRoom( this.appState.game ).subscribe( gamePlay => {
-                //console.log( gamePlay );
+                //console.log( 'Game Play', gamePlay );
                 if ( this.appState && this.appState.game && gamePlay.room ) {
                     this.store.dispatch( selectGameRoom( { game: this.appState.game, room: gamePlay.room } ) );
-                    this.store.dispatch( startCardGame( { game: this.appState.game } ) );
                 }
             });
         }
+        
+        this.actions$.pipe( ofType( selectGameRoomSuccess ) ).subscribe( () => {
+            if ( this.appState && this.appState.game ) {
+                //console.log( 'Game Room', this.appState.game.room );
+                this.game.setRoom( this.appState.game.room );
+                this.gamePlayers    = of( this.game.getPlayers() );
+                
+                this.store.dispatch( startCardGame( { game: this.appState.game } ) );
+            }
+        });
     }
     
     playWithFriends(): void

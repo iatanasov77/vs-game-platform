@@ -48,6 +48,7 @@ export class CardGameComponent extends GameBaseComponent implements OnInit
         
         this.errors$    = this.appState.errors.observe();
         this.game       = this.providerBridgeBelote.getGame();
+        // console.log( 'BridgeBelote GameSettings', this.providerBridgeBelote.gameSettings() );
     }
     
     saveErrorReport( errorDto: ErrorReportDto ): void

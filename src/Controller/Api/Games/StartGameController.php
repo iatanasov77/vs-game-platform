@@ -13,6 +13,8 @@ use App\Entity\GamePlay;
 
 class StartGameController extends AbstractController
 {
+    use GameRoomResponseTrait;
+    
     /** @var ManagerRegistry */
     private $doctrine;
     
@@ -52,9 +54,7 @@ class StartGameController extends AbstractController
         
         return new JsonResponse([
             'status'    => Status::STATUS_OK,
-            'data'      => [
-                'id'        => $gamePlay->getId(),
-            ],
+            'data'      => $this->createResponseBody( $gamePlay ),
         ]);
     }
     

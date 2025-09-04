@@ -4,7 +4,7 @@ import IGamePlayer from './GamePlayerModel';
 interface IGamePlay
 {
     id: any;
-    room: null | IGameRoom;
+    room?: IGameRoom;
     
     players?: Iterator<IGamePlayer>;
     

@@ -19,6 +19,8 @@ use App\Entity\TempPlayer;
 
 class CreateGameRoomController extends AbstractController
 {
+    use GameRoomResponseTrait;
+    
     /** @var ManagerRegistry */
     private $doctrine;
     
@@ -76,7 +78,7 @@ class CreateGameRoomController extends AbstractController
         
         $aiPlayer   = $this->playersRepository->findBy([
             'type'  => PlayerType::Computer->value,
-            'guid'  => null,
+            //'guid'  => null,
         ])[0];
         
         if ( ! $game ) {
@@ -112,28 +114,36 @@ class CreateGameRoomController extends AbstractController
         $currentUser = $this->vsSecurityBridge->getUser();
         
         // First Player
-        $gameRoom->addGamePlayer( $this->createGamePlayer( $currentUser->getPlayer(), [
+        $player = $this->createGamePlayer( $currentUser->getPlayer(), [
             'name' => $currentUser->getUsername(),
             'position' => PlayerPosition::North->toString(),
-        ]));
+        ]);
+        $player->setGame( $gameRoom );
+        $gameRoom->addGamePlayer( $player );
         
         // Second Player
-        $gameRoom->addGamePlayer( $this->createGamePlayer( $aiPlayer, [
+        $player = $this->createGamePlayer( $aiPlayer, [
             'name' => 'Computer_1',
             'position' => PlayerPosition::East->toString(),
-        ]));
+        ]);
+        $player->setGame( $gameRoom );
+        $gameRoom->addGamePlayer( $player );
         
         // Third Player
-        $gameRoom->addGamePlayer( $this->createGamePlayer( $aiPlayer, [
+        $player = $this->createGamePlayer( $aiPlayer, [
             'name' => 'Computer_2',
             'position' => PlayerPosition::South->toString(),
-        ]));
+        ]);
+        $player->setGame( $gameRoom );
+        $gameRoom->addGamePlayer( $player );
         
         // Fourth Player
-        $gameRoom->addGamePlayer( $this->createGamePlayer( $aiPlayer, [
+        $player = $this->createGamePlayer( $aiPlayer, [
             'name' => 'Computer_3',
             'position' => PlayerPosition::West->toString(),
-        ]));
+        ]);
+        $player->setGame( $gameRoom );
+        $gameRoom->addGamePlayer( $player);
     }
     
     private function createGamePlayer( GamePlayer $basePlayer, array $payerData ): TempPlayer
@@ -145,27 +155,5 @@ class CreateGameRoomController extends AbstractController
         $player->setName( $payerData['name'] );
         
         return $player;
-    }
-    
-    private function createResponseBody( GamePlay $gameRoom ): array
-    {
-        $data = [
-            'id'    => $gameRoom->getId(),
-            'room'  => [
-                'id'        => $gameRoom->getId(),
-                'players'   => [],
-            ],
-        ];
-        
-        foreach ( $gameRoom->getGamePlayers() as $player ) {
-            $data['room']['players'][] = [
-                'id'            => $player->getGuid(),
-                'containerId'   => $player->getPosition(),
-                'name'          => $player->getName(),
-                'type'          => $player->getType(),
-            ];
-        }
-        
-        return $data;
     }
 }

@@ -1,0 +1,20 @@
+<div id="game-board" align="center">
+    <bridge-belote-board
+        [game]="game"
+    ></bridge-belote-board>
+    
+    <div id="card-actions" class="card-actions">
+        <game-start *ngIf="gameStarted != true"
+            [isRoomSelected]="isRoomSelected"
+            
+            (onSelectGameRoom)="selectGameRoom()"
+            (onPlayWithComputer)="playWithComputer()"
+            (onPlayWithFriends)="playWithFriends()"
+        ></game-start>
+        
+        <card-game-announce *ngIf="gameStarted == true"
+            [gameAnnounceIcon]="gameAnnounceIcon"
+            [announceSymbols]="announceSymbols"
+        ></card-game-announce>
+    </div>
+</div>

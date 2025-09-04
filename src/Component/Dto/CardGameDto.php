@@ -1,6 +1,8 @@
 <?php namespace App\Component\Dto;
 
+use Doctrine\Common\Collections\Collection;
 use App\Component\Type\PlayerPosition;
+use App\Component\Rules\CardGame\Bid;
 
 class CardGameDto extends GameDto
 {
@@ -11,4 +13,13 @@ class CardGameDto extends GameDto
     
     public ?PlayerPosition $currentPlayer;
     public PlayerPosition $winner = PlayerPosition::Neither;
+    
+    public int $RoundNumber;
+    public PlayerPosition $FirstToPlayInTheRound;
+    public int $SouthNorthPoints;
+    public int $EastWestPoints;
+    
+    public Collection $MyCards;
+    public array $Bids;
+    public Bid $CurrentContract;
 }

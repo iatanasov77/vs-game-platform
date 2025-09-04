@@ -13,6 +13,9 @@ import { PlayerAnnounceComponent } from './player-announce/player-announce.compo
 import { GameStartComponent } from './board-actions/game-start/game-start.component';
 import { CardGameAnnounceComponent } from './board-actions/card-game-announce/card-game-announce.component';
 
+import { BridgeBeloteContainerComponent } from './bridge-belote-container/bridge-belote-container.component';
+import { BridgeBeloteBoardComponent } from './bridge-belote-board/bridge-belote-board.component';
+
 import { BackgammonContainerComponent } from './backgammon-container/backgammon-container.component';
 import { BackgammonBoardComponent } from './backgammon-board/backgammon-board.component';
 import { BackgammonBoardButtonsComponent } from './board-actions/backgammon-board-buttons/backgammon-board-buttons.component';
@@ -31,6 +34,10 @@ import { NgxChessBoardModule } from 'ngx-chess-board';
         CardGameBoardComponent,
         GameStartComponent,
         CardGameAnnounceComponent,
+        
+        BridgeBeloteContainerComponent,
+        BridgeBeloteBoardComponent,
+        
         BackgammonContainerComponent,
         BackgammonBoardComponent,
         BackgammonBoardButtonsComponent,
@@ -55,6 +62,10 @@ import { NgxChessBoardModule } from 'ngx-chess-board';
         CardGameBoardComponent,
         GameStartComponent,
         CardGameAnnounceComponent,
+        
+        BridgeBeloteContainerComponent,
+        BridgeBeloteBoardComponent,
+        
         BackgammonContainerComponent,
         BackgammonBoardComponent,
         BackgammonBoardButtonsComponent,

@@ -203,14 +203,6 @@ final class GameFactory
         $game->cardDeck     = Deck::shuffle( Deck::cards( 32 ) );
         $game->cardPiles    = [[], []];
         
-        $game->NorthPlayer = new CardGamePlayer();
-        $game->NorthPlayer->PlayerPosition = PlayerPosition::North;
-        $game->NorthPlayer->Name = "Guest";
-        
-        $game->WestPlayer = new CardGamePlayer();
-        $game->WestPlayer->PlayerPosition = PlayerPosition::West;
-        $game->WestPlayer->Name = "Guest";
-        
         $game->SouthPlayer = new CardGamePlayer();
         $game->SouthPlayer->PlayerPosition = PlayerPosition::South;
         $game->SouthPlayer->Name = "Guest";
@@ -218,6 +210,14 @@ final class GameFactory
         $game->EastPlayer = new CardGamePlayer();
         $game->EastPlayer->PlayerPosition = PlayerPosition::East;
         $game->EastPlayer->Name = "Guest";
+        
+        $game->NorthPlayer = new CardGamePlayer();
+        $game->NorthPlayer->PlayerPosition = PlayerPosition::North;
+        $game->NorthPlayer->Name = "Guest";
+        
+        $game->WestPlayer = new CardGamePlayer();
+        $game->WestPlayer->PlayerPosition = PlayerPosition::West;
+        $game->WestPlayer->Name = "Guest";
         
         $game->Created = new \DateTime( 'now' );
         

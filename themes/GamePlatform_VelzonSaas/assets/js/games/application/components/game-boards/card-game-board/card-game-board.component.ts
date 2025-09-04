@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit, OnDestroy, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Actions, ofType } from '@ngrx/effects';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 import {
     selectGameRoomSuccess
@@ -9,6 +9,7 @@ import {
 import { GameState } from '../../../+store/game.reducers';
 
 import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
+import IGamePlayer from '_@/GamePlatform/Model/GamePlayerModel';
 
 import templateString from './card-game-board.component.html'
 import styleString from './card-game-board.component.scss'
@@ -27,13 +28,13 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
     @Input() developementClass: string  = '';
     @Input() gameProvider?: any;
     @Input() game?: any;
+    @Input() gamePlayers?: Observable<IGamePlayer[]>;
     
     appState?: GameState;
     gameStarted: boolean                = false;
     gameAnnounceIcon: any;
     
     isRoomSelected: boolean             = false;
-    gamePlayers: any;
     
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,
@@ -46,13 +47,6 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
     {
         this.game?.initBoard();
         this.listenForGameEvents();
-        
-        this.actions$.pipe( ofType( selectGameRoomSuccess ) ).subscribe( () => {
-            this.game.setRoom( this?.appState?.game?.room );
-            
-            this.gamePlayers    = of( this.game.getPlayers() );
-            this.isRoomSelected = true;
-        });
     }
     
     ngOnDestroy(): void

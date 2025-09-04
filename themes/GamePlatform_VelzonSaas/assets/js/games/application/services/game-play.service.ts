@@ -151,7 +151,7 @@ export class GamePlayService
     
     private mapGamePlay( response: any ): any
     {
-        console.log( 'GamePlay Response: ', response );
+        //console.log( 'GamePlay Response: ', response );
         if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
             let gamePlay: IGamePlay = {
                 id: response.data.id,

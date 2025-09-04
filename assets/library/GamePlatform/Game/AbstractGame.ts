@@ -14,7 +14,9 @@ class AbstractGame
 {
     /** Game Slug */
     id: string;
-    room: null | IGameRoom;
+    
+    /** Game Room */
+    room?: IGameRoom;
     
     /** Game Players */
     players?: GamePlayersIterator;
@@ -39,8 +41,6 @@ class AbstractGame
         this.publicRootPath         = gameSettings.publicRootPath;
         this.boardSelector          = gameSettings.boardSelector;
         this.timeoutBetweenPlayers  = gameSettings.timeoutBetweenPlayers;
-        
-        this.room                   = null;
     }
     
     public initPlayers( room: IGameRoom ): void

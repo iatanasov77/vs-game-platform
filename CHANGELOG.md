@@ -1,3 +1,12 @@
+0.16.2	|	Release date: **04.09.2025**
+============================================
+* New Features:
+  - Litle Refactoring of BridgeBelote Game Rules and Manager.
+  - Add BridgeBelote CardGame Rules in Backend.
+  - Create a Test Card Game That Always to Use Old GardGame Board.
+  - Create a BridgeBeloteBoardComponent that draw Card Table in a Canvas Element.
+
+
 0.16.1	|	Release date: **28.08.2025**
 ============================================
 * New Features:

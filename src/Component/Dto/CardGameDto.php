@@ -16,10 +16,15 @@ class CardGameDto extends GameDto
     
     public int $RoundNumber;
     public PlayerPosition $FirstToPlayInTheRound;
+    
     public int $SouthNorthPoints;
     public int $EastWestPoints;
     
     public Collection $MyCards;
     public array $Bids;
     public Bid $CurrentContract;
+    
+    public array $deck;
+    public array $playerCards;
+    public array $teamsTricks;
 }

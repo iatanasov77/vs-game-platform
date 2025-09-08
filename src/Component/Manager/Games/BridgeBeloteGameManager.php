@@ -1,8 +1,11 @@
 <?php namespace App\Component\Manager\Games;
 
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
-use App\Component\Manager\AbstractGameManager;
+use App\Component\Manager\CardGameManager;
 use App\Component\Websocket\Client\WebsocketClientInterface;
+
+use App\Component\Manager\CardGame\RoundResult;
+
 use App\Component\Rules\CardGame\Game;
 use App\Component\Rules\CardGame\Player;
 use App\Component\AI\EngineFactory as AiEngineFactory;
@@ -23,7 +26,7 @@ use App\Component\Dto\Actions\GameCreatedActionDto;
 use App\Component\Dto\Actions\OpponentMoveActionDto;
 use App\Component\Dto\Actions\RolledActionDto;
 
-class BridgeBeloteGameManager extends AbstractGameManager
+class BridgeBeloteGameManager extends CardGameManager
 {
     public function ConnectAndListen( WebsocketClientInterface $webSocket, GamePlayer $dbUser, bool $playAi ): void
     {
@@ -132,6 +135,8 @@ class BridgeBeloteGameManager extends AbstractGameManager
     public function StartGame(): void
     {
         $this->Game->ThinkStart = new \DateTime( 'now' );
+        $this->PlayRound();
+        
         $gameDto = Mapper::CardGameToDto( $this->Game );
         $this->logger->log( 'Begin Start Game: ' . \print_r( $gameDto, true ), 'GameManager' );
         

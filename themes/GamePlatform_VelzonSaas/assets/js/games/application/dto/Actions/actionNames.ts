@@ -15,6 +15,9 @@
     requestHint,
     hintMoves,
     
+    // Card Game Actions
+    playCard,
+    
     serverWasTerminated
 }
 

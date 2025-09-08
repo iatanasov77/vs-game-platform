@@ -1,4 +1,4 @@
-<?php namespace App\Component\Manager\CardGame;
+<?php namespace App\Component\Manager\GameMechanics;
 
 
 class ContractManager

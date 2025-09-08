@@ -200,8 +200,7 @@ final class GameFactory
         
         $game->Id           = Guid::NewGuid();
         
-        $game->cardDeck     = Deck::shuffle( Deck::cards( 32 ) );
-        $game->cardPiles    = [[], []];
+        
         
         $game->SouthPlayer = new CardGamePlayer();
         $game->SouthPlayer->PlayerPosition = PlayerPosition::South;
@@ -223,6 +222,13 @@ final class GameFactory
         
         $game->GoldMultiplier = 1;
         $game->IsGoldGame = $forGold;
+        
+        $game->deck = new Deck();
+        $game->teamsTricks = [[], []];
+        
+        for ( $playerIndex = 0; $playerIndex < 4; $playerIndex++ ) {
+            $game->playerCards[] = new ArrayCollection();
+        }
         
         $game->SetStartPosition();
         

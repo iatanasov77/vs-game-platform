@@ -8,6 +8,8 @@ use App\Component\GameLogger;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerPosition;
 
+use App\Component\Rules\CardGame\GameMechanics\RoundManager;
+
 abstract class Game implements GameInterface
 {
     /** @var int */
@@ -19,21 +21,8 @@ abstract class Game implements GameInterface
     /** @var string */
     public $Id;
     
-    /**
-     * Deck Of Cards
-     * 
-     * @var array
-     */
-    public $cardDeck;
-    
-    /**
-     * Piles Of Cards
-     * $cardPiles[0] for Team1 (North-South)
-     * $cardPiles[1] for Team2 (East-West)
-     *
-     * @var array
-     */
-    public $cardPiles;
+    /** @var Deck */
+    public $deck;
     
     /**
      * Dealed Cards of the Players
@@ -41,6 +30,15 @@ abstract class Game implements GameInterface
      * @var array
      */
     public $playerCards;
+    
+    /**
+     * Piles Of Cards
+     * $teamsTricks[0] for Team1 (North-South)
+     * $teamsTricks[1] for Team2 (East-West)
+     *
+     * @var array
+     */
+    public $teamsTricks;
     
     /** @var Player */
     public $NorthPlayer;
@@ -81,8 +79,6 @@ abstract class Game implements GameInterface
     }
     
     abstract public function SetStartPosition(): void;
-    
-    abstract public function DealCards( int $count, Player $player ): void;
     
     abstract public function NextPlayer(): PlayerPosition;
     

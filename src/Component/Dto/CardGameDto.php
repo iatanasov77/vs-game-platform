@@ -2,6 +2,7 @@
 
 use Doctrine\Common\Collections\Collection;
 use App\Component\Type\PlayerPosition;
+use App\Component\Type\CardGameTeam;
 use App\Component\Rules\CardGame\Bid;
 
 class CardGameDto extends GameDto
@@ -10,7 +11,7 @@ class CardGameDto extends GameDto
     public array $players;
     
     public ?PlayerPosition $currentPlayer;
-    public PlayerPosition $winner = PlayerPosition::Neither;
+    public CardGameTeam $winner = CardGameTeam::Neither;
     
     public int $RoundNumber;
     public PlayerPosition $FirstToPlayInTheRound;

@@ -24,6 +24,9 @@ abstract class Game implements GameInterface
     /** @var Deck */
     public $deck;
     
+    /** @var array | Player[] */
+    public array $Players;
+    
     /**
      * Dealed Cards of the Players
      *
@@ -39,18 +42,6 @@ abstract class Game implements GameInterface
      * @var array
      */
     public $teamsTricks;
-    
-    /** @var Player */
-    public $NorthPlayer;
-    
-    /** @var Player */
-    public $SouthPlayer;
-    
-    /** @var Player */
-    public $EastPlayer;
-    
-    /** @var Player */
-    public $WestPlayer;
     
     /** @var PlayerPosition */
     public $CurrentPlayer;

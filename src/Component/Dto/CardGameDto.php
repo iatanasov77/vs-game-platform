@@ -6,10 +6,8 @@ use App\Component\Rules\CardGame\Bid;
 
 class CardGameDto extends GameDto
 {
-    public PlayerDto $northPlayer;
-    public PlayerDto $eastPlayer;
-    public PlayerDto $southPlayer;
-    public PlayerDto $westPlayer;
+    /** @var PlayerDto[] */
+    public array $players;
     
     public ?PlayerPosition $currentPlayer;
     public PlayerPosition $winner = PlayerPosition::Neither;

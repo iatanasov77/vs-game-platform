@@ -200,23 +200,21 @@ final class GameFactory
         
         $game->Id           = Guid::NewGuid();
         
+        $game->Players[PlayerPosition::South->value] = new CardGamePlayer();
+        $game->Players[PlayerPosition::South->value]->PlayerPosition = PlayerPosition::South;
+        $game->Players[PlayerPosition::South->value]->Name = "Guest";
         
+        $game->Players[PlayerPosition::East->value] = new CardGamePlayer();
+        $game->Players[PlayerPosition::East->value]->PlayerPosition = PlayerPosition::East;
+        $game->Players[PlayerPosition::East->value]->Name = "Guest";
         
-        $game->SouthPlayer = new CardGamePlayer();
-        $game->SouthPlayer->PlayerPosition = PlayerPosition::South;
-        $game->SouthPlayer->Name = "Guest";
+        $game->Players[PlayerPosition::North->value] = new CardGamePlayer();
+        $game->Players[PlayerPosition::North->value]->PlayerPosition = PlayerPosition::North;
+        $game->Players[PlayerPosition::North->value]->Name = "Guest";
         
-        $game->EastPlayer = new CardGamePlayer();
-        $game->EastPlayer->PlayerPosition = PlayerPosition::East;
-        $game->EastPlayer->Name = "Guest";
-        
-        $game->NorthPlayer = new CardGamePlayer();
-        $game->NorthPlayer->PlayerPosition = PlayerPosition::North;
-        $game->NorthPlayer->Name = "Guest";
-        
-        $game->WestPlayer = new CardGamePlayer();
-        $game->WestPlayer->PlayerPosition = PlayerPosition::West;
-        $game->WestPlayer->Name = "Guest";
+        $game->Players[PlayerPosition::West->value] = new CardGamePlayer();
+        $game->Players[PlayerPosition::West->value]->PlayerPosition = PlayerPosition::West;
+        $game->Players[PlayerPosition::West->value]->Name = "Guest";
         
         $game->Created = new \DateTime( 'now' );
         

@@ -34,7 +34,7 @@ class BridgeBeloteGameManager extends CardGameManager
         if ( $this->Game->CurrentPlayer == PlayerPosition::South ) {
             $this->Clients->set( PlayerPosition::South->value, $webSocket );
             
-            $this->InitializePlayer( $dbUser, false, $this->Game->SouthPlayer );
+            $this->InitializePlayer( $dbUser, false, $this->Game->Players[PlayerPosition::South->value] );
             if ( $this->Game->IsGoldGame ) {
                 $this->Game->Stake = self::firstBet * 2;
             }
@@ -43,9 +43,9 @@ class BridgeBeloteGameManager extends CardGameManager
                 $this->logger->log( "Play AI is TRUE !!!", 'GameManager' );
                 
                 $aiUser = $this->playersRepository->findOneBy( ['guid' => GamePlayer::AiUser] );
-                $this->InitializePlayer( $aiUser, true, $this->Game->EastPlayer );
-                $this->InitializePlayer( $aiUser, true, $this->Game->NorthPlayer );
-                $this->InitializePlayer( $aiUser, true, $this->Game->WestPlayer );
+                $this->InitializePlayer( $aiUser, true, $this->Game->Players[PlayerPosition::East->value] );
+                $this->InitializePlayer( $aiUser, true, $this->Game->Players[PlayerPosition::North->value] );
+                $this->InitializePlayer( $aiUser, true, $this->Game->Players[PlayerPosition::West->value] );
                 
                 $this->Engine = AiEngineFactory::CreateAiEngine(
                     $this->GameCode,
@@ -160,10 +160,10 @@ class BridgeBeloteGameManager extends CardGameManager
     
     protected function CreateDbGame(): void
     {
-        $southPlayer = $this->CreateTempPlayer( $this->Game->SouthPlayer->Id, PlayerPosition::South->value );
-        $eastPlayer = $this->CreateTempPlayer( $this->Game->EastPlayer->Id, PlayerPosition::East->value );
-        $northPlayer = $this->CreateTempPlayer( $this->Game->NorthPlayer->Id, PlayerPosition::North->value );
-        $westPlayer = $this->CreateTempPlayer( $this->Game->WestPlayer->Id, PlayerPosition::West->value );
+        $southPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::South->value]->Id, PlayerPosition::South->value );
+        $eastPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::East->value]->Id, PlayerPosition::East->value );
+        $northPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::North->value]->Id, PlayerPosition::North->value );
+        $westPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::West->value]->Id, PlayerPosition::West->value );
         
         // Create Game Session
         $gameBase   = $this->gameRepository->findOneBy(['slug' => $this->GameCode]);

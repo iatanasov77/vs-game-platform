@@ -47,7 +47,7 @@ export class BridgeBeloteProvider implements ICardGameProvider
             tooltip: "Clover",
             
             value: '<i class="fi fi-sr-club"></i>'
-            //value: '<img src="' + context.themeBuildPath + '/images/icons/Suites/clover.png" width="40" height="40" style="vertical-align: inherit;" />'
+            //value: '<img src="' + context.themeBuildPath + '/images/CardGame/Suites/clover.png" width="40" height="40" style="vertical-align: inherit;" />'
         },
         {
             id: Announce.DIAMOND,
@@ -55,7 +55,7 @@ export class BridgeBeloteProvider implements ICardGameProvider
             tooltip: "Diamond",
             
             value: '<i class="fi fi-sr-card-diamond"></i>'
-            //value: '<img src="' + context.themeBuildPath + '/images/icons/Suites/diamond.png" width="40" height="40" style="vertical-align: inherit;" />'
+            //value: '<img src="' + context.themeBuildPath + '/images/CardGame/Suites/diamond.png" width="40" height="40" style="vertical-align: inherit;" />'
         },
         {
             id: Announce.HEART,
@@ -63,7 +63,7 @@ export class BridgeBeloteProvider implements ICardGameProvider
             tooltip: "Heart",
             
             value: '<i class="fi fi-sr-heart"></i>'
-            //value: '<img src="' + context.themeBuildPath + '/images/icons/Suites/hearts.png" width="40" height="40" style="vertical-align: inherit;" />'
+            //value: '<img src="' + context.themeBuildPath + '/images/CardGame/Suites/hearts.png" width="40" height="40" style="vertical-align: inherit;" />'
         },
         {
             id: Announce.SPADE,
@@ -71,7 +71,7 @@ export class BridgeBeloteProvider implements ICardGameProvider
             tooltip: "Spade",
             
             value: '<i class="fi fi-sr-spade"></i>'
-            //value: '<img src="' + context.themeBuildPath + '/images/icons/Suites/symbol-of-spades.png" width="40" height="40" style="vertical-align: inherit;" />'
+            //value: '<img src="' + context.themeBuildPath + '/images/CardGame/Suites/symbol-of-spades.png" width="40" height="40" style="vertical-align: inherit;" />'
         },
         {
             id: Announce.BEZ_KOZ,

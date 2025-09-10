@@ -6,9 +6,6 @@ import { SoundService } from '../application/services/sound.service'
 import { GameService } from '../application/services/game.service'
 import { GameBaseComponent } from '../application/components/game-base/game-base.component';
 
-import { BridgeBeloteProvider } from '../application/providers/bridge-belote-provider';
-//import BeloteCardGame from '_@/GamePlatform/Game/BeloteCardGame';
-
 import cssGameString from './svara.component.scss'
 import templateString from './svara.component.html'
 

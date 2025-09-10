@@ -24,6 +24,20 @@ import {
 } from '../../../+store/game.actions';
 import { GameState } from '../../../+store/game.reducers';
 
+import {
+    Point,
+    MoveAnimation
+} from '../../../models/';
+
+import {
+    BlueTheme,
+    DarkTheme,
+    GreenTheme,
+    IThemes,
+    LightTheme,
+    PinkTheme
+} from '../../../models/themes';
+
 import templateString from './bridge-belote-board.component.html'
 import styleString from './bridge-belote-board.component.scss'
 
@@ -45,9 +59,28 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
     @Input() rotated = false;
     @Input() flipped = false;
     
+    @Input() themeName: string | null = 'green';
+    @Input() timeLeft: number | null = 0;
+    @Input() lobbyButtonsVisible: boolean = false;
+    
     gameState?: GameState;
     
     cx: CanvasRenderingContext2D | null = null;
+//     dragging: CheckerDrag | null = null;
+//     cursor: Point = new Point( 0, 0 );
+    framerate = 60;
+    animatedMove: MoveAnimation | undefined = undefined;
+//     animationSubscription: Subscription;
+//     lastTouch: Point | undefined = undefined;
+    hasTouch = false;
+    whitesName = '';
+    blacksName = '';
+    
+    //theme: IThemes = new DarkTheme();
+    private _theme: IThemes | undefined = undefined;
+    
+    cardWidth: number = 69;
+    cardHeight: number = 94;
     
     constructor(
         @Inject( TranslateService ) private translateService: TranslateService,
@@ -156,12 +189,57 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
             return 0;
         }
         
+        const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
+        canvasEl.width = this.width;
+        canvasEl.height = this.height;
+        const cx = this.cx;
+        this.drawDeck( cx );
         
+        if ( this.game && ! this.lobbyButtonsVisible ) {
+            this.drawPlayers( cx );
+            this.drawCards( cx );
+        }
+        
+        if ( this.animatedMove ) {
+            this.animatedMove.draw( cx, this.cardWidth );
+        }
         
         // *** NOT PROD CODE
         // this.drawIcon(cx);
         // this.drawDebugRects(cx);
         // *** NOT PROD CODE
         return 0;
+    }
+    
+    drawDeck( cx: CanvasRenderingContext2D )
+    {
+        const image = new Image( this.cardWidth, this.cardHeight );
+        image.src = "/build/gameplatform-velzonsaas-theme/images/CardGame/Cards/back.png";
+        
+        cx.drawImage(
+            image,
+            this.width / 2 - image.width / 2,
+            this.height / 2 - image.height / 2,
+            this.cardWidth,
+            this.cardHeight
+        );
+    }
+    
+    drawPlayers( cx: CanvasRenderingContext2D )
+    {
+    
+    }
+    
+    drawCards( cx: CanvasRenderingContext2D )
+    {
+        console.log( this.game );
+        //alert( this.game.players.length );
+//         for ( i = 0; i < lowerhand.length; i++ ) {
+//             lowerhand[i].el.css( 'left', 10 + ( i * 20 ) + 'px' );
+//             lowerhand[i].el.css( 'top', '45px' );
+// 
+//             lowerhand[i].el.moveTo( '#lowerhand' );   // https://stackoverflow.com/questions/2596833/how-to-move-child-element-from-one-parent-to-another-using-jquery
+//             lowerhand[i].el.css( 'z-index', '0' );
+//         }
     }
 }

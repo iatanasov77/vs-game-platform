@@ -13,7 +13,7 @@ import {
     loadGameBySlug,
     loadGameRooms
 } from '../../../+store/game.actions';
-import { GameState } from '../../../+store/game.reducers';
+import { GameState as MyGameState } from '../../../+store/game.reducers';
 
 import IGame from '_@/GamePlatform/Model/GameInterface';
 import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
@@ -24,6 +24,11 @@ import { AppStateService } from '../../../state/app-state.service';
 // Services
 import { BridgeBeloteService } from '../../../services/websocket/bridge-belote.service';
 import { GamePlayService } from '../../../services/game-play.service';
+
+// BoardGame Interfaces
+import UserDto from '_@/GamePlatform/Model/Core/userDto';
+import GameState from '_@/GamePlatform/Model/Core/gameState';
+import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
 
 // Dialogs
 import { RequirementsDialogComponent } from '../../game-dialogs/requirements-dialog/requirements-dialog.component';
@@ -44,13 +49,13 @@ declare var $: any;
 })
 export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChanges
 {
+    @Input() lobbyButtonsVisible: boolean   = false;
     @Input() isLoggedIn: boolean        = false;
     @Input() hasPlayer: boolean         = false;
-    @Input() developementClass: string  = '';
-    @Input() gameProvider?: any;
-    @Input() game?: any;
     
-    appState?: GameState;
+    gameDto$: Observable<CardGameDto>;
+    
+    appState?: MyGameState;
     gameStarted: boolean                = false;
     gameAnnounceIcon: any;
     announceSymbols: any;
@@ -67,12 +72,11 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
         this.gameAnnounceIcon   = null;
         
         this.wsService.connect( '', false, false );
+        this.gameDto$ = this.appStateService.cardGame.observe();
     }
     
     ngOnInit(): void
     {
-        this.announceSymbols    = this.gameProvider?.getAnnounceSymbols();
-        
         this.store.subscribe( ( state: any ) => {
             this.appState   = state.app.main;
             
@@ -86,7 +90,6 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
         
         this.actions$.pipe( ofType( startCardGameSuccess ) ).subscribe( () => {
             this.store.dispatch( loadGameRooms( { gameSlug: window.gamePlatformSettings.gameSlug } ) );
-            this.game.startGame();
         });
     }
     
@@ -101,9 +104,6 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
             const changedProp = changes[propName];
             
             switch ( propName ) {
-                case 'developementClass':
-                    this.developementClass = changedProp.currentValue;
-                    break;
                 case 'isLoggedIn':
                     this.isLoggedIn = changedProp.currentValue;
                     break;

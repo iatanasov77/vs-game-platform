@@ -25,8 +25,14 @@ import BoardGameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
 import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
 import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
 
-import { CheckerArea, CheckerDrag, Point, MoveAnimation } from './';
-import { Checker } from './checker';
+import {
+    Checker,
+    CheckerArea,
+    CheckerDrag,
+    Point,
+    MoveAnimation
+} from '../../../models/';
+
 import {
     BlueTheme,
     DarkTheme,
@@ -34,7 +40,7 @@ import {
     IThemes,
     LightTheme,
     PinkTheme
-} from './themes';
+} from '../../../models/themes';
 
 import { GameVariant } from "../../../game.variant";
 
@@ -86,13 +92,13 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
     framerate = 60;
     animatedMove: MoveAnimation | undefined = undefined;
     animationSubscription: Subscription;
+    lastTouch: Point | undefined = undefined;
     hasTouch = false;
     whitesName = '';
     blacksName = '';
+    
     //theme: IThemes = new DarkTheme();
     private _theme: IThemes | undefined = undefined;
-    
-    lastTouch: Point | undefined = undefined;
     
     // translated phrases
     you = '';
@@ -320,7 +326,7 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
             this.drawCheckers( cx );
         }
         if ( this.animatedMove ) {
-            this.animatedMove.draw(cx, this.getCheckerWidth());
+            this.animatedMove.draw( cx, this.getCheckerWidth() );
         }
         
         this.drawClock( cx );

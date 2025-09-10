@@ -7,9 +7,6 @@ import { SoundService } from '../application/services/sound.service'
 import { GameService } from '../application/services/game.service'
 import { GameBaseComponent } from '../application/components/game-base/game-base.component';
 
-import { BridgeBeloteProvider } from '../application/providers/bridge-belote-provider';
-import BeloteCardGame from '_@/GamePlatform/Game/BeloteCardGame';
-
 import { AppStateService } from '../application/state/app-state.service';
 import { ErrorState } from '../application/state/ErrorState';
 import { ErrorReportService } from '../application/services/error-report.service';
@@ -28,15 +25,18 @@ import templateString from './bridge-belote.component.html'
 })
 export class BridgeBeloteComponent extends GameBaseComponent implements OnInit
 {
-    game: BeloteCardGame;
+    title   = 'Bridge Belote';
     errors$: Observable<ErrorState>;
+    
+    lobbyButtonsVisible = true;
+    playAi              = false;
+    forGold             = false;
     
     constructor(
         @Inject( AuthService ) authService: AuthService,
         @Inject( SoundService ) soundService: SoundService,
         @Inject( GameService ) gameService: GameService,
         @Inject( Store ) store: Store,
-        @Inject( BridgeBeloteProvider ) private providerBridgeBelote: BridgeBeloteProvider,
         
         @Inject( ErrorReportService ) private errorReportService: ErrorReportService,
         @Inject( AppStateService ) private appState: AppStateService
@@ -44,7 +44,11 @@ export class BridgeBeloteComponent extends GameBaseComponent implements OnInit
         super( authService, soundService, gameService, store );
         
         this.errors$    = this.appState.errors.observe();
-        this.game       = this.providerBridgeBelote.getGame();
+    }
+    
+    lobbyButtonsVisibleChanged( value: boolean )
+    {
+        this.lobbyButtonsVisible = value;
     }
     
     saveErrorReport( errorDto: ErrorReportDto ): void

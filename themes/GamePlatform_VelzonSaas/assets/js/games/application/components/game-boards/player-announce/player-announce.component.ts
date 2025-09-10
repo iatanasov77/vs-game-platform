@@ -1,9 +1,11 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 
+import { SetPlayerAnnounce } from '../../../models/card-game-player';
+import { GetAnnounceSymbol } from '../../../models/announce';
+
 import CardGamePlayer from '_@/GamePlatform/Game/CardGamePlayer';
 import Announce from '_@/GamePlatform/CardGameAnnounce/Announce';
 import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
-import { BridgeBeloteProvider } from '../../../providers/bridge-belote-provider';
 
 import templateString from './player-announce.component.html'
 import styleString from './player-announce.component.scss'
@@ -20,7 +22,6 @@ declare var $: any;
 })
 export class PlayerAnnounceComponent implements OnInit, OnDestroy
 {
-    @Input() gameProvider?: any;
     @Input() player?: CardGamePlayer;
     
     providerBridgeBelote: any;
@@ -31,9 +32,8 @@ export class PlayerAnnounceComponent implements OnInit, OnDestroy
     rotateClassName: any;
     styles: any;
     
-    constructor(
-        //private providerBridgeBelote: BridgeBeloteProvider
-    ) {
+    constructor( )
+    {
         this.announceIcon   = null;
         
         this.className   = 'playerAnnounce';
@@ -83,10 +83,10 @@ export class PlayerAnnounceComponent implements OnInit, OnDestroy
         $( "#" + this.player?.containerId ).get( 0 ).addEventListener( GameEvents.PLAYER_ANNOUNCE_EVENT_NAME, ( event:any ) => {
             const { announceId }    = event.detail;
             
-            this.gameProvider.setAnnounce( this.player?.id, announceId );
+            SetPlayerAnnounce( this.player?.id, announceId );
             if ( this.position === this.player?.id ) {
                 //alert( announceId );
-                this.announceIcon   = this.gameProvider.getAnnounceSymbol( announceId )?.value;
+                this.announceIcon   = GetAnnounceSymbol( announceId )?.value;
             }
         });
     }

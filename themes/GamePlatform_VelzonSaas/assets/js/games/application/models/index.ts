@@ -1,3 +1,4 @@
+export * from './checker';
 export * from './checker-area';
 export * from './checker-drag';
 export * from './point';

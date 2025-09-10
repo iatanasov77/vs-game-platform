@@ -3,6 +3,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { Actions, ofType } from '@ngrx/effects';
 import { Observable, of } from 'rxjs';
 
+import { GetAnnounceSymbol } from '../../../models/announce';
+
 import {
     selectGameRoomSuccess
 } from '../../../+store/game.actions';
@@ -13,6 +15,7 @@ import IGamePlayer from '_@/GamePlatform/Model/GamePlayerModel';
 
 import templateString from './card-game-board.component.html'
 import styleString from './card-game-board.component.scss'
+
 declare var $: any;
 
 @Component({
@@ -72,7 +75,7 @@ export class CardGameBoardComponent implements OnInit, OnDestroy, OnChanges
         $( "#card-table" ).get( 0 ).addEventListener( GameEvents.GAME_START_EVENT_NAME, ( event: any ) => {
             const { announceId }    = event.detail;
             
-            this.gameAnnounceIcon   = this.gameProvider.getAnnounceSymbol( announceId )?.value;
+            this.gameAnnounceIcon   = GetAnnounceSymbol( announceId )?.value;
             
             $( '#AnnounceContainer' ).hide();
             $( '#GameAnnounce' ).show();

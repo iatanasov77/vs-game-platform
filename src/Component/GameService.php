@@ -287,6 +287,9 @@ final class GameService
     private function TryReConnect( WebsocketClientInterface $webSocket, ?string $gameCookie, ?GamePlayer $dbUser, string $gameCode ): ?string
     {
         $this->logger->log( 'Try Reconnect with cookie: '. $gameCookie, 'GameService' );
+        if ( $gameCode == 'bridge-belote' ) {
+            return null;
+        }
         
         // Find existing game to reconnect to.
         if ( $gameCookie ) {

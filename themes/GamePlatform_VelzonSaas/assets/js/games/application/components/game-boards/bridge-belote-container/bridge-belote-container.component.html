@@ -5,10 +5,14 @@
         [width]="width"
         [height]="height"
         [game]="gameDto$ | async"
+        [myPosition]="playerPosition$ | async"
+        [themeName]="themeName"
+        [timeLeft]="timeLeft$ | async"
+        [lobbyButtonsVisible]="lobbyButtonsVisible"
     ></bridge-belote-board>
     
     <div id="card-actions" class="card-actions">
-        <game-start *ngIf="gameStarted != true"
+        <game-start *ngIf="started != true"
             [isRoomSelected]="isRoomSelected"
             
             (onSelectGameRoom)="selectGameRoom()"
@@ -16,9 +20,10 @@
             (onPlayWithFriends)="playWithFriends()"
         ></game-start>
         
-        <card-game-announce *ngIf="gameStarted == true"
+        <bridge-belote-announce *ngIf="started == true"
             [gameAnnounceIcon]="gameAnnounceIcon"
-            [announceSymbols]="announceSymbols"
-        ></card-game-announce>
+            [announceVisible]="announceVisible"
+            [gameContractVisible]="gameContractVisible"
+        ></bridge-belote-announce>
     </div>
 </div>

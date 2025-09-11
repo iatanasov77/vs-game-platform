@@ -1,4 +1,4 @@
-import { Component, Inject, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Inject, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
@@ -9,21 +9,23 @@ import { GetAnnounceSymbols } from '../../../../models/announce';
 import CardGameAnnounceSymbolModel from '_@/GamePlatform/Model/CardGameAnnounceSymbolModel';
 import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
 
-import templateString from './card-game-announce.component.html'
-import styleString from './card-game-announce.component.scss'
+import templateString from './bridge-belote-announce.component.html'
+import styleString from './bridge-belote-announce.component.scss'
 declare var $: any;
 
 @Component({
-    selector: 'card-game-announce',
+    selector: 'bridge-belote-announce',
     
     template: templateString || 'Template Not Loaded !!!',
     styles: [
         styleString || 'CSS Not Loaded !!!'
     ]
 })
-export class CardGameAnnounceComponent implements OnInit, OnChanges
+export class BridgeBeloteAnnounceComponent implements OnChanges
 {
     @Input() gameAnnounceIcon: any;
+    @Input() announceVisible = false;
+    @Input() gameContractVisible = false;
     
     announceSymbols: Array<CardGameAnnounceSymbolModel>;
     
@@ -32,12 +34,6 @@ export class CardGameAnnounceComponent implements OnInit, OnChanges
     ) {
         this.announceSymbols = GetAnnounceSymbols();
         this.gameAnnounceIcon   = null;
-    }
-    
-    ngOnInit(): void
-    {
-        $( '#AnnounceContainer' ).hide();
-        $( '#GameAnnounce' ).hide();
     }
         
     ngOnChanges( changes: SimpleChanges )

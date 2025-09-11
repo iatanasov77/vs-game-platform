@@ -1,0 +1,17 @@
+<div>
+    <div *ngIf="announceVisible" id="AnnounceContainer">
+        <ng-container *ngFor="let icon of announceSymbols; let i = index">
+            <a href="javascript:void(0);"
+                id="{{ icon.key }}"
+                ngbTooltip="{{ icon.tooltip }}" placement="top"
+                (click)="onPlayerAnnounce( icon.id, $event )"
+            >
+                <span class="announce-button" [innerHTML]="icon.value"></span>
+            </a>
+        </ng-container>
+    </div>
+    <div *ngIf="gameContractVisible" id="GameAnnounce" class="float-end me-3">
+        <span class="announce-button">{{ 'game_board.game' | translate }}:</span>&nbsp;
+        <span class="announce-button" [innerHTML]="gameAnnounceIcon"></span>
+    </div>
+</div>

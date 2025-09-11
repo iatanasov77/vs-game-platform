@@ -24,6 +24,10 @@ import {
 } from '../../../+store/game.actions';
 import { GameState } from '../../../+store/game.reducers';
 
+// CardGame Interfaces
+import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
+import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
+
 import {
     Point,
     MoveAnimation
@@ -55,10 +59,8 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
     
     @Input() public width = 600;
     @Input() public height = 400;
-    @Input() game?: any;
-    @Input() rotated = false;
-    @Input() flipped = false;
-    
+    @Input() game: CardGameDto | null = null;
+    @Input() myPosition: PlayerPosition | null = PlayerPosition.south;
     @Input() themeName: string | null = 'green';
     @Input() timeLeft: number | null = 0;
     @Input() lobbyButtonsVisible: boolean = false;

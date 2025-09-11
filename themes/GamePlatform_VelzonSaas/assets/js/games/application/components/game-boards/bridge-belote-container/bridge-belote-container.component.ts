@@ -1,9 +1,19 @@
-import { Component, Inject, OnInit, OnDestroy, Input, OnChanges, SimpleChanges } from '@angular/core';
+import {
+    Component,
+    Inject,
+    OnInit,
+    OnDestroy,
+    Input,
+    Output,
+    OnChanges,
+    SimpleChanges,
+    EventEmitter
+} from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
-import { of, Observable, map, merge, take } from 'rxjs';
+import { of, Observable, Subscription, map, merge, take } from 'rxjs';
 
 import {
     selectGameRoom,
@@ -29,6 +39,7 @@ import { GamePlayService } from '../../../services/game-play.service';
 import UserDto from '_@/GamePlatform/Model/Core/userDto';
 import GameState from '_@/GamePlatform/Model/Core/gameState';
 import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
+import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
 
 // Dialogs
 import { RequirementsDialogComponent } from '../../game-dialogs/requirements-dialog/requirements-dialog.component';
@@ -53,12 +64,26 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
     @Input() isLoggedIn: boolean        = false;
     @Input() hasPlayer: boolean         = false;
     
+    @Output() lobbyButtonsVisibleChanged    = new EventEmitter<boolean>();
+    
     gameDto$: Observable<CardGameDto>;
+    playerPosition$: Observable<PlayerPosition>;
+    timeLeft$: Observable<number>;
+    
+    gameSubs: Subscription;
+    oponnetDoneSubs: Subscription;
+    
+    themeName: string;
+    
+    width = 600;
+    height = 400;
+    started = false;
+    
+    announceVisible = false;
+    gameContractVisible = false;
     
     appState?: MyGameState;
-    gameStarted: boolean                = false;
     gameAnnounceIcon: any;
-    announceSymbols: any;
     
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,
@@ -71,8 +96,23 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
     ) {
         this.gameAnnounceIcon   = null;
         
-        this.wsService.connect( '', false, false );
+        const currentUrlparams = new URLSearchParams( window.location.search );
+        let gameId = currentUrlparams.get( 'gameId' );
+        if ( gameId ) {
+            this.wsService.connect( '', false, false );
+        }
+        
         this.gameDto$ = this.appStateService.cardGame.observe();
+        this.playerPosition$ = this.appStateService.myPosition.observe();
+        
+        this.gameSubs = this.appStateService.cardGame.observe().subscribe( this.gameChanged.bind( this ) );
+        this.oponnetDoneSubs = this.appStateService.opponentDone.observe().subscribe( this.oponnentDone.bind( this ) );
+        
+        this.timeLeft$ = this.appStateService.moveTimer.observe();
+        
+        // For some reason i could not use an observable for theme. Maybe i'll figure out why someday
+        // service.connect might need to be in a setTimeout callback.
+        this.themeName = this.appStateService.user.getValue()?.theme ?? 'dark';
     }
     
     ngOnInit(): void
@@ -81,7 +121,7 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
             this.appState   = state.app.main;
             
             if ( state.app.main.gamePlay ) {
-                this.gameStarted    = true;
+                this.started    = true;
             }
             console.log( state.app.main );
         });
@@ -91,6 +131,13 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
         this.actions$.pipe( ofType( startCardGameSuccess ) ).subscribe( () => {
             this.store.dispatch( loadGameRooms( { gameSlug: window.gamePlatformSettings.gameSlug } ) );
         });
+        
+//         this.gameDto$.subscribe( game => {
+//             if ( game ) {
+//                 this.started = true;
+//                 $( '#AnnounceContainer' ).show();
+//             }
+//         });
     }
     
     ngOnDestroy(): void
@@ -166,5 +213,31 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
             // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
             modalRef.dismiss();
         });
+    }
+    
+    gameChanged( dto: CardGameDto ): void
+    {
+        if ( ! this.started && dto ) {
+            if ( dto.playState === GameState.playing ) {
+                this.started = true;
+                //this.playAiQuestion = false;
+                this.lobbyButtonsVisibleChanged.emit( false );
+            }
+        }
+        // console.log( dto?.id );
+        // console.log( 'Debug GameDto: ', dto );
+        // alert( this.lobbyButtonsVisible );
+        
+        this.setAnnounceVisible();
+    }
+    
+    oponnentDone(): void
+    {
+        this.announceVisible = false;
+    }
+    
+    setAnnounceVisible(): void
+    {
+        this.announceVisible = true;
     }
 }

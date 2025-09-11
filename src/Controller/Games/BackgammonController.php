@@ -25,10 +25,6 @@ class BackgammonController extends GameController
             
             'queryParams'           => [
                 'gameId'    => $request->query->get( 'gameId' ),
-//                 'playAi'    => $request->query->get( 'playAi' ),
-//                 'forGold'   => $request->query->get( 'forGold' ),
-//                 'tutorial'  => $request->query->get( 'tutorial' ),
-//                 'editing'   => $request->query->get( 'editing' ),
                 'inviteId'  => $request->query->get( 'inviteId' ),
             ],
         ];

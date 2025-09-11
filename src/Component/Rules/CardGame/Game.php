@@ -47,7 +47,7 @@ abstract class Game implements GameInterface
     public $CurrentPlayer;
     
     /** @var GameState */
-    public $PlayState = GameState::firstThrow;
+    public $PlayState = GameState::firstAnnounce;
     
     /** @var \DateTime */
     public $Created;

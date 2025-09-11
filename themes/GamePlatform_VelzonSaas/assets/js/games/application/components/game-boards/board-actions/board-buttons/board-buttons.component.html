@@ -11,6 +11,11 @@
             {{ 'game_board.play_game' | translate }}
         </button>
         
+        <!-- Test Button for Card Games -->
+        <button *ngIf="isLoggedIn && ! acceptInviteVisible && gameCode == 'bridge-belote'" (click)="playWithComputer()" class="default-button">
+            {{ 'game_board.play_with_computer' | translate }}
+        </button>
+        
         <button *ngIf="isLoggedIn && ! acceptInviteVisible" (click)="inviteFriendClick()" class="default-button">
             {{ 'game_board.invite_friend' | translate }}
         </button>
@@ -35,12 +40,12 @@
         <!--
          -- Backgammon Menu Buttons
         -->
-        <button class="red-button" (click)="rotateClick()" *ngIf="! tutorial">
+        <button class="red-button" (click)="rotateClick()" *ngIf="! tutorial && gameCode == 'backgammon'">
             <i class="fas fa-sync"></i>
             {{ 'menu.rotate' | translate }}
         </button>
         
-        <button class="red-button" (click)="flipClick()" *ngIf="! tutorial">
+        <button class="red-button" (click)="flipClick()" *ngIf="! tutorial && gameCode == 'backgammon'">
             <i class="fas fa-arrow-up"></i>
             {{ 'menu.flip' | translate }}
         </button>

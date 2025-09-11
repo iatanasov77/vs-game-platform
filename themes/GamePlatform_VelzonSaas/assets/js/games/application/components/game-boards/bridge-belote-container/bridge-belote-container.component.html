@@ -12,6 +12,7 @@
     ></bridge-belote-board>
     
     <div id="card-actions" class="card-actions">
+        <!--
         <game-start *ngIf="started != true"
             [isRoomSelected]="isRoomSelected"
             
@@ -19,6 +20,24 @@
             (onPlayWithComputer)="playWithComputer()"
             (onPlayWithFriends)="playWithFriends()"
         ></game-start>
+        -->
+        <app-board-buttons *ngIf="started != true"
+            [isLoggedIn]="isLoggedIn"
+            [lobbyButtonsVisible]="lobbyButtonsVisible"
+            
+            [newVisible]="newVisible"
+            [exitVisible]="exitVisible"
+            
+            (onLogin)="login()"
+            (onNew)="newGame()"
+            (onExit)="exitGame()"
+            
+            (onPlayWithComputer)="playWithComputer($event)"
+            (onPlayGame)="playGame($event)"
+            (onInviteFriend)="inviteFriend()"
+            (onAcceptInvite)="acceptInvite( $event )"
+            (onCancelInvite)="cancelInvite()"
+        ></app-board-buttons>
         
         <bridge-belote-announce *ngIf="started == true"
             [gameAnnounceIcon]="gameAnnounceIcon"

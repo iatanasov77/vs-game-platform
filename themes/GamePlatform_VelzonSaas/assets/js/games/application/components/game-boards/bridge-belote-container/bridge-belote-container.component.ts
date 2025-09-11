@@ -30,8 +30,12 @@ import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
 
 // App State
 import { AppStateService } from '../../../state/app-state.service';
+import { QueryParamsService } from '../../../state/query-params.service';
+import { StatusMessage } from '../../../utils/status-message';
 
 // Services
+import { StatusMessageService } from '../../../services/status-message.service';
+import { SoundService } from '../../../services/sound.service';
 import { BridgeBeloteService } from '../../../services/websocket/bridge-belote.service';
 import { GamePlayService } from '../../../services/game-play.service';
 
@@ -43,6 +47,10 @@ import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
 
 // Dialogs
 import { RequirementsDialogComponent } from '../../game-dialogs/requirements-dialog/requirements-dialog.component';
+import { SelectGameRoomDialogComponent } from '../../game-dialogs/select-game-room-dialog/select-game-room-dialog.component';
+import { CreateGameRoomDialogComponent } from '../../game-dialogs/create-game-room-dialog/create-game-room-dialog.component';
+import { CreateInviteGameDialogComponent } from '../../game-dialogs/create-invite-game-dialog/create-invite-game-dialog.component';
+import { UserLoginDialogComponent } from '../../game-dialogs/user-login-dialog/user-login-dialog.component';
 
 import { Helper } from '../../../utils/helper';
 
@@ -78,7 +86,13 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
     width = 600;
     height = 400;
     started = false;
+    gameId = "";
+    playAiFlag = false;
+    forGoldFlag = false;
+    lokalStake = 0;
     
+    newVisible = false;
+    exitVisible = true;
     announceVisible = false;
     gameContractVisible = false;
     
@@ -88,6 +102,9 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,
         @Inject( AppStateService ) private appStateService: AppStateService,
+        @Inject( QueryParamsService ) private queryParamsService: QueryParamsService,
+        @Inject( SoundService ) private sound: SoundService,
+        @Inject( StatusMessageService ) private statusMessageService: StatusMessageService,
         @Inject( BridgeBeloteService ) private wsService: BridgeBeloteService,
         @Inject( GamePlayService ) private gamePlayService: GamePlayService,
         @Inject( Store ) private store: Store,
@@ -131,13 +148,6 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
         this.actions$.pipe( ofType( startCardGameSuccess ) ).subscribe( () => {
             this.store.dispatch( loadGameRooms( { gameSlug: window.gamePlatformSettings.gameSlug } ) );
         });
-        
-//         this.gameDto$.subscribe( game => {
-//             if ( game ) {
-//                 this.started = true;
-//                 $( '#AnnounceContainer' ).show();
-//             }
-//         });
     }
     
     ngOnDestroy(): void
@@ -159,6 +169,70 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
                     break;
             }
         }
+    }
+    
+    login(): void
+    {
+        const modalRef = this.ngbModal.open( UserLoginDialogComponent );
+        
+        modalRef.componentInstance.closeModal.subscribe( () => {
+            // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
+            modalRef.dismiss();
+        });
+    }
+    
+    resignGame(): void
+    {
+        this.wsService.resignGame();
+    }
+    
+    newGame(): void
+    {
+        this.newVisible = false;
+        this.started = false;
+        
+        this.wsService.resetGame();
+        this.wsService.connect( '', false, false );
+        //this.waitForOpponent();
+    }
+    
+    exitGame(): void
+    {
+        this.wsService.exitGame();
+        this.appStateService.hideBusy();
+        
+        this.gamePlayService.exitBoardGame();
+        //this.playAiQuestion = false;
+        this.lobbyButtonsVisibleChanged.emit( true );
+    }
+    
+    inviteFriend(): void
+    {
+        const modalRef = this.ngbModal.open( CreateInviteGameDialogComponent );
+        
+        modalRef.componentInstance.closeModal.subscribe( () => {
+            // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
+            modalRef.dismiss();
+        });
+        
+        modalRef.componentInstance.onPlayGame.subscribe( ( gameId: string ) => {
+            modalRef.close();
+            
+            this.playGame( gameId );
+        });
+    }
+    
+    acceptInvite( inviteId: string ): void
+    {
+        this.wsService.acceptInvite( inviteId );
+        
+        this.wsService.resetGame();
+        this.wsService.connect( inviteId, this.playAiFlag, this.forGoldFlag );
+    }
+    
+    cancelInvite(): void
+    {
+        this.exitGame();
     }
     
     async playWithComputer()
@@ -239,5 +313,32 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
     setAnnounceVisible(): void
     {
         this.announceVisible = true;
+    }
+    
+    playGame( gameId: string ): void
+    {
+        if ( ! gameId.length ) {
+            this.gamePlayService.startBoardGame( 'normal' );
+        }
+        
+        this.initFlags();
+        this.wsService.connect( gameId, this.playAiFlag, this.forGoldFlag );
+        
+        this.lobbyButtonsVisibleChanged.emit( false );
+        window.dispatchEvent( new Event( 'resize' ) );
+        
+        this.statusMessageService.setWaitingForConnect();
+        this.exitVisible = true;
+    }
+    
+    initFlags(): void
+    {
+        if ( this.queryParamsService.gameId.getValue() ) {
+            this.gameId = this.queryParamsService.gameId.getValue();
+        }
+        
+        this.playAiFlag = this.queryParamsService.playAi.getValue() === true;
+        this.forGoldFlag = this.queryParamsService.forGold.getValue() === true;
+        this.lokalStake = 0;
     }
 }

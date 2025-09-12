@@ -97,6 +97,8 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
     gameContractVisible = false;
     
     appState?: MyGameState;
+    gameStarted: boolean = false;
+    
     gameAnnounceIcon: any;
     
     constructor(
@@ -129,25 +131,28 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
         
         // For some reason i could not use an observable for theme. Maybe i'll figure out why someday
         // service.connect might need to be in a setTimeout callback.
-        this.themeName = this.appStateService.user.getValue()?.theme ?? 'dark';
+        this.themeName = this.appStateService.user.getValue()?.theme ?? 'green';
     }
     
     ngOnInit(): void
     {
         this.store.subscribe( ( state: any ) => {
+            console.log( state.app.main );
+            
             this.appState   = state.app.main;
             
             if ( state.app.main.gamePlay ) {
-                this.started    = true;
+                this.gameStarted    = true;
             }
-            console.log( state.app.main );
         });
         
+        /*
         this.store.dispatch( loadGameBySlug( { slug: window.gamePlatformSettings.gameSlug } ) );
         
         this.actions$.pipe( ofType( startCardGameSuccess ) ).subscribe( () => {
             this.store.dispatch( loadGameRooms( { gameSlug: window.gamePlatformSettings.gameSlug } ) );
         });
+        */
     }
     
     ngOnDestroy(): void
@@ -292,7 +297,7 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
     gameChanged( dto: CardGameDto ): void
     {
         if ( ! this.started && dto ) {
-            if ( dto.playState === GameState.playing ) {
+            if ( dto.playState === GameState.firstAnnounce ) { // GameState.playing
                 this.started = true;
                 //this.playAiQuestion = false;
                 this.lobbyButtonsVisibleChanged.emit( false );

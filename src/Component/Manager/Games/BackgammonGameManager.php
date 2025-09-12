@@ -142,20 +142,20 @@ final class BackgammonGameManager extends BoardGameManager
                 function( $entry ) {
                     return Mapper::DiceToDto( $entry );
                 }
-                )->toArray();
-                $rollAction->playerToMove = $this->Game->CurrentPlayer;
-                $rollAction->validMoves = $this->Game->ValidMoves->map(
-                    function( $entry ) {
-                        return Mapper::MoveToDto( $entry );
-                    }
-                )->toArray();
-                $rollAction->moveTimer = Game::ClientCountDown;
-                
-                //$this->logger->log( 'First Throw Valid Moves: ' . \print_r( $rollAction->validMoves, true ), 'FirstThrowState' );
-                //$this->logger->debug( $rollAction, 'FirstRoll.txt' );
-                
-                $this->Send( $this->Clients->get( PlayerColor::Black->value ), $rollAction );
-                $this->Send( $this->Clients->get( PlayerColor::White->value ), $rollAction );
+            )->toArray();
+            $rollAction->playerToMove = $this->Game->CurrentPlayer;
+            $rollAction->validMoves = $this->Game->ValidMoves->map(
+                function( $entry ) {
+                    return Mapper::MoveToDto( $entry );
+                }
+            )->toArray();
+            $rollAction->moveTimer = Game::ClientCountDown;
+            
+            //$this->logger->log( 'First Throw Valid Moves: ' . \print_r( $rollAction->validMoves, true ), 'FirstThrowState' );
+            //$this->logger->debug( $rollAction, 'FirstRoll.txt' );
+            
+            $this->Send( $this->Clients->get( PlayerColor::Black->value ), $rollAction );
+            $this->Send( $this->Clients->get( PlayerColor::White->value ), $rollAction );
         }
         
         $this->moveTimeOut = new DeferredCancellation();

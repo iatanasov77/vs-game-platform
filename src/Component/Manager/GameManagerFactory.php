@@ -99,7 +99,7 @@ final class GameManagerFactory
                 return $this->createContractBridgeGameManager( $forGold, $gameCode, $gameVariant );
                 break;
             default:
-                throw new \RuntimeException( 'Unknown Game Code !' );
+                throw new \RuntimeException( "Unknown Game Code: '{$gameCode}' !" );
         }
     }
     

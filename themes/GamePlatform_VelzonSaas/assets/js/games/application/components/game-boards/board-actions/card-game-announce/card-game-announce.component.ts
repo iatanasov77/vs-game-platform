@@ -3,29 +3,35 @@ import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 
-import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
-import Announce from '_@/GamePlatform/CardGameAnnounce/Announce';
 import { playerAnnounce } from '../../../../+store/game.actions';
 
+import { GetAnnounceSymbols } from '../../../../models/announce';
+import CardGameAnnounceSymbolModel from '_@/GamePlatform/Model/CardGameAnnounceSymbolModel';
+import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
+
 import templateString from './card-game-announce.component.html'
+import styleString from './card-game-announce.component.scss'
 declare var $: any;
 
 @Component({
     selector: 'card-game-announce',
     
     template: templateString || 'Template Not Loaded !!!',
-    styles: []
+    styles: [
+        styleString || 'CSS Not Loaded !!!'
+    ]
 })
 export class CardGameAnnounceComponent implements OnInit, OnChanges
 {
     @Input() gameAnnounceIcon: any;
-    @Input() announceSymbols: any;
+    
+    announceSymbols: Array<CardGameAnnounceSymbolModel>;
     
     constructor(
         @Inject( Store ) private store: Store
     ) {
+        this.announceSymbols = GetAnnounceSymbols();
         this.gameAnnounceIcon   = null;
-        this.announceSymbols    = [];
     }
     
     ngOnInit(): void
@@ -42,9 +48,6 @@ export class CardGameAnnounceComponent implements OnInit, OnChanges
             switch ( propName ) {
                 case 'gameAnnounceIcon':
                     this.gameAnnounceIcon = changedProp.currentValue;
-                    break;
-                case 'announceSymbols':
-                    this.announceSymbols = changedProp.currentValue;
                     break;
             }
         }

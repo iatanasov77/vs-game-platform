@@ -15,9 +15,6 @@ import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
 import DiceDto from '_@/GamePlatform/Model/BoardGame/diceDto';
 import BoardGameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
 
-// CardGame Interfaces
-import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
-
 // Action Interfaces
 import ActionDto from '../../dto/Actions/actionDto';
 import ActionNames from '../../dto/Actions/actionNames';
@@ -140,7 +137,6 @@ export class BackgammonService extends AbstractGameService
                     id: dto.game.id,
                     game: window.gamePlatformSettings.gameSlug,
                     color: dto.myColor,
-                    //position: PlayerPosition.neither,
                     roomSelected: false
                 };
                 this.cookieService.deleteAll( Keys.gameIdKey );

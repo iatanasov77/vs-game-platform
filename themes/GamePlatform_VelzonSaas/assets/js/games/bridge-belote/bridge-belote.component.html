@@ -5,11 +5,10 @@
     
     <div class="col-8">
         <bridge-belote-container
+            [lobbyButtonsVisible]="lobbyButtonsVisible"
             [isLoggedIn]="isLoggedIn"
             [hasPlayer]="hasPlayer"
-            [developementClass]="developementClass"
-            [game]="game"
-            [gameProvider]="providerBridgeBelote"
+            (lobbyButtonsVisibleChanged)="lobbyButtonsVisibleChanged($event)"
         ></bridge-belote-container>
         
         <app-error-handler

@@ -2,24 +2,28 @@
 
 use Doctrine\Common\Collections\Collection;
 use App\Component\Type\PlayerPosition;
+use App\Component\Type\CardGameTeam;
 use App\Component\Rules\CardGame\Bid;
 
 class CardGameDto extends GameDto
 {
-    public PlayerDto $northPlayer;
-    public PlayerDto $eastPlayer;
-    public PlayerDto $southPlayer;
-    public PlayerDto $westPlayer;
+    /** @var PlayerDto[] */
+    public array $players;
     
     public ?PlayerPosition $currentPlayer;
-    public PlayerPosition $winner = PlayerPosition::Neither;
+    public CardGameTeam $winner = CardGameTeam::Neither;
     
     public int $RoundNumber;
     public PlayerPosition $FirstToPlayInTheRound;
+    
     public int $SouthNorthPoints;
     public int $EastWestPoints;
     
     public Collection $MyCards;
     public array $Bids;
     public Bid $CurrentContract;
+    
+    public array $deck;
+    public array $pile;
+    public array $teamsTricks;
 }

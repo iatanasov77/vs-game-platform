@@ -153,10 +153,7 @@ final class Mapper
         $gameDto = new CardGameDto();
         $gameDto->id = $game->Id;
         
-        $gameDto->northPlayer = self::CardGamePlayerToDto( $game->NorthPlayer );
-        $gameDto->eastPlayer = self::CardGamePlayerToDto( $game->EastPlayer );
-        $gameDto->southPlayer = self::CardGamePlayerToDto( $game->SouthPlayer );
-        $gameDto->westPlayer = self::CardGamePlayerToDto( $game->WestPlayer );
+        $gameDto->players   = self::CardGamePlayersToDto( $game->Players );
         
         $gameDto->currentPlayer = $game->CurrentPlayer;
         $gameDto->playState = $game->PlayState;
@@ -168,24 +165,34 @@ final class Mapper
         $gameDto->goldMultiplier    = $game->GoldMultiplier;
         $gameDto->isGoldGame        = $game->IsGoldGame;
         
+        $gameDto->deck = $game->deck->Cards();
+        $gameDto->pile = $game->pile;
+        $gameDto->teamsTricks = $game->teamsTricks;
+        
         return $gameDto;
     }
     
-    public static function CardGamePlayerToDto( CardGamePlayer $player ): PlayerDto
+    public static function CardGamePlayersToDto( array $players ): array
     {
-        $playerDto = new PlayerDto();
+        $playersDto = [];
+        foreach ( $players as $player ) {
+            $playerDto = new PlayerDto();
+            
+            // Do not mapp id, it should never be sent to opponent.
+            $playerDto->name = $player->Name;
+            
+            $playerDto->playerPosition = $player->PlayerPosition;
+            
+            $playerDto->elo = $player->Elo;
+            $playerDto->gold = $player->Gold;
+            $playerDto->photoUrl = $player->Photo;
+            $playerDto->cards = $player->Cards;
+            
+            $playerDto->isAi = $player->IsAi();
+            
+            $playersDto[] = $playerDto;
+        }
         
-        // Do not mapp id, it should never be sent to opponent.
-        $playerDto->name = $player->Name;
-        
-        $playerDto->playerPosition = $player->PlayerPosition;
-        
-        $playerDto->elo = $player->Elo;
-        $playerDto->gold = $player->Gold;
-        $playerDto->photoUrl = $player->Photo;
-        
-        $playerDto->isAi = $player->IsAi();
-        
-        return $playerDto;
+        return $playersDto;
     }
 }

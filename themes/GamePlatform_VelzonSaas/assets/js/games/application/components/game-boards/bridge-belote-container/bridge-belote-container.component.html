@@ -1,20 +1,40 @@
 <div id="game-board" align="center">
     <bridge-belote-board
-        [game]="game"
+        class="game-board"
+        
+        [width]="width"
+        [height]="height"
+        [game]="gameDto$ | async"
+        [myPosition]="playerPosition$ | async"
+        [themeName]="themeName"
+        [timeLeft]="timeLeft$ | async"
+        [lobbyButtonsVisible]="lobbyButtonsVisible"
     ></bridge-belote-board>
     
     <div id="card-actions" class="card-actions">
-        <game-start *ngIf="gameStarted != true"
-            [isRoomSelected]="isRoomSelected"
+        <app-board-buttons *ngIf="started != true"
+            [isLoggedIn]="isLoggedIn"
+            [lobbyButtonsVisible]="lobbyButtonsVisible"
             
-            (onSelectGameRoom)="selectGameRoom()"
-            (onPlayWithComputer)="playWithComputer()"
-            (onPlayWithFriends)="playWithFriends()"
-        ></game-start>
+            [newVisible]="newVisible"
+            [exitVisible]="exitVisible"
+            
+            (onLogin)="login()"
+            (onNew)="newGame()"
+            (onExit)="exitGame()"
+            
+            (onPlayWithComputer)="playWithComputer($event)"
+            
+            (onPlayGame)="playGame($event)"
+            (onInviteFriend)="inviteFriend()"
+            (onAcceptInvite)="acceptInvite( $event )"
+            (onCancelInvite)="cancelInvite()"
+        ></app-board-buttons>
         
-        <card-game-announce *ngIf="gameStarted == true"
+        <bridge-belote-announce *ngIf="started == true"
             [gameAnnounceIcon]="gameAnnounceIcon"
-            [announceSymbols]="announceSymbols"
-        ></card-game-announce>
+            [announceVisible]="announceVisible"
+            [gameContractVisible]="gameContractVisible"
+        ></bridge-belote-announce>
     </div>
 </div>

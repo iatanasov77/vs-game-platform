@@ -152,7 +152,7 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
     dicesDto: DiceDto[] | undefined;
     
     appState?: MyGameState;
-    gameStarted: boolean        = false;
+    gameStarted: boolean = false;
     
     isRoomSelected: boolean = false;
     hasRooms: boolean       = false;
@@ -798,7 +798,7 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
     {
         const game      = this.appStateService.boardGame.getValue();
         const myColor   = this.appStateService.myColor.getValue();
-        //console.log( 'GameDto Object: ', game );
+        console.log( 'GameDto Object: ', game );
         
         if ( ! gameId.length ) {
             this.gamePlayService.startBoardGame( 'normal' );

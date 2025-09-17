@@ -1,5 +1,7 @@
 <?php namespace App\Component\Rules\CardGame;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use App\Component\Type\CardSuit;
 use App\Component\Type\CardType;
 
@@ -7,15 +9,19 @@ class Card
 {
     use CardExtensions;
     
-    public static array $AllCards = [];
-    public static array $AllSuits = [ CardSuit::Club, CardSuit::Diamond, CardSuit::Heart, CardSuit::Spade, ];
-    public static array $AllTypes = [
+    /** @var Collection | Card[] */
+    public static $AllCards;
+    
+    public static $AllSuits = [ CardSuit::Club, CardSuit::Diamond, CardSuit::Heart, CardSuit::Spade, ];
+    
+    public static $AllTypes = [
         CardType::Seven, CardType::Eight, CardType::Nine, CardType::Ten,
         CardType::Jack, CardType::Queen, CardType::King, CardType::Ace,
     ];
     
-    private static array $TrumpOrders = [ 1, 2, 7, 5, 8, 3, 4, 6 ];
-    private static array $NoTrumpOrders = [ 1, 2, 3, 7, 4, 5, 6, 8 ];
+    private static $TrumpOrders = [ 1, 2, 7, 5, 8, 3, 4, 6 ];
+    
+    private static $NoTrumpOrders = [ 1, 2, 3, 7, 4, 5, 6, 8 ];
     
     private int $hashCode;
     
@@ -29,19 +35,21 @@ class Card
     
     public static function instance()
     {
+        self::$AllCards = new ArrayCollection();
+        
         foreach ( self::$AllSuits as $suit )
         {
             foreach ( self::$AllTypes as $type )
             {
                 $card = new Card( $suit, $type );
-                self::$AllCards[$card->hashCode] = $card;
+                self::$AllCards->set( $card->hashCode, $card );
             }
         }
     }
     
     public static function GetCard( CardSuit $suit, CardType $type ): Card
     {
-        return self::$AllCards[($suit->value * 8) + $type->value];
+        return self::$AllCards->get( ($suit->value * 8) + $type->value );
     }
     
     public static function Equals( Card $left, Card $right ): bool
@@ -52,15 +60,6 @@ class Card
     public static function NotEquals( Card $left, Card $right ): bool
     {
         return ! ( $left->hashCode == $right->hashCode );
-    }
-    
-    private function __construct( CardSuit $suit, CardType $type )
-    {
-        $this->hashCode = ( $suit->value * 8 ) + $type->value;
-        $this->Suit = $suit;
-        $this->Type = $type;
-        $this->TrumpOrder = self::$TrumpOrders[$this->Type->value];
-        $this->NoTrumpOrder = self::$NoTrumpOrders[$this->Type->value];
     }
     
     public function Suit(): CardSuit
@@ -95,5 +94,14 @@ class Card
             self::TypeToFriendlyString( $this->Type ),
             self::SuitToFriendlyString( $this->Suit )
         );
+    }
+    
+    private function __construct( CardSuit $suit, CardType $type )
+    {
+        $this->hashCode = ( $suit->value * 8 ) + $type->value;
+        $this->Suit = $suit;
+        $this->Type = $type;
+        $this->TrumpOrder = self::$TrumpOrders[$this->Type->value];
+        $this->NoTrumpOrder = self::$NoTrumpOrders[$this->Type->value];
     }
 }

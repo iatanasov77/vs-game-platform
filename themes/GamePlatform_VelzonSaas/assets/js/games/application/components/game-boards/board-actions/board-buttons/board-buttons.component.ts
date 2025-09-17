@@ -28,6 +28,7 @@ export class BoardButtonsComponent implements OnInit, OnChanges
     @Output() onNew = new EventEmitter<void>();
     @Output() onExit = new EventEmitter<void>();
     
+    @Output() onPlayWithComputer = new EventEmitter<string>();
     @Output() onPlayGame = new EventEmitter<string>();
     @Output() onInviteFriend = new EventEmitter<void>();
     @Output() onAcceptInvite = new EventEmitter<string>();
@@ -37,6 +38,7 @@ export class BoardButtonsComponent implements OnInit, OnChanges
     @Output() onFlip = new EventEmitter<void>();
     @Output() onResign = new EventEmitter<void>();
     
+    gameCode = null;
     inviteId = null;
     acceptInviteVisible: boolean = false;
     
@@ -48,6 +50,7 @@ export class BoardButtonsComponent implements OnInit, OnChanges
     
     ngOnInit(): void
     {
+        this.gameCode = window.gamePlatformSettings.gameSlug;
         this.inviteId = window.gamePlatformSettings.queryParams[
             Keys.inviteId
         ];
@@ -95,6 +98,11 @@ export class BoardButtonsComponent implements OnInit, OnChanges
     exitGame(): void
     {
         this.onExit.emit();
+    }
+    
+    playWithComputer(): void
+    {
+        this.onPlayWithComputer.emit( '' );
     }
     
     playGame(): void

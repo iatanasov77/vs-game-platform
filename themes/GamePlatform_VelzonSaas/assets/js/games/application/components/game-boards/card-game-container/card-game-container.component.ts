@@ -44,13 +44,11 @@ export class CardGameContainerComponent implements OnInit, OnDestroy, OnChanges
     @Input() isLoggedIn: boolean        = false;
     @Input() hasPlayer: boolean         = false;
     @Input() developementClass: string  = '';
-    @Input() gameProvider?: any;
     @Input() game?: any;
     
     appState?: GameState;
     gameStarted: boolean                = false;
     gameAnnounceIcon: any;
-    announceSymbols: any;
     gamePlayers: Observable<IGamePlayer[]>;
     
     constructor(
@@ -67,13 +65,12 @@ export class CardGameContainerComponent implements OnInit, OnDestroy, OnChanges
     
     ngOnInit(): void
     {
-        this.announceSymbols    = this.gameProvider?.getAnnounceSymbols();
-        
         this.store.subscribe( ( state: any ) => {
             this.appState   = state.app.main;
             
             if ( state.app.main.gamePlay ) {
                 this.gameStarted    = true;
+                //alert( 'Game Started !' );
             }
             //console.log( state.app.main );
         });

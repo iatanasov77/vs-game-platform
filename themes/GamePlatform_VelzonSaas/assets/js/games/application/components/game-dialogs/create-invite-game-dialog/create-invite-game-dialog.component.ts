@@ -45,10 +45,13 @@ export class CreateInviteGameDialogComponent
         const variant = currentUrlparams.get( 'variant' );
         
         const gameCode: string =  window.gamePlatformSettings.gameSlug;
-        const gameVariant: string = variant !== null ? variant : GameVariant.BACKGAMMON_NORMAL;
+        
+        var gameVariant;
+        if ( gameCode == GameVariant.BACKGAMMON_CODE ) {
+            gameVariant = variant !== null ? variant : GameVariant.BACKGAMMON_NORMAL;
+        }
         
         this.invite$ = this.inviteService.createInvite( gameCode, gameVariant );
-        
         this.invite$.subscribe( res => {
             this.gameId = res.gameId;
             

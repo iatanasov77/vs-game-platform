@@ -131,19 +131,15 @@ export class GamePlayService
         this.router.navigateByUrl( urlTree );
     }
     
-    createInvite( game: string, variant: string ): Observable<InviteResponseDto>
+    createInvite( game: string, variant?: string ): Observable<InviteResponseDto>
     {
-        /* NOT Work on Api , Beecause Game Service is Different Instance From Websocket Server
-         * ====================================================================================
-        const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
-        var url = `${this.apiUrl}/invite/create/${game}-${variant}`;
+        var url: string;
+        if ( variant ) {
+            url = `${this.backendUrl}/ajax/invite/create/${game}_${variant}`;
+        } else {
+            url = `${this.backendUrl}/ajax/invite/create/${game}`;
+        }
         
-        return this.httpClient.get<InviteResponseDto>( url, {headers} ).pipe(
-            map( ( dto ) => dto as InviteResponseDto )
-        );
-        */
-        
-        var url = `${this.backendUrl}/ajax/invite/create/${game}-${variant}`;
         return this.httpClient.get<InviteResponseDto>( url ).pipe(
             map( ( dto ) => dto as InviteResponseDto )
         );

@@ -1,8 +1,8 @@
 enum PlayerPosition
 {
-    north,
     south,
     east,
+    north,
     west,
     neither
 }

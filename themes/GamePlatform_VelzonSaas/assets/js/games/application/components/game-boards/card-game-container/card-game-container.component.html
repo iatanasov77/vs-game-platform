@@ -3,7 +3,6 @@
         [developementClass]="developementClass"
         [game]="game"
         [gamePlayers] = "gamePlayers"
-        [gameProvider]="providerBridgeBelote"
     ></card-game-board>
     
     <div id="card-actions" class="card-actions">
@@ -17,7 +16,6 @@
         
         <card-game-announce *ngIf="gameStarted == true"
             [gameAnnounceIcon]="gameAnnounceIcon"
-            [announceSymbols]="announceSymbols"
         ></card-game-announce>
     </div>
 </div>

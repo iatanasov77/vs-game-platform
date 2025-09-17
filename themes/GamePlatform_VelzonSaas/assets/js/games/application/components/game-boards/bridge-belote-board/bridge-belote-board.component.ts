@@ -24,6 +24,27 @@ import {
 } from '../../../+store/game.actions';
 import { GameState } from '../../../+store/game.reducers';
 
+// CardGame Interfaces
+import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
+import CardGamePlayerDto from '_@/GamePlatform/Model/CardGame/playerDto';
+import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
+
+import { CardGamePlayerArea } from '../../../models/card-game-player-area';
+import {
+    Point,
+    MoveAnimation
+} from '../../../models/';
+import {
+    BlueTheme,
+    DarkTheme,
+    GreenTheme,
+    IThemes,
+    LightTheme,
+    PinkTheme
+} from '../../../models/themes';
+
+import { Helper } from '../../../utils/helper';
+
 import templateString from './bridge-belote-board.component.html'
 import styleString from './bridge-belote-board.component.scss'
 
@@ -39,15 +60,35 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
 {
     @ViewChild( 'canvas' ) public canvas: ElementRef | undefined;
     
-    @Input() public width = 600;
-    @Input() public height = 400;
-    @Input() game?: any;
-    @Input() rotated = false;
-    @Input() flipped = false;
+    @Input() public width: number = 600;
+    @Input() public height: number = 400;
+    @Input() game: CardGameDto | null = null;
+    @Input() myPosition: PlayerPosition | null = PlayerPosition.south;
+    @Input() themeName: string | null = 'green';
+    @Input() timeLeft: number | null = 0;
+    @Input() lobbyButtonsVisible: boolean = false;
     
     gameState?: GameState;
     
     cx: CanvasRenderingContext2D | null = null;
+//     dragging: CheckerDrag | null = null;
+//     cursor: Point = new Point( 0, 0 );
+    framerate = 60;
+    animatedMove: MoveAnimation | undefined = undefined;
+//     animationSubscription: Subscription;
+//     lastTouch: Point | undefined = undefined;
+    hasTouch = false;
+    whitesName = '';
+    blacksName = '';
+    
+    //theme: IThemes = new DarkTheme();
+    private _theme: IThemes | undefined = undefined;
+    
+    playerAreas: CardGamePlayerArea[] = [];
+    cardWidth: number = 69;
+    cardHeight: number = 94;
+    cardOffset: number = 10;
+    playerAreaPadding: number = 10;
     
     constructor(
         @Inject( TranslateService ) private translateService: TranslateService,
@@ -60,30 +101,14 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
     ngOnChanges( changes: SimpleChanges ): void
     {
         if (
+            changes['game'] ||
             changes['width'] ||
-            changes['height'] ||
-            changes['flipped'] ||
-            changes['rotated']
+            changes['height']
         ) {
             this.recalculateGeometry();
         }
+        
         this.requestDraw();
-        
-        /*
-        const bName = this.myColor === PlayerColor.black
-            ? this.you
-            : this.game?.blackPlayer.name;
-        const wName = this.myColor === PlayerColor.white
-            ? this.you
-            : this.game?.whitePlayer.name;
-        
-        const bLeft = this.game?.blackPlayer.pointsLeft;
-        const wLeft = this.game?.whitePlayer.pointsLeft;
-        
-        this.blacksName = this.game ? `${bName} - ${bLeft} ${this.left}` : '';
-        this.whitesName = this.game ? `${wName} - ${wLeft} ${this.left}` : '';
-        */
-        // console.log( this.game?.playState );
     }
     
     ngAfterViewInit(): void
@@ -115,7 +140,6 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
         this.black = this.translateService.instant( 'gameboard.black' );
         this.left = this.translateService.instant( 'gameboard.left' );
         */
-        this.requestDraw();
     }
     
     onMouseMove( event: MouseEvent ): void
@@ -142,7 +166,78 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
     
     recalculateGeometry(): void
     {
-    
+        if ( this.canvas ) {
+            const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
+            canvasEl.width = this.width;
+            canvasEl.height = this.height;
+        }
+        
+        if ( this.game ) {
+            this.playerAreas = [];
+            var pw, ph, playerArea;
+            for ( let p = 0; p < this.game.players.length; p++ ) {
+                switch( this.game.players[p].playerPosition ) {
+                    case PlayerPosition.north:
+                        pw = this.width / 2;
+                        ph = this.cardHeight + 20;
+                        
+                        playerArea = new CardGamePlayerArea(
+                            ( this.width - pw ) / 2,
+                            this.playerAreaPadding,
+                            pw,
+                            ph,
+                            this.game.players[p].playerPosition
+                        );
+                        this.playerAreas.push( playerArea );
+                        
+                        break;
+                    case PlayerPosition.south:
+                        pw = this.width / 2;
+                        ph = this.cardHeight + 20;
+                        
+                        playerArea = new CardGamePlayerArea(
+                            ( this.width - pw ) / 2,
+                            this.height - ph - this.playerAreaPadding,
+                            pw,
+                            ph,
+                            this.game.players[p].playerPosition
+                        );
+                        this.playerAreas.push( playerArea );
+                        
+                        break;
+                    case PlayerPosition.east:
+                        pw = this.cardHeight + 20;
+                        ph = this.height / 2;
+                        
+                        playerArea = new CardGamePlayerArea(
+                            this.width - pw - this.playerAreaPadding,
+                            ( this.height - ph ) / 2,
+                            pw,
+                            ph,
+                            this.game.players[p].playerPosition
+                        );
+                        this.playerAreas.push( playerArea );
+                        
+                        break;
+                    case PlayerPosition.west:
+                        pw = this.cardHeight + 20;
+                        ph = this.height / 2;
+                        
+                        playerArea = new CardGamePlayerArea(
+                            this.playerAreaPadding,
+                            ( this.height - ph ) / 2,
+                            pw,
+                            ph,
+                            this.game.players[p].playerPosition
+                        );
+                        this.playerAreas.push( playerArea );
+                        
+                        break;
+                    default:
+                        throw new Error( `Invalid Player Position ${this.game.players[p].playerPosition}` );
+                }
+            }
+        }
     }
     
     requestDraw(): void
@@ -156,12 +251,181 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
             return 0;
         }
         
+        const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
+        canvasEl.width = this.width;
+        canvasEl.height = this.height;
+        const cx = this.cx;
+        this.drawDeck( cx );
         
+        if ( this.game && ! this.lobbyButtonsVisible ) {
+            console.log( this.game );
+            this.drawPlayers( cx );
+        }
+        
+        if ( this.animatedMove ) {
+            this.animatedMove.draw( cx, this.cardWidth );
+        }
         
         // *** NOT PROD CODE
         // this.drawIcon(cx);
         // this.drawDebugRects(cx);
         // *** NOT PROD CODE
         return 0;
+    }
+    
+    drawDeck( cx: CanvasRenderingContext2D ): void
+    {
+        const image = new Image( this.cardWidth, this.cardHeight );
+        image.src = "/build/gameplatform-velzonsaas-theme/images/CardGame/Cards/BridgeBelote/back.png";
+        
+        var cardX = this.width / 2 - image.width / 2;
+        var cardY = this.height / 2 - image.height / 2;
+        
+        cx.drawImage(
+            image,
+            cardX,
+            cardY,
+            this.cardWidth,
+            this.cardHeight
+        );
+        /*
+        for ( let c = 0; c < this?.game?.deck.length; c++ ) {
+            cardX -= 1;
+            cardY -= 1;
+            
+            cx.drawImage(
+                image,
+                cardX,
+                cardY,
+                this.cardWidth,
+                this.cardHeight
+            );
+        }
+        */
+    }
+    
+    drawPlayers( cx: CanvasRenderingContext2D ): void
+    {
+        if ( ! cx ) {
+            return;
+        }
+        
+        if ( ! this.game ) {
+            return;
+        }
+        
+        //console.log( 'Player Areas', this.playerAreas );
+        for ( let pa = 0; pa < this.playerAreas.length; pa++ ) {
+            this.drawPlayerArea( cx, this.playerAreas[pa] );
+            this.drawCards( cx, this.game.players[this.playerAreas[pa].playerPosition] );
+        }
+    }
+    
+    drawCards( cx: CanvasRenderingContext2D, playerDto: CardGamePlayerDto ): void
+    {
+        //console.log( 'PlayerDto', playerDto );
+        
+        var card, pa, xOffset = 0, yOffset = 0;
+        for ( let c = 0; c < playerDto.cards.length; c++ ) {
+            pa = this.playerAreas.find( ( x ) => x.playerPosition === playerDto.playerPosition );
+            if ( ! pa ) {
+                continue;
+            }
+            
+            card = playerDto.cards[c];
+            const image = new Image( this.cardWidth, this.cardHeight );
+            if ( pa.playerPosition === PlayerPosition.south ) {
+                let imgSrc = "/build/gameplatform-velzonsaas-theme/images/CardGame/Cards/BridgeBelote/";
+                imgSrc += `${Helper.cardType( card.Type ).toLowerCase()}`;
+                imgSrc += `${Helper.cardSuit( card.Suit ).toLowerCase()}.png`;
+                
+                image.src = imgSrc;
+            } else {
+                image.src = "/build/gameplatform-velzonsaas-theme/images/CardGame/Cards/BridgeBelote/back.png";
+            }
+            
+            if ( pa.playerPosition === PlayerPosition.east || pa.playerPosition === PlayerPosition.west ) {
+                if ( pa.playerPosition === PlayerPosition.west ) {
+                    xOffset = pa.width - this.cardHeight;
+                }
+                
+                const cardX = pa.x + pa.width - xOffset;
+                const cardY = pa.y + ( ( c + 1 ) * this.cardOffset ) + ( playerDto.cards.length * this.cardOffset / 2 ) + this.playerAreaPadding;
+                
+                cx.save();
+                cx.translate( cardX, cardY );
+                cx.rotate( Math.PI / 2 );
+                
+                cx.drawImage(
+                    image,
+                    0,
+                    0,
+                    this.cardWidth,
+                    this.cardHeight
+                );
+                
+                cx.restore();
+            } else {
+                if ( pa.playerPosition === PlayerPosition.south ) {
+                    yOffset = pa.height - this.cardHeight;
+                }
+                
+                const cardX = pa.x + ( ( c + 1 ) * this.cardOffset ) + ( playerDto.cards.length * this.cardOffset / 2 ) + this.playerAreaPadding;
+                const cardY = pa.y + yOffset;
+                
+                cx.drawImage(
+                    image,
+                    cardX,
+                    cardY,
+                    this.cardWidth,
+                    this.cardHeight
+                );
+            }
+        }
+    }
+    
+    drawPlayerArea( cx: CanvasRenderingContext2D, playerArea: CardGamePlayerArea ): void
+    {
+        if ( ! this.game || ! this.game.players[playerArea.playerPosition] ) {
+            return;
+        }
+        
+        //playerArea.drawBorder( cx );
+        
+        var x: number, y: number, angle;
+        switch( playerArea.playerPosition ) {
+            case PlayerPosition.north:
+                x = this.width / 2;
+                y = playerArea.y + playerArea.height;
+                angle = 0;
+                break;
+            case PlayerPosition.south:
+                x = this.width / 2;
+                y = playerArea.y;
+                angle = Math.PI;
+                break;
+            case PlayerPosition.east:
+                x = playerArea.x;
+                y = playerArea.y + playerArea.height / 2;
+                angle = Math.PI / 2;
+                break;
+            case PlayerPosition.west:
+                x = playerArea.x + playerArea.width;
+                y = playerArea.y + playerArea.height / 2;
+                angle = -Math.PI / 2;
+                break;
+            default:
+                throw new Error( `Invalid Player Position ${playerArea.playerPosition}` );
+        }
+        
+        cx.save();
+        cx.translate( x, y );
+        cx.rotate( angle );
+        
+        cx.textAlign = "center";
+        cx.font = "bold 10pt Courier";
+        cx.fillText( this.game.players[playerArea.playerPosition].name, 0, 0 );
+        
+        cx.restore();
     }
 }

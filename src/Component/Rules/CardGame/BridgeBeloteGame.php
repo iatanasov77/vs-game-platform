@@ -12,23 +12,33 @@ class BridgeBeloteGame extends Game
     /** @var Collection | BridgeBeloteDeclaration[] */
     public $Declarations;
     
+    /** @var int */
+    public $southNorthPoints;
+    
+    /** @var int */
+    public $eastWestPoints;
+    
+    /** @var PlayerPosition */
+    public $firstInRound;
+    
+    /** @var int */
+    public $roundNumber;
+    
+    /** @var int */
+    public $hangingPoints;
+    
     public function SetStartPosition(): void
     {
-        $this->DealCards( 5, $this->NorthPlayer );
-        $this->DealCards( 5, $this->WestPlayer );
-        $this->DealCards( 5, $this->SouthPlayer );
-        $this->DealCards( 5, $this->EastPlayer );
+        $this->playGame();
     }
     
-    public function DealCards( int $count, Player $player ): void
+    public function PlayGame( PlayerPosition $firstToPlay = PlayerPosition::South ): void
     {
-        if ( ! isset( $this->playerCards[$player->PlayerPosition->toString()] ) ) {
-            $this->playerCards[$player->PlayerPosition->toString()] = [];
-        }
-        
-        for ( $i = 0; $i < $count; $i++ ) {
-            $this->playerCards[$player->PlayerPosition->toString()][] = array_shift( $this->cardDeck );
-        }
+        $this->southNorthPoints = 0;
+        $this->eastWestPoints = 0;
+        $this->firstInRound = $firstToPlay;
+        $this->roundNumber = 1;
+        $this->hangingPoints = 0;
     }
     
     public function NextPlayer(): PlayerPosition

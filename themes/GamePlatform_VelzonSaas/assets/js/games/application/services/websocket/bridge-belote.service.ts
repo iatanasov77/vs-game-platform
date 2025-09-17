@@ -15,10 +15,11 @@ import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
 // Action Interfaces
 import ActionDto from '../../dto/Actions/actionDto';
 import ActionNames from '../../dto/Actions/actionNames';
+import ConnectionInfoActionDto from '../../dto/Actions/connectionInfoActionDto';
 import CardGameCreatedActionDto from '../../dto/Actions/cardGameCreatedActionDto';
 import CardGameEndedActionDto from '../../dto/Actions/cardGameEndedActionDto';
-import ConnectionInfoActionDto from '../../dto/Actions/connectionInfoActionDto';
 import CardGameRestoreActionDto from '../../dto/Actions/cardGameRestoreActionDto';
+import PlayCardActionDto from '../../dto/Actions/playCardActionDto';
 
 import { Keys } from '../../utils/keys';
 

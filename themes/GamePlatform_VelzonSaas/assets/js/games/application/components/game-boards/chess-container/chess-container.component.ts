@@ -120,7 +120,6 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
     undoVisible = false;
     
     appState?: MyGameState;
-    gameStarted: boolean        = false;
     
     isRoomSelected: boolean = false;
     hasRooms: boolean       = false;
@@ -181,7 +180,6 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
             this.hasRooms   = this?.appState?.rooms?.length && this?.appState?.rooms?.length > 0 ? true : false;
             
             if ( state.app.main.gamePlay ) {
-                this.gameStarted    = true;
                 this.statusMessageService.setWaitingForConnect();
             }
             

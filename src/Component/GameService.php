@@ -175,10 +175,10 @@ final class GameService
                     $this->SendConnectionLost( $manager, PlayerColor::White->value );
                     break;
                 case GameVariant::BRIDGE_BELOTE_CODE:
-                    $manager->Game->CurrentPlayer = PlayerPosition::North;
+                    $manager->Game->CurrentPlayer = PlayerPosition::South;
                     $manager->ConnectAndListen( $webSocket, $gamePlayer, $playAi );
                     $this->SendConnectionLost( $manager, PlayerPosition::East->value );
-                    $this->SendConnectionLost( $manager, PlayerPosition::South->value );
+                    $this->SendConnectionLost( $manager, PlayerPosition::North->value );
                     $this->SendConnectionLost( $manager, PlayerPosition::West->value );
                     break;
             }
@@ -199,10 +199,10 @@ final class GameService
                     $this->SendConnectionLost( $manager, PlayerColor::White->value );
                     break;
                 case GameVariant::BRIDGE_BELOTE_CODE:
-                    $manager->Game->CurrentPlayer = PlayerPosition::North;
+                    $manager->Game->CurrentPlayer = PlayerPosition::South;
                     $manager->ConnectAndListen( $webSocket, $gamePlayer, $playAi );
                     $this->SendConnectionLost( $manager, PlayerPosition::East->value );
-                    $this->SendConnectionLost( $manager, PlayerPosition::South->value );
+                    $this->SendConnectionLost( $manager, PlayerPosition::North->value );
                     $this->SendConnectionLost( $manager, PlayerPosition::West->value );
                     break;
             }
@@ -287,6 +287,9 @@ final class GameService
     private function TryReConnect( WebsocketClientInterface $webSocket, ?string $gameCookie, ?GamePlayer $dbUser, string $gameCode ): ?string
     {
         $this->logger->log( 'Try Reconnect with cookie: '. $gameCookie, 'GameService' );
+        if ( $gameCode == 'bridge-belote' ) {
+            return null;
+        }
         
         // Find existing game to reconnect to.
         if ( $gameCookie ) {

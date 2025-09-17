@@ -1,3 +1,13 @@
+0.16.3	|	Release date: **17.09.2025**
+============================================
+* New Features and Improvements:
+  - Improve CardGame Manager.
+  - Remove BridgeBeloteProvider .
+  - Create a BoardActions BridgeBeloteAnnounceComponent .
+  - Change GameStart Component with BoardButtons Component in BridgeBeloteGame .
+  - Draw CardGame Board as a Canvas.
+
+
 0.16.2	|	Release date: **04.09.2025**
 ============================================
 * New Features:

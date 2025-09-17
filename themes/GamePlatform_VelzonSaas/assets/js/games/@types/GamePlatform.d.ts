@@ -251,13 +251,27 @@ declare module '_@/GamePlatform/Model/CardGame/gameDto' {
     
     import CardGamePlayerDto from '_@/GamePlatform/Model/CardGame/playerDto';
     import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
+    import CardGameTeam from '_@/GamePlatform/Model/CardGame/cardGameTeam'
 
     interface CardGameDto extends GameDto {
-        northPlayer: CardGamePlayerDto;
-        southPlayer: CardGamePlayerDto;
-        eastPlayer: CardGamePlayerDto;
-        westPlayer: CardGamePlayerDto;
+        players: CardGamePlayerDto[];
+    
         currentPlayer: PlayerPosition;
+        winner: CardGameTeam;
+        
+        RoundNumber: number;
+        FirstToPlayInTheRound: PlayerPosition;
+        
+        SouthNorthPoints: number;
+        EastWestPoints: number;
+        
+        MyCards: any;
+        Bids: any;
+        CurrentContract: any;
+        
+        deck: any;
+        pile: any;
+        teamsTricks: any;
     }
     
     export = CardGameDto;
@@ -266,9 +280,9 @@ declare module '_@/GamePlatform/Model/CardGame/gameDto' {
 declare module '_@/GamePlatform/Model/CardGame/playerPosition' {
     enum PlayerPosition
     {
-        north,
         south,
         east,
+        north,
         west,
         neither
     }
@@ -276,14 +290,70 @@ declare module '_@/GamePlatform/Model/CardGame/playerPosition' {
     export = PlayerPosition;
 }
 
-declare module '_@/GamePlatform/Model/CardGame/playerDto' {
-    import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
+declare module '_@/GamePlatform/Model/CardGame/cardSuit' {
+    enum CardSuit
+    {
+        Club,
+        Diamond,
+        Heart,
+        Spade,
+    }
+    
+    export = CardSuit;
+}
 
-    interface CardGamePlayerDto {
+declare module '_@/GamePlatform/Model/CardGame/cardType' {
+    enum CardType
+    {
+        Seven,
+        Eight,
+        Nine,
+        Ten,
+        Jack,
+        Queen,
+        King,
+        Ace,
+    }
+    
+    export = CardType;
+}
+
+declare module '_@/GamePlatform/Model/CardGame/cardGameTeam' {
+    enum CardGameTeam
+    {
+        SouthNorth,
+        EastWest,
+        Neither
+    }
+    
+    export = CardGameTeam;
+}
+
+declare module '_@/GamePlatform/Model/CardGame/playerDto' {
+    import PlayerDto from '_@/GamePlatform/Model/Core/playerDto';
+    import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
+    import CardDto from '_@/GamePlatform/Model/CardGame/cardDto';
+    
+    interface CardGamePlayerDto extends PlayerDto
+    {
         playerPosition: PlayerPosition;
+        cards: CardDto[];
     }
     
     export default CardGamePlayerDto;
+}
+
+declare module '_@/GamePlatform/Model/CardGame/cardDto' {
+    import CardSuit from '_@/GamePlatform/Model/CardGame/cardSuit';
+    import CardType from '_@/GamePlatform/Model/CardGame/cardType';
+    
+    interface CardDto
+    {
+        Suit: CardSuit;
+        Type: CardType;
+    }
+    
+    export default CardDto;
 }
 
 /**

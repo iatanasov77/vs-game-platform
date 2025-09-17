@@ -222,11 +222,8 @@ final class GameFactory
         $game->IsGoldGame = $forGold;
         
         $game->deck = new Deck();
+        $game->pile = [];
         $game->teamsTricks = [[], []];
-        
-        for ( $playerIndex = 0; $playerIndex < 4; $playerIndex++ ) {
-            $game->playerCards[] = new ArrayCollection();
-        }
         
         $game->SetStartPosition();
         

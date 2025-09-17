@@ -26,13 +26,14 @@ import { GameState } from '../../../+store/game.reducers';
 
 // CardGame Interfaces
 import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
+import CardGamePlayerDto from '_@/GamePlatform/Model/CardGame/playerDto';
 import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
 
+import { CardGamePlayerArea } from '../../../models/card-game-player-area';
 import {
     Point,
     MoveAnimation
 } from '../../../models/';
-
 import {
     BlueTheme,
     DarkTheme,
@@ -41,6 +42,8 @@ import {
     LightTheme,
     PinkTheme
 } from '../../../models/themes';
+
+import { Helper } from '../../../utils/helper';
 
 import templateString from './bridge-belote-board.component.html'
 import styleString from './bridge-belote-board.component.scss'
@@ -57,8 +60,8 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
 {
     @ViewChild( 'canvas' ) public canvas: ElementRef | undefined;
     
-    @Input() public width = 600;
-    @Input() public height = 400;
+    @Input() public width: number = 600;
+    @Input() public height: number = 400;
     @Input() game: CardGameDto | null = null;
     @Input() myPosition: PlayerPosition | null = PlayerPosition.south;
     @Input() themeName: string | null = 'green';
@@ -81,8 +84,10 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
     //theme: IThemes = new DarkTheme();
     private _theme: IThemes | undefined = undefined;
     
+    playerAreas: CardGamePlayerArea[] = [];
     cardWidth: number = 69;
     cardHeight: number = 94;
+    cardOffset: number = 10;
     
     constructor(
         @Inject( TranslateService ) private translateService: TranslateService,
@@ -96,12 +101,11 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
     {
         if (
             changes['width'] ||
-            changes['height'] ||
-            changes['flipped'] ||
-            changes['rotated']
+            changes['height']
         ) {
             this.recalculateGeometry();
         }
+        this.initPlayerAreas();
         this.requestDraw();
         
         /*
@@ -134,6 +138,7 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
         // I. Atanasov - Get Translations Before Draw
         this.translateService.getTranslation( this.translateService.getBrowserLang()! ).subscribe( () => {
             this.translate();
+            this.initPlayerAreas();
             this.requestDraw();
         });
         
@@ -150,7 +155,6 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
         this.black = this.translateService.instant( 'gameboard.black' );
         this.left = this.translateService.instant( 'gameboard.left' );
         */
-        this.requestDraw();
     }
     
     onMouseMove( event: MouseEvent ): void
@@ -180,6 +184,106 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
     
     }
     
+    getPlayerWidth( pPos: PlayerPosition ): number
+    {
+        switch( pPos ) {
+            case PlayerPosition.north:
+                return this.width / 2;
+                break;
+            case PlayerPosition.south:
+                return this.width / 2;
+                break;
+            case PlayerPosition.east:
+                return this.cardHeight + 20;
+                break;
+            case PlayerPosition.west:
+                return this.cardHeight + 20;
+                break;
+            default:
+                throw new Error( `Invalid Player Position ${pPos}` );
+        }
+    }
+    
+    getPlayerHeight( pPos: PlayerPosition ): number
+    {
+        switch( pPos ) {
+            case PlayerPosition.north:
+                return this.cardHeight + 20;
+                break;
+            case PlayerPosition.south:
+                return this.cardHeight + 20;
+                break;
+            case PlayerPosition.east:
+                return this.height / 2;
+                break;
+            case PlayerPosition.west:
+                return this.height / 2;
+                break;
+            default:
+                throw new Error( `Invalid Player Position ${pPos}` );
+        }
+    }
+    
+    initPlayerAreas(): void
+    {
+        if ( ! this.game ) {
+            return;
+        }
+        
+        console.log( 'Players', this.game.players );
+        this.playerAreas = [];
+        var pw, ph, playerArea;
+        for ( let p = 0; p < this.game.players.length; p++ ) {
+            pw = this.getPlayerWidth( this.game.players[p].playerPosition );
+            ph = this.getPlayerHeight( this.game.players[p].playerPosition );
+            
+            switch( this.game.players[p].playerPosition ) {
+                case PlayerPosition.north:
+                    playerArea = new CardGamePlayerArea(
+                        ( this.width - pw ) / 2,
+                        10,
+                        pw,
+                        ph,
+                        this.game.players[p].playerPosition
+                    );
+                    this.playerAreas.push( playerArea );
+                    break;
+                case PlayerPosition.south:
+                    playerArea = new CardGamePlayerArea(
+                        ( this.width - pw ) / 2,
+                        this.height - ph - 10,
+                        pw,
+                        ph,
+                        this.game.players[p].playerPosition
+                    );
+                    this.playerAreas.push( playerArea );
+                    break;
+                case PlayerPosition.east:
+                    playerArea = new CardGamePlayerArea(
+                        this.width - pw - 10,
+                        ( this.height - ph ) / 2,
+                        pw,
+                        ph,
+                        this.game.players[p].playerPosition
+                    );
+                    this.playerAreas.push( playerArea );
+                    break;
+                case PlayerPosition.west:
+                    playerArea = new CardGamePlayerArea(
+                        10,
+                        ( this.height - ph ) / 2,
+                        pw,
+                        ph,
+                        this.game.players[p].playerPosition
+                    );
+                    this.playerAreas.push( playerArea );
+                    break;
+                default:
+                    throw new Error( `Invalid Player Position ${this.game.players[p].playerPosition}` );
+            }
+        }
+    }
+    
     requestDraw(): void
     {
         requestAnimationFrame( this.draw.bind( this ) );
@@ -198,8 +302,8 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
         this.drawDeck( cx );
         
         if ( this.game && ! this.lobbyButtonsVisible ) {
+            console.log( this.game );
             this.drawPlayers( cx );
-            this.drawCards( cx );
         }
         
         if ( this.animatedMove ) {
@@ -213,35 +317,159 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
         return 0;
     }
     
-    drawDeck( cx: CanvasRenderingContext2D )
+    drawDeck( cx: CanvasRenderingContext2D ): void
     {
         const image = new Image( this.cardWidth, this.cardHeight );
         image.src = "/build/gameplatform-velzonsaas-theme/images/CardGame/Cards/back.png";
         
+        var cardX = this.width / 2 - image.width / 2;
+        var cardY = this.height / 2 - image.height / 2;
+        
         cx.drawImage(
             image,
-            this.width / 2 - image.width / 2,
-            this.height / 2 - image.height / 2,
+            cardX,
+            cardY,
             this.cardWidth,
             this.cardHeight
         );
+        /*
+        for ( let c = 0; c < this?.game?.deck.length; c++ ) {
+            cardX -= 1;
+            cardY -= 1;
+            
+            cx.drawImage(
+                image,
+                cardX,
+                cardY,
+                this.cardWidth,
+                this.cardHeight
+            );
+        }
+        */
     }
     
-    drawPlayers( cx: CanvasRenderingContext2D )
+    drawPlayers( cx: CanvasRenderingContext2D ): void
     {
-    
+        if ( ! cx ) {
+            return;
+        }
+        
+        if ( ! this.game ) {
+            return;
+        }
+        
+        console.log( 'Player Areas', this.playerAreas );
+        for ( let pa = 0; pa < this.playerAreas.length; pa++ ) {
+            this.drawPlayerArea( cx, this.playerAreas[pa] );
+            this.drawCards( cx, this.game.players[this.playerAreas[pa].playerPosition] );
+        }
     }
     
-    drawCards( cx: CanvasRenderingContext2D )
+    drawCards( cx: CanvasRenderingContext2D, playerDto: CardGamePlayerDto ): void
     {
-        console.log( this.game );
-        //alert( this.game.players.length );
-//         for ( i = 0; i < lowerhand.length; i++ ) {
-//             lowerhand[i].el.css( 'left', 10 + ( i * 20 ) + 'px' );
-//             lowerhand[i].el.css( 'top', '45px' );
-// 
-//             lowerhand[i].el.moveTo( '#lowerhand' );   // https://stackoverflow.com/questions/2596833/how-to-move-child-element-from-one-parent-to-another-using-jquery
-//             lowerhand[i].el.css( 'z-index', '0' );
-//         }
+        console.log( 'PlayerDto', playerDto );
+        
+        var card, pa, xOffset = 0, yOffset = 0;
+        for ( let c = 0; c < playerDto.cards.length; c++ ) {
+            pa = this.playerAreas.find( ( x ) => x.playerPosition === playerDto.playerPosition );
+            if ( ! pa ) {
+                break;
+            }
+            card = playerDto.cards[c];
+            
+            const image = new Image( this.cardWidth, this.cardHeight );
+            if ( pa.playerPosition === PlayerPosition.south ) {
+                let imgSrc = "/build/gameplatform-velzonsaas-theme/images/CardGame/Cards/";
+                imgSrc += `${Helper.cardType( playerDto.cards[c].Type ).toLowerCase()}`;
+                imgSrc += `${Helper.cardSuit( playerDto.cards[c].Suit ).toLowerCase()}.png`;
+                
+                image.src = imgSrc;
+            } else {
+                image.src = "/build/gameplatform-velzonsaas-theme/images/CardGame/Cards/back.png";
+            }
+            
+            if ( pa.playerPosition === PlayerPosition.east || pa.playerPosition === PlayerPosition.west ) {
+                if ( pa.playerPosition === PlayerPosition.west ) {
+                    xOffset = pa.width - this.cardHeight;
+                }
+                
+                const cardX = pa.x + pa.width - xOffset;
+                const cardY = pa.y + ( ( c + 1 ) * this.cardOffset );
+                
+                cx.save();
+                cx.translate( cardX, cardY );
+                cx.rotate( Math.PI / 2 );
+                
+                cx.drawImage(
+                    image,
+                    0,
+                    0,
+                    this.cardWidth,
+                    this.cardHeight
+                );
+                
+                cx.restore();
+            } else {
+                if ( pa.playerPosition === PlayerPosition.south ) {
+                    yOffset = pa.height - this.cardHeight;
+                }
+                
+                const cardX = pa.x + ( ( c + 1 ) * this.cardOffset );
+                const cardY = pa.y + yOffset;
+                
+                cx.drawImage(
+                    image,
+                    cardX,
+                    cardY,
+                    this.cardWidth,
+                    this.cardHeight
+                );
+            }
+        }
+    }
+    
+    drawPlayerArea( cx: CanvasRenderingContext2D, playerArea: CardGamePlayerArea ): void
+    {
+        if ( ! this.game || ! this.game.players[playerArea.playerPosition] ) {
+            return;
+        }
+        
+        //console.log( 'Canvas Rendering Context', cx );
+        playerArea.drawBorder( cx );
+        
+        var x: number, y: number, angle;
+        switch( playerArea.playerPosition ) {
+            case PlayerPosition.north:
+                x = this.width / 2;
+                y = playerArea.y + playerArea.height - 10;
+                angle = 0;
+                break;
+            case PlayerPosition.south:
+                x = this.width / 2;
+                y = playerArea.y + 10;
+                angle = Math.PI;
+                break;
+            case PlayerPosition.east:
+                x = playerArea.x + 10;
+                y = playerArea.y + playerArea.height / 2;
+                angle = Math.PI / 2;
+                break;
+            case PlayerPosition.west:
+                x = playerArea.x + playerArea.width - 10;
+                y = playerArea.y + playerArea.height / 2;
+                angle = -Math.PI / 2;
+                break;
+            default:
+                throw new Error( `Invalid Player Position ${playerArea.playerPosition}` );
+        }
+        
+        cx.save();
+        cx.translate( x, y );
+        cx.rotate( angle );
+        
+        cx.textAlign = "center";
+        cx.fillText( this.game.players[playerArea.playerPosition].name, 0, 0 );
+        
+        cx.restore();
     }
 }

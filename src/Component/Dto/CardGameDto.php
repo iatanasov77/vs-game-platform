@@ -24,6 +24,6 @@ class CardGameDto extends GameDto
     public Bid $CurrentContract;
     
     public array $deck;
-    public array $playerCards;
+    public array $pile;
     public array $teamsTricks;
 }

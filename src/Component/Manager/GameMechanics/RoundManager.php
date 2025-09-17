@@ -1,15 +1,20 @@
 <?php namespace App\Component\Manager\GameMechanics;
 
+use App\Component\Type\PlayerPosition;
+use App\Component\Rules\CardGame\PlayerPositionExtensions;
+
 trait RoundManager
 {
+    use PlayerPositionExtensions;
+    
     public function PlayRound()
     {
         // Initialize the cards
         $this->Game->deck->Shuffle();
-        $this->Game->playerCards[0]->clear();
-        $this->Game->playerCards[1]->clear();
-        $this->Game->playerCards[2]->clear();
-        $this->Game->playerCards[3]->clear();
+        $this->Game->Players[PlayerPosition::South->value]->Cards->clear();
+        $this->Game->Players[PlayerPosition::East->value]->Cards->clear();
+        $this->Game->Players[PlayerPosition::North->value]->Cards->clear();
+        $this->Game->Players[PlayerPosition::West->value]->Cards->clear();
         
         // Deal 5 cards to each player
         $this->DealCards( 5 );
@@ -17,12 +22,16 @@ trait RoundManager
     
     protected function DealCards( int $count ): void
     {
+        $dealToPlayer   = $this->Game->CurrentPlayer;
         for ( $i = 0; $i < $count; $i++ )
         {
-            $this->Game->playerCards[0][] = $this->Game->deck->GetNextCard();
-            $this->Game->playerCards[1][] = $this->Game->deck->GetNextCard();
-            $this->Game->playerCards[2][] = $this->Game->deck->GetNextCard();
-            $this->Game->playerCards[3][] = $this->Game->deck->GetNextCard();
+            while( true ) {
+                $this->Game->Players[$dealToPlayer->value]->Cards[] = $this->Game->deck->GetNextCard();
+                $dealToPlayer = self::Next( $dealToPlayer );
+                if( $dealToPlayer === $this->Game->CurrentPlayer ) {
+                    break;
+                }
+            }
         }
     }
 }

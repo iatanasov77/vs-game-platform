@@ -6,6 +6,5 @@ use App\Component\Type\CardType;
 class CardDto
 {
     public CardSuit $Suit;
-    
     public CardType $Type;
 }

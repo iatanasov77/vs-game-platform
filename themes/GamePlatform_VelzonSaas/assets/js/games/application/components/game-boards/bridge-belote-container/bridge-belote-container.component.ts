@@ -39,7 +39,7 @@ import { SoundService } from '../../../services/sound.service';
 import { BridgeBeloteService } from '../../../services/websocket/bridge-belote.service';
 import { GamePlayService } from '../../../services/game-play.service';
 
-// BoardGame Interfaces
+// CardGame Interfaces
 import UserDto from '_@/GamePlatform/Model/Core/userDto';
 import GameState from '_@/GamePlatform/Model/Core/gameState';
 import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
@@ -83,8 +83,8 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
     
     themeName: string;
     
-    width = 600;
-    height = 400;
+    width: number = 600;
+    height: number = 400;
     started = false;
     gameId = "";
     playAiFlag = false;
@@ -157,7 +157,16 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
     
     ngOnDestroy(): void
     {
-
+        this.gameSubs.unsubscribe();
+        this.oponnetDoneSubs.unsubscribe();
+        //clearTimeout( this.startedHandle );
+        this.appStateService.cardGame.clearValue();
+        this.appStateService.myPosition.clearValue();
+        this.appStateService.messages.clearValue();
+        this.appStateService.moveTimer.clearValue();
+        this.started = false;
+        this.wsService.exitGame();
+        this.sound.fadeIntro();
     }
     
     ngOnChanges( changes: SimpleChanges ): void
@@ -206,7 +215,7 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
         this.wsService.exitGame();
         this.appStateService.hideBusy();
         
-        this.gamePlayService.exitBoardGame();
+        //this.gamePlayService.exitCardGame();
         //this.playAiQuestion = false;
         this.lobbyButtonsVisibleChanged.emit( true );
     }
@@ -323,7 +332,7 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
     playGame( gameId: string ): void
     {
         if ( ! gameId.length ) {
-            this.gamePlayService.startBoardGame( 'normal' );
+            //this.gamePlayService.startCardGame();
         }
         
         this.initFlags();

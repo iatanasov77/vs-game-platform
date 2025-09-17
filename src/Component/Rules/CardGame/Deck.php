@@ -24,4 +24,9 @@ class Deck
     {
         return $this->listOfCards[$this->currentCardIndex++];
     }
+    
+    public function Cards(): array
+    {
+        return $this->listOfCards;
+    }
 }

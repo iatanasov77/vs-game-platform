@@ -1,7 +1,10 @@
-﻿import PlayerPosition from './playerPosition';
+﻿import PlayerDto from '../Core/playerDto';
+import PlayerPosition from './playerPosition';
+import CardDto from './cardDto';
 
-interface CardGamePlayerDto {
+interface CardGamePlayerDto extends PlayerDto {
     playerPosition: PlayerPosition;
+    cards: CardDto[];
 }
 
 export default CardGamePlayerDto;

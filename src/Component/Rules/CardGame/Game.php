@@ -24,18 +24,15 @@ abstract class Game implements GameInterface
     /** @var Deck */
     public $deck;
     
+    /** @var array */
+    public $pile;
+    
     /** @var array | Player[] */
     public array $Players;
     
     /**
-     * Dealed Cards of the Players
-     *
-     * @var array
-     */
-    public $playerCards;
-    
-    /**
-     * Piles Of Cards
+     * Tricks Of Cards
+     * 
      * $teamsTricks[0] for Team1 (North-South)
      * $teamsTricks[1] for Team2 (East-West)
      *

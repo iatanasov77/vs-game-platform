@@ -306,7 +306,7 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
     gameChanged( dto: CardGameDto ): void
     {
         if ( ! this.started && dto ) {
-            if ( dto.playState === GameState.firstAnnounce ) { // GameState.playing
+            if ( dto.playState === GameState.bidding ) { // GameState.playing
                 this.started = true;
                 //this.playAiQuestion = false;
                 this.lobbyButtonsVisibleChanged.emit( false );

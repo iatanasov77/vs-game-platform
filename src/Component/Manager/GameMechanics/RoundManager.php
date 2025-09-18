@@ -1,5 +1,6 @@
 <?php namespace App\Component\Manager\GameMechanics;
 
+use App\Component\Type\GameState;
 use App\Component\Type\PlayerPosition;
 use App\Component\Rules\CardGame\PlayerPositionExtensions;
 
@@ -9,15 +10,22 @@ trait RoundManager
     
     public function PlayRound()
     {
-        // Initialize the cards
-        $this->Game->deck->Shuffle();
-        $this->Game->Players[PlayerPosition::South->value]->Cards->clear();
-        $this->Game->Players[PlayerPosition::East->value]->Cards->clear();
-        $this->Game->Players[PlayerPosition::North->value]->Cards->clear();
-        $this->Game->Players[PlayerPosition::West->value]->Cards->clear();
+        if ( $this->Game->PlayState = GameState::firstBid ) {
+            // Initialize the cards
+            $this->Game->deck->Shuffle();
+            $this->Game->Players[PlayerPosition::South->value]->Cards->clear();
+            $this->Game->Players[PlayerPosition::East->value]->Cards->clear();
+            $this->Game->Players[PlayerPosition::North->value]->Cards->clear();
+            $this->Game->Players[PlayerPosition::West->value]->Cards->clear();
+        }
+        $this->Game->SetFirstAnnounceWinner();
         
-        // Deal 5 cards to each player
-        $this->DealCards( 5 );
+        if ( $this->PlayState = GameState::bidding ) {
+            // Deal 5 cards to each player
+            $this->DealCards( 5 );
+        } else {
+            $this->DealCards( 3 );
+        }
     }
     
     protected function DealCards( int $count ): void

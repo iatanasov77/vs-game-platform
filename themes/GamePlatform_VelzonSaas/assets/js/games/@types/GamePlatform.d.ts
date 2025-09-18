@@ -57,7 +57,8 @@ declare module '_@/GamePlatform/Model/Core/gameState' {
         ended,
         
         // Card Games States
-        firstAnnounce
+        firstBid,
+        bidding
     }
     
     export = GameState;
@@ -288,6 +289,24 @@ declare module '_@/GamePlatform/Model/CardGame/playerPosition' {
     }
     
     export = PlayerPosition;
+}
+
+declare module '_@/GamePlatform/Model/CardGame/bidType' {
+    enum BidType
+    {
+        Pass,
+        Clubs,
+        Diamonds,
+        Hearts,
+        Spades,
+        
+        NoTrumps,
+        AllTrumps,
+        Double,
+        ReDouble
+    }
+    
+    export = BidType;
 }
 
 declare module '_@/GamePlatform/Model/CardGame/cardSuit' {

@@ -1,5 +1,10 @@
 <?php namespace App\Component\Manager\Games;
 
+use React\Async;
+use React\EventLoop\Loop;
+use React\EventLoop\TimerInterface;
+use Amp\DeferredCancellation;
+
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use App\Component\Manager\CardGameManager;
 use App\Component\Websocket\Client\WebsocketClientInterface;
@@ -24,7 +29,7 @@ use App\Component\Dto\Mapper;
 use App\Component\Dto\Actions\GameRestoreActionDto;
 use App\Component\Dto\Actions\GameCreatedActionDto;
 use App\Component\Dto\Actions\OpponentMoveActionDto;
-use App\Component\Dto\Actions\RolledActionDto;
+use App\Component\Dto\Actions\BiddingStartedActionDto;
 
 class BridgeBeloteGameManager extends CardGameManager
 {
@@ -135,7 +140,6 @@ class BridgeBeloteGameManager extends CardGameManager
     public function StartGame(): void
     {
         $this->Game->ThinkStart = new \DateTime( 'now' );
-        $this->PlayRound();
         
         $gameDto = Mapper::CardGameToDto( $this->Game );
         $this->logger->log( 'Begin Start Game: ' . \print_r( $gameDto, true ), 'GameManager' );
@@ -155,7 +159,27 @@ class BridgeBeloteGameManager extends CardGameManager
         $action->myPosition = PlayerPosition::West;
         $this->Send( $this->Clients->get( PlayerPosition::West->value ), $action );
         
-        $this->Game->PlayState = GameState::firstAnnounce;
+        $this->Game->PlayState = GameState::firstBid;
+        
+        while ( $this->Game->PlayState == GameState::firstBid ) {
+            $this->logger->log( 'First Throw State !!!', 'FirstThrowState' );
+            
+            $this->PlayRound();
+            
+            $biddingStartedAction = new BiddingStartedActionDto();
+//             $biddingStartedAction->bids = $this->Game->Roll->map(
+//                 function( $entry ) {
+//                     return Mapper::DiceToDto( $entry );
+//                 }
+//             )->toArray();
+            $biddingStartedAction->playerToBid = $this->Game->CurrentPlayer;
+            $biddingStartedAction->moveTimer = Game::ClientCountDown;
+            
+            $this->Send( $this->Clients->get( PlayerPosition::South->value ), $biddingStartedAction );
+            $this->Send( $this->Clients->get( PlayerPosition::East->value ), $biddingStartedAction );
+            $this->Send( $this->Clients->get( PlayerPosition::North->value ), $biddingStartedAction );
+            $this->Send( $this->Clients->get( PlayerPosition::West->value ), $biddingStartedAction );
+        }
     }
     
     protected function CreateDbGame(): void
@@ -217,6 +241,8 @@ class BridgeBeloteGameManager extends CardGameManager
     
     protected function EnginMoves( WebsocketClientInterface $client )
     {
+        return;
+        
         $promise = Async\async( function () use ( $client ) {
             $sleepMileseconds   = \rand( 700, 1200 );
             Async\delay( $sleepMileseconds / 1000 );

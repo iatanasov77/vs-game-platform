@@ -2,9 +2,17 @@ import { Injectable, Inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { StatusMessage } from '../utils/status-message';
 
-import GameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
-import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
+// Core Interfaces
+import GameDto from '_@/GamePlatform/Model/Core/gameDto';
 import NewScoreDto from '_@/GamePlatform/Model/Core/newScoreDto';
+
+// BoardGame Interfaces
+import BoardGameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
+import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
+
+// CardGame Interfaces
+import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
+import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
 
 import { SoundService } from './sound.service'
 import { AppStateService } from '../state/app-state.service';
@@ -22,31 +30,13 @@ export class StatusMessageService
         this.trans.use( 'en' );
     }
     
-    setTextMessage( game: GameDto ): void
+    setTextMessage( game: any ): void
     {
-        const myColor = this.appState.myColor.getValue();
-        let message: StatusMessage;
-        
-        //alert( PlayerColor[game.currentPlayer] );
-        if ( ! PlayerColor[game.currentPlayer] ) {
-            return;
+        if ( 'validMoves' in game ) {
+            this.setBoardGameTextMessage( game );
+        } else if ( 'deck' in game ) {
+            this.setCardGameTextMessage( game );
         }
-        const currentColor = this.trans.instant( PlayerColor[game.currentPlayer] );
-        
-        if ( game && myColor === game.currentPlayer ) {
-            this.appState.hideBusy();
-            const m = this.trans.instant( 'statusmessage.yourturn', {
-                color: currentColor
-            });
-            message = StatusMessage.info( m );
-        } else {
-            this.appState.hideBusy();
-            const m = this.trans.instant( 'statusmessage.waitingfor', {
-                color: currentColor
-            });
-            message = StatusMessage.info( m );
-        }
-        this.appState.statusMessage.setValue( message );
     }
     
     setMyConnectionLost( reason: string ): void
@@ -71,33 +61,12 @@ export class StatusMessageService
         this.appState.statusMessage.setValue( statusMessage );
     }
     
-    setGameEnded( game: GameDto, newScore: NewScoreDto ): void
+    setGameEnded( game: any, newScore: NewScoreDto ): void
     {
-        const myColor = this.appState.myColor.getValue();
-        let score = '';
-        if ( newScore ) {
-            let increase = newScore.increase.toString();
-            if ( newScore.increase > 0 ) increase = `+${newScore.increase}`;
-            score = this.trans.instant( 'statusmessage.newscore', {
-                score: newScore.score,
-                increase: increase
-            });
-        }
-        
-        const message = StatusMessage.info(
-            myColor === game.winner
-                ? this.trans.instant( 'statusmessage.youwon', { score: score } )
-                : this.trans.instant( 'statusmessage.youlost', { score: score } )
-        );
-        this.appState.statusMessage.setValue( message );
-        if ( myColor === game.winner ) {
-            this.sound.playWinner();
-            if ( game.isGoldGame )
-                setTimeout( () => {
-                  this.sound.playCoin();
-                }, 2000 );
-        } else {
-          this.sound.playLooser();
+        if ( 'validMoves' in game ) {
+            this.setBoardGameEnded( game, newScore );
+        } else if ( 'deck' in game ) {
+            this.setCardGameEnded( game, newScore );
         }
     }
     
@@ -159,5 +128,72 @@ export class StatusMessageService
         const text = this.trans.instant( 'statusmessage.gamenotstarted' );
         const msg = StatusMessage.info( text );
         this.appState.statusMessage.setValue( msg );
+    }
+    
+    setBoardGameTextMessage( game: BoardGameDto ): void
+    {
+        const myColor = this.appState.myColor.getValue();
+        let message: StatusMessage;
+        
+        //alert( PlayerColor[game.currentPlayer] );
+        if ( ! PlayerColor[game.currentPlayer] ) {
+            return;
+        }
+        const currentColor = this.trans.instant( PlayerColor[game.currentPlayer] );
+        
+        if ( game && myColor === game.currentPlayer ) {
+            this.appState.hideBusy();
+            const m = this.trans.instant( 'statusmessage.yourturn', {
+                color: currentColor
+            });
+            message = StatusMessage.info( m );
+        } else {
+            this.appState.hideBusy();
+            const m = this.trans.instant( 'statusmessage.waitingfor', {
+                color: currentColor
+            });
+            message = StatusMessage.info( m );
+        }
+        this.appState.statusMessage.setValue( message );
+    }
+    
+    setCardGameTextMessage( game: CardGameDto ): void
+    {
+    
+    }
+    
+    setBoardGameEnded( game: BoardGameDto, newScore: NewScoreDto ): void
+    {
+        const myColor = this.appState.myColor.getValue();
+        let score = '';
+        if ( newScore ) {
+            let increase = newScore.increase.toString();
+            if ( newScore.increase > 0 ) increase = `+${newScore.increase}`;
+            score = this.trans.instant( 'statusmessage.newscore', {
+                score: newScore.score,
+                increase: increase
+            });
+        }
+        
+        const message = StatusMessage.info(
+            myColor === game.winner
+                ? this.trans.instant( 'statusmessage.youwon', { score: score } )
+                : this.trans.instant( 'statusmessage.youlost', { score: score } )
+        );
+        this.appState.statusMessage.setValue( message );
+        if ( myColor === game.winner ) {
+            this.sound.playWinner();
+            if ( game.isGoldGame )
+                setTimeout( () => {
+                  this.sound.playCoin();
+                }, 2000 );
+        } else {
+          this.sound.playLooser();
+        }
+    }
+    
+    setCardGameEnded( game: CardGameDto, newScore: NewScoreDto ): void
+    {
+    
     }
 }

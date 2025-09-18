@@ -3,7 +3,7 @@
 use App\Component\Type\PlayerPosition;
 use App\Component\Dto\CardDto;
 
-class PlayCardActionDto
+class PlayCardActionDto extends ActionDto
 {
     public function __construct()
     {

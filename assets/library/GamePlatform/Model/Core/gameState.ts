@@ -1,4 +1,5 @@
-﻿enum GameState {
+﻿enum GameState
+{
     opponentConnectWaiting,
     firstThrow,
     playing,
@@ -6,7 +7,8 @@
     ended,
     
     // Card Games States
-    firstAnnounce
+    firstBid,
+    bidding
 }
 
 export default GameState;

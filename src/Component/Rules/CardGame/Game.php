@@ -44,7 +44,7 @@ abstract class Game implements GameInterface
     public $CurrentPlayer;
     
     /** @var GameState */
-    public $PlayState = GameState::firstAnnounce;
+    public $PlayState = GameState::firstBid;
     
     /** @var \DateTime */
     public $Created;
@@ -74,6 +74,14 @@ abstract class Game implements GameInterface
     {
         $this->logger->log( 'SwitchPlayer Called !!!', 'SwitchPlayer' );
         $this->CurrentPlayer = $this->OtherPlayer();
+    }
+    
+    public function SetFirstAnnounceWinner(): void
+    {
+        if ( $this->PlayState == GameState::firstBid ) {
+            $this->CurrentPlayer = PlayerPosition::from( \rand( 0, 3 ) );
+            $this->PlayState = GameState::bidding;
+        }
     }
     
     public function PlayersPassed(): bool

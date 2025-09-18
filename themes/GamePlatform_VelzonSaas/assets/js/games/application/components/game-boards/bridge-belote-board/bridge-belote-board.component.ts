@@ -325,7 +325,7 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
     {
         //console.log( 'PlayerDto', playerDto );
         
-        var card, pa, xOffset = 0, yOffset = 0;
+        var card, pa, cardX, cardY, angle, xOffset = 0, yOffset = 0;
         for ( let c = 0; c < playerDto.cards.length; c++ ) {
             pa = this.playerAreas.find( ( x ) => x.playerPosition === playerDto.playerPosition );
             if ( ! pa ) {
@@ -349,38 +349,32 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
                     xOffset = pa.width - this.cardHeight;
                 }
                 
-                const cardX = pa.x + pa.width - xOffset;
-                const cardY = pa.y + ( ( c + 1 ) * this.cardOffset ) + ( playerDto.cards.length * this.cardOffset / 2 ) + this.playerAreaPadding;
-                
-                cx.save();
-                cx.translate( cardX, cardY );
-                cx.rotate( Math.PI / 2 );
-                
-                cx.drawImage(
-                    image,
-                    0,
-                    0,
-                    this.cardWidth,
-                    this.cardHeight
-                );
-                
-                cx.restore();
+                cardX = pa.x + pa.width - xOffset;
+                cardY = pa.y + ( ( c + 1 ) * this.cardOffset ) + ( playerDto.cards.length * this.cardOffset / 2 ) + this.playerAreaPadding;
+                angle = Math.PI / 2;
             } else {
                 if ( pa.playerPosition === PlayerPosition.south ) {
                     yOffset = pa.height - this.cardHeight;
                 }
                 
-                const cardX = pa.x + ( ( c + 1 ) * this.cardOffset ) + ( playerDto.cards.length * this.cardOffset / 2 ) + this.playerAreaPadding;
-                const cardY = pa.y + yOffset;
-                
-                cx.drawImage(
-                    image,
-                    cardX,
-                    cardY,
-                    this.cardWidth,
-                    this.cardHeight
-                );
+                cardX = pa.x + ( ( c + 1 ) * this.cardOffset ) + this.cardWidth + ( playerDto.cards.length * this.cardOffset / 2 ) - this.playerAreaPadding;
+                cardY = pa.y + yOffset;
+                angle = 0;
             }
+            
+            cx.save();
+            cx.translate( cardX, cardY );
+            cx.rotate( angle );
+            
+            cx.drawImage(
+                image,
+                0,
+                0,
+                this.cardWidth,
+                this.cardHeight
+            );
+            
+            cx.restore();
         }
     }
     

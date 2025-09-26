@@ -53,6 +53,9 @@ qr_code_totp:
 test_card_game:
     path: /games/test-card-game
     controller: App\Controller\Games\TestCardGameController::index
+debug_enum_bitmask:
+    path: /games/debug-enum-bitmask
+    controller: App\Controller\Games\BridgeBeloteController::debugEnumBitmask
 svara:
     path: /games/svara
     controller: App\Controller\Games\SvaraController::index

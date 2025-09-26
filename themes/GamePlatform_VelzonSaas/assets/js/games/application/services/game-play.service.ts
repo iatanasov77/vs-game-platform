@@ -54,14 +54,45 @@ export class GamePlayService
         );
     }
     
-    startCardGame( game: IGame ): Observable<IGamePlay>
+    startCardGameOld( game: IGame ): Observable<IGamePlay>
     {
         const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
         var url         = `${this.apiUrl}/start-game/${game.room.id}`;
         
         return this.httpClient.get<IGamePlay>( url, {headers} ).pipe(
             map( ( response: any ) => this.mapGamePlay( response ) )
-        );
+        ); 
+    }
+    
+    startCardGame(): void
+    {
+        const playAi = false;
+        const forGold = true;
+        this.queryParamsService.gameId.clearValue();
+        
+        this.queryParamsService.playAi.setValue( playAi );
+        this.queryParamsService.forGold.setValue( forGold );
+        
+        const urlTree = this.router.createUrlTree([], {
+            queryParams: { playAi: playAi, forGold: forGold, gameId: null },
+            queryParamsHandling: "merge",
+            preserveFragment: true
+        });
+        this.router.navigateByUrl( urlTree );
+    }
+    
+    exitCardGame(): void
+    {
+        this.queryParamsService.gameId.clearValue();
+        this.queryParamsService.playAi.clearValue();
+        this.queryParamsService.forGold.clearValue();
+        
+        const urlTree = this.router.createUrlTree([], {
+            queryParams: { playAi: null, forGold: null, gameId: null },
+            queryParamsHandling: "merge",
+            preserveFragment: true
+        });
+        this.router.navigateByUrl( urlTree );
     }
     
     playerAnnounce(): Observable<ICardGameAnnounce>

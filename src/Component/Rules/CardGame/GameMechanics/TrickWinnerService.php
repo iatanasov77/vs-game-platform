@@ -1,4 +1,4 @@
-<?php namespace App\Component\Manager\GameMechanics;
+<?php namespace App\Component\Rules\CardGame\GameMechanics;
 
 use Doctrine\Common\Collections\Collection;
 use App\Component\Type\PlayerPosition;

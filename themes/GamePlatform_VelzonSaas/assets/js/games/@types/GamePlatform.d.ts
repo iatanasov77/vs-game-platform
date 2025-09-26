@@ -256,7 +256,8 @@ declare module '_@/GamePlatform/Model/CardGame/gameDto' {
 
     interface CardGameDto extends GameDto {
         players: CardGamePlayerDto[];
-    
+        validBids: any;
+        
         currentPlayer: PlayerPosition;
         winner: CardGameTeam;
         
@@ -351,12 +352,10 @@ declare module '_@/GamePlatform/Model/CardGame/cardGameTeam' {
 declare module '_@/GamePlatform/Model/CardGame/playerDto' {
     import PlayerDto from '_@/GamePlatform/Model/Core/playerDto';
     import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
-    import CardDto from '_@/GamePlatform/Model/CardGame/cardDto';
     
     interface CardGamePlayerDto extends PlayerDto
     {
         playerPosition: PlayerPosition;
-        cards: CardDto[];
     }
     
     export default CardGamePlayerDto;
@@ -373,6 +372,19 @@ declare module '_@/GamePlatform/Model/CardGame/cardDto' {
     }
     
     export default CardDto;
+}
+
+declare module '_@/GamePlatform/Model/CardGame/bidDto' {
+    import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
+    import BidType from '_@/GamePlatform/Model/CardGame/bidType';
+
+    interface BidDto
+    {
+        Player: PlayerPosition;
+        Type: BidType;
+    }
+    
+    export default BidDto;
 }
 
 /**

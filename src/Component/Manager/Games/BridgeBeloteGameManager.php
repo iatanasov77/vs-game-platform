@@ -5,11 +5,14 @@ use React\EventLoop\Loop;
 use React\EventLoop\TimerInterface;
 use Amp\DeferredCancellation;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use App\Component\Manager\CardGameManager;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 
-use App\Component\Manager\CardGame\RoundResult;
+use App\Component\Rules\CardGame\GameMechanics\RoundResult;
 
 use App\Component\Rules\CardGame\Game;
 use App\Component\Rules\CardGame\Player;
@@ -162,18 +165,46 @@ class BridgeBeloteGameManager extends CardGameManager
         $this->Game->PlayState = GameState::firstBid;
         
         while ( $this->Game->PlayState == GameState::firstBid ) {
-            $this->logger->log( 'First Throw State !!!', 'FirstThrowState' );
+            $this->logger->log( 'First Bid State !!!', 'FirstBidState' );
             
-            $this->PlayRound();
+            $validBids = new ArrayCollection();
+            $playerCards = $this->Game->roundManager->PlayRoundBiddingPhase();
+            $contract = $this->Game->roundManager->GetContract( $validBids );
             
             $biddingStartedAction = new BiddingStartedActionDto();
-//             $biddingStartedAction->bids = $this->Game->Roll->map(
-//                 function( $entry ) {
-//                     return Mapper::DiceToDto( $entry );
-//                 }
-//             )->toArray();
+            
+            $biddingStartedAction->playerCards[PlayerPosition::South->value] = $playerCards[PlayerPosition::South->value]->map(
+                function( $entry ) {
+                    return Mapper::CardToDto( $entry );
+                }
+            )->toArray();
+            
+            $biddingStartedAction->playerCards[PlayerPosition::East->value] = $playerCards[PlayerPosition::East->value]->map(
+                function( $entry ) {
+                    return Mapper::CardToDto( $entry );
+                }
+            )->toArray();
+                
+            $biddingStartedAction->playerCards[PlayerPosition::North->value] = $playerCards[PlayerPosition::North->value]->map(
+                function( $entry ) {
+                    return Mapper::CardToDto( $entry );
+                }
+            )->toArray();
+                    
+            $biddingStartedAction->playerCards[PlayerPosition::West->value] = $playerCards[PlayerPosition::West->value]->map(
+                function( $entry ) {
+                    return Mapper::CardToDto( $entry );
+                }
+            )->toArray();
+            
             $biddingStartedAction->playerToBid = $this->Game->CurrentPlayer;
-            $biddingStartedAction->moveTimer = Game::ClientCountDown;
+            
+            $biddingStartedAction->validBids = $validBids->map(
+                function( $entry ) {
+                    return Mapper::BidToDto( $entry );
+                }
+            )->toArray();
+            $biddingStartedAction->bidTimer = Game::ClientCountDown;
             
             $this->Send( $this->Clients->get( PlayerPosition::South->value ), $biddingStartedAction );
             $this->Send( $this->Clients->get( PlayerPosition::East->value ), $biddingStartedAction );

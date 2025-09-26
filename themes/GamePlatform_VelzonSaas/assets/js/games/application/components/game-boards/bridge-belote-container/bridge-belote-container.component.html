@@ -1,10 +1,20 @@
-<div id="game-board" align="center">
+<div class="bridge-belote-container" id="GameBoardContainer">
+    
+    <div class="messages" #messages>
+        <app-messages
+            [initial]="width"
+            [shown]="messageCenter"
+            [message]="message$ | async"
+        ></app-messages>
+    </div>
+    
     <bridge-belote-board
         class="game-board"
         
         [width]="width"
         [height]="height"
         [game]="gameDto$ | async"
+        [playerCards]="playerCardsDto"
         [myPosition]="playerPosition$ | async"
         [themeName]="themeName"
         [timeLeft]="timeLeft$ | async"
@@ -23,7 +33,7 @@
             (onNew)="newGame()"
             (onExit)="exitGame()"
             
-            (onPlayWithComputer)="playWithComputer($event)"
+            (onPlayWithComputer)="playAi()"
             
             (onPlayGame)="playGame($event)"
             (onInviteFriend)="inviteFriend()"
@@ -37,4 +47,5 @@
             [gameContractVisible]="gameContractVisible"
         ></bridge-belote-announce>
     </div>
+    
 </div>

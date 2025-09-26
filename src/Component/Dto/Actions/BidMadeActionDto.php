@@ -3,11 +3,11 @@
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\BidType;
 
-class BidActionDto extends ActionDto
+class BidMadeActionDto extends ActionDto
 {
     public function __construct()
     {
-        $this->actionName = ActionNames::bid->value;
+        $this->actionName = ActionNames::bidMade->value;
     }
     
     public PlayerPosition $Player;

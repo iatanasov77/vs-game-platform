@@ -12,6 +12,9 @@ use App\Component\Rules\BoardGame\Move;
 
 use App\Component\Rules\CardGame\Game as CardGame;
 use App\Component\Rules\CardGame\Player as CardGamePlayer;
+use App\Component\Rules\CardGame\Card;
+use App\Component\Rules\CardGame\Bid;
+use App\Component\Type\BidType;
 
 final class Mapper
 {
@@ -186,7 +189,6 @@ final class Mapper
             $playerDto->elo = $player->Elo;
             $playerDto->gold = $player->Gold;
             $playerDto->photoUrl = $player->Photo;
-            $playerDto->cards = $player->Cards;
             
             $playerDto->isAi = $player->IsAi();
             
@@ -194,5 +196,23 @@ final class Mapper
         }
         
         return $playersDto;
+    }
+    
+    public static function CardToDto( Card $card ): CardDto
+    {
+        $cardDto = new CardDto();
+        $cardDto->Suit = $card->Suit;
+        $cardDto->Type = $card->Type;
+        
+        return $cardDto;
+    }
+    
+    public static function BidToDto( Bid $bid ): BidDto
+    {
+        $bidDto = new BidDto();
+        $bidDto->Player = $bid->Player;
+        $bidDto->Type = BidType::fromBitMaskValue( $bid->Type->get() );
+        
+        return $bidDto;
     }
 }

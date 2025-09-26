@@ -140,17 +140,17 @@ export class BridgeBeloteService extends AbstractGameService
                 const biddingStartedAction = JSON.parse( message.data ) as BiddingStartedActionDto;
                 console.log( 'Bidding Started Action' + new Date().toLocaleTimeString(), biddingStartedAction );
                 
-//                 this.appState.dices.setValue( dicesAction.dices );
+                this.appState.playerCards.setValue( biddingStartedAction.playerCards );
                 const cGame = {
                     ...game,
-                    //validMoves: dicesAction.validMoves,
+                    validBids: biddingStartedAction.validBids,
                     currentPlayer: biddingStartedAction.playerToBid,
                     playState: GameState.bidding
                 };
                 
                 this.appState.cardGame.setValue( cGame );
                 this.statusMessageService.setTextMessage( cGame );
-                this.appState.moveTimer.setValue( biddingStartedAction.moveTimer );
+                this.appState.moveTimer.setValue( biddingStartedAction.bidTimer );
                 this.appState.opponentDone.setValue( true );
                 
                 break;

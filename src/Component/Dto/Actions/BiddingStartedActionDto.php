@@ -9,6 +9,8 @@ class BiddingStartedActionDto extends ActionDto
         $this->actionName = ActionNames::biddingStarted->value;
     }
     
+    public array $playerCards;
     public ?PlayerPosition $playerToBid;
-    public int $moveTimer;
+    public array $validBids;
+    public int $bidTimer;
 }

@@ -21,9 +21,6 @@ abstract class Game implements GameInterface
     /** @var string */
     public $Id;
     
-    /** @var Deck */
-    public $deck;
-    
     /** @var array */
     public $pile;
     
@@ -58,6 +55,12 @@ abstract class Game implements GameInterface
     /** @var bool */
     public $IsGoldGame;
     
+    /** @var PlayerPosition */
+    public $firstInRound;
+    
+    /** @var int */
+    public $roundNumber;
+    
     /** @var GameLogger */
     protected  $logger;
     
@@ -76,10 +79,11 @@ abstract class Game implements GameInterface
         $this->CurrentPlayer = $this->OtherPlayer();
     }
     
-    public function SetFirstAnnounceWinner(): void
+    public function SetFirstBidWinner(): void
     {
         if ( $this->PlayState == GameState::firstBid ) {
-            $this->CurrentPlayer = PlayerPosition::from( \rand( 0, 3 ) );
+            $this->CurrentPlayer = PlayerPosition::South;
+            //$this->CurrentPlayer = PlayerPosition::from( \rand( 0, 3 ) );
             $this->PlayState = GameState::bidding;
         }
     }

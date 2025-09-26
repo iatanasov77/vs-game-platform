@@ -38,6 +38,7 @@ export class BridgeBeloteAnnounceComponent implements OnChanges
         
     ngOnChanges( changes: SimpleChanges )
     {
+        //console.log( 'BridgeBeloteAnnounceComponent Changes', changes );
         for ( const propName in changes ) {
             const changedProp = changes[propName];
             
@@ -47,6 +48,7 @@ export class BridgeBeloteAnnounceComponent implements OnChanges
                     break;
                 case 'announceVisible':
                     this.announceVisible = changedProp.currentValue;
+                    alert( 'Announce Visible: ' + this.announceVisible );
                     break;
                 case 'gameContractVisible':
                     this.gameContractVisible = changedProp.currentValue;

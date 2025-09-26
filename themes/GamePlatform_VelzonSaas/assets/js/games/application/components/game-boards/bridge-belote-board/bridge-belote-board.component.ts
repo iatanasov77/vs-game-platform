@@ -85,7 +85,7 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
     playerAreas: CardGamePlayerArea[] = [];
     cardWidth: number = 69;
     cardHeight: number = 94;
-    cardOffset: number = 10;
+    cardOffset: number = 15;
     playerAreaPadding: number = 10;
     
     constructor(

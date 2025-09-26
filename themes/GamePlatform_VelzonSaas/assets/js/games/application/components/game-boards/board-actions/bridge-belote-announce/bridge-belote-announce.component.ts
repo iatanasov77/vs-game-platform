@@ -48,7 +48,7 @@ export class BridgeBeloteAnnounceComponent implements OnChanges
                     break;
                 case 'announceVisible':
                     this.announceVisible = changedProp.currentValue;
-                    alert( 'Announce Visible: ' + this.announceVisible );
+                    //alert( 'Announce Visible: ' + this.announceVisible );
                     break;
                 case 'gameContractVisible':
                     this.gameContractVisible = changedProp.currentValue;

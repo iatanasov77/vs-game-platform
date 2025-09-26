@@ -7,8 +7,6 @@ import { TranslateModule } from '@ngx-translate/core';
 import { SharedModule } from '../shared/shared.module';
 import { GameDialogsModule } from '../game-dialogs/game-dialogs.module';
 
-import { CardGameContainerComponent } from './card-game-container/card-game-container.component';
-import { CardGameBoardComponent } from './card-game-board/card-game-board.component';
 import { PlayerAnnounceComponent } from './player-announce/player-announce.component';
 import { GameStartComponent } from './board-actions/game-start/game-start.component';
 import { CardGameAnnounceComponent } from './board-actions/card-game-announce/card-game-announce.component';
@@ -31,8 +29,6 @@ import { NgxChessBoardModule } from 'ngx-chess-board';
 @NgModule({
     declarations: [
         PlayerAnnounceComponent,
-        CardGameContainerComponent,
-        CardGameBoardComponent,
         GameStartComponent,
         CardGameAnnounceComponent,
         
@@ -60,8 +56,6 @@ import { NgxChessBoardModule } from 'ngx-chess-board';
     ],
     exports: [
         PlayerAnnounceComponent,
-        CardGameContainerComponent,
-        CardGameBoardComponent,
         GameStartComponent,
         CardGameAnnounceComponent,
         

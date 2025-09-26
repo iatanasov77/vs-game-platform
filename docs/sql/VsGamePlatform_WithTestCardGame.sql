@@ -1103,7 +1103,6 @@ INSERT INTO `VSAPP_Translations` (`locale`, `object_class`, `field`, `foreign_ke
 ('en_US', 'App\\Entity\\Cms\\Page', 'text', '3', '<div>\r\n<h5>Welcome to VankoSoft GamePlatform!</h5>\r\n\r\n<p>GamePlatform is a test application for gaming.</p>\r\n</div>', 40),
 ('en_US', 'App\\Entity\\Game', 'title', '12', 'Svara', 41),
 ('en_US', 'App\\Entity\\Game', 'slug', '12', 'svara', 42),
-('en_US', 'App\\Entity\\Payment\\GatewayConfig', 'title', '2', 'Stripe Js', 44),
 ('en_US', 'App\\Entity\\Game', 'title', '16', 'Test Card Game', 51),
 ('en_US', 'App\\Entity\\Game', 'slug', '16', 'test-card-game', 52);
 
@@ -1939,15 +1938,6 @@ CREATE TABLE `VSPAY_GatewayConfig` (
   `use_sandbox` tinyint(1) NOT NULL,
   `sandbox_config` json DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
-
---
--- Dumping data for table `VSPAY_GatewayConfig`
---
-
-INSERT INTO `VSPAY_GatewayConfig` (`id`, `currency_id`, `gateway_name`, `factory_name`, `config`, `title`, `description`, `use_sandbox`, `sandbox_config`) VALUES
-(2, 1, 'stripe_js', 'stripe_js', '{\"secret_key\": \"sk_test_QHNIIAE1D7L5oqy54cxM4pXD00GO1NH64K\", \"publishable_key\": \"pk_test_4usJseX4BL8ZuSa9efnggWj800U21erI5Y\"}', 'Stripe Js', NULL, 1, '{\"sandbox\": \"true\", \"secret_key\": \"sk_test_QHNIIAE1D7L5oqy54cxM4pXD00GO1NH64K\", \"publishable_key\": \"pk_test_4usJseX4BL8ZuSa9efnggWj800U21erI5Y\"}');
-
--- --------------------------------------------------------
 
 --
 -- Table structure for table `VSPAY_Order`

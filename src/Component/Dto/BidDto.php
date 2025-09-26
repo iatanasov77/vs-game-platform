@@ -6,6 +6,5 @@ use App\Component\Type\BidType;
 class BidDto
 {
     public PlayerPosition $Player;
-    
     public BidType $Type;
 }

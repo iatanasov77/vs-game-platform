@@ -15,6 +15,4 @@ class PlayerDto
     
     // My Property to Detect If Player is AI in Frontend
     public bool $isAi;
-    
-    public $cards;
 }

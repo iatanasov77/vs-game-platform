@@ -19,6 +19,7 @@ import ConnectionInfoActionDto from '../../dto/Actions/connectionInfoActionDto';
 import CardGameCreatedActionDto from '../../dto/Actions/cardGameCreatedActionDto';
 import CardGameEndedActionDto from '../../dto/Actions/cardGameEndedActionDto';
 import CardGameRestoreActionDto from '../../dto/Actions/cardGameRestoreActionDto';
+import BiddingStartedActionDto from '../../dto/Actions/biddingStartedActionDto';
 import PlayCardActionDto from '../../dto/Actions/playCardActionDto';
 
 import { Keys } from '../../utils/keys';
@@ -132,6 +133,25 @@ export class BridgeBeloteService extends AbstractGameService
                 //this.appState.moveTimer.setValue( dto.game.thinkTime );
                 this.sound.fadeIntro();
                 this.startTimer();
+                
+                break;
+            }
+            case ActionNames.biddingStarted: {
+                const biddingStartedAction = JSON.parse( message.data ) as BiddingStartedActionDto;
+                console.log( 'Bidding Started Action' + new Date().toLocaleTimeString(), biddingStartedAction );
+                
+                this.appState.playerCards.setValue( biddingStartedAction.playerCards );
+                const cGame = {
+                    ...game,
+                    validBids: biddingStartedAction.validBids,
+                    currentPlayer: biddingStartedAction.playerToBid,
+                    playState: GameState.bidding
+                };
+                
+                this.appState.cardGame.setValue( cGame );
+                this.statusMessageService.setTextMessage( cGame );
+                this.appState.moveTimer.setValue( biddingStartedAction.bidTimer );
+                this.appState.opponentDone.setValue( true );
                 
                 break;
             }

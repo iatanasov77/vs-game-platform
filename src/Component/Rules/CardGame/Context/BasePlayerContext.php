@@ -2,6 +2,7 @@
 
 use Doctrine\Common\Collections\Collection;
 use App\Component\Type\PlayerPosition;
+use App\Component\Rules\CardGame\Bid;
 
 class BasePlayerContext
 {
@@ -17,7 +18,7 @@ class BasePlayerContext
     
     public Collection $MyCards;
     
-    public array $Bids;
+    public Collection $Bids;
     
     public Bid $CurrentContract;
 }

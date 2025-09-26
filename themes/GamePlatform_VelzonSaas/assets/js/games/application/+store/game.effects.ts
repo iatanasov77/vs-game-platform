@@ -126,7 +126,7 @@ export class GameEffects
         this.actions$.pipe(
             ofType( startCardGame ),
             switchMap( ( { game } ) =>
-                this.gamePlayService.startCardGame( game ).pipe(
+                this.gamePlayService.startCardGameOld( game ).pipe(
                     map( ( gamePlay: IGamePlay ) => startCardGameSuccess( { gamePlay } ) ),
                     catchError( error => [startCardGameFailure( { error } )] )
                 )

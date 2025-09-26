@@ -2,12 +2,16 @@ import {
     Component,
     Inject,
     OnInit,
+    AfterViewInit,
     OnDestroy,
     Input,
     Output,
     OnChanges,
     SimpleChanges,
-    EventEmitter
+    ViewChild,
+    HostListener,
+    EventEmitter,
+    ElementRef
 } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -34,16 +38,22 @@ import { QueryParamsService } from '../../../state/query-params.service';
 import { StatusMessage } from '../../../utils/status-message';
 
 // Services
+import { AuthService } from '../../../services/auth.service';
 import { StatusMessageService } from '../../../services/status-message.service';
 import { SoundService } from '../../../services/sound.service';
 import { BridgeBeloteService } from '../../../services/websocket/bridge-belote.service';
 import { GamePlayService } from '../../../services/game-play.service';
+
+import GameCookieDto from '_@/GamePlatform/Model/Core/gameCookieDto';
+import { CookieService } from 'ngx-cookie-service';
+import { Keys } from '../../../utils/keys';
 
 // CardGame Interfaces
 import UserDto from '_@/GamePlatform/Model/Core/userDto';
 import GameState from '_@/GamePlatform/Model/Core/gameState';
 import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
 import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
+import CardDto from '_@/GamePlatform/Model/CardGame/cardDto';
 
 // Dialogs
 import { RequirementsDialogComponent } from '../../game-dialogs/requirements-dialog/requirements-dialog.component';
@@ -66,19 +76,25 @@ declare var $: any;
         styleString || 'CSS Not Loaded !!!'
     ]
 })
-export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChanges
+export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges
 {
     @Input() lobbyButtonsVisible: boolean   = false;
     @Input() isLoggedIn: boolean        = false;
     @Input() hasPlayer: boolean         = false;
     
     @Output() lobbyButtonsVisibleChanged    = new EventEmitter<boolean>();
+    @ViewChild( 'messages' ) messages: ElementRef | undefined;
     
     gameDto$: Observable<CardGameDto>;
     playerPosition$: Observable<PlayerPosition>;
+    message$: Observable<StatusMessage>;
     timeLeft$: Observable<number>;
     
+    user$: Observable<UserDto>;
+    gameString$: Observable<string>;
+    
     gameSubs: Subscription;
+    playerCardsSubs: Subscription;
     oponnetDoneSubs: Subscription;
     
     themeName: string;
@@ -86,20 +102,28 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
     width: number = 600;
     height: number = 400;
     started = false;
+    messageCenter = 0;
     gameId = "";
     playAiFlag = false;
     forGoldFlag = false;
     lokalStake = 0;
+    playAiQuestion = false;
     
+    gameDto: CardGameDto | undefined;
     newVisible = false;
     exitVisible = true;
     announceVisible = false;
     gameContractVisible = false;
+    playerCardsDto: Array<CardDto[]> | undefined;
     
     appState?: MyGameState;
     gameStarted: boolean = false;
     
+    isRoomSelected: boolean = false;
+    hasRooms: boolean       = false;
+    
     gameAnnounceIcon: any;
+    startedHandle: any;
     
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,
@@ -107,7 +131,9 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
         @Inject( QueryParamsService ) private queryParamsService: QueryParamsService,
         @Inject( SoundService ) private sound: SoundService,
         @Inject( StatusMessageService ) private statusMessageService: StatusMessageService,
+        @Inject( AuthService ) private authService: AuthService,
         @Inject( BridgeBeloteService ) private wsService: BridgeBeloteService,
+        @Inject( CookieService ) private cookieService: CookieService,
         @Inject( GamePlayService ) private gamePlayService: GamePlayService,
         @Inject( Store ) private store: Store,
         @Inject( Actions ) private actions$: Actions,
@@ -115,19 +141,30 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
     ) {
         this.gameAnnounceIcon   = null;
         
-        const currentUrlparams = new URLSearchParams( window.location.search );
-        let gameId = currentUrlparams.get( 'gameId' );
-        if ( gameId ) {
-            this.wsService.connect( '', false, false );
-        }
-        
         this.gameDto$ = this.appStateService.cardGame.observe();
+        this.playerCardsSubs = this.appStateService.playerCards.observe().subscribe( this.playerCardsChanged.bind( this ) );
         this.playerPosition$ = this.appStateService.myPosition.observe();
         
         this.gameSubs = this.appStateService.cardGame.observe().subscribe( this.gameChanged.bind( this ) );
         this.oponnetDoneSubs = this.appStateService.opponentDone.observe().subscribe( this.oponnentDone.bind( this ) );
         
+        this.message$ = this.appStateService.statusMessage.observe();
         this.timeLeft$ = this.appStateService.moveTimer.observe();
+        
+        this.user$ = this.appStateService.user.observe();
+        this.gameString$ = this.appStateService.gameString.observe();
+        
+        // if game page is refreshed, restore user from login cookie
+        if ( ! this.appStateService.user.getValue() ) {
+            this.authService.repair();
+        }
+        
+        this.initFlags();
+        
+        if ( this.gameId.length ) {
+            //this.wsService.connect( this.gameId, this.playAiFlag, this.forGoldFlag );
+            this.playGame( this.gameId );
+        }
         
         // For some reason i could not use an observable for theme. Maybe i'll figure out why someday
         // service.connect might need to be in a setTimeout callback.
@@ -136,30 +173,66 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
     
     ngOnInit(): void
     {
+        this.authService.isLoggedIn().subscribe( ( isLoggedIn: boolean ) => {
+            this.isLoggedIn = isLoggedIn;
+            let auth        = this.authService.getAuth();
+            
+            if ( isLoggedIn && auth ) {
+                this.statusMessageService.setNotGameStarted();
+            }
+        });
+        
+        this.gameDto$.subscribe( res => {
+            this.gameDto = res;
+        });
+        
         this.store.subscribe( ( state: any ) => {
-            console.log( state.app.main );
+            // console.log( state.app.main );
             
             this.appState   = state.app.main;
             
             if ( state.app.main.gamePlay ) {
                 this.gameStarted    = true;
             }
+            
+            this.fireResize();
         });
         
-        /*
-        this.store.dispatch( loadGameBySlug( { slug: window.gamePlatformSettings.gameSlug } ) );
-        
-        this.actions$.pipe( ofType( startCardGameSuccess ) ).subscribe( () => {
-            this.store.dispatch( loadGameRooms( { gameSlug: window.gamePlatformSettings.gameSlug } ) );
+        /**
+         * Cannot Remove Game Rooms from Board Games Because Game Room is a Game Session for Now.
+         */
+        this.actions$.pipe( ofType( selectGameRoomSuccess ) ).subscribe( () => {
+            this.newVisible = false;
+            this.exitVisible = false;
+            
+            let gameCookie  = this.cookieService.get( Keys.gameIdKey );
+            //alert( gameCookie );
+            if ( gameCookie ) {
+                let gameCookieDto   = JSON.parse( gameCookie ) as GameCookieDto;
+                
+                gameCookieDto.roomSelected = true;
+                this.cookieService.set( Keys.gameIdKey, JSON.stringify( gameCookieDto ), 2 );
+            }
+            
+            this.isRoomSelected = true;
         });
-        */
+    }
+    
+    ngAfterViewInit(): void
+    {
+        this.playAiQuestion = false;
+    
+        if ( ! this.lobbyButtonsVisible && ! this.playAiFlag ) {
+            this.waitForOpponent();
+        }
+        this.fireResize();
     }
     
     ngOnDestroy(): void
     {
         this.gameSubs.unsubscribe();
         this.oponnetDoneSubs.unsubscribe();
-        //clearTimeout( this.startedHandle );
+        clearTimeout( this.startedHandle );
         this.appStateService.cardGame.clearValue();
         this.appStateService.myPosition.clearValue();
         this.appStateService.messages.clearValue();
@@ -178,11 +251,29 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
                 case 'isLoggedIn':
                     this.isLoggedIn = changedProp.currentValue;
                     break;
+                case 'lobbyButtonsVisible':
+                    this.lobbyButtonsVisible = changedProp.currentValue;
+                    break;
                 case 'hasPlayer':
                     this.hasPlayer = changedProp.currentValue;
                     break;
             }
         }
+    }
+    
+    private waitForOpponent()
+    {
+        //this.sound.playPianoIntro();
+        this.startedHandle = setTimeout( () => {
+            if ( ! this.started && ! this.lobbyButtonsVisible ) {
+                //alert( this.appStateService.user );
+                if ( this.appStateService.user?.getValue() ) {
+                    this.playAiQuestion = true;
+                } else {
+                    this.appStateService.hideBusy();
+                }
+            }
+        }, 11000 );
     }
     
     login(): void
@@ -207,16 +298,17 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
         
         this.wsService.resetGame();
         this.wsService.connect( '', false, false );
-        //this.waitForOpponent();
+        this.waitForOpponent();
     }
     
     exitGame(): void
     {
+        clearTimeout( this.startedHandle );
         this.wsService.exitGame();
         this.appStateService.hideBusy();
         
-        //this.gamePlayService.exitCardGame();
-        //this.playAiQuestion = false;
+        this.gamePlayService.exitCardGame();
+        this.playAiQuestion = false;
         this.lobbyButtonsVisibleChanged.emit( true );
     }
     
@@ -249,19 +341,6 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
         this.exitGame();
     }
     
-    async playWithComputer()
-    {
-        /*
-        this.wsService.exitGame();
-        
-        while ( this.appStateService.myConnection.getValue().connected ) {
-            await Helper.delay( 500 );
-        }
-        */
-        
-        this.wsService.connect( '', true, false );
-    }
-    
     playWithFriends(): void
     {
         if ( this.appState && this.appState.game ) {
@@ -290,6 +369,24 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
         }
     }
     
+    async playAi()
+    {
+        this.playAiQuestion = false;
+        this.wsService.exitGame();
+        
+        while ( this.appStateService.myConnection.getValue().connected ) {
+            await Helper.delay( 500 );
+        }
+        
+        this.wsService.connect( '', true, this.forGoldFlag );
+    }
+    
+    keepWaiting(): void
+    {
+        //this.sound.playBlues();
+        this.playAiQuestion = false;
+    }
+    
     openRequirementsDialog(): void
     {
         const modalRef = this.ngbModal.open( RequirementsDialogComponent );
@@ -306,9 +403,10 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
     gameChanged( dto: CardGameDto ): void
     {
         if ( ! this.started && dto ) {
-            if ( dto.playState === GameState.firstAnnounce ) { // GameState.playing
+            if ( dto.playState === GameState.bidding ) { // GameState.playing
                 this.started = true;
-                //this.playAiQuestion = false;
+                this.playAiQuestion = false;
+                this.announceVisible = true;
                 this.lobbyButtonsVisibleChanged.emit( false );
             }
         }
@@ -329,10 +427,52 @@ export class BridgeBeloteContainerComponent implements OnInit, OnDestroy, OnChan
         this.announceVisible = true;
     }
     
+    playerCardsChanged( dto: Array<CardDto[]> ): void
+    {
+        this.playerCardsDto = dto;
+        this.setAnnounceVisible();
+        this.fireResize();
+        
+        /*
+        const game = this.appStateService.boardGame.getValue();
+        this.exitVisible = game?.playState !== GameState.playing && game?.playState !== GameState.requestedDoubling;
+        */
+    }
+    
+    @HostListener( 'window:resize', ['$event'] )
+    onResize(): void
+    {
+        //const _innerWidth   = window.innerWidth;
+        const _innerWidth   = $( '#GameBoardContainer' ).width();
+        //const _innerHeight   = window.innerHeight;
+        const _innerHeight   = $( '#GameBoardContainer' ).height();
+        
+        //console.log( 'Window innerHeight', window.innerHeight );
+        //console.log( 'Container innerHeight', $( '#GameBoardContainer' ).height() );
+        
+        this.width = Math.min( _innerWidth, 1024 );
+        const span = this.messages?.nativeElement as Element;
+        // console.log( span.getElementsByTagName( 'span' ) );
+        const spanWidth = span.getElementsByTagName( 'span' )[0].clientWidth;
+        // alert( spanWidth );
+        
+        this.messageCenter = this.width / 2 - spanWidth / 2;
+        // alert( this.messageCenter );
+        
+        this.height = Math.min( _innerHeight - 40, this.width * 0.6 );
+    }
+    
+    fireResize(): void
+    {
+        setTimeout( () => {
+            this.onResize();
+        }, 1);
+    }
+    
     playGame( gameId: string ): void
     {
         if ( ! gameId.length ) {
-            //this.gamePlayService.startCardGame();
+            this.gamePlayService.startCardGame();
         }
         
         this.initFlags();

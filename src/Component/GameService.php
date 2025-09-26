@@ -138,7 +138,7 @@ final class GameService
             $this->logger->log( "On Connect Found Game with ID: {$game->Game->Id}", 'GameService' );
         }
         
-        if ( self::GameAlreadyStarted( $managers, $userId ) ) {
+        if ( $this->GameAlreadyStarted( $managers, $userId, $gameCode ) ) {
             $warning = "The user {$userId} has already started a game";
             $this->logger->log( $warning, 'GameService' );
             throw new \Exception( $warning );
@@ -347,17 +347,24 @@ final class GameService
         return null;
     }
     
-    private function GameAlreadyStarted( Collection $managers, $userId ): bool
+    private function GameAlreadyStarted( Collection $managers, int $userId, string $gameCode ): bool
     {
         foreach ( $managers as $m ) {
-            // Guest vs guest must be allowed. When guest games are enabled.
-            if (
-                $m->Game->BlackPlayer->Id == $userId ||
-                $m->Game->WhitePlayer->Id == $userId &&
-                $userId != Guid::Empty()
-            ) {
-                $this->logger->log( "Game Already Started", 'GameService' );
-                return true;
+            switch ( $gameCode ) {
+                case GameVariant::BACKGAMMON_CODE:
+                    // Guest vs guest must be allowed. When guest games are enabled.
+                    if (
+                        $m->Game->BlackPlayer->Id == $userId ||
+                        $m->Game->WhitePlayer->Id == $userId &&
+                        $userId != Guid::Empty()
+                    ) {
+                        $this->logger->log( "Game Already Started", 'GameService' );
+                        return true;
+                    }
+                    break;
+                case GameVariant::BRIDGE_BELOTE_CODE:
+                    return false;
+                    break;
             }
         }
         

@@ -56,7 +56,6 @@ Encore
 
     // Application Assets
     .copyFiles([
-        {from: './assets/library/GamePlatform/Einaregilsson_Cards.Js/img', to: 'einaregilsson-cards.js/img/[path][name].[ext]'},
         {from: './themes/GamePlatform_VelzonSaas/assets/images', to: 'images/[path][name].[ext]'},
         {from: './themes/GamePlatform_VelzonSaas/assets/sound', to: 'sound/[path][name].[ext]'},
         {from: './themes/GamePlatform_VelzonSaas/assets/i18n', to: 'i18n/[path][name].[ext]'},
@@ -85,7 +84,6 @@ Encore
     .addEntry( 'js/games', './themes/GamePlatform_VelzonSaas/assets/js/pages/games.js' )
     
     // Games
-    .addEntry( 'js/card-game', './themes/GamePlatform_VelzonSaas/assets/js/games/card-game/index.js' )
     .addEntry( 'js/svara', './themes/GamePlatform_VelzonSaas/assets/js/games/svara/index.js' )
     .addEntry( 'js/bridge-belote', './themes/GamePlatform_VelzonSaas/assets/js/games/bridge-belote/index.js' )
     .addEntry( 'js/contract-bridge', './themes/GamePlatform_VelzonSaas/assets/js/games/contract-bridge/index.js' )

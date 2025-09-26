@@ -147,15 +147,6 @@ services:
             - '@vs_users.security_bridge'
             - '@app_game_service'
     
-    App\Controller\Games\TestCardGameController:
-        tags: ['controller.service_arguments']
-        autowire: true
-        arguments:
-            - '@vs_application.context.application'
-            - '@twig'
-            - '@vsapp.repository.games'
-            - '@http_client'
-    
     App\Controller\Games\SvaraController:
         tags: ['controller.service_arguments']
         autowire: true

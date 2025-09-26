@@ -16,6 +16,9 @@
     hintMoves,
     
     // Card Game Actions
+    biddingStarted,
+    bidMade,
+    opponentBid,
     playCard,
     
     serverWasTerminated

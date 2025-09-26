@@ -2,27 +2,26 @@
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+
 use App\Component\Type\PlayerPosition;
+use App\Component\Type\BidType;
+use App\Component\Rules\CardGame\GameMechanics\RoundManager;
 
 /**
  * BelotGameEngine in C#: https://github.com/NikolayIT/BelotGameEngine
  */
 class BridgeBeloteGame extends Game
 {
-    /** @var Collection | BridgeBeloteDeclaration[] */
-    public $Declarations;
+    use PlayerPositionExtensions;
+    
+    /** @var RoundManager */
+    public $roundManager;
     
     /** @var int */
     public $southNorthPoints;
     
     /** @var int */
     public $eastWestPoints;
-    
-    /** @var PlayerPosition */
-    public $firstInRound;
-    
-    /** @var int */
-    public $roundNumber;
     
     /** @var int */
     public $hangingPoints;
@@ -34,6 +33,8 @@ class BridgeBeloteGame extends Game
     
     public function PlayGame( PlayerPosition $firstToPlay = PlayerPosition::South ): void
     {
+        $this->roundManager = new RoundManager( $this );
+        
         $this->southNorthPoints = 0;
         $this->eastWestPoints = 0;
         $this->firstInRound = $firstToPlay;

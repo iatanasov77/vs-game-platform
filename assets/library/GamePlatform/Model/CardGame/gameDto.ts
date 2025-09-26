@@ -5,6 +5,7 @@ import CardGameTeam from './cardGameTeam'
 
 interface CardGameDto extends GameDto {
     players: CardGamePlayerDto[];
+    validBids: any;
     
     currentPlayer: PlayerPosition;
     winner: CardGameTeam;

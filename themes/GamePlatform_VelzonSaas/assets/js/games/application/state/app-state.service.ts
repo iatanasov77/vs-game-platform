@@ -23,6 +23,7 @@ import DiceDto from '_@/GamePlatform/Model/BoardGame/diceDto';
 // CardGame Interfaces
 import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
 import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
+import CardDto from '_@/GamePlatform/Model/CardGame/cardDto';
 
 // State
 import { StateObject } from './state-object';
@@ -67,6 +68,8 @@ export class AppStateService
     chatOpen: StateObject<boolean>;
     chatMessages: StateObject<ChatMessageDto[]>;
     chatUsers: StateObject<string[]>;
+    
+    playerCards: StateObject<Array<CardDto[]>>;
   
     constructor()
     {
@@ -112,6 +115,9 @@ export class AppStateService
         this.chatMessages.setValue( [] );
         this.chatUsers = new StateObject<string[]>();
         this.chatUsers.setValue( [] );
+        
+        this.playerCards = new StateObject<Array<CardDto[]>>();
+        this.playerCards.setValue( [] );
     }
 
     myTurn(): boolean

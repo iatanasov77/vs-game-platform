@@ -10,10 +10,11 @@ use App\Entity\GamePlayer;
 use App\Component\Rules\CardGame\Context\PlayerGetBidContext;
 use App\Component\Rules\CardGame\Context\PlayerGetAnnouncesContext;
 use App\Component\Rules\CardGame\Context\PlayerPlayCardContext;
+use App\Component\Rules\CardGame\GameMechanics\RoundResult;
 
 use App\Component\Dto\Actions\PlayCardActionDto;
 
-class Player
+class Player implements PlayerInterface
 {
     /** @var int */
     public $Id;
@@ -47,14 +48,6 @@ class Player
     
     /** @var bool */
     public $FirstMoveMade;
-    
-    /** @var Collection */
-    public $Cards;
-    
-    public function __construct()
-    {
-        $this->Cards = new ArrayCollection();
-    }
     
     public function __toString(): string
     {
@@ -105,5 +98,20 @@ class Player
         $action = new PlayCardActionDto();
         
         return $action;
+    }
+    
+    public function EndOfTrick( Collection $trickActions ): void
+    {
+        
+    }
+    
+    public function EndOfRound( RoundResult $roundResult ): void
+    {
+        
+    }
+    
+    public function EndOfGame( GameResult $gameResult ): void
+    {
+        
     }
 }

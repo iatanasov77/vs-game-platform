@@ -1,5 +1,6 @@
 import { NgModule, InjectionToken, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { APP_BASE_HREF } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -35,6 +36,7 @@ export function HttpLoaderFactory( http: HttpClient ) {
     ],
     imports: [
         BrowserModule,
+        BrowserAnimationsModule,
         MatTooltipModule,
         NgbModule,
         

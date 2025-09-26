@@ -19,7 +19,10 @@ enum ActionNames: int
     case hintMoves          = 14;
     
     // Card Game Actions
-    case playCard           = 15;
+    case biddingStarted     = 15;
+    case bidMade            = 16;
+    case opponentBid        = 17;
+    case playCard           = 18;
     
-    case serverWasTerminated    = 16;
+    case serverWasTerminated    = 19;
 }

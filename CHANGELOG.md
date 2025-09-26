@@ -1,3 +1,12 @@
+0.16.4	|	Release date: **26.09.2025**
+============================================
+* New Features and Improvements:
+  - Improve Drawing CardGame Board as a Canvas.
+  - Add New Websocket Actions to the Card Games.
+  - Refactoring of CardGame Rules.
+  - Remove Test Card Game.
+
+
 0.16.3	|	Release date: **17.09.2025**
 ============================================
 * New Features and Improvements:

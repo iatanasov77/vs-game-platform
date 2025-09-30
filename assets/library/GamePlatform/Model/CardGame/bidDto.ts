@@ -5,6 +5,7 @@ interface BidDto
 {
     Player: PlayerPosition;
     Type: BidType;
+    NextBids: BidDto[];
 }
 
 export default BidDto;

@@ -41,11 +41,12 @@
             (onCancelInvite)="cancelInvite()"
         ></app-board-buttons>
         
-        <bridge-belote-announce *ngIf="started == true"
+        <bridge-belote-contract *ngIf="started == true"
             [gameAnnounceIcon]="gameAnnounceIcon"
-            [announceVisible]="announceVisible"
             [gameContractVisible]="gameContractVisible"
-        ></bridge-belote-announce>
+            [validBids] = "validBids"
+            (onPlayerMakeBid)="makeBid( $event )"
+        ></bridge-belote-contract>
     </div>
     
 </div>

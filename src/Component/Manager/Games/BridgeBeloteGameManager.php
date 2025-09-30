@@ -1,12 +1,17 @@
 <?php namespace App\Component\Manager\Games;
 
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Encoder\JsonEncode;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+
 use React\Async;
 use React\EventLoop\Loop;
 use React\EventLoop\TimerInterface;
 use Amp\DeferredCancellation;
-
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use App\Component\Manager\CardGameManager;
@@ -16,6 +21,7 @@ use App\Component\Rules\CardGame\GameMechanics\RoundResult;
 
 use App\Component\Rules\CardGame\Game;
 use App\Component\Rules\CardGame\Player;
+use App\Component\Rules\CardGame\Bid;
 use App\Component\AI\EngineFactory as AiEngineFactory;
 use App\Component\Utils\Guid;
 use App\Component\Utils\HumanName;
@@ -27,12 +33,17 @@ use App\Entity\TempPlayer;
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\GameState;
 
+// Contexts
+use App\Component\Rules\CardGame\Context\PlayerGetBidContext;
+
 // DTO Actions
 use App\Component\Dto\Mapper;
+use App\Component\Dto\Actions\ActionNames;
 use App\Component\Dto\Actions\GameRestoreActionDto;
 use App\Component\Dto\Actions\GameCreatedActionDto;
-use App\Component\Dto\Actions\OpponentMoveActionDto;
 use App\Component\Dto\Actions\BiddingStartedActionDto;
+use App\Component\Dto\Actions\BidMadeActionDto;
+use App\Component\Dto\Actions\OpponentBidsActionDto;
 
 class BridgeBeloteGameManager extends CardGameManager
 {
@@ -67,7 +78,7 @@ class BridgeBeloteGameManager extends CardGameManager
                 if ( $this->Game->CurrentPlayer != PlayerPosition::South ) {
                     $promise = \React\Async\async( function () {
                         $this->logger->log( "GameManager CurrentPlayer: Computer", 'GameManager' );
-                        $this->EnginMoves( $this->Clients->get( PlayerPosition::South->value ) );
+                        $this->EnginBids( $this->Clients->get( PlayerPosition::South->value ) );
                     })();
                     \React\Async\await( $promise );
                 }
@@ -169,7 +180,7 @@ class BridgeBeloteGameManager extends CardGameManager
             
             $validBids = new ArrayCollection();
             $playerCards = $this->Game->roundManager->PlayRoundBiddingPhase();
-            $contract = $this->Game->roundManager->GetContract( $validBids );
+            $this->Game->CurrentContract = $this->Game->roundManager->GetContract( $validBids );
             
             $biddingStartedAction = new BiddingStartedActionDto();
             
@@ -213,6 +224,38 @@ class BridgeBeloteGameManager extends CardGameManager
         }
     }
     
+    public function DoAction(
+        ActionNames $actionName,
+        string $actionText,
+        WebsocketClientInterface $socket,
+        ?WebsocketClientInterface $otherSocket
+    ): void {
+        $this->logger->log( "Doing action: {$actionName->value}", 'GameManager' );
+        //$this->logger->debug( $this->Game->Points, 'BeforeDoAction.txt' );
+        
+        if ( $actionName == ActionNames::bidMade ) {
+            $this->Game->ThinkStart = new \DateTime( 'now' );
+            $action = $this->serializer->deserialize( $actionText, BidMadeActionDto::class, JsonEncoder::FORMAT );
+            
+            $this->DoBid( $action );
+            $promise = Async\async( function () use ( $action, $socket ) {
+                $this->NewTurn( $socket );
+            })();
+            Async\await( $promise );
+        } else if ( $actionName == ActionNames::connectionInfo ) {
+            $action = $this->serializer->deserialize( $actionText, ConnectionInfoActionDto::class, JsonEncoder::FORMAT );
+            $this->Send( $otherSocket, $action );
+        } else if ( $actionName == ActionNames::resign ) {
+            $winner = $this->Clients->get( PlayerColor::Black->value ) == $otherSocket ? PlayerColor::Black : PlayerColor::White;
+            $this->Resign( $winner );
+        } else if ( $actionName == ActionNames::exitGame ) {
+            $this->logger->log( 'exitGame action recieved from GameManager.', 'GameManager' );
+            $this->CloseConnections( $socket );
+        }
+        
+        //$this->logger->debug( $this->Game->Points, 'AfterDoAction.txt' );
+    }
+    
     protected function CreateDbGame(): void
     {
         $southPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::South->value]->Id, PlayerPosition::South->value );
@@ -253,85 +296,73 @@ class BridgeBeloteGameManager extends CardGameManager
         if ( $winner ) {
             $this->EndGame( $winner );
         } else {
-            $this->SendNewRoll();
-            
             if ( $this->AisTurn() ) {
                 $this->logger->log( "NewTurn for AI", 'SwitchPlayer' );
-                $this->EnginMoves( $socket );
+                if ( $this->Game->PlayState == GameState::bidding ) {
+                    $this->EnginBids( $socket );
+                } else {
+                    $this->EnginPlays( $socket );
+                }
             }
         }
     }
     
     protected function AisTurn(): bool
     {
-        $plyr = $this->Game->CurrentPlayer == PlayerColor::Black ? $this->Game->BlackPlayer : $this->Game->WhitePlayer;
-        $this->logger->log( "AisTurn CurrentPlayer: " . \print_r( $plyr, true ) , 'SwitchPlayer' );
+        switch ( $this->Game->CurrentPlayer ) {
+            case PlayerPosition::South:
+                $plyr = $this->Game->Players[PlayerPosition::South->value];
+                break;
+            case PlayerPosition::North:
+                $plyr = $this->Game->Players[PlayerPosition::North->value];
+                break;
+            case PlayerPosition::West:
+                $plyr = $this->Game->Players[PlayerPosition::West->value];
+                break;
+                break;
+            case PlayerPosition::East:
+                $plyr = $this->Game->Players[PlayerPosition::East->value];
+                break;
+            default:
+                throw new \RuntimeException( 'Wrong Current Player !' );
+        }
         
+        $this->logger->log( "AisTurn CurrentPlayer: " . \print_r( $plyr, true ) , 'SwitchPlayer' );
         return $plyr->IsAi();
     }
     
-    protected function EnginMoves( WebsocketClientInterface $client )
+    protected function DoBid( BidMadeActionDto $action ): void
     {
-        return;
+        if ( $this->Game->CurrentContract ) {
+            $this->Game->CurrentContract->Player = $action->bid->Player;
+            $this->Game->CurrentContract->Type->set( $action->bid->Type );
+        } else {
+            $this->Game->CurrentContract = new Bid( $action->bid->Player, $action->bid->Type );
+        }
+    }
+    
+    protected function EnginBids( WebsocketClientInterface $client ): void
+    {
+        $availableBids  = new ArrayCollection();
+        $this->Game->roundManager->GetContract( $availableBids );
+        $context = new PlayerGetBidContext();
+        $context->AvailableBids = $availableBids;
         
-        $promise = Async\async( function () use ( $client ) {
+        $promise = Async\async( function () use ( $client, $context ) {
             $sleepMileseconds   = \rand( 700, 1200 );
             Async\delay( $sleepMileseconds / 1000 );
             
-            $action = new RolledActionDto();
+            $action = new OpponentBidsActionDto();
+            $action->bid = new Bid( $this->Game->CurrentPlayer, $this->Engine->GetBid( $context ) );
+            
             $this->Send( $client, $action );
         })();
         Async\await( $promise );
+    }
+    
+    protected function EnginPlays( WebsocketClientInterface $client ): void
+    {
         
-        $moves = $this->Engine->GetBestMoves();
-        //$this->logger->log( print_r( $moves->toArray(), true ), 'EnginMoves' );
-        
-        $noMoves = true;
-        $this->logger->log( "Points Before EnginMoves: " . \print_r( $this->Game->Points->toArray(), true ), 'EnginMoves' );
-        for ( $i = 0; $i < $moves->count(); $i++ ) {
-            $move = $moves[$i];
-            if ( $move->isNull() ) {
-                continue;
-            }
-            
-            $promise = Async\async( function () use ( $client, $move, &$noMoves ) {
-                $sleepMileseconds   = \rand( 700, 1200 );
-                Async\delay( $sleepMileseconds / 1000 );
-                
-                $moveDto = Mapper::MoveToDto( $move );
-                $moveDto->animate = true;
-                $dto = new OpponentMoveActionDto();
-                $dto->move = $moveDto;
-                
-                $hit = $this->Game->MakeMove( $move );
-                if ( $hit ) {
-                    $this->logger->log( "Has a Hit at BlackNumber Point: " . $move->To->BlackNumber, 'EnginMoves' );
-                }
-                
-                if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {
-                    $this->Game->BlackPlayer->FirstMoveMade = true;
-                } else {
-                    $this->Game->WhitePlayer->FirstMoveMade = true;
-                }
-                
-                $noMoves = false;
-                $this->Send( $client, $dto );
-            })();
-            Async\await( $promise );
-        }
-        $this->logger->log( "Points After EnginMoves: " . \print_r( $this->Game->Points->toArray(), true ), 'EnginMoves' );
-        
-        if ( $noMoves ) {
-            $promise = Async\async( function () {
-                Async\delay( 2.5 );
-            })();
-            Async\await( $promise );
-        }
-        
-        $promise = Async\async( function () use ( $client ) {
-            $this->NewTurn( $client );
-        })();
-        Async\await( $promise );
     }
     
     private function CreateTempPlayer( int $playerId, int $playerPositionId ): TempPlayer

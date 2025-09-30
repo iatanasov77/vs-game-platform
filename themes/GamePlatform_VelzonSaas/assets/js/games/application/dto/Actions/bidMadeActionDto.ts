@@ -1,11 +1,9 @@
 import ActionDto from './actionDto';
 
-import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
-import BidType from '_@/GamePlatform/Model/CardGame/bidType';
+import BidDto from '_@/GamePlatform/Model/CardGame/bidDto';
 
 interface BidMadeActionDto extends ActionDto {
-    Player: PlayerPosition;
-    Type: BidType;
+    bid: BidDto;
 }
 
 export default BidMadeActionDto;

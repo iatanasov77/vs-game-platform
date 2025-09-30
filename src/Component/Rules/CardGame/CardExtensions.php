@@ -2,6 +2,7 @@
 
 use App\Component\Type\CardSuit;
 use App\Component\Type\CardType;
+use App\Component\Type\BidType;
 
 trait CardExtensions
 {
@@ -56,4 +57,13 @@ trait CardExtensions
                 throw new \RuntimeException( "Invalid card type." );
         }
     }
+    
+    public static function ToBidType( CardSuit $cardSuit ): BidType
+    {
+        return $cardSuit == CardSuit::Club ? BidType::Clubs :
+                $cardSuit == CardSuit::Diamond ? BidType::Diamonds :
+                $cardSuit == CardSuit::Heart ? BidType::Hearts :
+                $cardSuit == CardSuit::Spade ? BidType::Spades : BidType::Pass;
+    }
+    
 }

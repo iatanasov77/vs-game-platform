@@ -98,11 +98,11 @@ abstract class BoardGameManager extends AbstractGameManager
                     function( $entry ) {
                         return $entry->Color == PlayerColor::Black;
                     }
-                    )->count() == 15
-                    ) {
-                        $this->Game->PlayState = GameState::ended;
-                        $winner = PlayerColor::Black;
-                    }
+                )->count() == 15
+            ) {
+                $this->Game->PlayState = GameState::ended;
+                $winner = PlayerColor::Black;
+            }
         } else {
             if (
                 $this->Game->GetHome( PlayerColor::White )->Checkers->filter(

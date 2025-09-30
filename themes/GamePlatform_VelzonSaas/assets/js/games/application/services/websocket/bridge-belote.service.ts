@@ -10,7 +10,9 @@ import GameCookieDto from '_@/GamePlatform/Model/Core/gameCookieDto';
 
 // CardGame Interfaces
 import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
+import BidType from '_@/GamePlatform/Model/CardGame/bidType';
 import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
+import BidDto from '_@/GamePlatform/Model/CardGame/bidDto';
 
 // Action Interfaces
 import ActionDto from '../../dto/Actions/actionDto';
@@ -20,6 +22,7 @@ import CardGameCreatedActionDto from '../../dto/Actions/cardGameCreatedActionDto
 import CardGameEndedActionDto from '../../dto/Actions/cardGameEndedActionDto';
 import CardGameRestoreActionDto from '../../dto/Actions/cardGameRestoreActionDto';
 import BiddingStartedActionDto from '../../dto/Actions/biddingStartedActionDto';
+import BidMadeActionDto from '../../dto/Actions/bidMadeActionDto';
 import PlayCardActionDto from '../../dto/Actions/playCardActionDto';
 
 import { Keys } from '../../utils/keys';
@@ -214,5 +217,14 @@ export class BridgeBeloteService extends AbstractGameService
             default:
                 throw new Error( `Action not implemented ${action.actionName}` );
         }
+    }
+    
+    makeBid( bid: BidDto ): void
+    {
+        const action: BidMadeActionDto = {
+            actionName: ActionNames.bidMade,
+            bid: { ...bid, NextBids: [] }
+        };
+        this.sendMessage( JSON.stringify( action ) );
     }
 }

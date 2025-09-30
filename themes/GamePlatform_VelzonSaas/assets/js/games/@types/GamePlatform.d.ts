@@ -382,6 +382,7 @@ declare module '_@/GamePlatform/Model/CardGame/bidDto' {
     {
         Player: PlayerPosition;
         Type: BidType;
+        NextBids: BidDto[];
     }
     
     export default BidDto;
@@ -546,8 +547,10 @@ declare module '_@/GamePlatform/Model/CardGamePlayerModel' {
 }
 
 declare module '_@/GamePlatform/Model/CardGameAnnounceSymbolModel' {
+    import BidType from '_@/GamePlatform/Model/CardGame/bidType';
+    
     interface CardGameAnnounceSymbolModel {
-        id: string;
+        id: BidType;
         key: string;
         tooltip: string;
         value: string;

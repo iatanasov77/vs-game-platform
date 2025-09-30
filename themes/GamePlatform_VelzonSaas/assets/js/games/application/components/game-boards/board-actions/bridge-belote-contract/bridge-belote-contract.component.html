@@ -1,10 +1,11 @@
 <div>
-    <div id="AnnounceContainer"> <!-- *ngIf="announceVisible"  -->
+    <div id="AnnounceContainer" *ngIf="validBids.length">
         <ng-container *ngFor="let icon of announceSymbols; let i = index">
             <a href="javascript:void(0);"
                 id="{{ icon.key }}"
                 ngbTooltip="{{ icon.tooltip }}" placement="top"
-                (click)="onPlayerAnnounce( icon.id, $event )"
+                [ngClass]="getClass( icon.id )"
+                (click)="makeBid( icon.id )"
             >
                 <span class="announce-button" [innerHTML]="icon.value"></span>
             </a>

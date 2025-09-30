@@ -45,7 +45,11 @@ class ContractManager
         
         $availableBids = $this->GetAvailableBids( $contract, $currentPlayerPosition );
         
-        if ( $availableBids == BidType::Pass ) {
+        // Debugging
+        $bids = $availableBids;
+        return $contract;
+        
+        if ( $availableBids->count() == 1 ) { // $availableBids == BidType::Pass
             // Only pass is available so we don't ask the player
             $bid = BidType::Pass;
         } else {
@@ -85,37 +89,38 @@ class ContractManager
         return $contract;
     }
     
-    private function GetAvailableBids( Bid $currentContract, PlayerPosition $currentPlayer ): EnumBitMask
+    private function GetAvailableBids( Bid $currentContract, PlayerPosition $currentPlayer ): Collection
     {
         $cleanContract = $currentContract->Type;
         
         $cleanContract->remove( BidType::Double );
         $cleanContract->remove( BidType::ReDouble );
         
-        $availableBids = EnumBitMask::create( BidType::class, BidType::Pass );
+        $availableBids = new ArrayCollection();
+        $availableBids->set( BidType::Pass->value(), new Bid( $currentPlayer, BidType::Pass ) );
         
         if ( $cleanContract->get() < BidType::Clubs->bitMaskValue() ) {
-            $availableBids->set( BidType::Clubs );
+            $availableBids->set( BidType::Clubs->value(), new Bid( $currentPlayer, BidType::Clubs ) );
         }
         
         if ( $cleanContract->get() < BidType::Diamonds->bitMaskValue() ) {
-            $availableBids->set( BidType::Diamonds );
+            $availableBids->set( BidType::Diamonds->value(), new Bid( $currentPlayer, BidType::Diamonds ) );
         }
         
         if ( $cleanContract->get() < BidType::Hearts->bitMaskValue() ) {
-            $availableBids->set( BidType::Hearts );
+            $availableBids->set( BidType::Hearts->value(), new Bid( $currentPlayer, BidType::Hearts ) );
         }
         
         if ( $cleanContract->get() < BidType::Spades->bitMaskValue() ) {
-            $availableBids->set( BidType::Spades );
+            $availableBids->set( BidType::Spades->value(), new Bid( $currentPlayer, BidType::Spades ) );
         }
         
         if ( $cleanContract->get() < BidType::NoTrumps->bitMaskValue() ) {
-            $availableBids->set( BidType::NoTrumps );
+            $availableBids->set( BidType::NoTrumps->value(), new Bid( $currentPlayer, BidType::NoTrumps ) );
         }
         
         if ( $cleanContract->get() < BidType::AllTrumps->bitMaskValue() ) {
-            $availableBids->set( BidType::AllTrumps );
+            $availableBids->set( BidType::AllTrumps->value(), new Bid( $currentPlayer, BidType::AllTrumps ) );
         }
         
         if (
@@ -123,11 +128,11 @@ class ContractManager
             $currentContract->Type->get() != BidType::Pass->bitMaskValue()
         ) {
             if ( $currentContract->Type->has( BidType::Double ) ) {
-                $availableBids->set( BidType::ReDouble );
+                $availableBids->set( BidType::ReDouble->value(), new Bid( $currentPlayer, BidType::ReDouble ) );
             } else if ( $currentContract->Type->has( BidType::ReDouble ) ) {
             
             } else {
-                $availableBids->set( BidType::Double );
+                $availableBids->set( BidType::Double->value(), new Bid( $currentPlayer, BidType::Double ) );
             }
         }
         

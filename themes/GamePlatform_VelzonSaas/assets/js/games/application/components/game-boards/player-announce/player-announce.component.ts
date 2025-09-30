@@ -4,7 +4,7 @@ import { SetPlayerAnnounce } from '../../../models/card-game-player';
 import { GetAnnounceSymbol } from '../../../models/announce';
 
 import CardGamePlayer from '_@/GamePlatform/Game/CardGamePlayer';
-import Announce from '_@/GamePlatform/CardGameAnnounce/Announce';
+import BidType from '_@/GamePlatform/Model/CardGame/bidType';
 import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
 
 import templateString from './player-announce.component.html'

@@ -7,8 +7,14 @@ use App\Component\Rules\GameInterface;
 use App\Component\GameLogger;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerPosition;
+use App\Component\Type\BidType;
 
-use App\Component\Rules\CardGame\GameMechanics\RoundManager;
+use App\Component\Rules\CardGame\Context\PlayerGetBidContext;
+use App\Component\Rules\CardGame\Context\PlayerGetAnnouncesContext;
+use App\Component\Rules\CardGame\Context\PlayerPlayCardContext;
+use App\Component\Rules\CardGame\GameMechanics\RoundResult;
+
+use App\Component\Dto\Actions\PlayCardActionDto;
 
 abstract class Game implements GameInterface
 {
@@ -36,6 +42,9 @@ abstract class Game implements GameInterface
      * @var array
      */
     public $teamsTricks;
+    
+    /** @var Bid */
+    public $CurrentContract;
     
     /** @var PlayerPosition */
     public $CurrentPlayer;
@@ -76,7 +85,7 @@ abstract class Game implements GameInterface
     public function SwitchPlayer(): void
     {
         $this->logger->log( 'SwitchPlayer Called !!!', 'SwitchPlayer' );
-        $this->CurrentPlayer = $this->OtherPlayer();
+        $this->CurrentPlayer = $this->NextPlayer();
     }
     
     public function SetFirstBidWinner(): void
@@ -126,5 +135,39 @@ abstract class Game implements GameInterface
     public function ReallyStarted(): bool
     {
         return $this->BlackPlayer->FirstMoveMade && $this->WhitePlayer->FirstMoveMade;
+    }
+    
+    public function GetBid( PlayerGetBidContext $context ): BidType
+    {
+        return BidType::Pass;
+    }
+    
+    public function GetAnnounces( PlayerGetAnnouncesContext $context ): Collection
+    {
+        $availableAnnounces = $context->AvailableAnnounces;
+        
+        return $availableAnnounces;
+    }
+    
+    public function PlayCard( PlayerPlayCardContext $context ): PlayCardActionDto
+    {
+        $action = new PlayCardActionDto();
+        
+        return $action;
+    }
+    
+    public function EndOfTrick( Collection $trickActions ): void
+    {
+        
+    }
+    
+    public function EndOfRound( RoundResult $roundResult ): void
+    {
+        
+    }
+    
+    public function EndOfGame( GameResult $gameResult ): void
+    {
+        
     }
 }

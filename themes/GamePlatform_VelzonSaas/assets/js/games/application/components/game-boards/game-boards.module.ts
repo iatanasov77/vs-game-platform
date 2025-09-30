@@ -9,11 +9,10 @@ import { GameDialogsModule } from '../game-dialogs/game-dialogs.module';
 
 import { PlayerAnnounceComponent } from './player-announce/player-announce.component';
 import { GameStartComponent } from './board-actions/game-start/game-start.component';
-import { CardGameAnnounceComponent } from './board-actions/card-game-announce/card-game-announce.component';
 
 import { BridgeBeloteContainerComponent } from './bridge-belote-container/bridge-belote-container.component';
 import { BridgeBeloteBoardComponent } from './bridge-belote-board/bridge-belote-board.component';
-import { BridgeBeloteAnnounceComponent } from './board-actions/bridge-belote-announce/bridge-belote-announce.component';
+import { BridgeBeloteContractComponent } from './board-actions/bridge-belote-contract/bridge-belote-contract.component';
 
 import { BackgammonContainerComponent } from './backgammon-container/backgammon-container.component';
 import { BackgammonBoardComponent } from './backgammon-board/backgammon-board.component';
@@ -30,11 +29,10 @@ import { NgxChessBoardModule } from 'ngx-chess-board';
     declarations: [
         PlayerAnnounceComponent,
         GameStartComponent,
-        CardGameAnnounceComponent,
         
         BridgeBeloteContainerComponent,
         BridgeBeloteBoardComponent,
-        BridgeBeloteAnnounceComponent,
+        BridgeBeloteContractComponent,
         
         BackgammonContainerComponent,
         BackgammonBoardComponent,
@@ -57,11 +55,10 @@ import { NgxChessBoardModule } from 'ngx-chess-board';
     exports: [
         PlayerAnnounceComponent,
         GameStartComponent,
-        CardGameAnnounceComponent,
         
         BridgeBeloteContainerComponent,
         BridgeBeloteBoardComponent,
-        BridgeBeloteAnnounceComponent,
+        BridgeBeloteContractComponent,
         
         BackgammonContainerComponent,
         BackgammonBoardComponent,

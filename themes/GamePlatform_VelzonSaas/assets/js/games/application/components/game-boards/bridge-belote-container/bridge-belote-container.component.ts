@@ -49,11 +49,13 @@ import { CookieService } from 'ngx-cookie-service';
 import { Keys } from '../../../utils/keys';
 
 // CardGame Interfaces
+import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
+import BidType from '_@/GamePlatform/Model/CardGame/bidType';
 import UserDto from '_@/GamePlatform/Model/Core/userDto';
 import GameState from '_@/GamePlatform/Model/Core/gameState';
 import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
-import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
 import CardDto from '_@/GamePlatform/Model/CardGame/cardDto';
+import BidDto from '_@/GamePlatform/Model/CardGame/bidDto';
 
 // Dialogs
 import { RequirementsDialogComponent } from '../../game-dialogs/requirements-dialog/requirements-dialog.component';
@@ -112,9 +114,9 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     gameDto: CardGameDto | undefined;
     newVisible = false;
     exitVisible = true;
-    announceVisible = false;
     gameContractVisible = false;
     playerCardsDto: Array<CardDto[]> | undefined;
+    validBids: BidDto[] = [];
     
     appState?: MyGameState;
     gameStarted: boolean = false;
@@ -276,6 +278,11 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
         }, 11000 );
     }
     
+    makeBid( bid: BidDto ): void
+    {
+        this.wsService.makeBid( bid );
+    }
+    
     login(): void
     {
         const modalRef = this.ngbModal.open( UserLoginDialogComponent );
@@ -406,7 +413,6 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
             if ( dto.playState === GameState.bidding ) { // GameState.playing
                 this.started = true;
                 this.playAiQuestion = false;
-                this.announceVisible = true;
                 this.lobbyButtonsVisibleChanged.emit( false );
             }
         }
@@ -414,23 +420,19 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
         // console.log( 'Debug GameDto: ', dto );
         // alert( this.lobbyButtonsVisible );
         
-        this.setAnnounceVisible();
+        if ( dto?.validBids && dto.validBids.length ) {
+            this.validBids = dto.validBids;
+        }
     }
     
     oponnentDone(): void
     {
-        this.announceVisible = false;
-    }
-    
-    setAnnounceVisible(): void
-    {
-        this.announceVisible = true;
+        
     }
     
     playerCardsChanged( dto: Array<CardDto[]> ): void
     {
         this.playerCardsDto = dto;
-        this.setAnnounceVisible();
         this.fireResize();
         
         /*

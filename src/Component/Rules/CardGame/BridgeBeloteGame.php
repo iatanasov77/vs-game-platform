@@ -61,4 +61,9 @@ class BridgeBeloteGame extends Game
                 throw new \RuntimeException( 'The Player Has No Position !' );
         }
     }
+    
+    public function MakeBid( PlayerGetBidContext $context ): BidType
+    {
+        return BidType::Pass;
+    }
 }

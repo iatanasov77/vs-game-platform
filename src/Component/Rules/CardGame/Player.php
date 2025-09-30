@@ -3,18 +3,10 @@
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use App\Component\Type\PlayerPosition;
-use App\Component\Type\BidType;
 use App\Component\Utils\Guid;
 use App\Entity\GamePlayer;
 
-use App\Component\Rules\CardGame\Context\PlayerGetBidContext;
-use App\Component\Rules\CardGame\Context\PlayerGetAnnouncesContext;
-use App\Component\Rules\CardGame\Context\PlayerPlayCardContext;
-use App\Component\Rules\CardGame\GameMechanics\RoundResult;
-
-use App\Component\Dto\Actions\PlayCardActionDto;
-
-class Player implements PlayerInterface
+class Player // implements PlayerInterface
 {
     /** @var int */
     public $Id;
@@ -79,39 +71,5 @@ class Player implements PlayerInterface
     public function IsAi(): bool
     {
         return $this->Guid == GamePlayer::AiUser;
-    }
-    
-    public function GetBid( PlayerGetBidContext $context ): BidType
-    {
-        return BidType::Pass;
-    }
-    
-    public function GetAnnounces( PlayerGetAnnouncesContext $context ): Collection
-    {
-        $availableAnnounces = $context->AvailableAnnounces;
-            
-        return $availableAnnounces;
-    }
-    
-    public function PlayCard( PlayerPlayCardContext $context ): PlayCardActionDto
-    {
-        $action = new PlayCardActionDto();
-        
-        return $action;
-    }
-    
-    public function EndOfTrick( Collection $trickActions ): void
-    {
-        
-    }
-    
-    public function EndOfRound( RoundResult $roundResult ): void
-    {
-        
-    }
-    
-    public function EndOfGame( GameResult $gameResult ): void
-    {
-        
     }
 }

@@ -48,6 +48,14 @@ services:
         tags:
             # register the normalizer with a high priority (called earlier)
             - { name: 'serializer.normalizer', priority: 500 }
+    App\Component\Serializer\Normalizer\BidDtoDenormalizer:
+        tags:
+            # register the normalizer with a high priority (called earlier)
+            - { name: 'serializer.normalizer', priority: 500 }
+    App\Component\Serializer\Normalizer\BidMadeActionDtoDenormalizer:
+        tags:
+            # register the normalizer with a high priority (called earlier)
+            - { name: 'serializer.normalizer', priority: 500 }
     
     ##############################################################
     # Websocket Servers

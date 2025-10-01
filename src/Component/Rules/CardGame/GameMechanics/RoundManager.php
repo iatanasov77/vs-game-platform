@@ -3,11 +3,12 @@
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
+use App\Component\Type\GameState;
+use App\Component\Type\PlayerPosition;
 use App\Component\Rules\CardGame\Game;
 use App\Component\Rules\CardGame\Deck;
 use App\Component\Rules\CardGame\Bid;
 use App\Component\Rules\CardGame\PlayerPositionExtensions;
-use App\Component\Type\PlayerPosition;
 
 class RoundManager
 {
@@ -21,59 +22,45 @@ class RoundManager
     
     private ScoreManager $scoreManager;
     
-    private Deck $deck;
-    
-    private Collection $playerCards;
-    
     public function __construct( Game $game )
     {
         $this->game = $game;
+        
+        
         $this->contractManager = new ContractManager( $this->game );
 //         $this->tricksManager = new TricksManager( southPlayer, eastPlayer, northPlayer, westPlayer );
 //         $this->scoreManager = new ScoreManager();
-        $this->deck = new Deck();
+        $this->game->Deck = new Deck();
         
-        $this->playerCards = new ArrayCollection();
+        $this->game->playerCards = new ArrayCollection();
         foreach ( $this->game->Players as $key => $player ) {
-            $this->playerCards->set( $key, new ArrayCollection() );
+            $this->game->playerCards->set( $key, new ArrayCollection() );
         }
     }
     
-    public function PlayRoundBiddingPhase(): Collection
+    public function PlayRound(): void
     {
-        // Initialize the cards
-        $this->deck->Shuffle();
-        $this->playerCards[PlayerPosition::South->value]->clear();
-        $this->playerCards[PlayerPosition::East->value]->clear();
-        $this->playerCards[PlayerPosition::North->value]->clear();
-        $this->playerCards[PlayerPosition::West->value]->clear();
+        if ( $this->game->PlayState == GameState::firstBid ) {
+            // Initialize the cards
+            $this->game->Deck->Shuffle();
+            $this->game->playerCards[PlayerPosition::South->value]->clear();
+            $this->game->playerCards[PlayerPosition::East->value]->clear();
+            $this->game->playerCards[PlayerPosition::North->value]->clear();
+            $this->game->playerCards[PlayerPosition::West->value]->clear();
+            
+            // Deal 5 cards to each player
+            $this->DealCards( 5 );
+            
+            $this->contractManager->StartNewRound();
+        }
         
-        $this->game->SetFirstBidWinner();
-        
-        // Deal 5 cards to each player
-        $this->DealCards( 5 );
-        
-        return $this->playerCards;
-    }
-    
-    public function GetContract( Collection &$bids ): Bid
-    {
-        return $this->contractManager->GetContract(
-            $this->game->roundNumber,
-            $this->game->firstInRound,
-            $this->game->southNorthPoints,
-            $this->game->eastWestPoints,
-            $this->playerCards,
-            $bids
-        );
-    }
-    
-    public function PlayRoundPlayingPhase(): Collection
-    {
         // Deal 3 more cards to each player
-        $this->DealCards( 3 );
-        
-        return $this->playerCards;
+        //$this->DealCards( 3 );
+    }
+    
+    public function SetContract( Bid $bid ): void
+    {
+        $this->contractManager->SetContract( $bid );
     }
     
     private function DealCards( int $count ): void
@@ -82,7 +69,7 @@ class RoundManager
         for ( $i = 0; $i < $count; $i++ )
         {
             while( true ) {
-                $this->playerCards[$dealToPlayer->value][] = $this->deck->GetNextCard();
+                $this->game->playerCards[$dealToPlayer->value][] = $this->game->Deck->GetNextCard();
                 $dealToPlayer = self::Next( $dealToPlayer );
                 if( $dealToPlayer === $this->game->CurrentPlayer ) {
                     break;

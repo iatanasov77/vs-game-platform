@@ -178,39 +178,21 @@ class BridgeBeloteGameManager extends CardGameManager
         while ( $this->Game->PlayState == GameState::firstBid ) {
             $this->logger->log( 'First Bid State !!!', 'FirstBidState' );
             
-            $validBids = new ArrayCollection();
-            $playerCards = $this->Game->roundManager->PlayRoundBiddingPhase();
-            $this->Game->CurrentContract = $this->Game->roundManager->GetContract( $validBids );
+            $this->Game->SetFirstBidWinner();
             
             $biddingStartedAction = new BiddingStartedActionDto();
             
-            $biddingStartedAction->playerCards[PlayerPosition::South->value] = $playerCards[PlayerPosition::South->value]->map(
-                function( $entry ) {
-                    return Mapper::CardToDto( $entry );
-                }
-            )->toArray();
-            
-            $biddingStartedAction->playerCards[PlayerPosition::East->value] = $playerCards[PlayerPosition::East->value]->map(
-                function( $entry ) {
-                    return Mapper::CardToDto( $entry );
-                }
-            )->toArray();
-                
-            $biddingStartedAction->playerCards[PlayerPosition::North->value] = $playerCards[PlayerPosition::North->value]->map(
-                function( $entry ) {
-                    return Mapper::CardToDto( $entry );
-                }
-            )->toArray();
-                    
-            $biddingStartedAction->playerCards[PlayerPosition::West->value] = $playerCards[PlayerPosition::West->value]->map(
-                function( $entry ) {
-                    return Mapper::CardToDto( $entry );
-                }
-            )->toArray();
+            foreach ( $this->Game->Players as $key => $player ) {
+                $biddingStartedAction->playerCards[$key] = $this->Game->playerCards[$key]->map(
+                    function( $entry ) {
+                        return Mapper::CardToDto( $entry );
+                    }
+                )->toArray();
+            }
             
             $biddingStartedAction->playerToBid = $this->Game->CurrentPlayer;
             
-            $biddingStartedAction->validBids = $validBids->map(
+            $biddingStartedAction->validBids = $this->Game->AvailableBids->map(
                 function( $entry ) {
                     return Mapper::BidToDto( $entry );
                 }
@@ -333,27 +315,25 @@ class BridgeBeloteGameManager extends CardGameManager
     
     protected function DoBid( BidMadeActionDto $action ): void
     {
-        if ( $this->Game->CurrentContract ) {
-            $this->Game->CurrentContract->Player = $action->bid->Player;
-            $this->Game->CurrentContract->Type->set( $action->bid->Type );
-        } else {
-            $this->Game->CurrentContract = new Bid( $action->bid->Player, $action->bid->Type );
-        }
+        $bid = new Bid( $action->bid->Player, $action->bid->Type );
+        $this->Game->SetContract( $bid );
     }
     
     protected function EnginBids( WebsocketClientInterface $client ): void
     {
-        $availableBids  = new ArrayCollection();
-        $this->Game->roundManager->GetContract( $availableBids );
         $context = new PlayerGetBidContext();
-        $context->AvailableBids = $availableBids;
+        $context->MyPosition = $this->Game->CurrentPlayer;
+        $context->Bids = $this->Game->Bids;
+        $context->AvailableBids = $this->Game->AvailableBids;
+        $context->MyCards = $this->Game->playerCards[$this->Game->CurrentPlayer->value];
         
         $promise = Async\async( function () use ( $client, $context ) {
             $sleepMileseconds   = \rand( 700, 1200 );
             Async\delay( $sleepMileseconds / 1000 );
             
+            $bid = new Bid( $this->Game->CurrentPlayer, $this->Engine->GetBid( $context ) );
             $action = new OpponentBidsActionDto();
-            $action->bid = new Bid( $this->Game->CurrentPlayer, $this->Engine->GetBid( $context ) );
+            $action->bid = Mapper::BidToDto( $bid );
             
             $this->Send( $client, $action );
         })();

@@ -1,6 +1,7 @@
 <?php namespace App\Component\Rules\CardGame\GameMechanics;
 
 use Doctrine\Common\Collections\Collection;
+
 use App\Component\Type\BidType;
 use App\Component\Type\CardSuit;
 use App\Component\Rules\CardGame\Helper;

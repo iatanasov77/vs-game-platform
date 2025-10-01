@@ -13,6 +13,7 @@ use App\Component\Rules\CardGame\GameMechanics\ValidAnnouncesService;
 use App\Component\Rules\CardGame\GameMechanics\TrickWinnerService;
 use App\Component\Rules\CardGame\Card;
 use App\Component\Rules\CardGame\PlayCardAction;
+use App\Component\Rules\CardGame\PlayerPositionExtensions;
 
 // Contexts
 use App\Component\Rules\CardGame\Context\PlayerGetBidContext;
@@ -59,48 +60,74 @@ class BridgeBeloteEngine extends Engine
     
     public function GetBid( PlayerGetBidContext $context ): BidType
     {
+        $availableAnnounces = $this->validAnnouncesService->GetAvailableAnnounces( $context->MyCards );
+        // $this->logger->log( print_r( $availableAnnounces->toArray(), true ), 'BridgeBeloteEngine' );
         $announcePoints = \array_reduce(
-            $this->validAnnouncesService->GetAvailableAnnounces( $context->MyCards )->toArray(),
+            $availableAnnounces->toArray(),
             function( $carry, $item )
             {
                 return $carry + $item->Value();
             }
         );
         
+        if ( ! $announcePoints ) {
+            $announcePoints = 0;
+        }
+        
         $bids = new ArrayCollection();
         
         if ( $context->AvailableBids->containsKey( BidType::Clubs->value() ) ) {
-            $bids->set( BidType::Clubs->value(), self::CalculateTrumpBidPoints( $context->MyCards, CardSuit::Club, $announcePoints ) );
+            $bids->set(
+                BidType::Clubs->value(),
+                self::CalculateTrumpBidPoints( $context->MyCards, CardSuit::Club, $announcePoints )
+            );
         }
         
         if ( $context->AvailableBids->containsKey( BidType::Diamonds->value() ) ) {
-            $bids->set( BidType::Diamonds->value(), self::CalculateTrumpBidPoints( $context->MyCards, CardSuit::Diamond, $announcePoints ) );
+            $bids->set(
+                BidType::Diamonds->value(),
+                self::CalculateTrumpBidPoints( $context->MyCards, CardSuit::Diamond, $announcePoints )
+            );
         }
         
         if ( $context->AvailableBids->containsKey( BidType::Hearts->value() ) ) {
-            $bids->set( BidType::Hearts->value(), self::CalculateTrumpBidPoints( $context->MyCards, CardSuit::Heart, $announcePoints));
+            $bids->set(
+                BidType::Hearts->value(),
+                self::CalculateTrumpBidPoints( $context->MyCards, CardSuit::Heart, $announcePoints )
+            );
         }
         
         if ( $context->AvailableBids->containsKey( BidType::Spades->value() ) ) {
-            $bids->set( BidType::Spades->value(), self::CalculateTrumpBidPoints( $context->MyCards, CardSuit::Spade, $announcePoints));
+            $bids->set(
+                BidType::Spades->value(),
+                self::CalculateTrumpBidPoints( $context->MyCards, CardSuit::Spade, $announcePoints )
+            );
         }
         
         if ( $context->AvailableBids->containsKey( BidType::AllTrumps->value() ) ) {
+            $teammate = PlayerPositionExtensions::GetTeammate( $context->MyPosition );
             $bids->set(
                 BidType::AllTrumps->value(),
-                self::CalculateAllTrumpsBidPoints( $context->MyCards, $context->Bids, $context->MyPosition->GetTeammate(), $announcePoints ) );
+                self::CalculateAllTrumpsBidPoints( $context->MyCards, $context->Bids, $teammate, $announcePoints )
+            );
         }
         
         if ( $context->AvailableBids->containsKey( BidType::NoTrumps->value() ) ) {
-            $bids->set( BidType::NoTrumps->value(), self::CalculateNoTrumpsBidPoints( $context->MyCards ) );
+            $bids->set(
+                BidType::NoTrumps->value(),
+                self::CalculateNoTrumpsBidPoints( $context->MyCards )
+            );
         }
         
         $bidsIterator = $bids->getIterator();
-        $bid = $bidsIterator->uasort( function ( $a, $b ) {
-            return $b->Value <=> $a->Value;
-        })->first();
+        $bidsIterator->uasort( function ( $a, $b ) {
+            return $b <=> $a;
+        });
+        $bids = new ArrayCollection( \iterator_to_array( $bidsIterator ) );
+        $bids->first();
+        $bid = $bids->first() ? BidType::fromValue( $bids->indexOf( $bids->key() ) ) : BidType::Pass;
         
-        return $bid ? BidType::fromValue( $bids->indexOf( $bid ) ) : BidType::Pass;
+        return $bid;
     }
     
     public function PlayCard( PlayerPlayCardContext $context ): PlayCardAction
@@ -181,7 +208,7 @@ class BridgeBeloteEngine extends Engine
         }
         
         $teammateHasSuitAnnounce = $previousBids->filter(
-            function( $entry ) use ( $teammate, $cardSuit ) {
+            function( $entry ) use ( $teammate ) {
                 return $entry->Player == $teammate && (
                     $entry->Type == BidType::Clubs
                     || $entry->Type == BidType::Diamonds

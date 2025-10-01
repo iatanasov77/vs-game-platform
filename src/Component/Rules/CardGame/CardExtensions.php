@@ -60,10 +60,18 @@ trait CardExtensions
     
     public static function ToBidType( CardSuit $cardSuit ): BidType
     {
-        return $cardSuit == CardSuit::Club ? BidType::Clubs :
-                $cardSuit == CardSuit::Diamond ? BidType::Diamonds :
-                $cardSuit == CardSuit::Heart ? BidType::Hearts :
-                $cardSuit == CardSuit::Spade ? BidType::Spades : BidType::Pass;
+        if ( $cardSuit == CardSuit::Club ) {
+            $bidType = BidType::Clubs;
+        } elseif ( $cardSuit == CardSuit::Diamond ) {
+            $bidType = BidType::Diamonds;
+        } elseif ( $cardSuit == CardSuit::Heart ) {
+            $bidType = BidType::Hearts;
+        } elseif ( $cardSuit == CardSuit::Spade ) {
+            $bidType = BidType::Spades;
+        } else {
+            $bidType = BidType::Pass;
+        }
+        
+        return $bidType;
     }
-    
 }

@@ -7,6 +7,7 @@ use App\Component\Rules\CardGame\Context\PlayerPlayCardContext;
 use App\Component\Rules\CardGame\PlayCardAction;
 use App\Component\Rules\CardGame\Card;
 use App\Component\Rules\CardGame\CardExtensions;
+use App\Component\Rules\CardGame\PlayerPositionExtensions;
 
 class AllTrumpsOursContractStrategy implements IPlayStrategy
 {
@@ -24,7 +25,7 @@ class AllTrumpsOursContractStrategy implements IPlayStrategy
         }
         
         // Play card of the same suit as one of my teammate's bids
-        $teammate = $context->MyPosition->GetTeammate();
+        $teammate = PlayerPositionExtensions::GetTeammate( $context->MyPosition );
         for ( $i = 0; $i < \count( Card::AllSuits ); $i++ ) {
             $cardSuit = Card::AllSuits[$i];
             $hasTeammateBid = ! $context->Bids->filter(

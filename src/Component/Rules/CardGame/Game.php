@@ -27,15 +27,15 @@ abstract class Game implements GameInterface
     /** @var string */
     public $Id;
     
-    /** @var array */
-    public $pile;
+    /** @var Deck */
+    public $Deck;
     
-    /** @var array | Player[] */
-    public array $Players;
+    /** @var array */
+    public $Pile;
     
     /**
      * Tricks Of Cards
-     * 
+     *
      * $teamsTricks[0] for Team1 (North-South)
      * $teamsTricks[1] for Team2 (East-West)
      *
@@ -43,8 +43,23 @@ abstract class Game implements GameInterface
      */
     public $teamsTricks;
     
+    /** @var array | Player[] */
+    public array $Players;
+    
+    /** @var Collection | Card[] */
+    public $playerCards;
+    
     /** @var Bid */
     public $CurrentContract;
+    
+    /** @var Collection | Bid[] */
+    public $AvailableBids;
+    
+    /** @var Collection | Bid[] */
+    public $Bids;
+    
+    /** @var int */
+    public $ConsecutivePasses = 0;
     
     /** @var PlayerPosition */
     public $CurrentPlayer;
@@ -73,6 +88,9 @@ abstract class Game implements GameInterface
     /** @var GameLogger */
     protected  $logger;
     
+    /** @var RoundManager */
+    protected $roundManager;
+    
     public function __construct( GameLogger $logger )
     {
         $this->logger   = $logger;
@@ -93,6 +111,7 @@ abstract class Game implements GameInterface
         if ( $this->PlayState == GameState::firstBid ) {
             $this->CurrentPlayer = PlayerPosition::South;
             //$this->CurrentPlayer = PlayerPosition::from( \rand( 0, 3 ) );
+            $this->roundManager->PlayRound();
             $this->PlayState = GameState::bidding;
         }
     }
@@ -135,6 +154,11 @@ abstract class Game implements GameInterface
     public function ReallyStarted(): bool
     {
         return $this->BlackPlayer->FirstMoveMade && $this->WhitePlayer->FirstMoveMade;
+    }
+    
+    public function SetContract( Bid $bid ): void
+    {
+        $this->roundManager->SetContract( $bid );
     }
     
     public function GetBid( PlayerGetBidContext $context ): BidType

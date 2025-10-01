@@ -14,9 +14,6 @@ class BridgeBeloteGame extends Game
 {
     use PlayerPositionExtensions;
     
-    /** @var RoundManager */
-    public $roundManager;
-    
     /** @var int */
     public $southNorthPoints;
     
@@ -28,7 +25,7 @@ class BridgeBeloteGame extends Game
     
     public function SetStartPosition(): void
     {
-        $this->playGame();
+        $this->PlayGame();
     }
     
     public function PlayGame( PlayerPosition $firstToPlay = PlayerPosition::South ): void

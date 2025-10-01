@@ -23,6 +23,7 @@ import CardGameEndedActionDto from '../../dto/Actions/cardGameEndedActionDto';
 import CardGameRestoreActionDto from '../../dto/Actions/cardGameRestoreActionDto';
 import BiddingStartedActionDto from '../../dto/Actions/biddingStartedActionDto';
 import BidMadeActionDto from '../../dto/Actions/bidMadeActionDto';
+import OpponentBidsActionDto from '../../dto/Actions/opponentBidsActionDto';
 import PlayCardActionDto from '../../dto/Actions/playCardActionDto';
 
 import { Keys } from '../../utils/keys';
@@ -158,6 +159,22 @@ export class BridgeBeloteService extends AbstractGameService
                 
                 break;
             }
+            case ActionNames.bidMade: {
+                //console.log( 'WebSocket Action Moves Made', action.actionName );
+                
+                // This action is only sent to server.
+                break;
+            }
+            case ActionNames.opponentBids: {
+                //alert( 'WebSocket Action Opponent Move' );
+                
+                const action = JSON.parse( message.data ) as OpponentBidsActionDto;
+                console.log( 'WebSocket Action Opponent Bids', action.bid );
+                
+                this.doBid( action.bid );
+                
+                break;
+            }
             case ActionNames.gameEnded: {
                 //console.log( 'WebSocket Action Game Ended', action.actionName );
                 
@@ -226,5 +243,15 @@ export class BridgeBeloteService extends AbstractGameService
             bid: { ...bid, NextBids: [] }
         };
         this.sendMessage( JSON.stringify( action ) );
+    }
+    
+    doOpponentBid( bid: BidDto ): void
+    {
+    
+    }
+    
+    doBid( bid: BidDto ): void
+    {
+    
     }
 }

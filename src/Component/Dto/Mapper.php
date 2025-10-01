@@ -168,8 +168,8 @@ final class Mapper
         $gameDto->goldMultiplier    = $game->GoldMultiplier;
         $gameDto->isGoldGame        = $game->IsGoldGame;
         
-        $gameDto->deck = $game->deck->Cards();
-        $gameDto->pile = $game->pile;
+        $gameDto->deck = $game->Deck->Cards();
+        $gameDto->pile = $game->Pile;
         $gameDto->teamsTricks = $game->teamsTricks;
         
         return $gameDto;

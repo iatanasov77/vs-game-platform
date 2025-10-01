@@ -23,70 +23,31 @@ class ContractManager
         $this->game = $game;
     }
     
-    public function GetContract(
-        int $roundNumber,
-        PlayerPosition $firstToPlay,
-        int $southNorthPoints,
-        int $eastWestPoints,
-        Collection $playerCards,
-        Collection &$bids
-    ): Bid {
-        $bids = new ArrayCollection(); // List<Bid>(8);
-        $consecutivePasses = 0;
-        $currentPlayerPosition = $firstToPlay;
-        $contract = new Bid( $currentPlayerPosition, BidType::Pass );
+    public function StartNewRound(): void
+    {
+        $contract = new Bid( $this->game->CurrentPlayer, BidType::Pass );
+        $this->game->AvailableBids = $this->GetAvailableBids( $contract, $this->game->CurrentPlayer );
+    }
+    
+    public function SetContract( Bid $bid ): void
+    {
+        $this->game->Bids[] = $bid;
         
-        $bidContext = new PlayerGetBidContext();
-        $bidContext->RoundNumber = $roundNumber;
-        $bidContext->FirstToPlayInTheRound = $firstToPlay;
-        $bidContext->EastWestPoints = $eastWestPoints;
-        $bidContext->SouthNorthPoints = $southNorthPoints;
-        $bidContext->Bids = $bids;
-        
-        $availableBids = $this->GetAvailableBids( $contract, $currentPlayerPosition );
-        
-        // Debugging
-        $bids = $availableBids;
-        return $contract;
-        
-        if ( $availableBids->count() == 1 ) { // $availableBids == BidType::Pass
-            // Only pass is available so we don't ask the player
-            $bid = BidType::Pass;
+        if ( ! $this->game->CurrentContract ) {
+            $this->game->CurrentContract = $bid;
         } else {
-            // Prepare context
-            $bidContext->AvailableBids = $availableBids;
-            $bidContext->MyCards = $playerCards[$currentPlayerPosition->value];
-            $bidContext->MyPosition = $currentPlayerPosition;
-            $bidContext->CurrentContract = $contract;
-            
-            // Execute GetBid()
-            $bid = $this->game->Players[$currentPlayerPosition->value]->GetBid( $bidContext );
-            
-            // Validate
-            if ( $bid != BidType::Pass && ( $bid & ( $bid - 1 ) ) != 0 ) {
-                throw new BelotGameException( "Invalid bid from {$currentPlayerPosition->value} player. More than 1 flags returned." );
-            }
-            
-            if ( ! $availableBids->has( $bid ) ) {
-                throw new BelotGameException( "Invalid bid from {$currentPlayerPosition->value} player. This bid is not permitted." );
-            }
-            
-            if ( $bid == BidType::Double || $bid == BidType::ReDouble ) {
-                $contract->Type->remove( BidType::Double );
-                $contract->Type->remove( BidType::ReDouble );
-                $contract->Type->set( $bid );
-                $contract->Player = $currentPlayerPosition;
-            } else if ( $bid != BidType::Pass ) {
-                $contract->Type = $bid;
-                $contract->Player = $currentPlayerPosition;
+            if ( $bid->Type == BidType::Double || $bid->Type == BidType::ReDouble) {
+                $this->game->CurrentContract->Type->remove( BidType::Double );
+                $this->game->CurrentContract->Type->remove( BidType::ReDouble );
+                $this->game->CurrentContract->Type->set( $bid->Type );
+                $this->game->CurrentContract->Player = $this->game->CurrentPlayer;
+            } else if ( $bid->Type != BidType::Pass ) {
+                $this->game->CurrentContract = $bid;
             }
         }
         
-        $bids[] = new Bid( $currentPlayerPosition, $bid );
-        
-        $consecutivePasses = ( $bid == BidType::Pass) ? $consecutivePasses + 1 : 0;
-        
-        return $contract;
+        $this->game->ConsecutivePasses = $bid->Type == BidType::Pass ? $this->game->ConsecutivePasses++ : 0;
+        $this->game->AvailableBids = $this->GetAvailableBids( $this->game->CurrentContract, $this->game->CurrentPlayer );
     }
     
     private function GetAvailableBids( Bid $currentContract, PlayerPosition $currentPlayer ): Collection

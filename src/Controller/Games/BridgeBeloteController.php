@@ -21,7 +21,10 @@ class BridgeBeloteController extends GameController
             'socketChatUrl'         => $this->getParameter( 'app_websocket_chat_url' ),
             'socketGameUrl'         => $this->getParameter( 'app_websocket_game_url' ),
             'apiVerifySiganature'   => $signature,
-            'timeoutBetweenPlayers' => $gamePlatformSettings->getTimeoutBetweenPlayers(),
+            
+            'timeoutBetweenPlayers'     => $gamePlatformSettings->getTimeoutBetweenPlayers(),
+            'debugCardGamePlayerAreas'  => $gamePlatformSettings->getDebugCardGamePlayerAreas(),
+            'debugCardGamePlayerCards'  => $gamePlatformSettings->getDebugCardGamePlayerCards(),
             
             'queryParams'           => [
                 'gameId'    => $request->query->get( 'gameId' ),

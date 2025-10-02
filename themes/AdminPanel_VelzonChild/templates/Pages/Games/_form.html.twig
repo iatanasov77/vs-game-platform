@@ -18,6 +18,16 @@
         </label>
     </div>
     
+    <div class="form-check form-check-secondary mb-3">
+        <input type="checkbox" id="game_form_notImplemented" name="game_form[notImplemented]"
+            class="form-check-input"
+            {% if form.vars.value.notImplemented %}checked="checked"{% endif %}
+        />
+        <label class="form-check-label" for="game_form_notImplemented">
+            {{ 'game_platform.form.game.not_implemented'|trans({}, 'GamePlatform') }}
+        </label>
+    </div>
+    
     <div class="form-group">
         {{ form_label(form.locale, null, {
             'label_attr': {'class': 'form-label'}

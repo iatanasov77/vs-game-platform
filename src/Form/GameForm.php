@@ -49,6 +49,11 @@ class GameForm extends AbstractForm
                 'translation_domain'    => 'VSApplicationBundle',
             ])
             
+            ->add( 'notImplemented', CheckboxType::class, [
+                'label'                 => 'game_platform.form.game.not_implemented',
+                'translation_domain'    => 'GamePlatform',
+            ])
+            
             ->add( 'category', EntityType::class, [
                 'label'                 => 'vs_application.form.category',
                 'translation_domain'    => 'VSApplicationBundle',

@@ -74,6 +74,35 @@
                 	</div>
                 	
                     <div class="card-body">
+                        
+                        <fieldset class="border border-dark rounded p-3">
+                            <legend class="w-auto float-none ps-2 pe-2">{{ 'game_platform.form.game_platform_settings.game_debugging' | trans( {},'GamePlatform' ) }}</legend>
+                            
+                            <div class="form-check form-check-secondary mb-3">
+                                <input type="checkbox" id="game_platform_settings_form_debugCardGamePlayerAreas" name="game_platform_settings_form[debugCardGamePlayerAreas]"
+                                    class="form-check-input"
+                                    {% if form.vars.value.debugCardGamePlayerAreas %}checked="checked"{% endif %}
+                                />
+                                <label class="form-check-label" for="game_platform_settings_form_debugCardGamePlayerAreas">
+                                    {{ 'game_platform.form.game_platform_settings.debug_card_game_player_areas'|trans({}, 'GamePlatform') }}
+                                </label>
+                            </div>
+                            
+                            <div class="form-check form-check-secondary mb-3">
+                                <input type="checkbox" id="game_platform_settings_form_debugCardGamePlayerCards" name="game_platform_settings_form[debugCardGamePlayerCards]"
+                                    class="form-check-input"
+                                    {% if form.vars.value.debugCardGamePlayerCards %}checked="checked"{% endif %}
+                                />
+                                <label class="form-check-label" for="game_platform_settings_form_debugCardGamePlayerCards">
+                                    {{ 'game_platform.form.game_platform_settings.debug_card_game_player_cards'|trans({}, 'GamePlatform') }}
+                                </label>
+                            </div>
+                            
+                        </fieldset>
+                        
+                    </div>
+                    
+                    <div class="card-body">
                         {{ vs_form.buttons( form, metadata ) }}
                     </div>
                 

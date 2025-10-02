@@ -65,6 +65,10 @@ class Game implements ResourceInterface
     #[ORM\OneToMany(targetEntity: GamePlay::class, mappedBy: "game", cascade: ["persist", "remove"], orphanRemoval: true)]
     private $gameSessions;
     
+    /** @var bool */
+    #[ORM\Column(name: "not_implemented", type: "boolean", options: ["default" => 1], nullable: true)]
+    private $notImplemented = true;
+    
     public function __construct()
     {
         $this->gameSessions = new ArrayCollection();
@@ -170,6 +174,18 @@ class Game implements ResourceInterface
         if ( $this->gameSessions->contains( $gameSession ) ) {
             $this->gameSessions->removeElement( $gameSession );
         }
+        
+        return $this;
+    }
+    
+    public function getNotImplemented()
+    {
+        return $this->notImplemented;
+    }
+    
+    public function setNotImplemented($notImplemented)
+    {
+        $this->notImplemented = $notImplemented;
         
         return $this;
     }

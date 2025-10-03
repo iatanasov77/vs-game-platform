@@ -297,9 +297,10 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
         }, 11000 );
     }
     
-    makeBid( bid: BidDto ): void
+    doBid( bid: BidDto ): void
     {
-        this.wsService.makeBid( bid );
+        this.wsService.doBid( bid );
+        this.wsService.sendBid( bid );
     }
     
     login(): void

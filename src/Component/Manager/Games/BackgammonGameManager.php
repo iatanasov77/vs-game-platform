@@ -188,7 +188,8 @@ final class BackgammonGameManager extends BoardGameManager
         ActionNames $actionName,
         string $actionText,
         WebsocketClientInterface $socket,
-        ?WebsocketClientInterface $otherSocket
+        //?WebsocketClientInterface $otherSocket
+        array $otherSockets
     ): void {
         $this->logger->log( "Doing action: {$actionName->value}", 'GameManager' );
         //$this->logger->debug( $this->Game->Points, 'BeforeDoAction.txt' );
@@ -211,13 +212,19 @@ final class BackgammonGameManager extends BoardGameManager
             
         } else if ( $actionName == ActionNames::opponentMove ) {
             $action = $this->serializer->deserialize( $actionText, OpponentMoveActionDto::class, JsonEncoder::FORMAT );
-            $this->Send( $otherSocket, $action );
+            foreach ( $otherSockets as $otherSocket ) {
+                $this->Send( $otherSocket, $action );
+            }
         } else if ( $actionName == ActionNames::undoMove ) {
             $action = $this->serializer->deserialize( $actionText, UndoActionDto::class, JsonEncoder::FORMAT );
-            $this->Send( $otherSocket, $action );
+            foreach ( $otherSockets as $otherSocket ) {
+                $this->Send( $otherSocket, $action );
+            }
         } else if ( $actionName == ActionNames::rolled ) {
             $action = $this->serializer->deserialize( $actionText, ActionDto::class, JsonEncoder::FORMAT );
-            $this->Send( $otherSocket, $action );
+            foreach ( $otherSockets as $otherSocket ) {
+                $this->Send( $otherSocket, $action );
+            }
         } else if ( $actionName == ActionNames::requestedDoubling ) {
             if ( ! $this->Game->IsGoldGame ) {
                 throw new \RuntimeException( "requestedDoubling should not be possible in a non gold game" );
@@ -244,7 +251,9 @@ final class BackgammonGameManager extends BoardGameManager
                     $this->Resign( $this->Game->OtherPlayer() );
                 }
             } else {
-                $this->Send( $otherSocket, $action );
+                foreach ( $otherSockets as $otherSocket ) {
+                    $this->Send( $otherSocket, $action );
+                }
             }
         } else if ( $actionName == ActionNames::acceptedDoubling ) {
             if ( ! $this->Game->IsGoldGame ) {
@@ -265,7 +274,9 @@ final class BackgammonGameManager extends BoardGameManager
             }
         } else if ( $actionName == ActionNames::connectionInfo ) {
             $action = $this->serializer->deserialize( $actionText, ConnectionInfoActionDto::class, JsonEncoder::FORMAT );
-            $this->Send( $otherSocket, $action );
+            foreach ( $otherSockets as $otherSocket ) {
+                $this->Send( $otherSocket, $action );
+            }
         } else if ( $actionName == ActionNames::resign ) {
             $winner = $this->Clients->get( PlayerColor::Black->value ) == $otherSocket ? PlayerColor::Black : PlayerColor::White;
             $this->Resign( $winner );

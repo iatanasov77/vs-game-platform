@@ -236,20 +236,6 @@ export class BridgeBeloteService extends AbstractGameService
         }
     }
     
-    makeBid( bid: BidDto ): void
-    {
-        const action: BidMadeActionDto = {
-            actionName: ActionNames.bidMade,
-            bid: { ...bid, NextBids: [] }
-        };
-        this.sendMessage( JSON.stringify( action ) );
-    }
-    
-    doOpponentBid( bid: BidDto ): void
-    {
-    
-    }
-    
     doBid( bid: BidDto ): void
     {
         const clone = this.appState.playerBids.getValue();
@@ -258,5 +244,20 @@ export class BridgeBeloteService extends AbstractGameService
         const playerBids = Object.assign( {[playerPosition]: bid}, clone );
         
         this.appState.playerBids.setValue( playerBids );
+    }
+    
+    sendBid( bid: BidDto ): void
+    {
+        const myBidAction: BidMadeActionDto = {
+            actionName: ActionNames.bidMade,
+            bid: { ...bid, NextBids: [] }
+        };
+        this.sendMessage( JSON.stringify( myBidAction ) );
+        
+        const opponentBidAction: OpponentBidsActionDto = {
+            actionName: ActionNames.bidMade,
+            bid: { ...bid, NextBids: [] }
+        };
+        this.sendMessage( JSON.stringify( opponentBidAction ) );
     }
 }

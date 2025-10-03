@@ -260,37 +260,6 @@ abstract class AbstractGameManager implements GameManagerInterface
         }
     }
     
-    protected function Resign( PlayerColor $winner ): void
-    {
-        $this->EndGame( $winner );
-        $this->logger->log( "{$winner} won Game {$this->Game->Id} by resignition.", 'GameManager' );
-    }
-    
-    protected function EndGame( PlayerColor $winner )
-    {
-        $this->moveTimeOut->cancel();
-        $this->Game->PlayState = GameState::ended;
-        $this->logger->log( "The winner is {$winner->value}", 'EndGame' );
-        
-        $newScore = $this->SaveWinner( $winner );
-        $this->SendWinner( $winner, $newScore );
-    }
-    
-    protected function CloseConnections( WebsocketClientInterface $socket )
-    {
-        if ( $socket != null ) {
-            $this->logger->log( "Closing client", 'ExitGame' );
-            $socket->close( Frame::CLOSE_NORMAL );
-            
-            // Dispose Websocket
-            if ( $socket == $this->Clients->get( PlayerColor::Black->value ) ) {
-                $this->Clients->set( PlayerColor::Black->value, null );
-            } else {
-                $this->Clients->set( PlayerColor::White->value, null );
-            }
-        }
-    }
-    
     abstract protected function CreateDbGame(): void;
     
     abstract protected function IsAi( ?string $guid ): bool;
@@ -298,4 +267,6 @@ abstract class AbstractGameManager implements GameManagerInterface
     abstract protected function NewTurn( WebsocketClientInterface $socket ): void;
     
     abstract protected function AisTurn(): bool;
+    
+    abstract protected function CloseConnections( WebsocketClientInterface $socket ): void;
 }

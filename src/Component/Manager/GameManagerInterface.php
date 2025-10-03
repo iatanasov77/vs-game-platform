@@ -17,6 +17,7 @@ interface GameManagerInterface
         ActionNames $actionName,
         string $actionText,
         WebsocketClientInterface $socket,
-        ?WebsocketClientInterface $otherSocket
+        //?WebsocketClientInterface $otherSocket
+        array $otherSockets
     ): void;
 }

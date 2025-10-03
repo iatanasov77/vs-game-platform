@@ -9,10 +9,12 @@ use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 
 use App\Component\GameLogger;
+use App\Component\GameVariant;
 use App\Component\Websocket\WebsocketClientFactory;
 use App\Component\Websocket\WebSocketState;
 use App\Component\GameService;
 use App\Component\Type\PlayerColor;
+use App\Component\Type\PlayerPosition;
 
 use App\Component\Dto\Actions\ActionDto;
 use App\Component\Dto\Actions\ActionNames;
@@ -56,6 +58,12 @@ final class WebsocketGamesHandler implements MessageComponentInterface
     /** @var array */
     private $games;
     
+    /** @var array */
+    private $boardGamePlayers;
+    
+    /** @var array */
+    private $cardGamePlayers;
+    
     /** @var bool */
     private $logExceptionTrace;
     
@@ -76,6 +84,18 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         $this->clients  = new SplObjectStorageAlias();
         $this->names    = [];
         $this->games    = [];
+        
+        $this->boardGamePlayers = [
+            PlayerColor::Black->value,
+            PlayerColor::White->value
+        ];
+        
+        $this->cardGamePlayers = [
+            PlayerPosition::South->value,
+            PlayerPosition::North->value,
+            PlayerPosition::East->value,
+            PlayerPosition::West->value
+        ];
         
         $this->logExceptionTrace    = $logExceptionTrace;
     }
@@ -116,10 +136,24 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         $this->logger->log( "Recieved Action: " . $action->actionName, 'GameServer' );
         
         try {
-            $otherClient    = $socket == $gameManager->Clients->get( PlayerColor::Black->value ) ?
-                                $gameManager->Clients->get( PlayerColor::White->value ) :
-                                $gameManager->Clients->get( PlayerColor::Black->value );
-            $gameManager->DoAction( ActionNames::from( $action->actionName ), $msg, $socket, $otherClient );
+            $otherPlayers = [];
+            $otherClients = [];
+            switch ( $gameManager->GameCode ) {
+                case GameVariant::BACKGAMMON_CODE:
+                case GameVariant::CHESS_CODE:
+                    $otherPlayers = $this->boardGamePlayers;
+                    break;
+            }
+            
+            if ( ( $key = \array_search( $gameManager->Game->CurrentPlayer->value, $otherPlayers ) ) !== false ) {
+                unset( $otherPlayers[$key] );
+            }
+            
+            foreach ( $otherPlayers as $player ) {
+                $otherClients[] = $gameManager->Clients->get( $player );
+            }
+            
+            $gameManager->DoAction( ActionNames::from( $action->actionName ), $msg, $socket, $otherClients );
         } catch ( \Exception $e ) {
             $this->logger->log( "Game Manager Do Action Error: '{$e->getMessage()}' in file {$e->getFile()} at line {$e->getLine()}", 'GameServer' );
             if ( $this->logExceptionTrace ) {

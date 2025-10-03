@@ -40,6 +40,7 @@ use App\Component\Rules\CardGame\Context\PlayerGetBidContext;
 // DTO Actions
 use App\Component\Dto\Mapper;
 use App\Component\Dto\Actions\ActionNames;
+use App\Component\Dto\Actions\ConnectionInfoActionDto;
 use App\Component\Dto\Actions\GameRestoreActionDto;
 use App\Component\Dto\Actions\GameCreatedActionDto;
 use App\Component\Dto\Actions\BiddingStartedActionDto;
@@ -211,7 +212,8 @@ class BridgeBeloteGameManager extends CardGameManager
         ActionNames $actionName,
         string $actionText,
         WebsocketClientInterface $socket,
-        ?WebsocketClientInterface $otherSocket
+        //?WebsocketClientInterface $otherSocket
+        array $otherSockets
     ): void {
         $this->logger->log( "Doing action: {$actionName->value}", 'GameManager' );
         //$this->logger->debug( $this->Game->Points, 'BeforeDoAction.txt' );
@@ -225,9 +227,16 @@ class BridgeBeloteGameManager extends CardGameManager
                 $this->NewTurn( $socket );
             })();
             Async\await( $promise );
+        } else if ( $actionName == ActionNames::opponentBids ) {
+            $action = $this->serializer->deserialize( $actionText, OpponentBidsActionDto::class, JsonEncoder::FORMAT );
+            foreach ( $otherSockets as $otherSocket ) {
+                $this->Send( $otherSocket, $action );
+            }
         } else if ( $actionName == ActionNames::connectionInfo ) {
             $action = $this->serializer->deserialize( $actionText, ConnectionInfoActionDto::class, JsonEncoder::FORMAT );
-            $this->Send( $otherSocket, $action );
+            foreach ( $otherSockets as $otherSocket ) {
+                $this->Send( $otherSocket, $action );
+            }
         } else if ( $actionName == ActionNames::resign ) {
             $winner = $this->Clients->get( PlayerColor::Black->value ) == $otherSocket ? PlayerColor::Black : PlayerColor::White;
             $this->Resign( $winner );

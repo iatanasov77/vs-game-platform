@@ -23,6 +23,7 @@ class BridgeBeloteController extends GameController
             'apiVerifySiganature'   => $signature,
             
             'timeoutBetweenPlayers'     => $gamePlatformSettings->getTimeoutBetweenPlayers(),
+            'debugGameSounds'           => $gamePlatformSettings->getDebugGameSounds(),
             'debugCardGamePlayerAreas'  => $gamePlatformSettings->getDebugCardGamePlayerAreas(),
             'debugCardGamePlayerCards'  => $gamePlatformSettings->getDebugCardGamePlayerCards(),
             

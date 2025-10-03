@@ -22,6 +22,13 @@ export class SoundService implements OnDestroy
     introPlaying = false;
     
     introPlaying$: BehaviorSubject<boolean>;
+    
+    /*
+     * Card Game Sounds
+     * ----------------
+     * https://pixabay.com/sound-effects/search/playing-cards/
+     */
+    throw_cards: HTMLAudioElement;
 
     constructor( @Inject( AppStateService ) private appState: AppStateService )
     {
@@ -80,6 +87,11 @@ export class SoundService implements OnDestroy
         this.pianointro.onended = () => {
             this.introPlaying = false;
         };
+        
+        // Card Game Sounds
+        this.throw_cards = new Audio();
+        this.throw_cards.src = '/build/gameplatform-velzonsaas-theme/sound/card_game/playing-cards-throw-94502.mp3';
+        this.throw_cards.load();
     }
     
     isIntroPlaying(): Observable<boolean>
@@ -190,5 +202,11 @@ export class SoundService implements OnDestroy
             }
             sound.volume = b;
         }, interval );
+    }
+    
+    // Card Game Sounds
+    playThrowCards(): void
+    {
+        this.throw_cards.play();
     }
 }

@@ -12,6 +12,7 @@ import { CreateGameRoomDialogComponent } from './create-game-room-dialog/create-
 import { PlayAiQuestionComponent } from './play-ai-question/play-ai-question.component';
 import { CreateInviteGameDialogComponent } from './create-invite-game-dialog/create-invite-game-dialog.component';
 import { UserLoginDialogComponent } from './user-login-dialog/user-login-dialog.component';
+import { DebugGameSoundsComponent } from './debug-game-sounds/debug-game-sounds.component';
 
 @NgModule({
     declarations: [
@@ -20,7 +21,8 @@ import { UserLoginDialogComponent } from './user-login-dialog/user-login-dialog.
         CreateGameRoomDialogComponent,
         PlayAiQuestionComponent,
         CreateInviteGameDialogComponent,
-        UserLoginDialogComponent
+        UserLoginDialogComponent,
+        DebugGameSoundsComponent
     ],
     imports: [
         CommonModule,
@@ -37,7 +39,8 @@ import { UserLoginDialogComponent } from './user-login-dialog/user-login-dialog.
         CreateGameRoomDialogComponent,
         PlayAiQuestionComponent,
         CreateInviteGameDialogComponent,
-        UserLoginDialogComponent
+        UserLoginDialogComponent,
+        DebugGameSoundsComponent
     ]
 })
 export class GameDialogsModule { }

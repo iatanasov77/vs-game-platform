@@ -79,6 +79,16 @@
                             <legend class="w-auto float-none ps-2 pe-2">{{ 'game_platform.form.game_platform_settings.game_debugging' | trans( {},'GamePlatform' ) }}</legend>
                             
                             <div class="form-check form-check-secondary mb-3">
+                                <input type="checkbox" id="game_platform_settings_form_debugGameSounds" name="game_platform_settings_form[debugGameSounds]"
+                                    class="form-check-input"
+                                    {% if form.vars.value.debugGameSounds %}checked="checked"{% endif %}
+                                />
+                                <label class="form-check-label" for="game_platform_settings_form_debugGameSounds">
+                                    {{ 'game_platform.form.game_platform_settings.debug_game_sounds'|trans({}, 'GamePlatform') }}
+                                </label>
+                            </div>
+                            
+                            <div class="form-check form-check-secondary mb-3">
                                 <input type="checkbox" id="game_platform_settings_form_debugCardGamePlayerAreas" name="game_platform_settings_form[debugCardGamePlayerAreas]"
                                     class="form-check-input"
                                     {% if form.vars.value.debugCardGamePlayerAreas %}checked="checked"{% endif %}

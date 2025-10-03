@@ -64,4 +64,10 @@
         </button>
         
     </ng-container>
+    
+    <ng-container *ngIf="debugGameSoundsVisible">
+        <button (click)="debugGameSounds()" class="default-button ms-4">
+            Debug Game Sounds
+        </button>
+    </ng-container>
 </div>

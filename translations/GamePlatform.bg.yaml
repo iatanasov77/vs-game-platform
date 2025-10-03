@@ -61,6 +61,7 @@ game_platform:
             game_settings: Game Settings
             timeout_between_players: Timeout between Players
             game_debugging: Game Debugging
+            debug_game_sounds: Debug Game Sounds
             debug_card_game_player_areas: Debug Card Game Player Areas
             debug_card_game_player_cards: Debug Card Game Player Cards
         

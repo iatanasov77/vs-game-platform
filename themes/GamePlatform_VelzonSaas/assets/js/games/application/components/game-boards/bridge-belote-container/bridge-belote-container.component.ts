@@ -55,6 +55,7 @@ import CardDto from '_@/GamePlatform/Model/CardGame/cardDto';
 import BidDto from '_@/GamePlatform/Model/CardGame/bidDto';
 
 // Dialogs
+import { DebugGameSoundsComponent } from '../../game-dialogs/debug-game-sounds/debug-game-sounds.component';
 import { RequirementsDialogComponent } from '../../game-dialogs/requirements-dialog/requirements-dialog.component';
 import { SelectGameRoomDialogComponent } from '../../game-dialogs/select-game-room-dialog/select-game-room-dialog.component';
 import { CreateGameRoomDialogComponent } from '../../game-dialogs/create-game-room-dialog/create-game-room-dialog.component';
@@ -65,7 +66,13 @@ import { Helper } from '../../../utils/helper';
 
 import templateString from './bridge-belote-container.component.html'
 import styleString from './bridge-belote-container.component.scss'
+
 declare var $: any;
+declare global {
+    interface Window {
+        gamePlatformSettings: any;
+    }
+}
 
 @Component({
     selector: 'bridge-belote-container',
@@ -125,6 +132,8 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     
     gameAnnounceIcon: any;
     startedHandle: any;
+    
+    debugGameSoundsVisible = window.gamePlatformSettings.debugGameSounds;
     
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,
@@ -263,9 +272,19 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
         }
     }
     
+    openDebugGameSoundsDialog(): void
+    {
+        const modalRef = this.ngbModal.open( DebugGameSoundsComponent );
+        
+        modalRef.componentInstance.closeModal.subscribe( () => {
+            // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
+            modalRef.dismiss();
+        });
+    }
+    
     private waitForOpponent()
     {
-        //this.sound.playPianoIntro();
+        this.sound.playPianoIntro();
         this.startedHandle = setTimeout( () => {
             if ( ! this.started && ! this.lobbyButtonsVisible ) {
                 //alert( this.appStateService.user );
@@ -390,7 +409,7 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     
     keepWaiting(): void
     {
-        //this.sound.playBlues();
+        this.sound.playBlues();
         this.playAiQuestion = false;
     }
     

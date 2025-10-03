@@ -22,11 +22,13 @@ export class BoardButtonsComponent implements OnInit, OnChanges
     
     @Input() newVisible = false;
     @Input() exitVisible = false;
+    @Input() debugGameSoundsVisible = false;
     
     @Output() onLogin = new EventEmitter<void>();
     
     @Output() onNew = new EventEmitter<void>();
     @Output() onExit = new EventEmitter<void>();
+    @Output() onOpenDebugGameSoundsDialog = new EventEmitter<void>();
     
     @Output() onPlayWithComputer = new EventEmitter<string>();
     @Output() onPlayGame = new EventEmitter<string>();
@@ -66,6 +68,9 @@ export class BoardButtonsComponent implements OnInit, OnChanges
             const changedProp = changes[propName];
             
             switch ( propName ) {
+                case 'debugGameSoundsVisible':
+                    this.debugGameSoundsVisible = changedProp.currentValue;
+                    break;
                 case 'isLoggedIn':
                     this.isLoggedIn = changedProp.currentValue;
                     if ( this.isLoggedIn && this.inviteId ) {
@@ -83,6 +88,11 @@ export class BoardButtonsComponent implements OnInit, OnChanges
                     break;
             }
         }
+    }
+    
+    debugGameSounds(): void
+    {
+        this.onOpenDebugGameSoundsDialog.emit();
     }
     
     loginClick(): void

@@ -30,9 +30,12 @@
             [newVisible]="newVisible"
             [exitVisible]="exitVisible"
             
+            [debugGameSoundsVisible]="debugGameSoundsVisible"
+            
             (onLogin)="login()"
             (onNew)="newGame()"
             (onExit)="exitGame()"
+            (onOpenDebugGameSoundsDialog)="openDebugGameSoundsDialog()"
             
             (onPlayWithComputer)="playAi()"
             

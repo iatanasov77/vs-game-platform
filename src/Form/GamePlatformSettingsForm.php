@@ -29,6 +29,11 @@ class GamePlatformSettingsForm extends AbstractForm
                 'translation_domain'    => 'GamePlatform',
             ])
             
+            ->add( 'debugGameSounds', CheckboxType::class, [
+                'label'                 => 'game_platform.form.game_platform_settings.debug_game_sounds',
+                'translation_domain'    => 'GamePlatform',
+            ])
+            
             ->add( 'debugCardGamePlayerAreas', CheckboxType::class, [
                 'label'                 => 'game_platform.form.game_platform_settings.debug_card_game_player_areas',
                 'translation_domain'    => 'GamePlatform',

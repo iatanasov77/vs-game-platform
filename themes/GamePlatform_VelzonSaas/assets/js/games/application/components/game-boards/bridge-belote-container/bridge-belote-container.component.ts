@@ -29,9 +29,6 @@ import {
 } from '../../../+store/game.actions';
 import { GameState as MyGameState } from '../../../+store/game.reducers';
 
-import IGame from '_@/GamePlatform/Model/GameInterface';
-import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
-
 // App State
 import { AppStateService } from '../../../state/app-state.service';
 import { QueryParamsService } from '../../../state/query-params.service';
@@ -97,6 +94,7 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     
     gameSubs: Subscription;
     playerCardsSubs: Subscription;
+    playerBidsSubs: Subscription;
     oponnetDoneSubs: Subscription;
     
     themeName: string;
@@ -116,6 +114,7 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     exitVisible = true;
     gameContractVisible = false;
     playerCardsDto: Array<CardDto[]> | undefined;
+    playerBidsDto: BidDto[] | undefined = [];
     validBids: BidDto[] = [];
     
     appState?: MyGameState;
@@ -145,6 +144,7 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
         
         this.gameDto$ = this.appStateService.cardGame.observe();
         this.playerCardsSubs = this.appStateService.playerCards.observe().subscribe( this.playerCardsChanged.bind( this ) );
+        this.playerBidsSubs = this.appStateService.playerBids.observe().subscribe( this.playerBidsChanged.bind( this ) );
         this.playerPosition$ = this.appStateService.myPosition.observe();
         
         this.gameSubs = this.appStateService.cardGame.observe().subscribe( this.gameChanged.bind( this ) );
@@ -433,6 +433,17 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     playerCardsChanged( dto: Array<CardDto[]> ): void
     {
         this.playerCardsDto = dto;
+        this.fireResize();
+        
+        /*
+        const game = this.appStateService.boardGame.getValue();
+        this.exitVisible = game?.playState !== GameState.playing && game?.playState !== GameState.requestedDoubling;
+        */
+    }
+    
+    playerBidsChanged( dto: BidDto[] ): void
+    {
+        this.playerBidsDto = dto;
         this.fireResize();
         
         /*

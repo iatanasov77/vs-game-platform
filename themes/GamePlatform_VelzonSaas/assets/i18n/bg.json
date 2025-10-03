@@ -258,5 +258,19 @@
         "chat": {
             "title": "Game Chat"
         }
+    },
+    "bridge-belote": {
+        "bid-type": {
+            "pass": "Pass",
+            "clubs": "Clubs",
+            "diamonds": "Diamonds",
+            "hearts": "Hearts",
+            "spades": "Spades",
+            
+            "no-trumps": "No Trumps",
+            "all-trumps": "All Trumps",
+            "double": "Double",
+            "re-double": "Re-Double"
+        }
     }
 }

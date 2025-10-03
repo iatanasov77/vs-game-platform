@@ -11,7 +11,6 @@ import { Keys } from '../utils/keys';
 
 import GameCookieDto from '_@/GamePlatform/Model/Core/gameCookieDto';
 import IGamePlay from '_@/GamePlatform/Model/GamePlayInterface';
-import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
 import IGame from '_@/GamePlatform/Model/GameInterface';
 import { InviteResponseDto } from '../dto/rest/inviteResponseDto';
 
@@ -93,14 +92,6 @@ export class GamePlayService
             preserveFragment: true
         });
         this.router.navigateByUrl( urlTree );
-    }
-    
-    playerAnnounce(): Observable<ICardGameAnnounce>
-    {
-        let gameId      = 'bridge-belote';
-        let announceId  = 'pass';
-        
-        return new Observable;
     }
     
     finishCardGame( gamePlay: any ): Observable<IGamePlay>

@@ -8,12 +8,10 @@ import {
     selectGameRoom,
     selectGameRoomSuccess,
     
-    startCardGameSuccess,
-    playerAnnounceSuccess
+    startCardGameSuccess
 } from "./game.actions";
 
 import IGamePlay from '_@/GamePlatform/Model/GamePlayInterface';
-import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
 
 import IGame from '_@/GamePlatform/Model/GameInterface';
 import IPlayer from '_@/GamePlatform/Model/PlayerInterface';
@@ -26,7 +24,6 @@ export interface GameState
     rooms:          null | IGameRoom[];
     
     gamePlay:       null | IGamePlay;
-    announce:       null | ICardGameAnnounce;
 }
 
 const initialState: GameState = {
@@ -34,8 +31,7 @@ const initialState: GameState = {
     players:        null,
     rooms:          null,
     
-    gamePlay:       null,
-    announce:       null
+    gamePlay:       null
 };
 
 export const gameReducer = createReducer( initialState,
@@ -45,5 +41,4 @@ export const gameReducer = createReducer( initialState,
     
     on( selectGameRoomSuccess, ( state, { game } ) => ( { ...state, game } ) ),
     on( startCardGameSuccess, ( state, { gamePlay } ) => ( { ...state, gamePlay } ) ),
-    on( playerAnnounceSuccess, ( state, { announce } ) => ( { ...state, announce } ) ),
 );

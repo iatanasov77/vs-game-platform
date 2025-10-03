@@ -211,7 +211,7 @@ final class Mapper
     {
         $bidDto = new BidDto();
         $bidDto->Player = $bid->Player;
-        $bidDto->Type = BidType::fromBitMaskValue( $bid->Type->get() );
+        $bidDto->Type = BidType::fromBitMaskValue( $bid->Type->get() )->value();
         
         return $bidDto;
     }

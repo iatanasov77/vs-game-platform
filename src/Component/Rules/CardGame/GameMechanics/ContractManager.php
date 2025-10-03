@@ -31,7 +31,7 @@ class ContractManager
     
     public function SetContract( Bid $bid ): void
     {
-        $this->game->Bids[] = $bid;
+        $this->game->Bids[$bid->Player->value] = $bid;
         
         if ( ! $this->game->CurrentContract ) {
             $this->game->CurrentContract = $bid;

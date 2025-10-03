@@ -7,6 +7,6 @@ use App\Component\Type\BidType;
 class BidDto
 {
     public PlayerPosition $Player;
-    public BidType $Type;
+    public int $Type; // BidType
     public Collection $NextBids; // BidDto[]
 }

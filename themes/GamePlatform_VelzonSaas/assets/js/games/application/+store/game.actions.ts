@@ -1,8 +1,6 @@
 import { createAction, props } from "@ngrx/store";
 
-import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
 import IGamePlay from '_@/GamePlatform/Model/GamePlayInterface';
-import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
 
 import IGame from '_@/GamePlatform/Model/GameInterface';
 import IPlayer from '_@/GamePlatform/Model/PlayerInterface';
@@ -29,10 +27,6 @@ const actionTypes = {
     startCardGame:              'START_CARD_GAME',
     startCardGameSuccess:       'START_CARD_GAME_SUCCESS',
     startCardGameFailure:       'START_CARD_GAME_FAILURE',
-    
-    playerAnnounce:             'PLAYER_ANNOUNCE',
-    playerAnnounceSuccess:      'PLAYER_ANNOUNCE_SUCCESS',
-    playerAnnounceFailure:      'PLAYER_ANNOUNCE_FAILURE',
 };
 
 export const loadGame                   = createAction( actionTypes.loadGame, props<{ id: number }>() );
@@ -55,7 +49,3 @@ export const selectGameRoomFailure      = createAction( actionTypes.selectGameRo
 export const startCardGame              = createAction( actionTypes.startCardGame, props<{ game: IGame }>() );
 export const startCardGameSuccess       = createAction( actionTypes.startCardGameSuccess, props<{ gamePlay: IGamePlay }>() );
 export const startCardGameFailure       = createAction( actionTypes.startCardGameFailure, props<{ error: any }>() );
-
-export const playerAnnounce             = createAction( actionTypes.playerAnnounce );
-export const playerAnnounceSuccess      = createAction( actionTypes.playerAnnounceSuccess, props<{ announce: ICardGameAnnounce }>() );
-export const playerAnnounceFailure      = createAction( actionTypes.playerAnnounceFailure, props<{ error: any }>() );

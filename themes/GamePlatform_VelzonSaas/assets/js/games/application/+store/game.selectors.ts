@@ -40,8 +40,3 @@ export const runStartCardGame           = createSelector(
     mainSelector,
     ( s: GameState ) => s?.gamePlay
 );
-
-export const runMakeAnnounce        = createSelector(
-    mainSelector,
-    ( s: GameState ) => s?.announce
-);

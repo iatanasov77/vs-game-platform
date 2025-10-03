@@ -31,6 +31,7 @@ use App\Entity\TempPlayer;
 
 // Types
 use App\Component\Type\PlayerPosition;
+use App\Component\Type\BidType;
 use App\Component\Type\GameState;
 
 // Contexts
@@ -315,7 +316,7 @@ class BridgeBeloteGameManager extends CardGameManager
     
     protected function DoBid( BidMadeActionDto $action ): void
     {
-        $bid = new Bid( $action->bid->Player, $action->bid->Type );
+        $bid = new Bid( $action->bid->Player, BidType::fromValue( $action->bid->Type ) );
         $this->Game->SetContract( $bid );
     }
     

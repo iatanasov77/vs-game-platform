@@ -1,8 +1,6 @@
 import { Component, Inject, Input, OnChanges, SimpleChanges, EventEmitter, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { playerAnnounce } from '../../../../+store/game.actions';
-
 import { GetAnnounceSymbols } from '../../../../models/announce';
 import CardGameAnnounceSymbolModel from '_@/GamePlatform/Model/CardGameAnnounceSymbolModel';
 

@@ -252,6 +252,11 @@ export class BridgeBeloteService extends AbstractGameService
     
     doBid( bid: BidDto ): void
     {
-    
+        const clone = this.appState.playerBids.getValue();
+        
+        const playerPosition = bid.Player
+        const playerBids = Object.assign( {[playerPosition]: bid}, clone );
+        
+        this.appState.playerBids.setValue( playerBids );
     }
 }

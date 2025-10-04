@@ -46,6 +46,7 @@ final class BackgammonGameManager extends BoardGameManager
     {
         $this->logger->log( "Connecting Game Manager ...", 'GameManager' );
         if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {
+            $this->logger->log( "Connecting Black Player ...", 'GameManager' );
             $this->Clients->set( PlayerColor::Black->value, $webSocket );
             
             $this->InitializePlayer( $dbUser, false, $this->Game->BlackPlayer );
@@ -77,6 +78,7 @@ final class BackgammonGameManager extends BoardGameManager
                 }
             }
         } else {
+            $this->logger->log( "Connecting White Player ...", 'GameManager' );
             if ( $playAi ) {
                 throw new \Exception( "Ai always plays as white. This is not expected" );
             }

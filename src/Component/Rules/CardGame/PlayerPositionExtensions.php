@@ -2,7 +2,7 @@
 
 use App\Component\Type\PlayerPosition;
 
-trait PlayerPositionExtensions
+class PlayerPositionExtensions
 {
     public static function Next( PlayerPosition $playerPosition ): PlayerPosition
     {

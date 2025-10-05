@@ -1,5 +1,5 @@
 <div>
-    <div id="AnnounceContainer" *ngIf="validBids.length">
+    <div id="AnnounceContainer" *ngIf="validBids.length && currentPlayer == myPosition">
         <ng-container *ngFor="let icon of announceSymbols; let i = index">
             <a href="javascript:void(0);"
                 id="{{ icon.key }}"

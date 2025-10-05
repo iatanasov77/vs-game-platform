@@ -61,7 +61,7 @@ class BridgeBeloteEngine extends Engine
     public function GetBid( PlayerGetBidContext $context ): BidType
     {
         $availableAnnounces = $this->validAnnouncesService->GetAvailableAnnounces( $context->MyCards );
-        // $this->logger->log( print_r( $availableAnnounces->toArray(), true ), 'BridgeBeloteEngine' );
+        $this->logger->log( print_r( $availableAnnounces->toArray(), true ), 'BridgeBeloteEngine' );
         $announcePoints = \array_reduce(
             $availableAnnounces->toArray(),
             function( $carry, $item )

@@ -56,9 +56,6 @@ class BridgeBeloteGameManager extends CardGameManager
             $this->Clients->set( PlayerPosition::South->value, $webSocket );
             
             $this->InitializePlayer( $dbUser, false, $this->Game->Players[PlayerPosition::South->value] );
-            if ( $this->Game->IsGoldGame ) {
-                $this->Game->Stake = self::firstBet * 2;
-            }
             
             if ( $playAi ) {
                 $this->logger->log( "Play AI is TRUE !!!", 'GameManager' );
@@ -158,7 +155,7 @@ class BridgeBeloteGameManager extends CardGameManager
         $this->Game->ThinkStart = new \DateTime( 'now' );
         
         $gameDto = Mapper::CardGameToDto( $this->Game );
-        $this->logger->log( 'Begin Start Game: ' . \print_r( $gameDto, true ), 'GameManager' );
+        // $this->logger->log( 'Begin Start Game: ' . \print_r( $gameDto, true ), 'GameManager' );
         
         $action = new GameCreatedActionDto();
         $action->game = $gameDto;
@@ -223,7 +220,7 @@ class BridgeBeloteGameManager extends CardGameManager
             $action = $this->serializer->deserialize( $actionText, BidMadeActionDto::class, JsonEncoder::FORMAT );
             
             $this->DoBid( $action );
-            $promise = Async\async( function () use ( $action, $socket ) {
+            $promise = Async\async( function () use ( $socket ) {
                 $this->NewTurn( $socket );
             })();
             Async\await( $promise );
@@ -295,6 +292,11 @@ class BridgeBeloteGameManager extends CardGameManager
                 } else {
                     $this->EnginPlays( $socket );
                 }
+                
+                $promise = Async\async( function () use ( $socket ) {
+                    $this->NewTurn( $socket );
+                })();
+                Async\await( $promise );
             }
         }
     }
@@ -327,6 +329,10 @@ class BridgeBeloteGameManager extends CardGameManager
     {
         $bid = new Bid( $action->bid->Player, BidType::fromValue( $action->bid->Type ) );
         $this->Game->SetContract( $bid );
+        
+        if ( $this->Game->PlayState == GameState::playing ) {
+            $this->logger->log( 'Playing Card Game Round Started.', 'GameManager' );
+        }
     }
     
     protected function EnginBids( WebsocketClientInterface $client ): void
@@ -344,6 +350,8 @@ class BridgeBeloteGameManager extends CardGameManager
             $bid = new Bid( $this->Game->CurrentPlayer, $this->Engine->GetBid( $context ) );
             $action = new OpponentBidsActionDto();
             $action->bid = Mapper::BidToDto( $bid );
+            $action->nextPlayer = $this->Game->NextPlayer();
+            $action->playState = $this->Game->PlayState;
             
             $this->Send( $client, $action );
         })();

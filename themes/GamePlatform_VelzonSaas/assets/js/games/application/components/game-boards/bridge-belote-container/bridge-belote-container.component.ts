@@ -123,6 +123,7 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     playerCardsDto: Array<CardDto[]> | undefined;
     playerBidsDto: BidDto[] | undefined = [];
     validBids: BidDto[] = [];
+    currentPlayer: PlayerPosition | undefined;
     
     appState?: MyGameState;
     gameStarted: boolean = false;
@@ -443,6 +444,9 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
         if ( dto?.validBids && dto.validBids.length ) {
             this.validBids = dto.validBids;
         }
+        
+        // alert( 'Current Player: ' + dto?.currentPlayer + 'Play State: ' + dto?.playState );
+        this.currentPlayer = dto?.currentPlayer;
     }
     
     oponnentDone(): void

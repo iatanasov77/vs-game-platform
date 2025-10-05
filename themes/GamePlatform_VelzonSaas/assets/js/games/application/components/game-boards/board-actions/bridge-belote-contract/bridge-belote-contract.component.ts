@@ -27,10 +27,12 @@ export class BridgeBeloteContractComponent implements OnChanges
     @Input() gameAnnounceIcon: any;
     @Input() gameContractVisible = false;
     @Input() validBids: BidDto[] = [];
+    @Input() currentPlayer: PlayerPosition | undefined;
     
     @Output() onPlayerMakeBid = new EventEmitter<BidDto>();
     
     announceSymbols: Array<CardGameAnnounceSymbolModel>;
+    myPosition: PlayerPosition;
     
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,
@@ -38,6 +40,8 @@ export class BridgeBeloteContractComponent implements OnChanges
     ) {
         this.announceSymbols = GetAnnounceSymbols();
         this.gameAnnounceIcon   = null;
+        
+        this.myPosition = this.appStateService.myPosition.getValue();
     }
         
     ngOnChanges( changes: SimpleChanges )
@@ -57,6 +61,9 @@ export class BridgeBeloteContractComponent implements OnChanges
                     this.validBids = changedProp.currentValue;
                     //alert( 'Valid Bids: ' + this.validBids.length );
                     break;
+                case 'currentPlayer':
+                    this.currentPlayer = changedProp.currentValue;
+                    break;
             }
         }
     }
@@ -64,7 +71,7 @@ export class BridgeBeloteContractComponent implements OnChanges
     getClass( bid: BidType ): string
     {
         if ( ! ( bid in this.validBids ) ) {
-            return 'disabled';
+            return 'announce-disabled';
         }
         
         return '';
@@ -72,10 +79,8 @@ export class BridgeBeloteContractComponent implements OnChanges
     
     makeBid( bidType: BidType )
     {
-        const myPosition: PlayerPosition = this.appStateService.myPosition.getValue()
-        
         let bid: BidDto = {
-            Player: myPosition,
+            Player: this.myPosition,
             Type: bidType,
             NextBids: []
         };

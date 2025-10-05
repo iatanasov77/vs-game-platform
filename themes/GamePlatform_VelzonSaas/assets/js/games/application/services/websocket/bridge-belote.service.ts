@@ -169,9 +169,16 @@ export class BridgeBeloteService extends AbstractGameService
                 //alert( 'WebSocket Action Opponent Move' );
                 
                 const action = JSON.parse( message.data ) as OpponentBidsActionDto;
-                console.log( 'WebSocket Action Opponent Bids', action.bid );
+                console.log( 'WebSocket Action Opponent Bids', action );
                 
                 this.doBid( action.bid );
+                
+                const cGame = {
+                    ...game,
+                    currentPlayer: action.nextPlayer,
+                    playState: action.playState
+                };
+                this.appState.cardGame.setValue( cGame );
                 
                 break;
             }
@@ -248,6 +255,8 @@ export class BridgeBeloteService extends AbstractGameService
     
     sendBid( bid: BidDto ): void
     {
+        const game = this.appState.cardGame.getValue();
+        
         const myBidAction: BidMadeActionDto = {
             actionName: ActionNames.bidMade,
             bid: { ...bid, NextBids: [] }
@@ -255,8 +264,11 @@ export class BridgeBeloteService extends AbstractGameService
         this.sendMessage( JSON.stringify( myBidAction ) );
         
         const opponentBidAction: OpponentBidsActionDto = {
-            actionName: ActionNames.bidMade,
-            bid: { ...bid, NextBids: [] }
+            actionName: ActionNames.opponentBids,
+            bid: { ...bid, NextBids: [] },
+            
+            nextPlayer: game.currentPlayer,
+            playState: game.playState
         };
         this.sendMessage( JSON.stringify( opponentBidAction ) );
     }

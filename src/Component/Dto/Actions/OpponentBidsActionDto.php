@@ -3,6 +3,8 @@
 use Symfony\Component\Serializer\Attribute\Context;
 use App\Component\Serializer\Normalizer\BidDtoDenormalizer;
 use App\Component\Dto\BidDto;
+use App\Component\Type\PlayerPosition;
+use App\Component\Type\GameState;
 
 class OpponentBidsActionDto extends ActionDto
 {
@@ -14,4 +16,7 @@ class OpponentBidsActionDto extends ActionDto
     /** @var BidDto $bid */
     #[Context([BidDtoDenormalizer::class])]
     public BidDto $bid;
+    
+    public PlayerPosition $nextPlayer;
+    public GameState $playState;
 }

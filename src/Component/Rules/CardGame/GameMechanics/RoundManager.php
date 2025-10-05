@@ -12,7 +12,6 @@ use App\Component\Rules\CardGame\PlayerPositionExtensions;
 
 class RoundManager
 {
-    use PlayerPositionExtensions;
     
     private Game $game;
     
@@ -70,7 +69,7 @@ class RoundManager
         {
             while( true ) {
                 $this->game->playerCards[$dealToPlayer->value][] = $this->game->Deck->GetNextCard();
-                $dealToPlayer = self::Next( $dealToPlayer );
+                $dealToPlayer = PlayerPositionExtensions::Next( $dealToPlayer );
                 if( $dealToPlayer === $this->game->CurrentPlayer ) {
                     break;
                 }

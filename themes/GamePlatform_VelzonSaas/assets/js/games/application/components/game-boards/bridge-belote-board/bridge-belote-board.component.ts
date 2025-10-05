@@ -330,6 +330,7 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
         }
         
         var card, pa, cardX, cardY, angle, xOffset = 0, yOffset = 0;
+        var cardsWidth = this.cardWidth + ( ( playerCards.length - 1 ) * this.cardOffset );
         for ( let c = 0; c < playerCards.length; c++ ) {
             pa = this.playerAreas.find( ( x ) => x.playerPosition === playerPosition );
             if ( ! pa ) {
@@ -354,14 +355,14 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
                 }
                 
                 cardX = pa.x + pa.width - xOffset;
-                cardY = pa.y + ( ( c + 1 ) * this.cardOffset ) + ( playerCards.length * this.cardOffset / 2 ) + this.playerAreaPadding;
+                cardY = pa.y + pa.height / 2 - ( cardsWidth / 2 ) + ( c * this.cardOffset );
                 angle = Math.PI / 2;
             } else {
                 if ( pa.playerPosition === PlayerPosition.south ) {
                     yOffset = pa.height - this.cardHeight;
                 }
                 
-                cardX = pa.x + ( ( c + 1 ) * this.cardOffset ) + this.cardWidth + ( playerCards.length * this.cardOffset / 2 ) - this.playerAreaPadding;
+                cardX = pa.x + pa.width / 2 - ( cardsWidth / 2 ) + ( c * this.cardOffset );
                 cardY = pa.y + yOffset;
                 angle = 0;
             }
@@ -422,7 +423,7 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
                     break;
                 case PlayerPosition.east:
                     pw = this.cardHeight + this.playerAreaHeightAddition;
-                    ph = this.height / 2;
+                    ph = this.height / 1.3;
                     
                     playerArea = new CardGamePlayerArea(
                         this.width - pw - this.playerAreaPadding,
@@ -436,7 +437,7 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
                     break;
                 case PlayerPosition.west:
                     pw = this.cardHeight + this.playerAreaHeightAddition;
-                    ph = this.height / 2;
+                    ph = this.height / 1.3;
                     
                     playerArea = new CardGamePlayerArea(
                         this.playerAreaPadding,

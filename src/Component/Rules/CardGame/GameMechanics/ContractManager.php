@@ -4,18 +4,17 @@ use BitMask\EnumBitMask;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-use App\Component\Rules\CardGame\PlayerPositionExtensions;
-use App\Component\Rules\CardGame\Game;
-use App\Component\Rules\CardGame\Bid;
-use App\Component\Rules\CardGame\BelotGameException;
-use App\Component\Rules\CardGame\Context\PlayerGetBidContext;
+use App\Component\Type\GameState;
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\BidType;
 
+use App\Component\Rules\CardGame\PlayerPositionExtensions;
+use App\Component\Rules\CardGame\Game;
+use App\Component\Rules\CardGame\Bid;
+
 class ContractManager
 {
-    use PlayerPositionExtensions;
-    
+    /** @var Game */
     private Game $game;
     
     public function __construct( Game $game )
@@ -36,18 +35,22 @@ class ContractManager
         if ( ! $this->game->CurrentContract ) {
             $this->game->CurrentContract = $bid;
         } else {
-            if ( $bid->Type == BidType::Double || $bid->Type == BidType::ReDouble) {
+            if ( $bid->Type->has( BidType::Double ) || $bid->Type->has( BidType::ReDouble ) ) {
                 $this->game->CurrentContract->Type->remove( BidType::Double );
                 $this->game->CurrentContract->Type->remove( BidType::ReDouble );
                 $this->game->CurrentContract->Type->set( $bid->Type );
                 $this->game->CurrentContract->Player = $this->game->CurrentPlayer;
-            } else if ( $bid->Type != BidType::Pass ) {
+            } else if ( ! $bid->Type->has( BidType::Pass ) ) {
                 $this->game->CurrentContract = $bid;
             }
         }
         
-        $this->game->ConsecutivePasses = $bid->Type == BidType::Pass ? $this->game->ConsecutivePasses++ : 0;
+        $this->game->ConsecutivePasses = $bid->Type->has( BidType::Pass ) ? $this->game->ConsecutivePasses++ : 0;
         $this->game->AvailableBids = $this->GetAvailableBids( $this->game->CurrentContract, $this->game->CurrentPlayer );
+        
+        if ( $this->game->ConsecutivePasses >= 3 ) {
+            $this->game->PlayState = GameState::playing;
+        }
     }
     
     private function GetAvailableBids( Bid $currentContract, PlayerPosition $currentPlayer ): Collection
@@ -85,7 +88,7 @@ class ContractManager
         }
         
         if (
-            ! $this->IsInSameTeamWith( $currentPlayer, $currentContract->Player ) &&
+            ! PlayerPositionExtensions::IsInSameTeamWith( $currentPlayer, $currentContract->Player ) &&
             $currentContract->Type->get() != BidType::Pass->bitMaskValue()
         ) {
             if ( $currentContract->Type->has( BidType::Double ) ) {

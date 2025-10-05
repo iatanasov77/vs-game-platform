@@ -12,8 +12,6 @@ use App\Component\Rules\CardGame\GameMechanics\RoundManager;
  */
 class BridgeBeloteGame extends Game
 {
-    use PlayerPositionExtensions;
-    
     /** @var int */
     public $southNorthPoints;
     

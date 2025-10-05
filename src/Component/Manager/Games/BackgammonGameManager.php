@@ -130,7 +130,7 @@ final class BackgammonGameManager extends BoardGameManager
         $this->Game->ThinkStart = new \DateTime( 'now' );
         
         $gameDto = Mapper::BoardGameToDto( $this->Game );
-        $this->logger->log( 'Begin Start Game: ' . \print_r( $gameDto, true ), 'GameManager' );
+        // $this->logger->log( 'Begin Start Game: ' . \print_r( $gameDto, true ), 'GameManager' );
         
         $action = new GameCreatedActionDto();
         $action->game = $gameDto;

@@ -24,6 +24,7 @@ import CardGameRestoreActionDto from '../../dto/Actions/cardGameRestoreActionDto
 import BiddingStartedActionDto from '../../dto/Actions/biddingStartedActionDto';
 import BidMadeActionDto from '../../dto/Actions/bidMadeActionDto';
 import OpponentBidsActionDto from '../../dto/Actions/opponentBidsActionDto';
+import PlayingStartedActionDto from '../../dto/Actions/playingStartedActionDto';
 import PlayCardActionDto from '../../dto/Actions/playCardActionDto';
 
 import { Keys } from '../../utils/keys';
@@ -148,13 +149,14 @@ export class BridgeBeloteService extends AbstractGameService
                 const cGame = {
                     ...game,
                     validBids: biddingStartedAction.validBids,
-                    currentPlayer: biddingStartedAction.playerToBid,
+                    currentPlayer: biddingStartedAction.firstToBid,
                     playState: GameState.bidding
                 };
                 
                 this.appState.cardGame.setValue( cGame );
                 this.statusMessageService.setTextMessage( cGame );
-                this.appState.moveTimer.setValue( biddingStartedAction.bidTimer );
+                
+                this.appState.moveTimer.setValue( biddingStartedAction.timer );
                 this.appState.opponentDone.setValue( true );
                 
                 break;
@@ -178,7 +180,30 @@ export class BridgeBeloteService extends AbstractGameService
                     currentPlayer: action.nextPlayer,
                     playState: action.playState
                 };
+                // console.log( 'Game After Action Opponent Bids', cGame );
                 this.appState.cardGame.setValue( cGame );
+                
+                break;
+            }
+            case ActionNames.playingStarted: {
+                const playingStartedAction = JSON.parse( message.data ) as PlayingStartedActionDto;
+                console.log( 'Playing Started Action' + new Date().toLocaleTimeString(), playingStartedAction );
+                
+                this.appState.playerCards.setValue( playingStartedAction.playerCards );
+                const cGame = {
+                    ...game,
+                    contract: playingStartedAction.contract,
+                    validBids: [],
+                    validCards: playingStartedAction.validCards,
+                    currentPlayer: playingStartedAction.firstToPlay,
+                    playState: GameState.playing
+                };
+                
+                this.appState.cardGame.setValue( cGame );
+                this.statusMessageService.setTextMessage( cGame );
+                
+                this.appState.moveTimer.setValue( playingStartedAction.timer );
+                this.appState.opponentDone.setValue( true );
                 
                 break;
             }
@@ -245,16 +270,21 @@ export class BridgeBeloteService extends AbstractGameService
     
     doBid( bid: BidDto ): void
     {
-        const clone = this.appState.playerBids.getValue();
-        
         const playerPosition = bid.Player
-        const playerBids = Object.assign( {[playerPosition]: bid}, clone );
+        const playerBids = this.appState.playerBids.getValue();
         
-        this.appState.playerBids.setValue( playerBids );
+        this.appState.playerBids.setValue({
+            ...playerBids,
+            [playerPosition]: bid
+        });
+        
+        //console.log( 'Player Do Bid', bid );
+        //console.log( 'After Player Do Bid', this.appState.playerBids.getValue() );
     }
     
     sendBid( bid: BidDto ): void
     {
+        //console.log( 'Player Send Bid', bid );
         const game = this.appState.cardGame.getValue();
         
         const myBidAction: BidMadeActionDto = {

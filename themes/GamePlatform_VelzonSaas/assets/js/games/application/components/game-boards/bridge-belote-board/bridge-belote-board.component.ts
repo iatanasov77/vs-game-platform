@@ -316,7 +316,7 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
         
         for ( let pa = 0; pa < this.playerAreas.length; pa++ ) {
             if ( this.playerBids.hasOwnProperty( pa ) ) {
-                //console.log( this.playerBids[pa].Type );
+                //console.log( 'Player Bid', this.playerBids[pa] );
                 //alert( 'Bid Player: ' + pa + ' Bid Type: ' + this.playerBids[pa].Type );
                 this.drawPlayerBid( this.playerAreas[pa], this.playerBids[pa] );
             }

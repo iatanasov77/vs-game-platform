@@ -6,6 +6,8 @@ import CardGameTeam from './cardGameTeam'
 interface CardGameDto extends GameDto {
     players: CardGamePlayerDto[];
     validBids: any;
+    validCards: any;
+    contract: any;
     
     currentPlayer: PlayerPosition;
     winner: CardGameTeam;
@@ -18,7 +20,6 @@ interface CardGameDto extends GameDto {
     
     MyCards: any;
     Bids: any;
-    CurrentContract: any;
     
     deck: any;
     pile: any;

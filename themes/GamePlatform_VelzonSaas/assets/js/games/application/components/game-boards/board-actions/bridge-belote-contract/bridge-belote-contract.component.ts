@@ -24,10 +24,11 @@ declare var $: any;
 })
 export class BridgeBeloteContractComponent implements OnChanges
 {
-    @Input() gameAnnounceIcon: any;
+    @Input() gameBiddingVisible = false;
     @Input() gameContractVisible = false;
     @Input() validBids: BidDto[] = [];
     @Input() currentPlayer: PlayerPosition | undefined;
+    @Input() contract: BidDto | undefined;
     
     @Output() onPlayerMakeBid = new EventEmitter<BidDto>();
     
@@ -39,8 +40,6 @@ export class BridgeBeloteContractComponent implements OnChanges
         @Inject( AppStateService ) private appStateService: AppStateService,
     ) {
         this.announceSymbols = GetAnnounceSymbols();
-        this.gameAnnounceIcon   = null;
-        
         this.myPosition = this.appStateService.myPosition.getValue();
     }
         
@@ -51,14 +50,18 @@ export class BridgeBeloteContractComponent implements OnChanges
             const changedProp = changes[propName];
             
             switch ( propName ) {
-                case 'gameAnnounceIcon':
-                    this.gameAnnounceIcon = changedProp.currentValue;
-                    break;
                 case 'gameContractVisible':
                     this.gameContractVisible = changedProp.currentValue;
                     break;
+                case 'gameBiddingVisible':
+                    this.gameBiddingVisible = changedProp.currentValue;
+                    break;
                 case 'validBids':
                     this.validBids = changedProp.currentValue;
+                    //alert( 'Valid Bids: ' + this.validBids.length );
+                    break;
+                case 'contract':
+                    this.contract = changedProp.currentValue;
                     //alert( 'Valid Bids: ' + this.validBids.length );
                     break;
                 case 'currentPlayer':
@@ -75,6 +78,37 @@ export class BridgeBeloteContractComponent implements OnChanges
         }
         
         return '';
+    }
+    
+    getContractIcon(): string
+    {
+        if ( ! this.contract ) {
+            return '';
+        }
+        
+        //console.log( 'Current Contract', this.contract );
+        switch ( this.contract.Type ) {
+            case BidType.Clubs:
+                return '<i class="fi fi-sr-club"></i>';
+                break;
+            case BidType.Diamonds:
+                return '<i class="fi fi-sr-card-diamond"></i>';
+                break;
+            case BidType.Hearts:
+                return '<i class="fi fi-sr-heart"></i>';
+                break;
+            case BidType.Spades:
+                return '<i class="fi fi-sr-spade"></i>';
+                break;
+            case BidType.NoTrumps:
+                return 'a';
+                break;
+            case BidType.AllTrumps:
+                return 'j';
+                break;
+            default:
+                return '';
+        }
     }
     
     makeBid( bidType: BidType )

@@ -10,6 +10,10 @@ class CardGameDto extends GameDto
     /** @var PlayerDto[] */
     public array $players;
     
+    public array $validBids;
+    public array $validCards;
+    public ?Bid $contract;
+    
     public ?PlayerPosition $currentPlayer;
     public CardGameTeam $winner = CardGameTeam::Neither;
     
@@ -21,7 +25,6 @@ class CardGameDto extends GameDto
     
     public Collection $MyCards;
     public array $Bids;
-    public Bid $CurrentContract;
     
     public array $deck;
     public array $pile;

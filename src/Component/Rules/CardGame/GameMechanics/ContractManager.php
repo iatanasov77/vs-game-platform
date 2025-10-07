@@ -4,10 +4,10 @@ use BitMask\EnumBitMask;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-use App\Component\Type\GameState;
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\BidType;
 
+use App\Component\GameLogger;
 use App\Component\Rules\CardGame\PlayerPositionExtensions;
 use App\Component\Rules\CardGame\Game;
 use App\Component\Rules\CardGame\Bid;
@@ -17,9 +17,13 @@ class ContractManager
     /** @var Game */
     private Game $game;
     
-    public function __construct( Game $game )
+    /** @var GameLogger */
+    private  $logger;
+    
+    public function __construct( Game $game, GameLogger $logger )
     {
         $this->game = $game;
+        $this->logger = $logger;
     }
     
     public function StartNewRound(): void
@@ -32,30 +36,22 @@ class ContractManager
     {
         $this->game->Bids[$bid->Player->value] = $bid;
         
-        if ( ! $this->game->CurrentContract ) {
+        if ( $bid->Type->has( BidType::Double ) || $bid->Type->has( BidType::ReDouble ) ) {
+            $this->game->CurrentContract->Type->remove( BidType::Double );
+            $this->game->CurrentContract->Type->remove( BidType::ReDouble );
+            $this->game->CurrentContract->Type->set( $bid->Type );
+            $this->game->CurrentContract->Player = $this->game->CurrentPlayer;
+        } else if ( ! $bid->Type->has( BidType::Pass ) ) {
             $this->game->CurrentContract = $bid;
-        } else {
-            if ( $bid->Type->has( BidType::Double ) || $bid->Type->has( BidType::ReDouble ) ) {
-                $this->game->CurrentContract->Type->remove( BidType::Double );
-                $this->game->CurrentContract->Type->remove( BidType::ReDouble );
-                $this->game->CurrentContract->Type->set( $bid->Type );
-                $this->game->CurrentContract->Player = $this->game->CurrentPlayer;
-            } else if ( ! $bid->Type->has( BidType::Pass ) ) {
-                $this->game->CurrentContract = $bid;
-            }
         }
         
-        $this->game->ConsecutivePasses = $bid->Type->has( BidType::Pass ) ? $this->game->ConsecutivePasses++ : 0;
+        $this->game->ConsecutivePasses = $bid->Type->has( BidType::Pass ) ? ++$this->game->ConsecutivePasses : 0;
         $this->game->AvailableBids = $this->GetAvailableBids( $this->game->CurrentContract, $this->game->CurrentPlayer );
-        
-        if ( $this->game->ConsecutivePasses >= 3 ) {
-            $this->game->PlayState = GameState::playing;
-        }
     }
     
-    private function GetAvailableBids( Bid $currentContract, PlayerPosition $currentPlayer ): Collection
+    private function GetAvailableBids( ?Bid $currentContract, PlayerPosition $currentPlayer ): Collection
     {
-        $cleanContract = $currentContract->Type;
+        $cleanContract = $currentContract ? $currentContract->Type : EnumBitMask::create( BidType::class, BidType::Pass );
         
         $cleanContract->remove( BidType::Double );
         $cleanContract->remove( BidType::ReDouble );
@@ -88,6 +84,7 @@ class ContractManager
         }
         
         if (
+            $currentContract &&
             ! PlayerPositionExtensions::IsInSameTeamWith( $currentPlayer, $currentContract->Player ) &&
             $currentContract->Type->get() != BidType::Pass->bitMaskValue()
         ) {

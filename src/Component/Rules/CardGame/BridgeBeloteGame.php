@@ -28,7 +28,7 @@ class BridgeBeloteGame extends Game
     
     public function PlayGame( PlayerPosition $firstToPlay = PlayerPosition::South ): void
     {
-        $this->roundManager = new RoundManager( $this );
+        $this->roundManager = new RoundManager( $this, $this->logger );
         
         $this->southNorthPoints = 0;
         $this->eastWestPoints = 0;

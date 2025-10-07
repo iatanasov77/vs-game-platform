@@ -119,11 +119,13 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     gameDto: CardGameDto | undefined;
     newVisible = false;
     exitVisible = true;
+    gameBiddingVisible = false;
     gameContractVisible = false;
     playerCardsDto: Array<CardDto[]> | undefined;
     playerBidsDto: BidDto[] | undefined = [];
     validBids: BidDto[] = [];
     currentPlayer: PlayerPosition | undefined;
+    contract: BidDto | undefined;
     
     appState?: MyGameState;
     gameStarted: boolean = false;
@@ -131,7 +133,6 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     isRoomSelected: boolean = false;
     hasRooms: boolean       = false;
     
-    gameAnnounceIcon: any;
     startedHandle: any;
     
     debugGameSoundsVisible = window.gamePlatformSettings.debugGameSounds;
@@ -150,8 +151,6 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
         @Inject( Actions ) private actions$: Actions,
         @Inject( NgbModal ) private ngbModal: NgbModal,
     ) {
-        this.gameAnnounceIcon   = null;
-        
         this.gameDto$ = this.appStateService.cardGame.observe();
         this.playerCardsSubs = this.appStateService.playerCards.observe().subscribe( this.playerCardsChanged.bind( this ) );
         this.playerBidsSubs = this.appStateService.playerBids.observe().subscribe( this.playerBidsChanged.bind( this ) );
@@ -431,18 +430,24 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     gameChanged( dto: CardGameDto ): void
     {
         if ( ! this.started && dto ) {
-            if ( dto.playState === GameState.bidding ) { // GameState.playing
+            if ( dto.playState === GameState.bidding ) {
                 this.started = true;
+                this.gameBiddingVisible = true;
+                
                 this.playAiQuestion = false;
                 this.lobbyButtonsVisibleChanged.emit( false );
             }
         }
-        // console.log( dto?.id );
-        // console.log( 'Debug GameDto: ', dto );
-        // alert( this.lobbyButtonsVisible );
         
-        if ( dto?.validBids && dto.validBids.length ) {
+        if ( dto && dto.validBids && dto.validBids.length ) {
             this.validBids = dto.validBids;
+        }
+        
+        if ( dto && dto.playState === GameState.playing ) {
+            this.contract = dto.contract;
+            this.playerBidsDto = [];
+            this.gameBiddingVisible = false;
+            this.gameContractVisible = true;
         }
         
         // alert( 'Current Player: ' + dto?.currentPlayer + 'Play State: ' + dto?.playState );
@@ -467,6 +472,7 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     
     playerBidsChanged( dto: BidDto[] ): void
     {
+        console.log( 'Player Bids Changed', dto );
         this.playerBidsDto = dto;
         this.fireResize();
         

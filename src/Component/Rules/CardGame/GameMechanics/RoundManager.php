@@ -3,8 +3,11 @@
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
+use App\Component\GameLogger;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerPosition;
+use App\Component\Type\BidType;
+
 use App\Component\Rules\CardGame\Game;
 use App\Component\Rules\CardGame\Deck;
 use App\Component\Rules\CardGame\Bid;
@@ -12,21 +15,27 @@ use App\Component\Rules\CardGame\PlayerPositionExtensions;
 
 class RoundManager
 {
-    
+    /** @var Game */
     private Game $game;
     
+    /** @var GameLogger */
+    private  $logger;
+    
+    /** @var ContractManager */
     private ContractManager $contractManager;
     
+    /** @var TricksManager */
     private TricksManager $tricksManager;
     
+    /** @var ScoreManager */
     private ScoreManager $scoreManager;
     
-    public function __construct( Game $game )
+    public function __construct( Game $game, GameLogger $logger )
     {
         $this->game = $game;
+        $this->logger = $logger;
         
-        
-        $this->contractManager = new ContractManager( $this->game );
+        $this->contractManager = new ContractManager( $this->game, $this->logger );
 //         $this->tricksManager = new TricksManager( southPlayer, eastPlayer, northPlayer, westPlayer );
 //         $this->scoreManager = new ScoreManager();
         $this->game->Deck = new Deck();
@@ -53,8 +62,21 @@ class RoundManager
             $this->contractManager->StartNewRound();
         }
         
-        // Deal 3 more cards to each player
-        //$this->DealCards( 3 );
+        if ( $this->game->PlayState == GameState::bidding ) {
+            if ( ! $this->game->CurrentContract && $this->game->ConsecutivePasses == 4 ) {
+                $this->logger->log( 'Consecutive Passes Exceeded !!!', 'RoundManager' );
+                
+                $this->game->PlayState = GameState::ended;
+            }
+            
+            if ( $this->game->CurrentPlayer == $this->game->CurrentContract->Player && $this->game->ConsecutivePasses == 3 ) {
+                $this->logger->log( 'Consecutive Passes Exceeded !!!', 'RoundManager' );
+                $this->logger->log( 'CurrentContract: ' . \print_r( $this->game->CurrentContract, true ), 'RoundManager' );
+                
+                $this->game->PlayState = GameState::playing;
+                $this->DealCards( 3 );
+            }
+        }
     }
     
     public function SetContract( Bid $bid ): void
@@ -64,13 +86,13 @@ class RoundManager
     
     private function DealCards( int $count ): void
     {
-        $dealToPlayer   = $this->game->CurrentPlayer;
+        $dealToPlayer   = $this->game->firstInRound;
         for ( $i = 0; $i < $count; $i++ )
         {
             while( true ) {
                 $this->game->playerCards[$dealToPlayer->value][] = $this->game->Deck->GetNextCard();
                 $dealToPlayer = PlayerPositionExtensions::Next( $dealToPlayer );
-                if( $dealToPlayer === $this->game->CurrentPlayer ) {
+                if( $dealToPlayer === $this->game->firstInRound ) {
                     break;
                 }
             }

@@ -2,6 +2,7 @@
 
 use Ratchet\RFC6455\Messaging\Frame;
 use App\Component\Websocket\Client\WebsocketClientInterface;
+use App\Component\Rules\CardGame\Game;
 
 // Types
 use App\Component\Type\CardGameTeam;
@@ -9,11 +10,97 @@ use App\Component\Type\PlayerPosition;
 use App\Component\Type\GameState;
 
 // DTO Actions
+use App\Component\Dto\Mapper;
+use App\Component\Dto\Actions\GameCreatedActionDto;
+use App\Component\Dto\Actions\BiddingStartedActionDto;
 use App\Component\Dto\Actions\BidMadeActionDto;
+use App\Component\Dto\Actions\PlayingStartedActionDto;
 
 abstract class CardGameManager extends AbstractGameManager
 {
+    public function StartGame(): void
+    {
+        $this->Game->ThinkStart = new \DateTime( 'now' );
+        
+        $gameDto = Mapper::CardGameToDto( $this->Game );
+        // $this->logger->log( 'Begin Start Game: ' . \print_r( $gameDto, true ), 'GameManager' );
+        
+        $action = new GameCreatedActionDto();
+        $action->game = $gameDto;
+        
+        $action->myPosition = PlayerPosition::South;
+        $this->Send( $this->Clients->get( PlayerPosition::South->value ), $action );
+        
+        $action->myPosition = PlayerPosition::East;
+        $this->Send( $this->Clients->get( PlayerPosition::East->value ), $action );
+        
+        $action->myPosition = PlayerPosition::North;
+        $this->Send( $this->Clients->get( PlayerPosition::North->value ), $action );
+        
+        $action->myPosition = PlayerPosition::West;
+        $this->Send( $this->Clients->get( PlayerPosition::West->value ), $action );
+        
+        $this->Game->PlayState = GameState::firstBid;
+        
+        while ( $this->Game->PlayState == GameState::firstBid ) {
+            $this->logger->log( 'First Bid State !!!', 'FirstBidState' );
+            
+            $this->Game->SetFirstBidWinner();
+            
+            $biddingStartedAction = new BiddingStartedActionDto();
+            
+            foreach ( $this->Game->Players as $key => $player ) {
+                $biddingStartedAction->playerCards[$key] = $this->Game->playerCards[$key]->map(
+                    function( $entry ) {
+                        return Mapper::CardToDto( $entry );
+                    }
+                )->toArray();
+            }
+            
+            $biddingStartedAction->firstToBid = $this->Game->CurrentPlayer;
+            
+            $biddingStartedAction->validBids = $this->Game->AvailableBids->map(
+                function( $entry ) {
+                    return Mapper::BidToDto( $entry );
+                }
+            )->toArray();
+            $biddingStartedAction->timer = Game::ClientCountDown;
+            
+            $this->Send( $this->Clients->get( PlayerPosition::South->value ), $biddingStartedAction );
+            $this->Send( $this->Clients->get( PlayerPosition::East->value ), $biddingStartedAction );
+            $this->Send( $this->Clients->get( PlayerPosition::North->value ), $biddingStartedAction );
+            $this->Send( $this->Clients->get( PlayerPosition::West->value ), $biddingStartedAction );
+        }
+    }
+    
     abstract protected function DoBid( BidMadeActionDto $action ): void;
+    
+    protected function StartGamePlay(): void
+    {
+        $playingStartedAction = new PlayingStartedActionDto();
+        
+        foreach ( $this->Game->Players as $key => $player ) {
+            $playingStartedAction->playerCards[$key] = $this->Game->playerCards[$key]->map(
+                function( $entry ) {
+                    return Mapper::CardToDto( $entry );
+                }
+            )->toArray();
+        }
+        
+        $playingStartedAction->firstToPlay = $this->Game->CurrentPlayer;
+        $playingStartedAction->contract = Mapper::BidToDto( $this->Game->CurrentContract );
+        $playingStartedAction->validCards = $this->Game->ValidCards->map(
+            function( $entry ) {
+                return Mapper::CardToDto( $entry );
+            }
+        )->toArray();
+        $playingStartedAction->timer = Game::ClientCountDown;
+        
+        $this->Send( $this->Clients->get( PlayerPosition::South->value ), $playingStartedAction );
+        $this->Send( $this->Clients->get( PlayerPosition::East->value ), $playingStartedAction );
+        $this->Send( $this->Clients->get( PlayerPosition::North->value ), $playingStartedAction );
+        $this->Send( $this->Clients->get( PlayerPosition::West->value ), $playingStartedAction );
+    }
     
     protected function SaveWinner( CardGameTeam $team ): ?array
     {

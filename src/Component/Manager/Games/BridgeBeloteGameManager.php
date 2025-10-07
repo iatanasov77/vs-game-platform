@@ -42,8 +42,6 @@ use App\Component\Dto\Mapper;
 use App\Component\Dto\Actions\ActionNames;
 use App\Component\Dto\Actions\ConnectionInfoActionDto;
 use App\Component\Dto\Actions\GameRestoreActionDto;
-use App\Component\Dto\Actions\GameCreatedActionDto;
-use App\Component\Dto\Actions\BiddingStartedActionDto;
 use App\Component\Dto\Actions\BidMadeActionDto;
 use App\Component\Dto\Actions\OpponentBidsActionDto;
 
@@ -150,61 +148,6 @@ class BridgeBeloteGameManager extends CardGameManager
         }
     }
     
-    public function StartGame(): void
-    {
-        $this->Game->ThinkStart = new \DateTime( 'now' );
-        
-        $gameDto = Mapper::CardGameToDto( $this->Game );
-        // $this->logger->log( 'Begin Start Game: ' . \print_r( $gameDto, true ), 'GameManager' );
-        
-        $action = new GameCreatedActionDto();
-        $action->game = $gameDto;
-        
-        $action->myPosition = PlayerPosition::South;
-        $this->Send( $this->Clients->get( PlayerPosition::South->value ), $action );
-        
-        $action->myPosition = PlayerPosition::East;
-        $this->Send( $this->Clients->get( PlayerPosition::East->value ), $action );
-        
-        $action->myPosition = PlayerPosition::North;
-        $this->Send( $this->Clients->get( PlayerPosition::North->value ), $action );
-        
-        $action->myPosition = PlayerPosition::West;
-        $this->Send( $this->Clients->get( PlayerPosition::West->value ), $action );
-        
-        $this->Game->PlayState = GameState::firstBid;
-        
-        while ( $this->Game->PlayState == GameState::firstBid ) {
-            $this->logger->log( 'First Bid State !!!', 'FirstBidState' );
-            
-            $this->Game->SetFirstBidWinner();
-            
-            $biddingStartedAction = new BiddingStartedActionDto();
-            
-            foreach ( $this->Game->Players as $key => $player ) {
-                $biddingStartedAction->playerCards[$key] = $this->Game->playerCards[$key]->map(
-                    function( $entry ) {
-                        return Mapper::CardToDto( $entry );
-                    }
-                )->toArray();
-            }
-            
-            $biddingStartedAction->playerToBid = $this->Game->CurrentPlayer;
-            
-            $biddingStartedAction->validBids = $this->Game->AvailableBids->map(
-                function( $entry ) {
-                    return Mapper::BidToDto( $entry );
-                }
-            )->toArray();
-            $biddingStartedAction->bidTimer = Game::ClientCountDown;
-            
-            $this->Send( $this->Clients->get( PlayerPosition::South->value ), $biddingStartedAction );
-            $this->Send( $this->Clients->get( PlayerPosition::East->value ), $biddingStartedAction );
-            $this->Send( $this->Clients->get( PlayerPosition::North->value ), $biddingStartedAction );
-            $this->Send( $this->Clients->get( PlayerPosition::West->value ), $biddingStartedAction );
-        }
-    }
-    
     public function DoAction(
         ActionNames $actionName,
         string $actionText,
@@ -282,9 +225,14 @@ class BridgeBeloteGameManager extends CardGameManager
     {
         $winner = $this->GetWinner();
         $this->Game->SwitchPlayer();
+        
         if ( $winner ) {
             $this->EndGame( $winner );
         } else {
+            if ( ! $this->ContinuePlay() ) {
+                return;
+            }
+            
             if ( $this->AisTurn() ) {
                 $this->logger->log( "NewTurn for AI", 'SwitchPlayer' );
                 if ( $this->Game->PlayState == GameState::bidding ) {
@@ -325,14 +273,22 @@ class BridgeBeloteGameManager extends CardGameManager
         return $plyr->IsAi();
     }
     
+    protected function ContinuePlay(): bool
+    {
+        $this->Game->PlayRound();
+        if ( $this->Game->PlayState == GameState::playing ) {
+            $this->logger->log( 'Playing Card Game Round Started.', 'GameManager' );
+            $this->StartGamePlay();
+            return false;
+        }
+        
+        return true;
+    }
+    
     protected function DoBid( BidMadeActionDto $action ): void
     {
         $bid = new Bid( $action->bid->Player, BidType::fromValue( $action->bid->Type ) );
         $this->Game->SetContract( $bid );
-        
-        if ( $this->Game->PlayState == GameState::playing ) {
-            $this->logger->log( 'Playing Card Game Round Started.', 'GameManager' );
-        }
     }
     
     protected function EnginBids( WebsocketClientInterface $client ): void
@@ -348,6 +304,8 @@ class BridgeBeloteGameManager extends CardGameManager
             Async\delay( $sleepMileseconds / 1000 );
             
             $bid = new Bid( $this->Game->CurrentPlayer, $this->Engine->GetBid( $context ) );
+            $this->Game->SetContract( $bid );
+            
             $action = new OpponentBidsActionDto();
             $action->bid = Mapper::BidToDto( $bid );
             $action->nextPlayer = $this->Game->NextPlayer();

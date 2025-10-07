@@ -46,9 +46,10 @@
         ></app-board-buttons>
         
         <bridge-belote-contract *ngIf="started == true"
-            [gameAnnounceIcon]="gameAnnounceIcon"
             [gameContractVisible]="gameContractVisible"
+            [gameBiddingVisible] = "gameBiddingVisible"
             [validBids] = "validBids"
+            [contract] = "contract"
             [currentPlayer] = "currentPlayer"
             (onPlayerMakeBid)="doBid( $event )"
         ></bridge-belote-contract>

@@ -10,7 +10,7 @@ class BiddingStartedActionDto extends ActionDto
     }
     
     public array $playerCards;
-    public ?PlayerPosition $playerToBid;
+    public ?PlayerPosition $firstToBid;
     public array $validBids;
-    public int $bidTimer;
+    public int $timer;
 }

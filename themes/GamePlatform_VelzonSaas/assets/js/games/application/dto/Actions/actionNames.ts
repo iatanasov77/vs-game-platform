@@ -19,6 +19,7 @@
     biddingStarted,
     bidMade,
     opponentBids,
+    playingStarted,
     playCard,
     
     serverWasTerminated

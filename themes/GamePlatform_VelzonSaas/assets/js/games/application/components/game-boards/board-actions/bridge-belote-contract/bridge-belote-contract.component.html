@@ -1,5 +1,6 @@
 <div>
-    <div id="AnnounceContainer" *ngIf="validBids.length && currentPlayer == myPosition">
+    
+    <div *ngIf="gameBiddingVisible && currentPlayer == myPosition">
         <ng-container *ngFor="let icon of announceSymbols; let i = index">
             <a href="javascript:void(0);"
                 id="{{ icon.key }}"
@@ -11,8 +12,10 @@
             </a>
         </ng-container>
     </div>
-    <div *ngIf="gameContractVisible" id="GameAnnounce" class="float-end me-3">
+    
+    <div *ngIf="gameContractVisible" class="float-end me-3">
         <span class="announce-button">{{ 'game_board.game' | translate }}:</span>&nbsp;
-        <span class="announce-button" [innerHTML]="gameAnnounceIcon"></span>
+        <span class="announce-button" [innerHTML]="getContractIcon()"></span>
     </div>
+    
 </div>

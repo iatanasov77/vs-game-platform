@@ -156,7 +156,21 @@ final class Mapper
         $gameDto = new CardGameDto();
         $gameDto->id = $game->Id;
         
-        $gameDto->players   = self::CardGamePlayersToDto( $game->Players );
+        $gameDto->players = self::CardGamePlayersToDto( $game->Players );
+        
+        $gameDto->validBids = $game->AvailableBids->map(
+            function( $entry ) {
+                return self::BidToDto( $entry );
+            }
+        )->toArray();
+        
+        $gameDto->validCards = $game->ValidCards->map(
+            function( $entry ) {
+                return self::CardToDto( $entry );
+            }
+        )->toArray();
+        
+        $gameDto->contract = $game->CurrentContract ? self::BidToDto( $game->CurrentContract ) : null;
         
         $gameDto->currentPlayer = $game->CurrentPlayer;
         $gameDto->playState = $game->PlayState;

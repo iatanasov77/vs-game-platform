@@ -55,6 +55,9 @@ abstract class Game implements GameInterface
     /** @var Collection | Bid[] */
     public $AvailableBids;
     
+    /** @var Collection | Card[] */
+    public $ValidCards;
+    
     /** @var Collection | Bid[] */
     public $Bids;
     
@@ -111,7 +114,7 @@ abstract class Game implements GameInterface
         if ( $this->PlayState == GameState::firstBid ) {
             $this->CurrentPlayer = PlayerPosition::South;
             //$this->CurrentPlayer = PlayerPosition::from( \rand( 0, 3 ) );
-            $this->roundManager->PlayRound();
+            $this->PlayRound();
             $this->PlayState = GameState::bidding;
         }
     }
@@ -154,6 +157,11 @@ abstract class Game implements GameInterface
     public function ReallyStarted(): bool
     {
         return $this->BlackPlayer->FirstMoveMade && $this->WhitePlayer->FirstMoveMade;
+    }
+    
+    public function PlayRound(): void
+    {
+        $this->roundManager->PlayRound();
     }
     
     public function SetContract( Bid $bid ): void

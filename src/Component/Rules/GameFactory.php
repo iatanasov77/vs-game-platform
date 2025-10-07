@@ -225,6 +225,8 @@ final class GameFactory
         $game->Pile = [];
         $game->teamsTricks = [[], []];
         
+        $game->AvailableBids = new ArrayCollection();
+        $game->ValidCards = new ArrayCollection();
         $game->Bids = new ArrayCollection();
         
         $game->SetStartPosition();

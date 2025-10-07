@@ -257,6 +257,8 @@ declare module '_@/GamePlatform/Model/CardGame/gameDto' {
     interface CardGameDto extends GameDto {
         players: CardGamePlayerDto[];
         validBids: any;
+        validCards: any;
+        contract: any;
         
         currentPlayer: PlayerPosition;
         winner: CardGameTeam;
@@ -269,7 +271,6 @@ declare module '_@/GamePlatform/Model/CardGame/gameDto' {
         
         MyCards: any;
         Bids: any;
-        CurrentContract: any;
         
         deck: any;
         pile: any;

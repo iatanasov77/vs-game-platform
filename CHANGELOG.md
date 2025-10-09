@@ -1,3 +1,18 @@
+0.16.5	|	Release date: **09.10.2025**
+============================================
+* New Features, Fixes and Improvements:
+  - Create Bridge Belote AI Engine.
+  - Fix Bridge Belote AI Engine Bidding.
+  - Add Some Debugging Flags in GamePlatformSettings.
+  - Display Player Bids on Bridge Belote Board.
+  - Add Card Game Sonds to Sound Service and a Dialog to Debug Game Sounds.
+  - Improving Game Managers.
+  - Fix Playing Backgamon with Invited User.
+  - Improve Bridge Belote Bidding Actions.
+  - Finishing Bridge Belote Bidding Phase.
+  - Improve Card Game Board Drawing and add Card Areas to can Click and Drag Cards.
+
+
 0.16.4	|	Release date: **26.09.2025**
 ============================================
 * New Features and Improvements:

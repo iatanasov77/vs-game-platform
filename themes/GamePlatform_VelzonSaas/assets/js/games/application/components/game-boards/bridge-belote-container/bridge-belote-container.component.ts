@@ -106,8 +106,8 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     
     themeName: string;
     
-    width: number = 600;
-    height: number = 400;
+    width: number = 710;
+    height: number = 510;
     started = false;
     messageCenter = 0;
     gameId = "";
@@ -179,7 +179,8 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
         
         // For some reason i could not use an observable for theme. Maybe i'll figure out why someday
         // service.connect might need to be in a setTimeout callback.
-        this.themeName = this.appStateService.user.getValue()?.theme ?? 'green';
+        // this.themeName = this.appStateService.user.getValue()?.theme ?? 'card-game';
+        this.themeName = 'card-game';
     }
     
     ngOnInit(): void

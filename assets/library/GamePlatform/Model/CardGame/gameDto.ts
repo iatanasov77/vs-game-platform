@@ -1,5 +1,6 @@
 ﻿import GameDto from '../Core/gameDto';
 import CardGamePlayerDto from './playerDto';
+import CardDto from './cardDto';
 import PlayerPosition from './playerPosition';
 import CardGameTeam from './cardGameTeam'
 
@@ -21,7 +22,7 @@ interface CardGameDto extends GameDto {
     MyCards: any;
     Bids: any;
     
-    deck: any;
+    deck: CardDto[];
     pile: any;
     teamsTricks: any;
 }

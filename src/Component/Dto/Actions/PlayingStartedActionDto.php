@@ -10,6 +10,7 @@ class PlayingStartedActionDto extends ActionDto
         $this->actionName = ActionNames::playingStarted->value;
     }
     
+    public array $deck; // CardDto[]
     public array $playerCards;
     public ?PlayerPosition $firstToPlay;
     public BidDto $contract;

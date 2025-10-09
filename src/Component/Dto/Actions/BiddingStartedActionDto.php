@@ -9,6 +9,7 @@ class BiddingStartedActionDto extends ActionDto
         $this->actionName = ActionNames::biddingStarted->value;
     }
     
+    public array $deck; // CardDto[]
     public array $playerCards;
     public ?PlayerPosition $firstToBid;
     public array $validBids;

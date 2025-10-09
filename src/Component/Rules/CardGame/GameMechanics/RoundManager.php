@@ -36,10 +36,10 @@ class RoundManager
         $this->logger = $logger;
         
         $this->contractManager = new ContractManager( $this->game, $this->logger );
-//         $this->tricksManager = new TricksManager( southPlayer, eastPlayer, northPlayer, westPlayer );
+//         $this->tricksManager = new TricksManager( $this->game, $this->logger );
 //         $this->scoreManager = new ScoreManager();
+
         $this->game->Deck = new Deck();
-        
         $this->game->playerCards = new ArrayCollection();
         foreach ( $this->game->Players as $key => $player ) {
             $this->game->playerCards->set( $key, new ArrayCollection() );

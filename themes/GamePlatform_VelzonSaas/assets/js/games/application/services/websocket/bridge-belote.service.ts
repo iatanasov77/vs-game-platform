@@ -148,6 +148,7 @@ export class BridgeBeloteService extends AbstractGameService
                 this.appState.playerCards.setValue( biddingStartedAction.playerCards );
                 const cGame = {
                     ...game,
+                    deck: biddingStartedAction.deck,
                     validBids: biddingStartedAction.validBids,
                     currentPlayer: biddingStartedAction.firstToBid,
                     playState: GameState.bidding
@@ -193,6 +194,7 @@ export class BridgeBeloteService extends AbstractGameService
                 const cGame = {
                     ...game,
                     contract: playingStartedAction.contract,
+                    deck: playingStartedAction.deck,
                     validBids: [],
                     validCards: playingStartedAction.validCards,
                     currentPlayer: playingStartedAction.firstToPlay,

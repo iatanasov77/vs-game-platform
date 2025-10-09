@@ -251,6 +251,7 @@ declare module '_@/GamePlatform/Model/CardGame/gameDto' {
     import GameState from '_@/GamePlatform/Model/Core/gameState';
     
     import CardGamePlayerDto from '_@/GamePlatform/Model/CardGame/playerDto';
+    import CardDto from '_@/GamePlatform/Model/CardGame/cardDto';
     import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
     import CardGameTeam from '_@/GamePlatform/Model/CardGame/cardGameTeam'
 
@@ -272,7 +273,7 @@ declare module '_@/GamePlatform/Model/CardGame/gameDto' {
         MyCards: any;
         Bids: any;
         
-        deck: any;
+        deck: CardDto[];
         pile: any;
         teamsTricks: any;
     }
@@ -365,11 +366,15 @@ declare module '_@/GamePlatform/Model/CardGame/playerDto' {
 declare module '_@/GamePlatform/Model/CardGame/cardDto' {
     import CardSuit from '_@/GamePlatform/Model/CardGame/cardSuit';
     import CardType from '_@/GamePlatform/Model/CardGame/cardType';
+    import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
     
     interface CardDto
     {
         Suit: CardSuit;
         Type: CardType;
+        
+        position: PlayerPosition;
+        cardIndex: string;
     }
     
     export default CardDto;

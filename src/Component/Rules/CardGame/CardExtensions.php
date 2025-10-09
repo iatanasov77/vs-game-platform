@@ -4,8 +4,60 @@ use App\Component\Type\CardSuit;
 use App\Component\Type\CardType;
 use App\Component\Type\BidType;
 
-trait CardExtensions
+class CardExtensions
 {
+    public static function SuitToString( CardSuit $cardSuit ): string
+    {
+        switch ( $cardSuit ) {
+            case CardSuit::Club:
+                return "Club";
+                break;
+            case CardSuit::Diamond:
+                return "Diamond";
+                break;
+            case CardSuit::Heart:
+                return "Heart";
+                break;
+            case CardSuit::Spade:
+                return "Spade";
+                break;
+            default:
+                throw new \RuntimeException( "Invalid card suit." );
+        }
+    }
+    
+    public static function TypeToString( CardType $cardType ): string
+    {
+        switch ( $cardType ) {
+            case CardType::Seven:
+                return "Seven";
+                break;
+            case CardType::Eight:
+                return "Eight";
+                break;
+            case CardType::Nine:
+                return "Nine";
+                break;
+            case CardType::Ten:
+                return "Ten";
+                break;
+            case CardType::Jack:
+                return "Jack";
+                break;
+            case CardType::Queen:
+                return "Queen";
+                break;
+            case CardType::King:
+                return "King";
+                break;
+            case CardType::Ace:
+                return "Ace";
+                break;
+            default:
+                throw new \RuntimeException( "Invalid card type." );
+        }
+    }
+    
     public static function SuitToFriendlyString( CardSuit $cardSuit ): string
     {
         switch ( $cardSuit ) {

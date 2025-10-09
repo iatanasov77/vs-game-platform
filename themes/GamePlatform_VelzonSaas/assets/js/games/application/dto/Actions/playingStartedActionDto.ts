@@ -5,6 +5,7 @@ import CardDto from '_@/GamePlatform/Model/CardGame/cardDto';
 import BidDto from '_@/GamePlatform/Model/CardGame/bidDto';
 
 interface PlayingStartedActionDto extends ActionDto {
+    deck: CardDto[];
     playerCards: Array<CardDto[]>;
     firstToPlay: PlayerPosition;
     contract: BidDto

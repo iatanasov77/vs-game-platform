@@ -49,10 +49,16 @@ abstract class CardGameManager extends AbstractGameManager
             
             $biddingStartedAction = new BiddingStartedActionDto();
             
+            $biddingStartedAction->deck = $this->Game->Deck->Cards()->map(
+                function( $entry ) {
+                    return Mapper::CardToDto( $entry );
+                }
+            )->toArray();
+            
             foreach ( $this->Game->Players as $key => $player ) {
                 $biddingStartedAction->playerCards[$key] = $this->Game->playerCards[$key]->map(
-                    function( $entry ) {
-                        return Mapper::CardToDto( $entry );
+                    function( $entry ) use ( $player ) {
+                        return Mapper::CardToDto( $entry, $player->PlayerPosition );
                     }
                 )->toArray();
             }
@@ -79,19 +85,30 @@ abstract class CardGameManager extends AbstractGameManager
     {
         $playingStartedAction = new PlayingStartedActionDto();
         
+        $playingStartedAction->deck = $this->Game->Deck->Cards()->map(
+            function( $entry ) {
+                return Mapper::CardToDto( $entry );
+            }
+        )->toArray();
+        
         foreach ( $this->Game->Players as $key => $player ) {
             $playingStartedAction->playerCards[$key] = $this->Game->playerCards[$key]->map(
-                function( $entry ) {
-                    return Mapper::CardToDto( $entry );
+                function( $entry ) use ( $player ) {
+                    return Mapper::CardToDto( $entry, $player->PlayerPosition );
                 }
             )->toArray();
+            
+            // Debugging
+            if ( $player->PlayerPosition == PlayerPosition::South ) {
+                $this->Game->ValidCards = $this->Game->playerCards[$key];
+            }
         }
         
         $playingStartedAction->firstToPlay = $this->Game->CurrentPlayer;
         $playingStartedAction->contract = Mapper::BidToDto( $this->Game->CurrentContract );
         $playingStartedAction->validCards = $this->Game->ValidCards->map(
             function( $entry ) {
-                return Mapper::CardToDto( $entry );
+                return Mapper::CardToDto( $entry, PlayerPosition::South );
             }
         )->toArray();
         $playingStartedAction->timer = Game::ClientCountDown;

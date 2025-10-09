@@ -978,7 +978,7 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
     //Draws the background and also set shape of all rectangles used for interaction.
     drawBoard( cx: CanvasRenderingContext2D | null ): void
     {
-        if ( ! cx) {
+        if ( ! cx ) {
             return;
         }
         

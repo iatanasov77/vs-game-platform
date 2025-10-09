@@ -2,6 +2,7 @@
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
+
 use App\Component\Type\PlayerColor;
 use App\Component\Rules\BoardGame\Game as BoardGame;
 use App\Component\Rules\BoardGame\Player as BoardGamePlayer;
@@ -14,6 +15,8 @@ use App\Component\Rules\CardGame\Game as CardGame;
 use App\Component\Rules\CardGame\Player as CardGamePlayer;
 use App\Component\Rules\CardGame\Card;
 use App\Component\Rules\CardGame\Bid;
+use App\Component\Rules\CardGame\CardExtensions;
+use App\Component\Type\PlayerPosition;
 use App\Component\Type\BidType;
 
 final class Mapper
@@ -182,7 +185,7 @@ final class Mapper
         $gameDto->goldMultiplier    = $game->GoldMultiplier;
         $gameDto->isGoldGame        = $game->IsGoldGame;
         
-        $gameDto->deck = $game->Deck->Cards();
+        $gameDto->deck = $game->Deck->Cards()->toArray();
         $gameDto->pile = $game->Pile;
         $gameDto->teamsTricks = $game->teamsTricks;
         
@@ -212,11 +215,14 @@ final class Mapper
         return $playersDto;
     }
     
-    public static function CardToDto( Card $card ): CardDto
+    public static function CardToDto( Card $card, PlayerPosition $position = PlayerPosition::Neither ): CardDto
     {
         $cardDto = new CardDto();
         $cardDto->Suit = $card->Suit;
         $cardDto->Type = $card->Type;
+        
+        $cardDto->position = $position;
+        $cardDto->cardIndex = \strtolower( CardExtensions::TypeToString( $card->Type ) . CardExtensions::SuitToString( $card->Suit ) );
         
         return $cardDto;
     }

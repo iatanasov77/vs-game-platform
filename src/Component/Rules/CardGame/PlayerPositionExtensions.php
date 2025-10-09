@@ -2,7 +2,7 @@
 
 use App\Component\Type\PlayerPosition;
 
-trait PlayerPositionExtensions
+class PlayerPositionExtensions
 {
     public static function Next( PlayerPosition $playerPosition ): PlayerPosition
     {
@@ -58,13 +58,13 @@ trait PlayerPositionExtensions
     {
         switch ( $playerPosition ) {
             case PlayerPosition::South:
-                return PlayerPosition.North;
+                return PlayerPosition::North;
                 break;
             case PlayerPosition::East:
-                return PlayerPosition.West;
+                return PlayerPosition::West;
                 break;
             case PlayerPosition::North:
-                return PlayerPosition.South;
+                return PlayerPosition::South;
                 break;
             case PlayerPosition::West:
                 return PlayerPosition::East;

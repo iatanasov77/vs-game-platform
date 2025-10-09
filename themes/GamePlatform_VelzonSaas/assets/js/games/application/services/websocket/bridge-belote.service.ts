@@ -10,7 +10,9 @@ import GameCookieDto from '_@/GamePlatform/Model/Core/gameCookieDto';
 
 // CardGame Interfaces
 import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
+import BidType from '_@/GamePlatform/Model/CardGame/bidType';
 import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
+import BidDto from '_@/GamePlatform/Model/CardGame/bidDto';
 
 // Action Interfaces
 import ActionDto from '../../dto/Actions/actionDto';
@@ -20,6 +22,9 @@ import CardGameCreatedActionDto from '../../dto/Actions/cardGameCreatedActionDto
 import CardGameEndedActionDto from '../../dto/Actions/cardGameEndedActionDto';
 import CardGameRestoreActionDto from '../../dto/Actions/cardGameRestoreActionDto';
 import BiddingStartedActionDto from '../../dto/Actions/biddingStartedActionDto';
+import BidMadeActionDto from '../../dto/Actions/bidMadeActionDto';
+import OpponentBidsActionDto from '../../dto/Actions/opponentBidsActionDto';
+import PlayingStartedActionDto from '../../dto/Actions/playingStartedActionDto';
 import PlayCardActionDto from '../../dto/Actions/playCardActionDto';
 
 import { Keys } from '../../utils/keys';
@@ -143,14 +148,63 @@ export class BridgeBeloteService extends AbstractGameService
                 this.appState.playerCards.setValue( biddingStartedAction.playerCards );
                 const cGame = {
                     ...game,
+                    deck: biddingStartedAction.deck,
                     validBids: biddingStartedAction.validBids,
-                    currentPlayer: biddingStartedAction.playerToBid,
+                    currentPlayer: biddingStartedAction.firstToBid,
                     playState: GameState.bidding
                 };
                 
                 this.appState.cardGame.setValue( cGame );
                 this.statusMessageService.setTextMessage( cGame );
-                this.appState.moveTimer.setValue( biddingStartedAction.bidTimer );
+                
+                this.appState.moveTimer.setValue( biddingStartedAction.timer );
+                this.appState.opponentDone.setValue( true );
+                
+                break;
+            }
+            case ActionNames.bidMade: {
+                //console.log( 'WebSocket Action Moves Made', action.actionName );
+                
+                // This action is only sent to server.
+                break;
+            }
+            case ActionNames.opponentBids: {
+                //alert( 'WebSocket Action Opponent Move' );
+                
+                const action = JSON.parse( message.data ) as OpponentBidsActionDto;
+                console.log( 'WebSocket Action Opponent Bids', action );
+                
+                this.doBid( action.bid );
+                
+                const cGame = {
+                    ...game,
+                    currentPlayer: action.nextPlayer,
+                    playState: action.playState
+                };
+                // console.log( 'Game After Action Opponent Bids', cGame );
+                this.appState.cardGame.setValue( cGame );
+                
+                break;
+            }
+            case ActionNames.playingStarted: {
+                const playingStartedAction = JSON.parse( message.data ) as PlayingStartedActionDto;
+                console.log( 'Playing Started Action' + new Date().toLocaleTimeString(), playingStartedAction );
+                
+                this.appState.playerCards.setValue( playingStartedAction.playerCards );
+                const cGame = {
+                    ...game,
+                    contract: playingStartedAction.contract,
+                    deck: playingStartedAction.deck,
+                    validBids: [],
+                    validCards: playingStartedAction.validCards,
+                    currentPlayer: playingStartedAction.firstToPlay,
+                    playState: GameState.playing
+                };
+                
+                this.appState.cardGame.setValue( cGame );
+                this.statusMessageService.setTextMessage( cGame );
+                
+                this.appState.moveTimer.setValue( playingStartedAction.timer );
                 this.appState.opponentDone.setValue( true );
                 
                 break;
@@ -214,5 +268,40 @@ export class BridgeBeloteService extends AbstractGameService
             default:
                 throw new Error( `Action not implemented ${action.actionName}` );
         }
+    }
+    
+    doBid( bid: BidDto ): void
+    {
+        const playerPosition = bid.Player
+        const playerBids = this.appState.playerBids.getValue();
+        
+        this.appState.playerBids.setValue({
+            ...playerBids,
+            [playerPosition]: bid
+        });
+        
+        //console.log( 'Player Do Bid', bid );
+        //console.log( 'After Player Do Bid', this.appState.playerBids.getValue() );
+    }
+    
+    sendBid( bid: BidDto ): void
+    {
+        //console.log( 'Player Send Bid', bid );
+        const game = this.appState.cardGame.getValue();
+        
+        const myBidAction: BidMadeActionDto = {
+            actionName: ActionNames.bidMade,
+            bid: { ...bid, NextBids: [] }
+        };
+        this.sendMessage( JSON.stringify( myBidAction ) );
+        
+        const opponentBidAction: OpponentBidsActionDto = {
+            actionName: ActionNames.opponentBids,
+            bid: { ...bid, NextBids: [] },
+            
+            nextPlayer: game.currentPlayer,
+            playState: game.playState
+        };
+        this.sendMessage( JSON.stringify( opponentBidAction ) );
     }
 }

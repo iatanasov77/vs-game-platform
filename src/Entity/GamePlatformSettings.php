@@ -27,6 +27,18 @@ class GamePlatformSettings implements ResourceInterface
     #[ORM\Column(name: "timeout_between_players", type: "integer")]
     private $timeoutBetweenPlayers;
     
+    /** @var bool */
+    #[ORM\Column(name: "debug_game_sounds", type: "boolean", options: ["default" => 0], nullable: true)]
+    private $debugGameSounds = false;
+    
+    /** @var bool */
+    #[ORM\Column(name: "debug_card_game_player_areas", type: "boolean", options: ["default" => 0], nullable: true)]
+    private $debugCardGamePlayerAreas = false;
+    
+    /** @var bool */
+    #[ORM\Column(name: "debug_card_game_player_cards", type: "boolean", options: ["default" => 0], nullable: true)]
+    private $debugCardGamePlayerCards = false;
+    
     public function getId()
     {
         return $this->id;
@@ -64,6 +76,42 @@ class GamePlatformSettings implements ResourceInterface
     public function setTimeoutBetweenPlayers($timeoutBetweenPlayers)
     {
         $this->timeoutBetweenPlayers  = $timeoutBetweenPlayers;
+        
+        return $this;
+    }
+    
+    public function getDebugGameSounds()
+    {
+        return $this->debugGameSounds;
+    }
+    
+    public function setDebugGameSounds($debugGameSounds)
+    {
+        $this->debugGameSounds  = $debugGameSounds;
+        
+        return $this;
+    }
+    
+    public function getDebugCardGamePlayerAreas()
+    {
+        return $this->debugCardGamePlayerAreas;
+    }
+    
+    public function setDebugCardGamePlayerAreas($debugCardGamePlayerAreas)
+    {
+        $this->debugCardGamePlayerAreas  = $debugCardGamePlayerAreas;
+        
+        return $this;
+    }
+    
+    public function getDebugCardGamePlayerCards()
+    {
+        return $this->debugCardGamePlayerCards;
+    }
+    
+    public function setDebugCardGamePlayerCards($debugCardGamePlayerCards)
+    {
+        $this->debugCardGamePlayerCards  = $debugCardGamePlayerCards;
         
         return $this;
     }

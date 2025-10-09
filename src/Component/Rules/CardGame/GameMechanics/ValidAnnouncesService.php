@@ -1,6 +1,8 @@
 <?php namespace App\Component\Rules\CardGame\GameMechanics;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+
 use App\Component\Type\BidType;
 use App\Component\Type\CardSuit;
 use App\Component\Type\CardType;
@@ -135,7 +137,16 @@ class ValidAnnouncesService
     private function FindFourOfAKindAnnounces( Collection $cards, Collection &$combinations ): void
     {
         // Group by type
-        $countOfCardTypes = [];
+        $countOfCardTypes = [
+            CardType::Seven->value => 0,
+            CardType::Eight->value => 0,
+            CardType::Nine->value => 0,
+            CardType::Ten->value => 0,
+            CardType::Jack->value => 0,
+            CardType::Queen->value => 0,
+            CardType::King->value => 0,
+            CardType::Ace->value => 0,
+        ];
         foreach ( $cards as $card ) {
             $countOfCardTypes[$card->Type->value]++;
         }
@@ -194,7 +205,7 @@ class ValidAnnouncesService
             $previousCardValue = $suitedCards[0]->Type->value;
             $count = 1;
             for ( $i = 1; $i < $suitedCards->count(); $i++ ) {
-                if ( $suitedCards[i]->Type->value == $previousCardValue + 1 ) {
+                if ( $suitedCards[$i]->Type->value == $previousCardValue + 1 ) {
                     $count++;
                 } else {
                     switch ( $count )
@@ -217,7 +228,7 @@ class ValidAnnouncesService
                     $count = 1;
                 }
                 
-                $previousCardValue = $suitedCards[i]->Type->value;
+                $previousCardValue = $suitedCards[$i]->Type->value;
             }
             
             switch ( $count )

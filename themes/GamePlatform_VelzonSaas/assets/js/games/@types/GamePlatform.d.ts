@@ -251,12 +251,15 @@ declare module '_@/GamePlatform/Model/CardGame/gameDto' {
     import GameState from '_@/GamePlatform/Model/Core/gameState';
     
     import CardGamePlayerDto from '_@/GamePlatform/Model/CardGame/playerDto';
+    import CardDto from '_@/GamePlatform/Model/CardGame/cardDto';
     import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
     import CardGameTeam from '_@/GamePlatform/Model/CardGame/cardGameTeam'
 
     interface CardGameDto extends GameDto {
         players: CardGamePlayerDto[];
         validBids: any;
+        validCards: any;
+        contract: any;
         
         currentPlayer: PlayerPosition;
         winner: CardGameTeam;
@@ -269,9 +272,8 @@ declare module '_@/GamePlatform/Model/CardGame/gameDto' {
         
         MyCards: any;
         Bids: any;
-        CurrentContract: any;
         
-        deck: any;
+        deck: CardDto[];
         pile: any;
         teamsTricks: any;
     }
@@ -364,11 +366,15 @@ declare module '_@/GamePlatform/Model/CardGame/playerDto' {
 declare module '_@/GamePlatform/Model/CardGame/cardDto' {
     import CardSuit from '_@/GamePlatform/Model/CardGame/cardSuit';
     import CardType from '_@/GamePlatform/Model/CardGame/cardType';
+    import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
     
     interface CardDto
     {
         Suit: CardSuit;
         Type: CardType;
+        
+        position: PlayerPosition;
+        cardIndex: string;
     }
     
     export default CardDto;
@@ -382,6 +388,7 @@ declare module '_@/GamePlatform/Model/CardGame/bidDto' {
     {
         Player: PlayerPosition;
         Type: BidType;
+        NextBids: BidDto[];
     }
     
     export default BidDto;
@@ -390,17 +397,6 @@ declare module '_@/GamePlatform/Model/CardGame/bidDto' {
 /**
  * Common Interfaces
  */
-declare module '_@/GamePlatform/Game/GameSettings' {
-    type GameSettings = {
-        id: string;
-        publicRootPath: string;
-        boardSelector: string;
-        timeoutBetweenPlayers: number;
-    };
-    
-    export = GameSettings;
-}
-
 declare module '_@/GamePlatform/Model/GameInterface' {
     interface IGame {
         id: number;
@@ -486,57 +482,6 @@ declare module '_@/GamePlatform/Model/GamePlayModel' {
     export = IGamePlay;
 }
 
-declare module '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface' {
-    interface ICardGameAnnounce
-    {
-        
-    }
-    export = ICardGameAnnounce;
-}
-
-declare module '_@/GamePlatform/Game/GameEvents' {
-    export const PLAYER_ANNOUNCE_EVENT_NAME: string;
-    export const GAME_START_EVENT_NAME: string;
-    export const playerAnnounce: CustomEvent;
-    export const gameStart: CustomEvent;
-}
-
-declare module '_@/GamePlatform/Game/BeloteCardGame' {
-    import GameSettings from '_@/GamePlatform/Game/GameSettings';
-    
-    class BeloteCardGame {
-        constructor( gameSettings: GameSettings )
-    }
-    export = BeloteCardGame;
-}
-
-declare module '_@/GamePlatform/Game/CardGamePlayer' {
-    class CardGamePlayer {
-        id: any;
-        containerId: any;
-        constructor( id: any, containerId: any, playerName: any, playerType: any )
-    }
-    export = CardGamePlayer;
-}
-
-declare module '_@/GamePlatform/CardGameAnnounce/Announce' {
-    class Announce {
-        static PASS: string;
-    
-        static CLOVER: string;
-        static DIAMOND: string;
-        static HEART: string;
-        static SPADE: string;
-        
-        static BEZ_KOZ: string;
-        static VSICHKO_KOZ: string;
-        
-        static KONTRA: string;
-        static RE_KONTRA: string;
-    }
-    export = Announce;
-}
-
 declare module '_@/GamePlatform/Model/CardGamePlayerModel' {
     interface CardGamePlayerModel {
         id: string;
@@ -546,8 +491,10 @@ declare module '_@/GamePlatform/Model/CardGamePlayerModel' {
 }
 
 declare module '_@/GamePlatform/Model/CardGameAnnounceSymbolModel' {
+    import BidType from '_@/GamePlatform/Model/CardGame/bidType';
+    
     interface CardGameAnnounceSymbolModel {
-        id: string;
+        id: BidType;
         key: string;
         tooltip: string;
         value: string;

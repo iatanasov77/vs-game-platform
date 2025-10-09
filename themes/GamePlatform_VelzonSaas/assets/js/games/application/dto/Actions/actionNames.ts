@@ -18,7 +18,8 @@
     // Card Game Actions
     biddingStarted,
     bidMade,
-    opponentBid,
+    opponentBids,
+    playingStarted,
     playCard,
     
     serverWasTerminated

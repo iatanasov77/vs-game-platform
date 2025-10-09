@@ -2,23 +2,36 @@
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+
+use App\Component\GameLogger;
+use App\Component\Rules\CardGame\Game;
+
 use App\Component\Type\PlayerPosition;
 use App\Component\Rules\CardGame\Player;
 use App\Component\Rules\CardGame\Bid;
 
 class TricksManager
 {
-    private Collection $players;
+    /** @var Game */
+    private Game $game;
     
-    private TrickWinnerService $trickWinnerService;
+    /** @var GameLogger */
+    private  $logger;
     
-    private ValidCardsService $validCardsService;
+    /** @var TrickWinnerService */
+    private $trickWinnerService;
     
-    private ValidAnnouncesService $validAnnouncesService;
+    /** @var ValidCardsService */
+    private $validCardsService;
     
-    public function __construct( Player $southPlayer, Player $eastPlayer, Player $northPlayer, Player $westPlayer )
+    /** @var ValidAnnouncesService */
+    private $validAnnouncesService;
+    
+    public function __construct( Game $game, GameLogger $logger )
     {
-        $this->players = new ArrayCollection( [$southPlayer, $eastPlayer, $northPlayer, $westPlayer] );
+        $this->game = $game;
+        $this->logger = $logger;
+        
         $this->trickWinnerService = new TrickWinnerService();
         $this->validCardsService = new ValidCardsService();
         $this->validAnnouncesService = new ValidAnnouncesService();

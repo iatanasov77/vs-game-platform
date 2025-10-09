@@ -117,7 +117,7 @@ final class GameService
         }
         
         if ( ! empty ( $gameId ) ) {
-            $this->logger->log( 'Invite to Game', 'GameService' );
+            $this->logger->log( 'Invite to Game: ' . $gameId, 'GameService' );
             $gameGuid = $this->ConnectInvite( $webSocket, $gamePlayer, $gameId, $gameCode, $gameVariant );
             
             // Game disconnected here.
@@ -189,17 +189,24 @@ final class GameService
             $gameGuid                   =  $manager->Game->Id;
             
             $this->logger->log( "Found a game and added a second player. Game id {$manager->Game->Id}", 'GameService' );
-            $color = $manager->Clients->get( PlayerColor::Black->value ) == null ? PlayerColor::Black : PlayerColor::White;
             
             // entering socket loop
             switch ( $gameCode ) {
                 case GameVariant::BACKGAMMON_CODE:
-                    $manager->Game->CurrentPlayer = PlayerColor::Black;
+                    $color = $manager->Clients->get( PlayerColor::Black->value ) == null ? PlayerColor::Black : PlayerColor::White;
+                    $colorName = $color === PlayerColor::Black ? 'Black' : 'White';
+                    $this->logger->log( "{$colorName} player disconnected.", 'GameService' );
+                    
+                    $manager->Game->CurrentPlayer = $color;
                     $manager->ConnectAndListen( $webSocket, $gamePlayer, $playAi );
                     $this->SendConnectionLost( $manager, PlayerColor::White->value );
                     break;
                 case GameVariant::BRIDGE_BELOTE_CODE:
-                    $manager->Game->CurrentPlayer = PlayerPosition::South;
+                    $position = $manager->Clients->get( PlayerPosition::South->value ) == null ? PlayerPosition::South : PlayerPosition::East;
+                    //$colorName = $color === PlayerColor::Black ? 'Black' : 'White';
+                    //$this->logger->log( "{$colorName} player disconnected.", 'GameService' );
+                    
+                    $manager->Game->CurrentPlayer = $position;
                     $manager->ConnectAndListen( $webSocket, $gamePlayer, $playAi );
                     $this->SendConnectionLost( $manager, PlayerPosition::East->value );
                     $this->SendConnectionLost( $manager, PlayerPosition::North->value );
@@ -207,9 +214,6 @@ final class GameService
                     break;
             }
             //This is the end of the connection
-            
-            $colorName = $color === PlayerColor::Black ? 'Black' : 'White';
-            $this->logger->log( "{$colorName} player disconnected.", 'GameService' );
         }
         $this->RemoveDissconnected( $manager );
         
@@ -412,7 +416,7 @@ final class GameService
         }
         
         $color = PlayerColor::Black;
-        if ( $manager->Clients->get( PlayerColor::White->value ) != null ) {
+        if ( $manager->Clients->get( PlayerColor::Black->value ) != null ) {
             $color = PlayerColor::White;
         }
         

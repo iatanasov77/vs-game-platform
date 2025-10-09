@@ -1,5 +1,7 @@
 <?php namespace App\Component\Manager;
 
+use Ratchet\RFC6455\Messaging\Frame;
+use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Rules\BoardGame\Score;
 
 // Types
@@ -98,11 +100,11 @@ abstract class BoardGameManager extends AbstractGameManager
                     function( $entry ) {
                         return $entry->Color == PlayerColor::Black;
                     }
-                    )->count() == 15
-                    ) {
-                        $this->Game->PlayState = GameState::ended;
-                        $winner = PlayerColor::Black;
-                    }
+                )->count() == 15
+            ) {
+                $this->Game->PlayState = GameState::ended;
+                $winner = PlayerColor::Black;
+            }
         } else {
             if (
                 $this->Game->GetHome( PlayerColor::White )->Checkers->filter(
@@ -154,5 +156,36 @@ abstract class BoardGameManager extends AbstractGameManager
         }
         
         $em->flush();
+    }
+    
+    protected function Resign( PlayerColor $winner ): void
+    {
+        $this->EndGame( $winner );
+        $this->logger->log( "{$winner} won Game {$this->Game->Id} by resignition.", 'GameManager' );
+    }
+    
+    protected function EndGame( PlayerColor $winner ): void
+    {
+        $this->moveTimeOut->cancel();
+        $this->Game->PlayState = GameState::ended;
+        $this->logger->log( "The winner is {$winner->value}", 'EndGame' );
+        
+        $newScore = $this->SaveWinner( $winner );
+        $this->SendWinner( $winner, $newScore );
+    }
+    
+    protected function CloseConnections( WebsocketClientInterface $socket ): void
+    {
+        if ( $socket != null ) {
+            $this->logger->log( "Closing client", 'ExitGame' );
+            $socket->close( Frame::CLOSE_NORMAL );
+            
+            // Dispose Websocket
+            if ( $socket == $this->Clients->get( PlayerColor::Black->value ) ) {
+                $this->Clients->set( PlayerColor::Black->value, null );
+            } else {
+                $this->Clients->set( PlayerColor::White->value, null );
+            }
+        }
     }
 }

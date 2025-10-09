@@ -7,8 +7,6 @@ use App\Component\Type\CardType;
 
 class Card
 {
-    use CardExtensions;
-    
     /** @var Collection | Card[] */
     public static $AllCards;
     
@@ -91,8 +89,8 @@ class Card
     {
         return \sprintf(
             '%s%s',
-            self::TypeToFriendlyString( $this->Type ),
-            self::SuitToFriendlyString( $this->Suit )
+            CardExtensions::TypeToFriendlyString( $this->Type ),
+            CardExtensions::SuitToFriendlyString( $this->Suit )
         );
     }
     

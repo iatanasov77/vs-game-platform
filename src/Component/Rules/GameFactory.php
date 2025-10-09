@@ -221,9 +221,13 @@ final class GameFactory
         $game->GoldMultiplier = 1;
         $game->IsGoldGame = $forGold;
         
-        $game->deck = new Deck();
-        $game->pile = [];
+        $game->Deck = new Deck();
+        $game->Pile = [];
         $game->teamsTricks = [[], []];
+        
+        $game->AvailableBids = new ArrayCollection();
+        $game->ValidCards = new ArrayCollection();
+        $game->Bids = new ArrayCollection();
         
         $game->SetStartPosition();
         

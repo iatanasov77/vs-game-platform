@@ -6,6 +6,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
 use App\Entity\GamePlatformSettings;
 
@@ -25,6 +26,21 @@ class GamePlatformSettingsForm extends AbstractForm
             
             ->add( 'timeoutBetweenPlayers', IntegerType::class, [
                 'label'                 => 'game_platform.form.game_platform_settings.timeout_between_players',
+                'translation_domain'    => 'GamePlatform',
+            ])
+            
+            ->add( 'debugGameSounds', CheckboxType::class, [
+                'label'                 => 'game_platform.form.game_platform_settings.debug_game_sounds',
+                'translation_domain'    => 'GamePlatform',
+            ])
+            
+            ->add( 'debugCardGamePlayerAreas', CheckboxType::class, [
+                'label'                 => 'game_platform.form.game_platform_settings.debug_card_game_player_areas',
+                'translation_domain'    => 'GamePlatform',
+            ])
+            
+            ->add( 'debugCardGamePlayerCards', CheckboxType::class, [
+                'label'                 => 'game_platform.form.game_platform_settings.debug_card_game_player_cards',
                 'translation_domain'    => 'GamePlatform',
             ])
         ;

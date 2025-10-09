@@ -1,0 +1,80 @@
+<?php namespace App\Component\AI\CardGame\Strategies;
+
+use Doctrine\Common\Collections\Collection;
+use App\Component\Type\PlayerPosition;
+use App\Component\Type\CardType;
+use App\Component\Rules\CardGame\Context\PlayerPlayCardContext;
+use App\Component\Rules\CardGame\PlayCardAction;
+
+class NoTrumpsOursContractStrategy implements IPlayStrategy
+{
+    public function PlayFirst( PlayerPlayCardContext $context, Collection $playedCards ): PlayCardAction
+    {
+        $card = CardHelpers::GetCardThatSurelyWinsATrickInNoTrumps(
+            $context->AvailableCardsToPlay,
+            $context->MyCards,
+            $playedCards,
+        );
+        if ( $card != null ) {
+            return new PlayCardAction( $card );
+        }
+        
+        $availableCardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
+        $cardToPlay = $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
+            return $a->NoTrumpOrder <=> $b->NoTrumpOrder;
+        })->first();
+        
+        return new PlayCardAction( $cardToPlay ); // .Lowest(x => x.NoTrumpOrder)
+    }
+    
+    public function PlaySecond( PlayerPlayCardContext $context, Collection $playedCards ): PlayCardAction
+    {
+        $availableCardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
+        $cardToPlay = $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
+            return $a->NoTrumpOrder <=> $b->NoTrumpOrder;
+        })->first();
+        
+        return new PlayCardAction( $cardToPlay ); // .Lowest(x => x.NoTrumpOrder)
+    }
+    
+    public function PlayThird( PlayerPlayCardContext $context, Collection $playedCards, PlayerPosition $trickWinner ): PlayCardAction
+    {
+        $availableCardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
+        $cardToPlay = $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
+            return $a->NoTrumpOrder <=> $b->NoTrumpOrder;
+        })->first();
+        
+        return new PlayCardAction( $cardToPlay ); // .Lowest(x => x.NoTrumpOrder)
+    }
+    
+    public function PlayFourth( PlayerPlayCardContext $context, Collection $playedCards, PlayerPosition $trickWinners ): PlayCardAction
+    {
+        $cardsToPlay = $context->AvailableCardsToPlay->filter(
+            function( $entry ) {
+                return $entry->Type != CardType::Ace && $entry->Type != CardType::Ten;
+            }
+        );
+        
+        if (
+            $trickWinners->IsInSameTeamWith( $context->MyPosition )
+            && $cardsToPlay->count()
+        ) {
+            $availableCardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
+            $cardsToPlay = $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
+                return $a->NoTrumpOrder <=> $b->NoTrumpOrder;
+            });
+            
+            return new PlayCardAction(
+                $cardsToPlay->filter(
+                    function( $entry ) {
+                        return $entry->Type != CardType::Ace && $entry->Type != CardType::Ten;
+                    }
+                )->last()
+            ); // .Highest(x => x.NoTrumpOrder)
+        }
+        
+        return new PlayCardAction(
+            $context->AvailableCardsToPlay->first() // .Lowest(x => x.NoTrumpOrder)
+        );
+    }
+}

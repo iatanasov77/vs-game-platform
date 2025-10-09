@@ -12,11 +12,6 @@ use App\Component\Rules\CardGame\GameMechanics\RoundManager;
  */
 class BridgeBeloteGame extends Game
 {
-    use PlayerPositionExtensions;
-    
-    /** @var RoundManager */
-    public $roundManager;
-    
     /** @var int */
     public $southNorthPoints;
     
@@ -28,12 +23,12 @@ class BridgeBeloteGame extends Game
     
     public function SetStartPosition(): void
     {
-        $this->playGame();
+        $this->PlayGame();
     }
     
     public function PlayGame( PlayerPosition $firstToPlay = PlayerPosition::South ): void
     {
-        $this->roundManager = new RoundManager( $this );
+        $this->roundManager = new RoundManager( $this, $this->logger );
         
         $this->southNorthPoints = 0;
         $this->eastWestPoints = 0;
@@ -60,5 +55,10 @@ class BridgeBeloteGame extends Game
             default:
                 throw new \RuntimeException( 'The Player Has No Position !' );
         }
+    }
+    
+    public function MakeBid( PlayerGetBidContext $context ): BidType
+    {
+        return BidType::Pass;
     }
 }

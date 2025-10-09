@@ -3,88 +3,96 @@
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
+use App\Component\GameLogger;
+use App\Component\Type\GameState;
+use App\Component\Type\PlayerPosition;
+use App\Component\Type\BidType;
+
 use App\Component\Rules\CardGame\Game;
 use App\Component\Rules\CardGame\Deck;
 use App\Component\Rules\CardGame\Bid;
 use App\Component\Rules\CardGame\PlayerPositionExtensions;
-use App\Component\Type\PlayerPosition;
 
 class RoundManager
 {
-    use PlayerPositionExtensions;
-    
+    /** @var Game */
     private Game $game;
     
+    /** @var GameLogger */
+    private  $logger;
+    
+    /** @var ContractManager */
     private ContractManager $contractManager;
     
+    /** @var TricksManager */
     private TricksManager $tricksManager;
     
+    /** @var ScoreManager */
     private ScoreManager $scoreManager;
     
-    private Deck $deck;
-    
-    private Collection $playerCards;
-    
-    public function __construct( Game $game )
+    public function __construct( Game $game, GameLogger $logger )
     {
         $this->game = $game;
-        $this->contractManager = new ContractManager( $this->game );
-//         $this->tricksManager = new TricksManager( southPlayer, eastPlayer, northPlayer, westPlayer );
-//         $this->scoreManager = new ScoreManager();
-        $this->deck = new Deck();
+        $this->logger = $logger;
         
-        $this->playerCards = new ArrayCollection();
+        $this->contractManager = new ContractManager( $this->game, $this->logger );
+//         $this->tricksManager = new TricksManager( $this->game, $this->logger );
+//         $this->scoreManager = new ScoreManager();
+
+        $this->game->Deck = new Deck();
+        $this->game->playerCards = new ArrayCollection();
         foreach ( $this->game->Players as $key => $player ) {
-            $this->playerCards->set( $key, new ArrayCollection() );
+            $this->game->playerCards->set( $key, new ArrayCollection() );
         }
     }
     
-    public function PlayRoundBiddingPhase(): Collection
+    public function PlayRound(): void
     {
-        // Initialize the cards
-        $this->deck->Shuffle();
-        $this->playerCards[PlayerPosition::South->value]->clear();
-        $this->playerCards[PlayerPosition::East->value]->clear();
-        $this->playerCards[PlayerPosition::North->value]->clear();
-        $this->playerCards[PlayerPosition::West->value]->clear();
+        if ( $this->game->PlayState == GameState::firstBid ) {
+            // Initialize the cards
+            $this->game->Deck->Shuffle();
+            $this->game->playerCards[PlayerPosition::South->value]->clear();
+            $this->game->playerCards[PlayerPosition::East->value]->clear();
+            $this->game->playerCards[PlayerPosition::North->value]->clear();
+            $this->game->playerCards[PlayerPosition::West->value]->clear();
+            
+            // Deal 5 cards to each player
+            $this->DealCards( 5 );
+            
+            $this->contractManager->StartNewRound();
+        }
         
-        $this->game->SetFirstBidWinner();
-        
-        // Deal 5 cards to each player
-        $this->DealCards( 5 );
-        
-        return $this->playerCards;
+        if ( $this->game->PlayState == GameState::bidding ) {
+            if ( ! $this->game->CurrentContract && $this->game->ConsecutivePasses == 4 ) {
+                $this->logger->log( 'Consecutive Passes Exceeded !!!', 'RoundManager' );
+                
+                $this->game->PlayState = GameState::ended;
+            }
+            
+            if ( $this->game->CurrentPlayer == $this->game->CurrentContract->Player && $this->game->ConsecutivePasses == 3 ) {
+                $this->logger->log( 'Consecutive Passes Exceeded !!!', 'RoundManager' );
+                $this->logger->log( 'CurrentContract: ' . \print_r( $this->game->CurrentContract, true ), 'RoundManager' );
+                
+                $this->game->PlayState = GameState::playing;
+                $this->DealCards( 3 );
+            }
+        }
     }
     
-    public function GetContract( Collection &$bids ): Bid
+    public function SetContract( Bid $bid ): void
     {
-        return $this->contractManager->GetContract(
-            $this->game->roundNumber,
-            $this->game->firstInRound,
-            $this->game->southNorthPoints,
-            $this->game->eastWestPoints,
-            $this->playerCards,
-            $bids
-        );
-    }
-    
-    public function PlayRoundPlayingPhase(): Collection
-    {
-        // Deal 3 more cards to each player
-        $this->DealCards( 3 );
-        
-        return $this->playerCards;
+        $this->contractManager->SetContract( $bid );
     }
     
     private function DealCards( int $count ): void
     {
-        $dealToPlayer   = $this->game->CurrentPlayer;
+        $dealToPlayer   = $this->game->firstInRound;
         for ( $i = 0; $i < $count; $i++ )
         {
             while( true ) {
-                $this->playerCards[$dealToPlayer->value][] = $this->deck->GetNextCard();
-                $dealToPlayer = self::Next( $dealToPlayer );
-                if( $dealToPlayer === $this->game->CurrentPlayer ) {
+                $this->game->playerCards[$dealToPlayer->value][] = $this->game->Deck->GetNextCard();
+                $dealToPlayer = PlayerPositionExtensions::Next( $dealToPlayer );
+                if( $dealToPlayer === $this->game->firstInRound ) {
                     break;
                 }
             }

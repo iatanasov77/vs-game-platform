@@ -5,10 +5,11 @@ import CardDto from '_@/GamePlatform/Model/CardGame/cardDto';
 import BidDto from '_@/GamePlatform/Model/CardGame/bidDto';
 
 interface BiddingStartedActionDto extends ActionDto {
+    deck: CardDto[];
     playerCards: Array<CardDto[]>;
-    playerToBid: PlayerPosition;
+    firstToBid: PlayerPosition;
     validBids: BidDto[];
-    bidTimer: number;
+    timer: number;
 }
 
 export default BiddingStartedActionDto;

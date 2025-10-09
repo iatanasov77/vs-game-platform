@@ -23,11 +23,7 @@ import {
     
     startCardGame,
     startCardGameFailure,
-    startCardGameSuccess,
-    
-    playerAnnounce,
-    playerAnnounceFailure,
-    playerAnnounceSuccess
+    startCardGameSuccess
 } from "./game.actions";
 
 import { GameService } from "../services/game.service";
@@ -35,7 +31,6 @@ import { GamePlayService } from "../services/game-play.service";
 import { EventSourceService } from "../services/event-source.service";
 
 import IGamePlay from '_@/GamePlatform/Model/GamePlayInterface';
-import ICardGameAnnounce from '_@/GamePlatform/CardGameAnnounce/CardGameAnnounceInterface';
 
 import IGame from '_@/GamePlatform/Model/GameInterface';
 import IPlayer from '_@/GamePlatform/Model/PlayerInterface';
@@ -129,18 +124,6 @@ export class GameEffects
                 this.gamePlayService.startCardGameOld( game ).pipe(
                     map( ( gamePlay: IGamePlay ) => startCardGameSuccess( { gamePlay } ) ),
                     catchError( error => [startCardGameFailure( { error } )] )
-                )
-            )
-        )
-    );
-    
-    playerAnnounce = createEffect( (): any =>
-        this.actions$.pipe(
-            ofType( playerAnnounce ),
-            switchMap( () =>
-                this.gamePlayService.playerAnnounce().pipe(
-                    map( ( announce: ICardGameAnnounce ) => playerAnnounceSuccess( { announce } ) ),
-                    catchError( error => [playerAnnounceFailure( { error } )] )
                 )
             )
         )

@@ -1,8 +1,11 @@
 <?php namespace App\Component\Rules\CardGame;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+
 class Deck
 {
-    /** @var array | Card[] */
+    /** @var Collection | Card[] */
     private $listOfCards;
     
     /** @var int */
@@ -11,12 +14,15 @@ class Deck
     public function __construct()
     {
         Card::instance();
-        $this->listOfCards = Card::$AllCards->toArray();
+        $this->listOfCards = Card::$AllCards;
     }
     
     public function Shuffle(): void
     {
-        shuffle( $this->listOfCards );
+        $entries = $this->listOfCards->toArray();
+        shuffle( $entries );
+        
+        $this->listOfCards = new ArrayCollection( $entries );
         $this->currentCardIndex = 0;
     }
     
@@ -25,7 +31,7 @@ class Deck
         return $this->listOfCards[$this->currentCardIndex++];
     }
     
-    public function Cards(): array
+    public function Cards(): Collection
     {
         return $this->listOfCards;
     }

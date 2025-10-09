@@ -53,6 +53,21 @@ enum BidType implements BidTypeInterface
         };
     }
     
+    public static function fromValue( int $value ): self
+    {
+        return match( true ) {
+            $value == 1 => BidType::Clubs,
+            $value == 2 => BidType::Diamonds,
+            $value == 3 => BidType::Hearts,
+            $value == 4 => BidType::Spades,
+            $value == 5 => BidType::NoTrumps,
+            $value == 6 => BidType::AllTrumps,
+            $value == 7 => BidType::Double,
+            $value == 8 => BidType::ReDouble,
+            default => BidType::Pass,
+        };
+    }
+    
     public static function fromBitMaskValue( int $value ): self
     {
         return match( true ) {

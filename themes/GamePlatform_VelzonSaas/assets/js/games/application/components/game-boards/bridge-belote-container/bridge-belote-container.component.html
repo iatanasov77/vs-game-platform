@@ -15,6 +15,7 @@
         [height]="height"
         [game]="gameDto$ | async"
         [playerCards]="playerCardsDto"
+        [playerBids]="playerBidsDto"
         [myPosition]="playerPosition$ | async"
         [themeName]="themeName"
         [timeLeft]="timeLeft$ | async"
@@ -29,9 +30,12 @@
             [newVisible]="newVisible"
             [exitVisible]="exitVisible"
             
+            [debugGameSoundsVisible]="debugGameSoundsVisible"
+            
             (onLogin)="login()"
             (onNew)="newGame()"
             (onExit)="exitGame()"
+            (onOpenDebugGameSoundsDialog)="openDebugGameSoundsDialog()"
             
             (onPlayWithComputer)="playAi()"
             
@@ -41,11 +45,14 @@
             (onCancelInvite)="cancelInvite()"
         ></app-board-buttons>
         
-        <bridge-belote-announce *ngIf="started == true"
-            [gameAnnounceIcon]="gameAnnounceIcon"
-            [announceVisible]="announceVisible"
+        <bridge-belote-contract *ngIf="started == true"
             [gameContractVisible]="gameContractVisible"
-        ></bridge-belote-announce>
+            [gameBiddingVisible] = "gameBiddingVisible"
+            [validBids] = "validBids"
+            [contract] = "contract"
+            [currentPlayer] = "currentPlayer"
+            (onPlayerMakeBid)="doBid( $event )"
+        ></bridge-belote-contract>
     </div>
     
 </div>

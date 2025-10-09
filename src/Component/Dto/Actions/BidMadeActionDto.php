@@ -1,8 +1,11 @@
 <?php namespace App\Component\Dto\Actions;
 
-use App\Component\Type\PlayerPosition;
-use App\Component\Type\BidType;
+use Symfony\Component\Serializer\Attribute\Context;
+use App\Component\Serializer\Normalizer\BidMadeActionDtoDenormalizer;
+use App\Component\Serializer\Normalizer\BidDtoDenormalizer;
+use App\Component\Dto\BidDto;
 
+#[Context([BidMadeActionDtoDenormalizer::class])]
 class BidMadeActionDto extends ActionDto
 {
     public function __construct()
@@ -10,7 +13,7 @@ class BidMadeActionDto extends ActionDto
         $this->actionName = ActionNames::bidMade->value;
     }
     
-    public PlayerPosition $Player;
-    
-    public BidType $Type;
+    /** @var BidDto $bid */
+    #[Context([BidDtoDenormalizer::class])]
+    public BidDto $bid;
 }

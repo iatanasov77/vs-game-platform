@@ -24,6 +24,7 @@ import DiceDto from '_@/GamePlatform/Model/BoardGame/diceDto';
 import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
 import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
 import CardDto from '_@/GamePlatform/Model/CardGame/cardDto';
+import BidDto from '_@/GamePlatform/Model/CardGame/bidDto';
 
 // State
 import { StateObject } from './state-object';
@@ -70,6 +71,7 @@ export class AppStateService
     chatUsers: StateObject<string[]>;
     
     playerCards: StateObject<Array<CardDto[]>>;
+    playerBids: StateObject<BidDto[]>;
   
     constructor()
     {
@@ -118,6 +120,8 @@ export class AppStateService
         
         this.playerCards = new StateObject<Array<CardDto[]>>();
         this.playerCards.setValue( [] );
+        this.playerBids = new StateObject<BidDto[]>();
+        this.playerBids.setValue( [] );
     }
 
     myTurn(): boolean

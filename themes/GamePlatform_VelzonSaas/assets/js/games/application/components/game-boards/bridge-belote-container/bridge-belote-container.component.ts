@@ -29,9 +29,6 @@ import {
 } from '../../../+store/game.actions';
 import { GameState as MyGameState } from '../../../+store/game.reducers';
 
-import IGame from '_@/GamePlatform/Model/GameInterface';
-import * as GameEvents from '_@/GamePlatform/Game/GameEvents';
-
 // App State
 import { AppStateService } from '../../../state/app-state.service';
 import { QueryParamsService } from '../../../state/query-params.service';
@@ -49,13 +46,16 @@ import { CookieService } from 'ngx-cookie-service';
 import { Keys } from '../../../utils/keys';
 
 // CardGame Interfaces
+import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
+import BidType from '_@/GamePlatform/Model/CardGame/bidType';
 import UserDto from '_@/GamePlatform/Model/Core/userDto';
 import GameState from '_@/GamePlatform/Model/Core/gameState';
 import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
-import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
 import CardDto from '_@/GamePlatform/Model/CardGame/cardDto';
+import BidDto from '_@/GamePlatform/Model/CardGame/bidDto';
 
 // Dialogs
+import { DebugGameSoundsComponent } from '../../game-dialogs/debug-game-sounds/debug-game-sounds.component';
 import { RequirementsDialogComponent } from '../../game-dialogs/requirements-dialog/requirements-dialog.component';
 import { SelectGameRoomDialogComponent } from '../../game-dialogs/select-game-room-dialog/select-game-room-dialog.component';
 import { CreateGameRoomDialogComponent } from '../../game-dialogs/create-game-room-dialog/create-game-room-dialog.component';
@@ -66,7 +66,13 @@ import { Helper } from '../../../utils/helper';
 
 import templateString from './bridge-belote-container.component.html'
 import styleString from './bridge-belote-container.component.scss'
+
 declare var $: any;
+declare global {
+    interface Window {
+        gamePlatformSettings: any;
+    }
+}
 
 @Component({
     selector: 'bridge-belote-container',
@@ -95,12 +101,13 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     
     gameSubs: Subscription;
     playerCardsSubs: Subscription;
+    playerBidsSubs: Subscription;
     oponnetDoneSubs: Subscription;
     
     themeName: string;
     
-    width: number = 600;
-    height: number = 400;
+    width: number = 710;
+    height: number = 510;
     started = false;
     messageCenter = 0;
     gameId = "";
@@ -112,9 +119,13 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     gameDto: CardGameDto | undefined;
     newVisible = false;
     exitVisible = true;
-    announceVisible = false;
+    gameBiddingVisible = false;
     gameContractVisible = false;
     playerCardsDto: Array<CardDto[]> | undefined;
+    playerBidsDto: BidDto[] | undefined = [];
+    validBids: BidDto[] = [];
+    currentPlayer: PlayerPosition | undefined;
+    contract: BidDto | undefined;
     
     appState?: MyGameState;
     gameStarted: boolean = false;
@@ -122,8 +133,9 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     isRoomSelected: boolean = false;
     hasRooms: boolean       = false;
     
-    gameAnnounceIcon: any;
     startedHandle: any;
+    
+    debugGameSoundsVisible = window.gamePlatformSettings.debugGameSounds;
     
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,
@@ -139,10 +151,9 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
         @Inject( Actions ) private actions$: Actions,
         @Inject( NgbModal ) private ngbModal: NgbModal,
     ) {
-        this.gameAnnounceIcon   = null;
-        
         this.gameDto$ = this.appStateService.cardGame.observe();
         this.playerCardsSubs = this.appStateService.playerCards.observe().subscribe( this.playerCardsChanged.bind( this ) );
+        this.playerBidsSubs = this.appStateService.playerBids.observe().subscribe( this.playerBidsChanged.bind( this ) );
         this.playerPosition$ = this.appStateService.myPosition.observe();
         
         this.gameSubs = this.appStateService.cardGame.observe().subscribe( this.gameChanged.bind( this ) );
@@ -168,7 +179,8 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
         
         // For some reason i could not use an observable for theme. Maybe i'll figure out why someday
         // service.connect might need to be in a setTimeout callback.
-        this.themeName = this.appStateService.user.getValue()?.theme ?? 'green';
+        // this.themeName = this.appStateService.user.getValue()?.theme ?? 'card-game';
+        this.themeName = 'card-game';
     }
     
     ngOnInit(): void
@@ -261,9 +273,19 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
         }
     }
     
+    openDebugGameSoundsDialog(): void
+    {
+        const modalRef = this.ngbModal.open( DebugGameSoundsComponent );
+        
+        modalRef.componentInstance.closeModal.subscribe( () => {
+            // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
+            modalRef.dismiss();
+        });
+    }
+    
     private waitForOpponent()
     {
-        //this.sound.playPianoIntro();
+        this.sound.playPianoIntro();
         this.startedHandle = setTimeout( () => {
             if ( ! this.started && ! this.lobbyButtonsVisible ) {
                 //alert( this.appStateService.user );
@@ -274,6 +296,12 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
                 }
             }
         }, 11000 );
+    }
+    
+    doBid( bid: BidDto ): void
+    {
+        this.wsService.doBid( bid );
+        this.wsService.sendBid( bid );
     }
     
     login(): void
@@ -383,7 +411,7 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     
     keepWaiting(): void
     {
-        //this.sound.playBlues();
+        this.sound.playBlues();
         this.playAiQuestion = false;
     }
     
@@ -403,34 +431,50 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     gameChanged( dto: CardGameDto ): void
     {
         if ( ! this.started && dto ) {
-            if ( dto.playState === GameState.bidding ) { // GameState.playing
+            if ( dto.playState === GameState.bidding ) {
                 this.started = true;
+                this.gameBiddingVisible = true;
+                
                 this.playAiQuestion = false;
-                this.announceVisible = true;
                 this.lobbyButtonsVisibleChanged.emit( false );
             }
         }
-        // console.log( dto?.id );
-        // console.log( 'Debug GameDto: ', dto );
-        // alert( this.lobbyButtonsVisible );
         
-        this.setAnnounceVisible();
+        if ( dto && dto.validBids && dto.validBids.length ) {
+            this.validBids = dto.validBids;
+        }
+        
+        if ( dto && dto.playState === GameState.playing ) {
+            this.contract = dto.contract;
+            this.playerBidsDto = [];
+            this.gameBiddingVisible = false;
+            this.gameContractVisible = true;
+        }
+        
+        // alert( 'Current Player: ' + dto?.currentPlayer + 'Play State: ' + dto?.playState );
+        this.currentPlayer = dto?.currentPlayer;
     }
     
     oponnentDone(): void
     {
-        this.announceVisible = false;
-    }
-    
-    setAnnounceVisible(): void
-    {
-        this.announceVisible = true;
+        
     }
     
     playerCardsChanged( dto: Array<CardDto[]> ): void
     {
         this.playerCardsDto = dto;
-        this.setAnnounceVisible();
+        this.fireResize();
+        
+        /*
+        const game = this.appStateService.boardGame.getValue();
+        this.exitVisible = game?.playState !== GameState.playing && game?.playState !== GameState.requestedDoubling;
+        */
+    }
+    
+    playerBidsChanged( dto: BidDto[] ): void
+    {
+        console.log( 'Player Bids Changed', dto );
+        this.playerBidsDto = dto;
         this.fireResize();
         
         /*

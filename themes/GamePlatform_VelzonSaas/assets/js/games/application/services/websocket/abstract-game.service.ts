@@ -194,9 +194,7 @@ export abstract class AbstractGameService
     resetGame(): void
     {
         this.cookieService.deleteAll( Keys.gameIdKey );
-        this.userMoves = [];
         this.gameHistory = [];
-        this.dicesHistory = [];
         this.connectTime = new Date();
     }
     

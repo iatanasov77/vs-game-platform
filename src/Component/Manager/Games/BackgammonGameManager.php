@@ -1,5 +1,10 @@
 <?php namespace App\Component\Manager\Games;
 
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Encoder\JsonEncode;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+
 use React\Async;
 use React\EventLoop\Loop;
 use React\EventLoop\TimerInterface;
@@ -22,13 +27,18 @@ use App\Component\Type\GameState;
 
 // DTO Actions
 use App\Component\Dto\Mapper;
+use App\Component\Dto\Actions\ActionNames;
+use App\Component\Dto\Actions\ActionDto;
+use App\Component\Dto\Actions\ConnectionInfoActionDto;
 use App\Component\Dto\Actions\GameRestoreActionDto;
 use App\Component\Dto\Actions\GameCreatedActionDto;
 use App\Component\Dto\Actions\DicesRolledActionDto;
 use App\Component\Dto\Actions\RolledActionDto;
 use App\Component\Dto\Actions\HintMovesActionDto;
 use App\Component\Dto\Actions\MovesMadeActionDto;
+use App\Component\Dto\Actions\UndoActionDto;
 use App\Component\Dto\Actions\OpponentMoveActionDto;
+use App\Component\Dto\Actions\DoublingActionDto;
 
 final class BackgammonGameManager extends BoardGameManager
 {
@@ -36,6 +46,7 @@ final class BackgammonGameManager extends BoardGameManager
     {
         $this->logger->log( "Connecting Game Manager ...", 'GameManager' );
         if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {
+            $this->logger->log( "Connecting Black Player ...", 'GameManager' );
             $this->Clients->set( PlayerColor::Black->value, $webSocket );
             
             $this->InitializePlayer( $dbUser, false, $this->Game->BlackPlayer );
@@ -67,6 +78,7 @@ final class BackgammonGameManager extends BoardGameManager
                 }
             }
         } else {
+            $this->logger->log( "Connecting White Player ...", 'GameManager' );
             if ( $playAi ) {
                 throw new \Exception( "Ai always plays as white. This is not expected" );
             }
@@ -118,7 +130,7 @@ final class BackgammonGameManager extends BoardGameManager
         $this->Game->ThinkStart = new \DateTime( 'now' );
         
         $gameDto = Mapper::BoardGameToDto( $this->Game );
-        $this->logger->log( 'Begin Start Game: ' . \print_r( $gameDto, true ), 'GameManager' );
+        // $this->logger->log( 'Begin Start Game: ' . \print_r( $gameDto, true ), 'GameManager' );
         
         $action = new GameCreatedActionDto();
         $action->game = $gameDto;
@@ -172,6 +184,110 @@ final class BackgammonGameManager extends BoardGameManager
                 });
             })();
         }
+    }
+    
+    public function DoAction(
+        ActionNames $actionName,
+        string $actionText,
+        WebsocketClientInterface $socket,
+        //?WebsocketClientInterface $otherSocket
+        array $otherSockets
+    ): void {
+        $this->logger->log( "Doing action: {$actionName->value}", 'GameManager' );
+        //$this->logger->debug( $this->Game->Points, 'BeforeDoAction.txt' );
+        
+        if ( $actionName == ActionNames::movesMade ) {
+            $this->Game->ThinkStart = new \DateTime( 'now' );
+            $action = $this->serializer->deserialize( $actionText, MovesMadeActionDto::class, JsonEncoder::FORMAT );
+            
+            if ( $socket == $this->Clients->get( PlayerColor::Black->value ) ) {
+                $this->Game->BlackPlayer->FirstMoveMade = true;
+            } else {
+                $this->Game->WhitePlayer->FirstMoveMade = true;
+            }
+            
+            $this->DoMoves( $action );
+            $promise = Async\async( function () use ( $action, $socket ) {
+                $this->NewTurn( $socket );
+            })();
+            Async\await( $promise );
+            
+        } else if ( $actionName == ActionNames::opponentMove ) {
+            $action = $this->serializer->deserialize( $actionText, OpponentMoveActionDto::class, JsonEncoder::FORMAT );
+            foreach ( $otherSockets as $otherSocket ) {
+                $this->Send( $otherSocket, $action );
+            }
+        } else if ( $actionName == ActionNames::undoMove ) {
+            $action = $this->serializer->deserialize( $actionText, UndoActionDto::class, JsonEncoder::FORMAT );
+            foreach ( $otherSockets as $otherSocket ) {
+                $this->Send( $otherSocket, $action );
+            }
+        } else if ( $actionName == ActionNames::rolled ) {
+            $action = $this->serializer->deserialize( $actionText, ActionDto::class, JsonEncoder::FORMAT );
+            foreach ( $otherSockets as $otherSocket ) {
+                $this->Send( $otherSocket, $action );
+            }
+        } else if ( $actionName == ActionNames::requestedDoubling ) {
+            if ( ! $this->Game->IsGoldGame ) {
+                throw new \RuntimeException( "requestedDoubling should not be possible in a non gold game" );
+            }
+            
+            $action = $this->serializer->deserialize( $actionText, DoublingActionDto::class, JsonEncoder::FORMAT );
+            $action->moveTimer = Game::ClientCountDown;
+            
+            $this->Game->ThinkStart = new \DateTime( 'now' );
+            $this->Game->SwitchPlayer();
+            if ( $this->AisTurn() ) {
+                if ( $this->Engine->AcceptDoubling() ) {
+                    $this->DoDoubling();
+                    $this->Game->SwitchPlayer();
+                    
+                    sleep( 2 );
+                    $doublingAction = new DoublingActionDto();
+                    $doublingAction->actionName = ActionNames::acceptedDoubling->value;
+                    $doublingAction->moveTimer = Game::ClientCountDown;
+                    
+                    $this->Send( $socket, $doublingAction );
+                } else {
+                    sleep( 2 );
+                    $this->Resign( $this->Game->OtherPlayer() );
+                }
+            } else {
+                foreach ( $otherSockets as $otherSocket ) {
+                    $this->Send( $otherSocket, $action );
+                }
+            }
+        } else if ( $actionName == ActionNames::acceptedDoubling ) {
+            if ( ! $this->Game->IsGoldGame ) {
+                throw new \RuntimeException( "acceptedDoubling should not be possible in a non gold game" );
+            }
+            
+            $action = $this->serializer->deserialize( $actionText, DoublingActionDto::class, JsonEncoder::FORMAT );
+            $action->moveTimer = Game::ClientCountDown;
+            $this->Game->ThinkStart = new \DateTime( 'now' );
+            $this->DoDoubling();
+            $this->Game->SwitchPlayer();
+            $this->Send( $otherSocket, $action );
+        } else if ( $actionName == ActionNames::requestHint ) {
+            if ( ! $this->Game->IsGoldGame && $this->Game->CurrentPlayer == PlayerColor::Black ) {
+                // Aina is always white
+                $action = $this->GetHintAction();
+                $this->Send( $socket, $action );
+            }
+        } else if ( $actionName == ActionNames::connectionInfo ) {
+            $action = $this->serializer->deserialize( $actionText, ConnectionInfoActionDto::class, JsonEncoder::FORMAT );
+            foreach ( $otherSockets as $otherSocket ) {
+                $this->Send( $otherSocket, $action );
+            }
+        } else if ( $actionName == ActionNames::resign ) {
+            $winner = $this->Clients->get( PlayerColor::Black->value ) == $otherSocket ? PlayerColor::Black : PlayerColor::White;
+            $this->Resign( $winner );
+        } else if ( $actionName == ActionNames::exitGame ) {
+            $this->logger->log( 'exitGame action recieved from GameManager.', 'GameManager' );
+            $this->CloseConnections( $socket );
+        }
+        
+        //$this->logger->debug( $this->Game->Points, 'AfterDoAction.txt' );
     }
     
     protected function CreateDbGame(): void
@@ -288,8 +404,8 @@ final class BackgammonGameManager extends BoardGameManager
             function( $entry ) use ( $firstMove ) {
                 //return $entry == $firstMove;
                 return
-                $entry->From->GetNumber( $firstMove->Color ) == $firstMove->From->GetNumber( $firstMove->Color ) &&
-                $entry->To->GetNumber( $firstMove->Color ) == $firstMove->To->GetNumber( $firstMove->Color )
+                    $entry->From->GetNumber( $firstMove->Color ) == $firstMove->From->GetNumber( $firstMove->Color ) &&
+                    $entry->To->GetNumber( $firstMove->Color ) == $firstMove->To->GetNumber( $firstMove->Color )
                 ;
             }
         )->first();
@@ -314,8 +430,8 @@ final class BackgammonGameManager extends BoardGameManager
                     function( $entry ) use ( $nextMove ) {
                         //return $entry == $nextMove;
                         return
-                        $entry->From->GetNumber( $nextMove->Color ) == $nextMove->From->GetNumber( $nextMove->Color ) &&
-                        $entry->To->GetNumber( $nextMove->Color ) == $nextMove->To->GetNumber( $nextMove->Color )
+                            $entry->From->GetNumber( $nextMove->Color ) == $nextMove->From->GetNumber( $nextMove->Color ) &&
+                            $entry->To->GetNumber( $nextMove->Color ) == $nextMove->To->GetNumber( $nextMove->Color )
                         ;
                     }
                 )->first();
@@ -353,7 +469,7 @@ final class BackgammonGameManager extends BoardGameManager
         return $plyr->IsAi();
     }
     
-    protected function EnginMoves( WebsocketClientInterface $client )
+    protected function EnginMoves( WebsocketClientInterface $client ): void
     {
         $promise = Async\async( function () use ( $client ) {
             $sleepMileseconds   = \rand( 700, 1200 );

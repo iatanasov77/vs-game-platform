@@ -1,8 +1,8 @@
 <?php namespace App\Component\Rules\CardGame\Context;
 
-use BitMask\EnumBitMask;
+use Doctrine\Common\Collections\Collection;
 
 class PlayerGetBidContext extends BasePlayerContext
 {
-    public EnumBitMask $AvailableBids;
+    public Collection $AvailableBids;
 }

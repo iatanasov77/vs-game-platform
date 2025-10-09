@@ -60,6 +60,10 @@ game_platform:
             settings_key_help: Used to load different Settings in Different Application Environements.
             game_settings: Game Settings
             timeout_between_players: Timeout between Players
+            game_debugging: Game Debugging
+            debug_game_sounds: Debug Game Sounds
+            debug_card_game_player_areas: Debug Card Game Player Areas
+            debug_card_game_player_cards: Debug Card Game Player Cards
         
         login:
             email: Имейл Адрес
@@ -80,6 +84,7 @@ game_platform:
             parent_game: Parent Game
             parent_game_placeholder: '-- Choose a Parent Game'
             parent_game_help: Choose a Parent Game if this Game is a Game Variant
+            not_implemented: Not Implemented
             
         game_room:
             game: Game

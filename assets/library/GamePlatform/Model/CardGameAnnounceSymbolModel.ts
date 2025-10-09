@@ -1,6 +1,8 @@
+import BidType from './CardGame/bidType';
+
 interface CardGameAnnounceSymbolModel
 {
-    id: string;
+    id: BidType;
     key: string;
     tooltip: string;
     value: string;

@@ -87,3 +87,18 @@ export class GreenTheme implements IThemes
     highLight = '#28DD2E';
     checkerBorder = '#787';
 }
+
+export class CardGameTheme implements IThemes
+{
+    name = 'card-game';
+    boardBackground = 'green';
+    homeBackground = '#454';
+    border = 'brown';
+    whiteTriangle = '#676';
+    blackTriangle = '#343';
+    whiteChecker = '#aaa';
+    blackChecker = '#000';
+    textColor = '#232';
+    highLight = '#28DD2E';
+    checkerBorder = '#787';
+}

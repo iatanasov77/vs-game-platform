@@ -37,6 +37,16 @@ class TricksManager
         $this->validAnnouncesService = new ValidAnnouncesService();
     }
     
+    public function GetValidCards( Collection $playerCards, Bid $currentContract, Collection $trickActions ): Collection
+    {
+        return $this->validCardsService->GetValidCards(
+            $playerCards,
+            $currentContract->Type,
+            $trickActions
+        );
+    }
+    
+    /*
     public function PlayTricks(
         int $roundNumber,
         PlayerPosition $firstToPlay,
@@ -50,10 +60,10 @@ class TricksManager
         Collection $eastWestTricks,
         PlayerPosition $lastTrickWinner
     ): void {
-        announces = new List<Announce>(12);
-        southNorthTricks = new CardCollection();
-        eastWestTricks = new CardCollection();
-        lastTrickWinner = firstToPlay;
+//         announces = new List<Announce>(12);
+//         southNorthTricks = new CardCollection();
+//         eastWestTricks = new CardCollection();
+        $lastTrickWinner = $firstToPlay;
         var actions = new List<PlayCardAction>(8 * 4);
         var trickActions = new List<PlayCardAction>(4);
         
@@ -68,6 +78,7 @@ class TricksManager
             CurrentTrickActions = trickActions,
             Announces = announces,
         };
+            
         var playContext = new PlayerPlayCardContext
         {
             RoundNumber = roundNumber,
@@ -134,6 +145,7 @@ class TricksManager
                     playerCards[currentPlayerIndex],
                     currentContract.Type,
                     trickActions);
+                
                 PlayCardAction action;
                 if (availableCards.Count == 1)
                 {
@@ -216,4 +228,5 @@ class TricksManager
             this.players[3].EndOfTrick(trickActions);
         }
     }
+    */
 }

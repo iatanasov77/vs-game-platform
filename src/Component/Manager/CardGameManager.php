@@ -1,5 +1,7 @@
 <?php namespace App\Component\Manager;
 
+use Doctrine\Common\Collections\ArrayCollection;
+
 use Ratchet\RFC6455\Messaging\Frame;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Rules\CardGame\Game;
@@ -97,12 +99,13 @@ abstract class CardGameManager extends AbstractGameManager
                     return Mapper::CardToDto( $entry, $player->PlayerPosition );
                 }
             )->toArray();
-            
-            // Debugging
-            if ( $player->PlayerPosition == PlayerPosition::South ) {
-                $this->Game->ValidCards = $this->Game->playerCards[$key];
-            }
         }
+        
+        $this->Game->ValidCards = $this->Game->GetValidCards(
+            $this->Game->playerCards[$this->Game->CurrentPlayer->value],
+            $this->Game->CurrentContract,
+            new ArrayCollection()
+        );
         
         $playingStartedAction->firstToPlay = $this->Game->CurrentPlayer;
         $playingStartedAction->contract = Mapper::BidToDto( $this->Game->CurrentContract );

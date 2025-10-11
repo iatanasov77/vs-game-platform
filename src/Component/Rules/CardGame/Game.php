@@ -12,6 +12,8 @@ use App\Component\Type\BidType;
 use App\Component\Rules\CardGame\Context\PlayerGetBidContext;
 use App\Component\Rules\CardGame\Context\PlayerGetAnnouncesContext;
 use App\Component\Rules\CardGame\Context\PlayerPlayCardContext;
+
+use App\Component\Rules\CardGame\GameMechanics\RoundManager;
 use App\Component\Rules\CardGame\GameMechanics\RoundResult;
 
 use App\Component\Dto\Actions\PlayCardActionDto;
@@ -88,6 +90,9 @@ abstract class Game implements GameInterface
     /** @var int */
     public $roundNumber;
     
+    /** @var int */
+    public $trickNumber;
+    
     /** @var GameLogger */
     protected  $logger;
     
@@ -99,9 +104,21 @@ abstract class Game implements GameInterface
         $this->logger   = $logger;
     }
     
-    abstract public function SetStartPosition(): void;
-    
     abstract public function NextPlayer(): PlayerPosition;
+    
+    public function SetStartPosition(): void
+    {
+        $this->PlayGame();
+    }
+    
+    public function PlayGame( PlayerPosition $firstToPlay = PlayerPosition::South ): void
+    {
+        $this->roundManager = new RoundManager( $this, $this->logger );
+        
+        $this->firstInRound = $firstToPlay;
+        $this->roundNumber = 1;
+        $this->trickNumber = 1;
+    }
     
     public function SwitchPlayer(): void
     {
@@ -167,6 +184,11 @@ abstract class Game implements GameInterface
     public function SetContract( Bid $bid ): void
     {
         $this->roundManager->SetContract( $bid );
+    }
+    
+    public function GetValidCards( Collection $playerCards, Bid $currentContract, Collection $trickActions ): Collection
+    {
+        return $this->roundManager->GetValidCards( $playerCards, $currentContract, $trickActions );
     }
     
     public function GetBid( PlayerGetBidContext $context ): BidType

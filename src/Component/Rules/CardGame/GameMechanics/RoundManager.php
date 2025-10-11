@@ -36,7 +36,7 @@ class RoundManager
         $this->logger = $logger;
         
         $this->contractManager = new ContractManager( $this->game, $this->logger );
-//         $this->tricksManager = new TricksManager( $this->game, $this->logger );
+        $this->tricksManager = new TricksManager( $this->game, $this->logger );
 //         $this->scoreManager = new ScoreManager();
 
         $this->game->Deck = new Deck();
@@ -82,6 +82,11 @@ class RoundManager
     public function SetContract( Bid $bid ): void
     {
         $this->contractManager->SetContract( $bid );
+    }
+    
+    public function GetValidCards( Collection $playerCards, Bid $currentContract, Collection $trickActions ): Collection
+    {
+        return $this->tricksManager->GetValidCards( $playerCards, $currentContract, $trickActions );
     }
     
     private function DealCards( int $count ): void

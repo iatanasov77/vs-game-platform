@@ -5,7 +5,6 @@ use Doctrine\Common\Collections\Collection;
 
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\BidType;
-use App\Component\Rules\CardGame\GameMechanics\RoundManager;
 
 /**
  * BelotGameEngine in C#: https://github.com/NikolayIT/BelotGameEngine
@@ -21,19 +20,12 @@ class BridgeBeloteGame extends Game
     /** @var int */
     public $hangingPoints;
     
-    public function SetStartPosition(): void
-    {
-        $this->PlayGame();
-    }
-    
     public function PlayGame( PlayerPosition $firstToPlay = PlayerPosition::South ): void
     {
-        $this->roundManager = new RoundManager( $this, $this->logger );
+        parent::PlayGame( $firstToPlay );
         
         $this->southNorthPoints = 0;
         $this->eastWestPoints = 0;
-        $this->firstInRound = $firstToPlay;
-        $this->roundNumber = 1;
         $this->hangingPoints = 0;
     }
     
@@ -55,10 +47,5 @@ class BridgeBeloteGame extends Game
             default:
                 throw new \RuntimeException( 'The Player Has No Position !' );
         }
-    }
-    
-    public function MakeBid( PlayerGetBidContext $context ): BidType
-    {
-        return BidType::Pass;
     }
 }

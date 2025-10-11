@@ -1,17 +1,19 @@
 <?php namespace App\Component\Rules\CardGame\GameMechanics;
 
 use Doctrine\Common\Collections\Collection;
+use BitMask\EnumBitMask;
 
 use App\Component\Type\BidType;
 use App\Component\Type\CardSuit;
 use App\Component\Rules\CardGame\Helper;
+use App\Component\Rules\CardGame\BidTypeExtensions;
 use App\Component\Manager\AbstractGameManager;
 
 class ValidCardsService
 {
     use Helper;
     
-    public function GetValidCards( Collection $playerCards, BidType $contract, Collection $currentTrickActions ): Collection
+    public function GetValidCards( Collection $playerCards, EnumBitMask $contract, Collection $currentTrickActions ): Collection
     {
         if ( $currentTrickActions->count() == 0 || $playerCards->count() == 1 ) {
             // The player is first and can play any card or has only 1 card available
@@ -21,17 +23,17 @@ class ValidCardsService
         $firstCardSuit = $currentTrickActions[0]->Card->Suit;
         
         // Playing AllTrumps
-        if ( $contract->HasFlag( BidType::AllTrumps ) ) {
+        if ( $contract->has( BidType::AllTrumps ) ) {
             return $this->GetValidCardsForAllTrumps( $playerCards, $currentTrickActions, $firstCardSuit );
         }
         
         // Playing NoTrumps
-        if ( $contract->HasFlag( BidType::NoTrumps ) ) {
+        if ( $contract->has( BidType::NoTrumps ) ) {
             return $this->GetValidCardsForNoTrumps( $playerCards, $firstCardSuit );
         }
         
         // Playing Clubs, Diamonds, Hearts or Spades
-        $trumpSuit = $contract->ToCardSuit();
+        $trumpSuit = BidTypeExtensions::ToCardSuit( $contract );
         if ( $firstCardSuit == $trumpSuit ) {
             // Trump card played first
             return $this->GetValidCardsForAllTrumps( $playerCards, $currentTrickActions, $firstCardSuit );
@@ -82,9 +84,13 @@ class ValidCardsService
     // For no trumps the player should play card from the same suit if available, else any card is allowed.
     private function GetValidCardsForNoTrumps( Collection $playerCards, CardSuit $firstCardSuit ): Collection
     {
-        return $playerCards.HasAnyOfSuit( $firstCardSuit )
-                ? new CardCollection(playerCards, x => x.Suit == firstCardSuit)
-                : playerCards;
+        $cardsOfSuit = $playerCards->filter(
+            function( $entry ) use ( $firstCardSuit ) {
+                return $entry->Suit == $firstCardSuit;
+            }
+        );
+        
+        return $cardsOfSuit->count() ? $cardsOfSuit : $playerCards;
     }
     
     private function GetValidCardsForTrumpWhenNonTrumpIsPlayedFirst(
@@ -93,17 +99,24 @@ class ValidCardsService
         Collection $currentTrickActions,
         CardSuit $firstCardSuit
     ): Collection {
-    
-        if ( $playerCards.HasAnyOfSuit( $firstCardSuit ) ) {
+        $cardsOfSuit = $playerCards->filter(
+            function( $entry ) use ( $firstCardSuit ) {
+                return $entry->Suit == $firstCardSuit;
+            }
+        );
+        
+        if ( $cardsOfSuit->count() ) {
             // If the player has the same card suit, he should play a card from the suit
-            return $playerCards->filter(
-                function( $entry ) use ( $firstCardSuit ) {
-                    return $entry->Suit == $firstCardSuit;
-                }
-            );
+            return $cardsOfSuit;
         }
         
-        if ( ! $playerCards.HasAnyOfSuit( $trumpSuit ) ) {
+        $cardsOfTrumpSuit = $playerCards->filter(
+            function( $entry ) use ( $trumpSuit ) {
+                return $entry->Suit == $trumpSuit;
+            }
+        );
+        
+        if ( ! $cardsOfTrumpSuit->count() ) {
             // The player doesn't have any trump card or card from the played suit
             return $playerCards;
         }

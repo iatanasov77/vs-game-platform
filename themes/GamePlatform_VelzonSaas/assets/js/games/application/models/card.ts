@@ -53,37 +53,4 @@ export class Card
         
         cx.restore();
     }
-    
-    static drawInPile(
-        cx: CanvasRenderingContext2D | null,
-        card: CardDto,
-        point: Point,
-        width: number,
-        height: number,
-        angle: number,
-        theme: IThemes
-    ): void {
-        if ( ! cx ) {
-            return;
-        }
-        
-        const { x, y } = point;
-        const image = new Image( width, height );
-        
-        image.src = `/build/gameplatform-velzonsaas-theme/images/CardGame/Cards/BridgeBelote/${card.cardIndex}.png`;
-        
-        cx.save();
-        cx.translate( x, y );
-        cx.rotate( angle );
-        
-        cx.drawImage(
-            image,
-            0,
-            0,
-            width,
-            height
-        );
-        
-        cx.restore();
-    }
 }

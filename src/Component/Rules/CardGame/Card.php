@@ -47,7 +47,7 @@ class Card
     
     public static function GetCard( CardSuit $suit, CardType $type ): Card
     {
-        return self::$AllCards->get( ($suit->value * 8) + $type->value );
+        return self::$AllCards->get( ( $suit->value * 8 ) + $type->value );
     }
     
     public static function Equals( Card $left, Card $right ): bool

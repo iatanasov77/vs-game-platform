@@ -186,7 +186,7 @@ final class Mapper
         $gameDto->isGoldGame        = $game->IsGoldGame;
         
         $gameDto->deck = $game->Deck->Cards()->toArray();
-        $gameDto->pile = $game->Pile;
+        $gameDto->pile = $game->Pile->toArray();
         $gameDto->teamsTricks = $game->teamsTricks;
         
         return $gameDto;

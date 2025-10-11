@@ -49,11 +49,11 @@ abstract class CardGameManager extends AbstractGameManager
             
             $biddingStartedAction = new BiddingStartedActionDto();
             
-            $biddingStartedAction->deck = $this->Game->Deck->Cards()->map(
+            $biddingStartedAction->deck = \array_values( $this->Game->Deck->Cards()->map(
                 function( $entry ) {
                     return Mapper::CardToDto( $entry );
                 }
-            )->toArray();
+            )->toArray() );
             
             foreach ( $this->Game->Players as $key => $player ) {
                 $biddingStartedAction->playerCards[$key] = $this->Game->playerCards[$key]->map(
@@ -85,11 +85,11 @@ abstract class CardGameManager extends AbstractGameManager
     {
         $playingStartedAction = new PlayingStartedActionDto();
         
-        $playingStartedAction->deck = $this->Game->Deck->Cards()->map(
+        $playingStartedAction->deck = \array_values( $this->Game->Deck->Cards()->map(
             function( $entry ) {
                 return Mapper::CardToDto( $entry );
             }
-        )->toArray();
+        )->toArray() );
         
         foreach ( $this->Game->Players as $key => $player ) {
             $playingStartedAction->playerCards[$key] = $this->Game->playerCards[$key]->map(

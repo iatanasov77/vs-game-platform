@@ -30,7 +30,7 @@ abstract class Game implements GameInterface
     /** @var Deck */
     public $Deck;
     
-    /** @var array */
+    /** @var Collection | Card[] */
     public $Pile;
     
     /**

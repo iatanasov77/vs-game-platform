@@ -222,7 +222,7 @@ final class GameFactory
         $game->IsGoldGame = $forGold;
         
         $game->Deck = new Deck();
-        $game->Pile = [];
+        $game->Pile = new ArrayCollection();
         $game->teamsTricks = [[], []];
         
         $game->AvailableBids = new ArrayCollection();

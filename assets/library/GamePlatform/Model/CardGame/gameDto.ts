@@ -23,7 +23,7 @@ interface CardGameDto extends GameDto {
     Bids: any;
     
     deck: CardDto[];
-    pile: any;
+    pile: CardDto[];
     teamsTricks: any;
 }
 

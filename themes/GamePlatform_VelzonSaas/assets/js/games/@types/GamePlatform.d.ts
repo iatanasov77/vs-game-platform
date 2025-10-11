@@ -274,7 +274,7 @@ declare module '_@/GamePlatform/Model/CardGame/gameDto' {
         Bids: any;
         
         deck: CardDto[];
-        pile: any;
+        pile: CardDto[];
         teamsTricks: any;
     }
     

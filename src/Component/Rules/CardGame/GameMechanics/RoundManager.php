@@ -90,7 +90,10 @@ class RoundManager
         for ( $i = 0; $i < $count; $i++ )
         {
             while( true ) {
-                $this->game->playerCards[$dealToPlayer->value][] = $this->game->Deck->GetNextCard();
+                $card = $this->game->Deck->GetNextCard();
+                $this->game->Deck->RemoveCard( $card );
+                
+                $this->game->playerCards[$dealToPlayer->value][] = $card;
                 $dealToPlayer = PlayerPositionExtensions::Next( $dealToPlayer );
                 if( $dealToPlayer === $this->game->firstInRound ) {
                     break;

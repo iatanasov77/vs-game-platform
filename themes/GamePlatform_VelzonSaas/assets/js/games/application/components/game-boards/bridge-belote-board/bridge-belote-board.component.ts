@@ -30,7 +30,7 @@ import BidDto from '_@/GamePlatform/Model/CardGame/bidDto';
 import BidType from '_@/GamePlatform/Model/CardGame/bidType';
 
 import { CardGamePlayerArea } from '../../../models/card-game-player-area';
-import { Card, CardArea, CardDrag, Point, MoveAnimation } from '../../../models/';
+import { Card, CardArea, CardDrag, Point, MoveAnimation, Pile } from '../../../models/';
 import {
     BlueTheme,
     DarkTheme,
@@ -74,8 +74,9 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
     
     borderWidth = 0;
     cx: CanvasRenderingContext2D | null = null;
-    dragging: CardDrag | null = null;
+    dragging: CardDrag | null = null; // May be will be used if I Create Solitaires ( Пасианси )
     cursor: Point = new Point( 0, 0 );
+    cxCursor: string = 'default';
     framerate = 60;
     animatedMove: MoveAnimation | undefined = undefined;
 //     animationSubscription: Subscription;
@@ -208,7 +209,7 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
     
     onMouseDown( event: MouseEvent ): void
     {
-        console.log( 'mouse down', event );
+        // console.log( 'mouse down', event );
         if ( this.hasTouch ) {
             return;
         }
@@ -219,7 +220,7 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
     
     onMouseUp( event: MouseEvent ): void
     {
-        console.log( 'mouse up', event );
+        // console.log( 'mouse up', event );
         if ( this.hasTouch ) {
             return;
             // on mobile there is a mouse up event if the mouse hasn't been moved.
@@ -260,6 +261,11 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
             return;
         }
         
+        if ( this.dragging ) {
+            this.requestDraw();
+            return;
+        }
+        
         this.setCanBePlayed( clientX, clientY );
     }
     
@@ -275,6 +281,7 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
             rect.canBePlayed = false;
         });
         
+        this.cxCursor = 'default';
         for ( let i = 0; i < this.cardAreas.length; i++ ) {
             const rect = this.cardAreas[i];
             if ( ! rect.contains( clientX, clientY ) ) {
@@ -292,6 +299,8 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
                     
                     if ( area ) {
                         area.canBePlayed = true;
+                        this.cxCursor = 'pointer';
+                        //alert( area.canBePlayed );
                     }
                 });
             }
@@ -317,6 +326,7 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
                 continue;
             }
             let ptIdx = rect.cardIdx;
+            // alert( ptIdx );
             
             // The moves are ordered  by backend by dice value.
             const card = this.game.validCards.find( ( c: CardDto ) => c.cardIndex === ptIdx );
@@ -328,7 +338,7 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
                     ptIdx,
                     card.position
                 );
-                console.log( 'dragging', this.dragging );
+                // console.log( 'dragging', this.dragging );
                 break;
             }
         }
@@ -374,6 +384,8 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
                 */
             }
             if ( card ) {
+                //alert( card.cardIndex );
+                
                 // this.addMove.emit( { ...move, animate: isClick } );
                 break;
             }
@@ -428,6 +440,9 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
             this.drawDeck( cx );
             this.drawPlayers( cx );
             this.drawPlayerBids( cx );
+            this.drawPile( cx );
+            
+            canvasEl.style.cursor = this.cxCursor;
         }
         
         if ( this.animatedMove ) {
@@ -561,9 +576,10 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
     
     drawCards( playerCards: CardDto[], playerPosition: number ): void
     {
-        var card, pa, cardX, cardY, angle, xOffset = 0, yOffset = 0;
+        var highLight, card, pa, cardX, cardY, angle, xOffset = 0, yOffset = 0;
         var cardsWidth = this.cardWidth + ( ( playerCards.length - 1 ) * this.cardOffset );
         for ( let c = 0; c < playerCards.length; c++ ) {
+            highLight = false;
             pa = this.playerAreas.find( ( x ) => x.playerPosition === playerPosition );
             if ( ! pa ) {
                 continue;
@@ -580,6 +596,11 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
             } else {
                 if ( pa.playerPosition === PlayerPosition.south ) {
                     yOffset = pa.height - this.cardHeight;
+                    
+                    const area = this.cardAreas.find( ( r ) => r.cardIdx === playerCards[c].cardIndex );
+                    if ( area ) {
+                        highLight = area.hasValidCard;
+                    }
                 }
                 
                 cardX = pa.x + pa.width / 2 - ( cardsWidth / 2 ) + ( c * this.cardOffset );
@@ -596,9 +617,50 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
                 angle,
                 this.theme,
                 playerPosition,
+                highLight,
                 window.gamePlatformSettings.debugCardGamePlayerCards
             );
         }
+    }
+    
+    drawPile( cx: CanvasRenderingContext2D ): void
+    {
+        if ( ! this.game ) {
+            return;
+        }
+        
+        // If There are any cards in deck don't draw the pile
+        if ( this.game.deck.length ) {
+            return;
+        }
+        
+        if ( ! this.game.pile.length ) {
+            // return;
+        }
+        
+        /**
+         * Debugging
+         */
+        if ( ! this.playerCards ) {
+            return;
+        }
+        
+        var pile = [
+            this.playerCards[PlayerPosition.south][0],
+            this.playerCards[PlayerPosition.east][0],
+            this.playerCards[PlayerPosition.north][0],
+            this.playerCards[PlayerPosition.west][0]
+        ];
+        
+        Pile.drawAsPile(
+            this.cx,
+            pile,
+            this.width,
+            this.height,
+            this.cardWidth,
+            this.cardHeight,
+            this.theme
+        );
     }
     
     initPlayerAreas(): void
@@ -695,8 +757,9 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
         const cardY = pa.y + yOffset;
         for ( let c = 0; c < playerCards.length; c++ ) {
             let cardX = pa.x + pa.width / 2 - ( cardsWidth / 2 ) + ( c * this.cardOffset );
+            let areaWidth = c == ( playerCards.length - 1 ) ? this.cardWidth : this.cardOffset;
             
-            this.cardAreas[c].set( cardX, cardY, this.cardWidth, this.cardHeight, playerCards[c] .cardIndex );
+            this.cardAreas[c].set( cardX, cardY, areaWidth, this.cardHeight, playerCards[c] .cardIndex );
         }
     }
     
@@ -796,7 +859,7 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
     
     onTouchStart( event: TouchEvent ): void
     {
-        console.log( 'touch start', event );
+        //console.log( 'touch start', event );
         this.hasTouch = true;
         if ( event.touches.length !== 1 ) {
             return;
@@ -819,7 +882,7 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onTouchEnd( event: TouchEvent ): void
     {
-        console.log( 'touch end', event );
+        //console.log( 'touch end', event );
         
         if ( this.cursor != undefined ) {
             this.handleUp( this.cursor.x, this.cursor.y );
@@ -829,7 +892,7 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
     
     onTouchMove( event: TouchEvent ): void
     {
-        console.log( 'touch move', event );
+        //console.log( 'touch move', event );
         if ( event.touches.length !== 1 ) {
             return;
         }

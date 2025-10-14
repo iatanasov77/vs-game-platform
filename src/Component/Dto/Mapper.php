@@ -178,16 +178,16 @@ final class Mapper
         $gameDto->currentPlayer = $game->CurrentPlayer;
         $gameDto->playState = $game->PlayState;
         
+        $gameDto->FirstToPlayInTheRound = $game->firstInRound;
+        $gameDto->RoundNumber = $game->roundNumber;
+        $gameDto->TrickNumber = $game->trickNumber;
+        
         $gameDto->thinkTime = CardGame::ClientCountDown - (
             ( new \DateTime( 'now' ) )->getTimestamp() - $game->ThinkStart->getTimestamp()
         );
         
         $gameDto->goldMultiplier    = $game->GoldMultiplier;
         $gameDto->isGoldGame        = $game->IsGoldGame;
-        
-        $gameDto->deck = $game->Deck->Cards()->toArray();
-        $gameDto->pile = $game->Pile->toArray();
-        $gameDto->teamsTricks = $game->teamsTricks;
         
         return $gameDto;
     }

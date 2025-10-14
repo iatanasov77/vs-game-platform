@@ -10,7 +10,8 @@ import {
     ElementRef,
     Input,
     OnChanges,
-    SimpleChanges
+    SimpleChanges,
+    Output
 } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
@@ -67,10 +68,15 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
     @Input() game: CardGameDto | null = null;
     @Input() playerCards: Array<CardDto[]> | null = [];
     @Input() playerBids: BidDto[] = [];
+    @Input() deck: CardDto[] = [];
+    @Input() pile: CardDto[] = [];
     @Input() myPosition: PlayerPosition | null = PlayerPosition.south;
     @Input() themeName: string | null = 'card-game';
     @Input() timeLeft: number | null = 0;
     @Input() lobbyButtonsVisible: boolean = false;
+    
+    @Output() playCard = new EventEmitter<CardDto>();
+    @Output() playCardAnimFinished = new EventEmitter<void>();
     
     borderWidth = 0;
     cx: CanvasRenderingContext2D | null = null;
@@ -377,20 +383,17 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
             if ( isClick ) {
                 card = this.game.validCards.find( ( c: CardDto ) => c.cardIndex === ptIdx );
             } else {
-                /*
-                card = this.game.validCards.find(
-                  ( c: CardDto ) => m.to === ptIdx && cardIdx === m.from
-                );
-                */
+                // Here is the same as above, but if i made dragging of later here will be different
+                card = this.game.validCards.find( ( c: CardDto ) => c.cardIndex === ptIdx );
             }
+            
             if ( card ) {
-                //alert( card.cardIndex );
-                
-                // this.addMove.emit( { ...move, animate: isClick } );
+                this.playCard.emit( { ...card, animate: isClick } );
                 break;
             }
         }
         this.requestDraw();
+        
         // console.log( 'dragging null' );
         this.dragging = null;
     }
@@ -497,7 +500,7 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
             return;
         }
         
-        if ( ! this.game.deck.length ) {
+        if ( ! this.deck.length ) {
             return;
         }
         
@@ -630,31 +633,21 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
         }
         
         // If There are any cards in deck don't draw the pile
-        if ( this.game.deck.length ) {
+        if ( this.deck.length ) {
             return;
         }
         
-        if ( ! this.game.pile.length ) {
-            // return;
+        if ( false ) {
+            return this.debugDrawPile();
         }
         
-        /**
-         * Debugging
-         */
-        if ( ! this.playerCards ) {
+        if ( ! this.pile.length ) { // this.game.pile.length
             return;
         }
-        
-        var pile = [
-            this.playerCards[PlayerPosition.south][0],
-            this.playerCards[PlayerPosition.east][0],
-            this.playerCards[PlayerPosition.north][0],
-            this.playerCards[PlayerPosition.west][0]
-        ];
         
         Pile.drawAsPile(
             this.cx,
-            pile,
+            this.pile,
             this.width,
             this.height,
             this.cardWidth,
@@ -903,5 +896,29 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
         const w = this.cardWidth;
         
         this.handleMove( x - w / 2, y - w / 2 );
+    }
+    
+    debugDrawPile(): void
+    {
+        if ( ! this.playerCards ) {
+            return;
+        }
+        
+        var pile = [
+            this.playerCards[PlayerPosition.south][0],
+            this.playerCards[PlayerPosition.east][0],
+            this.playerCards[PlayerPosition.north][0],
+            this.playerCards[PlayerPosition.west][0]
+        ];
+        
+        Pile.drawAsPile(
+            this.cx,
+            pile,
+            this.width,
+            this.height,
+            this.cardWidth,
+            this.cardHeight,
+            this.theme
+        );
     }
 }

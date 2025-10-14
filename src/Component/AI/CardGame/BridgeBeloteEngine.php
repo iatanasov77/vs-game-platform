@@ -140,16 +140,16 @@ class BridgeBeloteEngine extends Engine
         }
         
         if ( $context->CurrentContract->Type->has( BidType::AllTrumps ) ) {
-            $strategy = $context->CurrentContract->Player->IsInSameTeamWith( $context->MyPosition )
+            $strategy = PlayerPositionExtensions::IsInSameTeamWith( $context->CurrentContract->Player, $context->MyPosition )
                             ? $this->allTrumpsOursContractStrategy
                             : $this->allTrumpsTheirsContractStrategy;
         } else if ( $context->CurrentContract->Type->has( BidType::NoTrumps ) ) {
-            $strategy = $context->CurrentContract->Player->IsInSameTeamWith( $context->MyPosition )
+            $strategy = PlayerPositionExtensions::IsInSameTeamWith( $context->CurrentContract->Player, $context->MyPosition )
                             ? $this->noTrumpsOursContractStrategy
                             : $this->noTrumpsTheirsContractStrategy;
         } else {
             // Trump contract
-            $strategy = $context->CurrentContract->Player->IsInSameTeamWith( $context->MyPosition )
+            $strategy = PlayerPositionExtensions::IsInSameTeamWith( $context->CurrentContract->Player, $context->MyPosition )
                             ? $this->trumpOursContractStrategy
                             : $this->trumpTheirsContractStrategy;
         }

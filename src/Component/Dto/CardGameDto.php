@@ -17,16 +17,13 @@ class CardGameDto extends GameDto
     public ?PlayerPosition $currentPlayer;
     public CardGameTeam $winner = CardGameTeam::Neither;
     
-    public int $RoundNumber;
     public PlayerPosition $FirstToPlayInTheRound;
+    public int $RoundNumber;
+    public int $TrickNumber;
     
     public int $SouthNorthPoints;
     public int $EastWestPoints;
     
     public Collection $MyCards;
     public array $Bids;
-    
-    public array $deck;
-    public array $pile;
-    public array $teamsTricks;
 }

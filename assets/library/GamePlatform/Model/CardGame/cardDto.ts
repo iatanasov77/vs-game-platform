@@ -9,6 +9,7 @@ interface CardDto
     
     position: PlayerPosition;
     cardIndex: string;
+    animate: boolean;
 }
 
 export default CardDto;

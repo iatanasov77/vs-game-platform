@@ -1,10 +1,12 @@
 <?php namespace App\Component\Manager;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 use Ratchet\RFC6455\Messaging\Frame;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Rules\CardGame\Game;
+use App\Component\Rules\CardGame\PlayCardAction;
 
 // Types
 use App\Component\Type\CardGameTeam;
@@ -17,9 +19,13 @@ use App\Component\Dto\Actions\GameCreatedActionDto;
 use App\Component\Dto\Actions\BiddingStartedActionDto;
 use App\Component\Dto\Actions\BidMadeActionDto;
 use App\Component\Dto\Actions\PlayingStartedActionDto;
+use App\Component\Dto\Actions\PlayCardActionDto;
 
 abstract class CardGameManager extends AbstractGameManager
 {
+    /** @var Collection | PlayCardAction[] */
+    protected $TrickActions;
+    
     public function StartGame(): void
     {
         $this->Game->ThinkStart = new \DateTime( 'now' );
@@ -83,8 +89,12 @@ abstract class CardGameManager extends AbstractGameManager
     
     abstract protected function DoBid( BidMadeActionDto $action ): void;
     
+    abstract protected function PlayCard( PlayCardActionDto $action ): void;
+    
     protected function StartGamePlay(): void
     {
+        $this->TrickActions = new ArrayCollection();
+        
         $playingStartedAction = new PlayingStartedActionDto();
         
         $playingStartedAction->deck = \array_values( $this->Game->Deck->Cards()->map(
@@ -120,6 +130,8 @@ abstract class CardGameManager extends AbstractGameManager
         $this->Send( $this->Clients->get( PlayerPosition::East->value ), $playingStartedAction );
         $this->Send( $this->Clients->get( PlayerPosition::North->value ), $playingStartedAction );
         $this->Send( $this->Clients->get( PlayerPosition::West->value ), $playingStartedAction );
+        
+        $this->Game->PlayState = GameState::playing;
     }
     
     protected function SaveWinner( CardGameTeam $team ): ?array

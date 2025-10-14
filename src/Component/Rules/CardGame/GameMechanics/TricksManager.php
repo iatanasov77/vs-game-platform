@@ -1,5 +1,6 @@
 <?php namespace App\Component\Rules\CardGame\GameMechanics;
 
+use BitMask\EnumBitMask;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
@@ -7,7 +8,9 @@ use App\Component\GameLogger;
 use App\Component\Rules\CardGame\Game;
 
 use App\Component\Type\PlayerPosition;
+use App\Component\Type\BidType;
 use App\Component\Rules\CardGame\Player;
+use App\Component\Rules\CardGame\Card;
 use App\Component\Rules\CardGame\Bid;
 
 class TricksManager
@@ -44,6 +47,16 @@ class TricksManager
             $currentContract->Type,
             $trickActions
         );
+    }
+    
+    public function GetAvailableAnnounces( Collection $playerCards ): Collection
+    {
+        return $this->validAnnouncesService->GetAvailableAnnounces( $playerCards );
+    }
+    
+    public function IsBeloteAllowed( Collection $playerCards, EnumBitMask $contract, Collection $currentTrickActions, Card $playedCard ): bool
+    {
+        return $this->validAnnouncesService->IsBeloteAllowed( $playerCards, $contract, $currentTrickActions, $playedCard );
     }
     
     /*

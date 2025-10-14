@@ -21,6 +21,7 @@
     opponentBids,
     playingStarted,
     playCard,
+    opponentPlayCard,
     
     serverWasTerminated
 }

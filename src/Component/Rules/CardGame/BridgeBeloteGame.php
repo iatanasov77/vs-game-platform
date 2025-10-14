@@ -1,5 +1,6 @@
 <?php namespace App\Component\Rules\CardGame;
 
+use BitMask\EnumBitMask;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
@@ -47,5 +48,10 @@ class BridgeBeloteGame extends Game
             default:
                 throw new \RuntimeException( 'The Player Has No Position !' );
         }
+    }
+    
+    public function IsBeloteAllowed( Collection $playerCards, EnumBitMask $contract, Collection $currentTrickActions, Card $playedCard ): bool
+    {
+        return $this->roundManager->IsBeloteAllowed( $playerCards, $contract, $currentTrickActions, $playedCard );
     }
 }

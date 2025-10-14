@@ -72,6 +72,8 @@ export class AppStateService
     
     playerCards: StateObject<Array<CardDto[]>>;
     playerBids: StateObject<BidDto[]>;
+    deck: StateObject<CardDto[]>;
+    pile: StateObject<CardDto[]>;
   
     constructor()
     {
@@ -122,6 +124,10 @@ export class AppStateService
         this.playerCards.setValue( [] );
         this.playerBids = new StateObject<BidDto[]>();
         this.playerBids.setValue( [] );
+        this.deck = new StateObject<CardDto[]>();
+        this.deck.setValue( [] );
+        this.pile = new StateObject<CardDto[]>();
+        this.pile.setValue( [] );
     }
 
     myTurn(): boolean

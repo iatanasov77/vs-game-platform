@@ -191,6 +191,11 @@ abstract class Game implements GameInterface
         return $this->roundManager->GetValidCards( $playerCards, $currentContract, $trickActions );
     }
     
+    public function GetAvailableAnnounces( Collection $playerCards ): Collection
+    {
+        return $this->roundManager->GetAvailableAnnounces( $playerCards );
+    }
+    
     public function GetBid( PlayerGetBidContext $context ): BidType
     {
         return BidType::Pass;

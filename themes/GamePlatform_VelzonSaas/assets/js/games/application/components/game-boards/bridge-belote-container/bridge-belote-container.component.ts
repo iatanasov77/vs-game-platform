@@ -102,6 +102,8 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     gameSubs: Subscription;
     playerCardsSubs: Subscription;
     playerBidsSubs: Subscription;
+    deckSubs: Subscription;
+    pileSubs: Subscription;
     oponnetDoneSubs: Subscription;
     
     themeName: string;
@@ -123,6 +125,8 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     gameContractVisible = false;
     playerCardsDto: Array<CardDto[]> | undefined;
     playerBidsDto: BidDto[] | undefined = [];
+    deckDto: CardDto[] | undefined = [];
+    pileDto: CardDto[] | undefined = [];
     validBids: BidDto[] = [];
     currentPlayer: PlayerPosition | undefined;
     contract: BidDto | undefined;
@@ -154,6 +158,8 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
         this.gameDto$ = this.appStateService.cardGame.observe();
         this.playerCardsSubs = this.appStateService.playerCards.observe().subscribe( this.playerCardsChanged.bind( this ) );
         this.playerBidsSubs = this.appStateService.playerBids.observe().subscribe( this.playerBidsChanged.bind( this ) );
+        this.deckSubs = this.appStateService.deck.observe().subscribe( this.deckChanged.bind( this ) );
+        this.pileSubs = this.appStateService.pile.observe().subscribe( this.pileChanged.bind( this ) );
         this.playerPosition$ = this.appStateService.myPosition.observe();
         
         this.gameSubs = this.appStateService.cardGame.observe().subscribe( this.gameChanged.bind( this ) );
@@ -302,6 +308,19 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     {
         this.wsService.doBid( bid );
         this.wsService.sendBid( bid );
+    }
+    
+    doPlayCard( card: CardDto ): void
+    {
+        if ( ! card.animate ) this.sound.playChecker();
+        this.wsService.doPlayCard( card );
+        this.wsService.sendPlayCard( card );
+    }
+    
+    playCardAnimFinished(): void
+    {
+//         this.sound.playChecker();
+//         this.wsService.shiftMoveAnimationsQueue();
     }
     
     login(): void
@@ -464,23 +483,24 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     {
         this.playerCardsDto = dto;
         this.fireResize();
-        
-        /*
-        const game = this.appStateService.boardGame.getValue();
-        this.exitVisible = game?.playState !== GameState.playing && game?.playState !== GameState.requestedDoubling;
-        */
     }
     
     playerBidsChanged( dto: BidDto[] ): void
     {
-        console.log( 'Player Bids Changed', dto );
         this.playerBidsDto = dto;
         this.fireResize();
-        
-        /*
-        const game = this.appStateService.boardGame.getValue();
-        this.exitVisible = game?.playState !== GameState.playing && game?.playState !== GameState.requestedDoubling;
-        */
+    }
+    
+    deckChanged( dto: CardDto[] ): void
+    {
+        this.deckDto = dto;
+        this.fireResize();
+    }
+    
+    pileChanged( dto: CardDto[] ): void
+    {
+        this.pileDto = dto;
+        this.fireResize();
     }
     
     @HostListener( 'window:resize', ['$event'] )

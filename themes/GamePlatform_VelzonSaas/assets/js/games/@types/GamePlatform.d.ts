@@ -58,7 +58,8 @@ declare module '_@/GamePlatform/Model/Core/gameState' {
         
         // Card Games States
         firstBid,
-        bidding
+        bidding,
+        firstRound
     }
     
     export = GameState;
@@ -251,7 +252,6 @@ declare module '_@/GamePlatform/Model/CardGame/gameDto' {
     import GameState from '_@/GamePlatform/Model/Core/gameState';
     
     import CardGamePlayerDto from '_@/GamePlatform/Model/CardGame/playerDto';
-    import CardDto from '_@/GamePlatform/Model/CardGame/cardDto';
     import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
     import CardGameTeam from '_@/GamePlatform/Model/CardGame/cardGameTeam'
 
@@ -264,18 +264,15 @@ declare module '_@/GamePlatform/Model/CardGame/gameDto' {
         currentPlayer: PlayerPosition;
         winner: CardGameTeam;
         
-        RoundNumber: number;
         FirstToPlayInTheRound: PlayerPosition;
+        RoundNumber: number;
+        TrickNumber: number;
         
         SouthNorthPoints: number;
         EastWestPoints: number;
         
         MyCards: any;
         Bids: any;
-        
-        deck: CardDto[];
-        pile: CardDto[];
-        teamsTricks: any;
     }
     
     export = CardGameDto;
@@ -375,6 +372,7 @@ declare module '_@/GamePlatform/Model/CardGame/cardDto' {
         
         position: PlayerPosition;
         cardIndex: string;
+        animate: boolean;
     }
     
     export default CardDto;

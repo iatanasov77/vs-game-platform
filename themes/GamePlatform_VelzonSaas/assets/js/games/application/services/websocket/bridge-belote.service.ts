@@ -13,6 +13,7 @@ import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
 import BidType from '_@/GamePlatform/Model/CardGame/bidType';
 import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
 import BidDto from '_@/GamePlatform/Model/CardGame/bidDto';
+import CardDto from '_@/GamePlatform/Model/CardGame/cardDto';
 
 // Action Interfaces
 import ActionDto from '../../dto/Actions/actionDto';
@@ -26,6 +27,7 @@ import BidMadeActionDto from '../../dto/Actions/bidMadeActionDto';
 import OpponentBidsActionDto from '../../dto/Actions/opponentBidsActionDto';
 import PlayingStartedActionDto from '../../dto/Actions/playingStartedActionDto';
 import PlayCardActionDto from '../../dto/Actions/playCardActionDto';
+import OpponentPlayCardActionDto from '../../dto/Actions/opponentPlayCardActionDto';
 
 import { Keys } from '../../utils/keys';
 
@@ -148,12 +150,12 @@ export class BridgeBeloteService extends AbstractGameService
                 this.appState.playerCards.setValue( biddingStartedAction.playerCards );
                 const cGame = {
                     ...game,
-                    deck: biddingStartedAction.deck,
                     validBids: biddingStartedAction.validBids,
                     currentPlayer: biddingStartedAction.firstToBid,
                     playState: GameState.bidding
                 };
                 
+                this.appState.deck.setValue( biddingStartedAction.deck );
                 this.appState.cardGame.setValue( cGame );
                 this.statusMessageService.setTextMessage( cGame );
                 
@@ -163,7 +165,7 @@ export class BridgeBeloteService extends AbstractGameService
                 break;
             }
             case ActionNames.bidMade: {
-                //console.log( 'WebSocket Action Moves Made', action.actionName );
+                //console.log( 'WebSocket Action Bid Made', action.actionName );
                 
                 // This action is only sent to server.
                 break;
@@ -176,13 +178,12 @@ export class BridgeBeloteService extends AbstractGameService
                 
                 this.doBid( action.bid );
                 
-                const cGame = {
-                    ...game,
-                    currentPlayer: action.nextPlayer,
-                    playState: action.playState
-                };
-                // console.log( 'Game After Action Opponent Bids', cGame );
-                this.appState.cardGame.setValue( cGame );
+//                 const cGame = {
+//                     ...game,
+//                     currentPlayer: action.nextPlayer,
+//                     playState: action.playState
+//                 };
+//                 this.appState.cardGame.setValue( cGame );
                 
                 break;
             }
@@ -194,18 +195,39 @@ export class BridgeBeloteService extends AbstractGameService
                 const cGame = {
                     ...game,
                     contract: playingStartedAction.contract,
-                    deck: playingStartedAction.deck,
                     validBids: [],
                     validCards: playingStartedAction.validCards,
                     currentPlayer: playingStartedAction.firstToPlay,
                     playState: GameState.playing
                 };
                 
+                this.appState.deck.setValue( playingStartedAction.deck );
                 this.appState.cardGame.setValue( cGame );
                 this.statusMessageService.setTextMessage( cGame );
                 
                 this.appState.moveTimer.setValue( playingStartedAction.timer );
                 this.appState.opponentDone.setValue( true );
+                
+                break;
+            }
+            case ActionNames.playCard: {
+                //console.log( 'WebSocket Action Play Card', action.actionName );
+                
+                // This action is only sent to server.
+                break;
+            }
+            case ActionNames.opponentPlayCard: {
+                const action = JSON.parse( message.data ) as OpponentPlayCardActionDto;
+                console.log( 'WebSocket Action Opponent Play Card', action );
+                
+                this.doPlayCard( action.Card );
+                
+//                 const cGame = {
+//                     ...game,
+//                     currentPlayer: action.nextPlayer,
+//                     playState: action.playState
+//                 };
+//                 this.appState.cardGame.setValue( cGame );
                 
                 break;
             }
@@ -279,9 +301,6 @@ export class BridgeBeloteService extends AbstractGameService
             ...playerBids,
             [playerPosition]: bid
         });
-        
-        //console.log( 'Player Do Bid', bid );
-        //console.log( 'After Player Do Bid', this.appState.playerBids.getValue() );
     }
     
     sendBid( bid: BidDto ): void
@@ -303,5 +322,48 @@ export class BridgeBeloteService extends AbstractGameService
             playState: game.playState
         };
         this.sendMessage( JSON.stringify( opponentBidAction ) );
+    }
+    
+    doPlayCard( card: CardDto ): void
+    {
+        const prevPlayerCards = this.appState.playerCards.getValue();
+        const playerCardsClone = JSON.parse( JSON.stringify( prevPlayerCards ) );
+        
+        // remove card from playerCards
+        const movedCard = <CardDto>(
+            playerCardsClone[card.position].find( ( c: CardDto ) => c.cardIndex === card.cardIndex )
+        );
+        const index = playerCardsClone[card.position].indexOf( movedCard );
+        playerCardsClone[card.position].splice( index, 1 );
+        this.appState.playerCards.setValue( playerCardsClone );
+        
+        const pileClone = [...this.appState.pile.getValue()];
+        pileClone.push( card );
+        this.appState.pile.setValue( pileClone );
+        
+        console.log( 'Do PlayCard', playerCardsClone );
+    }
+    
+    sendPlayCard( card: CardDto ): void
+    {
+        const game = this.appState.cardGame.getValue();
+        
+        const myPlayCardAction: PlayCardActionDto = {
+            actionName: ActionNames.playCard,
+            Card: card,
+            Belote: false,
+            Player: card.position,
+            TrickNumber: game.TrickNumber
+        };
+        this.sendMessage( JSON.stringify( myPlayCardAction ) );
+        
+        const opponentPlayCardAction: OpponentPlayCardActionDto = {
+            actionName: ActionNames.opponentPlayCard,
+            Card: card,
+            Belote: false,
+            Player: card.position,
+            TrickNumber: game.TrickNumber
+        };
+        this.sendMessage( JSON.stringify( opponentPlayCardAction ) );
     }
 }

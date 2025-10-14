@@ -1,6 +1,5 @@
 ﻿import GameDto from '../Core/gameDto';
 import CardGamePlayerDto from './playerDto';
-import CardDto from './cardDto';
 import PlayerPosition from './playerPosition';
 import CardGameTeam from './cardGameTeam'
 
@@ -13,18 +12,15 @@ interface CardGameDto extends GameDto {
     currentPlayer: PlayerPosition;
     winner: CardGameTeam;
     
-    RoundNumber: number;
     FirstToPlayInTheRound: PlayerPosition;
+    RoundNumber: number;
+    TrickNumber: number;
     
     SouthNorthPoints: number;
     EastWestPoints: number;
     
     MyCards: any;
     Bids: any;
-    
-    deck: CardDto[];
-    pile: CardDto[];
-    teamsTricks: any;
 }
 
 export default CardGameDto;

@@ -1,5 +1,6 @@
 <?php namespace App\Component\Rules\CardGame\GameMechanics;
 
+use BitMask\EnumBitMask;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
@@ -9,6 +10,7 @@ use App\Component\Type\PlayerPosition;
 use App\Component\Type\BidType;
 
 use App\Component\Rules\CardGame\Game;
+use App\Component\Rules\CardGame\Card;
 use App\Component\Rules\CardGame\Deck;
 use App\Component\Rules\CardGame\Bid;
 use App\Component\Rules\CardGame\PlayerPositionExtensions;
@@ -73,7 +75,7 @@ class RoundManager
                 $this->logger->log( 'Consecutive Passes Exceeded !!!', 'RoundManager' );
                 $this->logger->log( 'CurrentContract: ' . \print_r( $this->game->CurrentContract, true ), 'RoundManager' );
                 
-                $this->game->PlayState = GameState::playing;
+                $this->game->PlayState = GameState::firstRound;
                 $this->DealCards( 3 );
             }
         }
@@ -87,6 +89,16 @@ class RoundManager
     public function GetValidCards( Collection $playerCards, Bid $currentContract, Collection $trickActions ): Collection
     {
         return $this->tricksManager->GetValidCards( $playerCards, $currentContract, $trickActions );
+    }
+    
+    public function GetAvailableAnnounces( Collection $playerCards ): Collection
+    {
+        return $this->tricksManager->GetAvailableAnnounces( $playerCards );
+    }
+    
+    public function IsBeloteAllowed( Collection $playerCards, EnumBitMask $contract, Collection $currentTrickActions, Card $playedCard ): bool
+    {
+        return $this->tricksManager->IsBeloteAllowed( $playerCards, $contract, $currentTrickActions, $playedCard );
     }
     
     private function DealCards( int $count ): void

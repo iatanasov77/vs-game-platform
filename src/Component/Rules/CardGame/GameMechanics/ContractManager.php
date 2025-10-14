@@ -28,8 +28,8 @@ class ContractManager
     
     public function StartNewRound(): void
     {
-        $contract = new Bid( $this->game->CurrentPlayer, BidType::Pass );
-        $this->game->AvailableBids = $this->GetAvailableBids( $contract, $this->game->CurrentPlayer );
+        $this->game->CurrentContract = new Bid( $this->game->CurrentPlayer, BidType::Pass );
+        $this->game->AvailableBids = $this->GetAvailableBids( $this->game->CurrentContract, $this->game->CurrentPlayer );
     }
     
     public function SetContract( Bid $bid ): void

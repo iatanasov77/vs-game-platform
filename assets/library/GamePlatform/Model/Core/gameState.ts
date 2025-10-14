@@ -8,7 +8,8 @@
     
     // Card Games States
     firstBid,
-    bidding
+    bidding,
+    firstRound
 }
 
 export default GameState;

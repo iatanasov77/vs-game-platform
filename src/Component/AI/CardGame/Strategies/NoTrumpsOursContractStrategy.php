@@ -1,10 +1,13 @@
 <?php namespace App\Component\AI\CardGame\Strategies;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\CardType;
 use App\Component\Rules\CardGame\Context\PlayerPlayCardContext;
 use App\Component\Rules\CardGame\PlayCardAction;
+use App\Component\Rules\CardGame\PlayerPositionExtensions;
 
 class NoTrumpsOursContractStrategy implements IPlayStrategy
 {
@@ -20,31 +23,37 @@ class NoTrumpsOursContractStrategy implements IPlayStrategy
         }
         
         $availableCardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
-        $cardToPlay = $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
+        $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
             return $a->NoTrumpOrder <=> $b->NoTrumpOrder;
-        })->first();
+        });
         
-        return new PlayCardAction( $cardToPlay ); // .Lowest(x => x.NoTrumpOrder)
+        $availableCards = new ArrayCollection( \iterator_to_array( $availableCardsToPlayIterator ) );
+        
+        return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.NoTrumpOrder)
     }
     
     public function PlaySecond( PlayerPlayCardContext $context, Collection $playedCards ): PlayCardAction
     {
         $availableCardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
-        $cardToPlay = $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
+        $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
             return $a->NoTrumpOrder <=> $b->NoTrumpOrder;
-        })->first();
+        });
         
-        return new PlayCardAction( $cardToPlay ); // .Lowest(x => x.NoTrumpOrder)
+        $availableCards = new ArrayCollection( \iterator_to_array( $availableCardsToPlayIterator ) );
+        
+        return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.NoTrumpOrder)
     }
     
     public function PlayThird( PlayerPlayCardContext $context, Collection $playedCards, PlayerPosition $trickWinner ): PlayCardAction
     {
         $availableCardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
-        $cardToPlay = $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
+        $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
             return $a->NoTrumpOrder <=> $b->NoTrumpOrder;
-        })->first();
+        });
         
-        return new PlayCardAction( $cardToPlay ); // .Lowest(x => x.NoTrumpOrder)
+        $availableCards = new ArrayCollection( \iterator_to_array( $availableCardsToPlayIterator ) );
+        
+        return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.NoTrumpOrder)
     }
     
     public function PlayFourth( PlayerPlayCardContext $context, Collection $playedCards, PlayerPosition $trickWinners ): PlayCardAction
@@ -56,7 +65,7 @@ class NoTrumpsOursContractStrategy implements IPlayStrategy
         );
         
         if (
-            $trickWinners->IsInSameTeamWith( $context->MyPosition )
+            PlayerPositionExtensions::IsInSameTeamWith( $trickWinners, $context->MyPosition )
             && $cardsToPlay->count()
         ) {
             $availableCardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();

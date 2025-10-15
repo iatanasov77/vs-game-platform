@@ -104,8 +104,6 @@ class BridgeBeloteEngine extends Engine
         $action->Player = $this->EngineGame->CurrentPlayer;
         $action->TrickNumber = $this->EngineGame->GetTrickActionNumber() + 1;
         
-        $this->EngineGame->AddTrickAction( $action );
-        
         return $action;
     }
     

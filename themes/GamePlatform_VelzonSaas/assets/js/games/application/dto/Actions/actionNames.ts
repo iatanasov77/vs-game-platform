@@ -22,6 +22,7 @@
     playingStarted,
     playCard,
     opponentPlayCard,
+    trickEnded,
     
     serverWasTerminated
 }

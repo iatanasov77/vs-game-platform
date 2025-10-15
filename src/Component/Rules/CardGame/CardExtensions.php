@@ -134,11 +134,11 @@ class CardExtensions
     public static function GetValue( Card $card, EnumBitMask $contract ): int
     {
         if ( $contract->has( BidType::AllTrumps ) ) {
-            return self::TrumpValues[$card->Type->value];
+            return self::$TrumpValues[$card->Type->value];
         }
         
         if ( $contract->has( BidType::NoTrumps ) ) {
-            return self::NoTrumpValues[$card->Type->value];
+            return self::$NoTrumpValues[$card->Type->value];
         }
         
         if ( $contract->get() == BidType::Pass ) {
@@ -147,9 +147,9 @@ class CardExtensions
         
         $suit = BidType::fromBitMaskValue( $contract->get() );
         if ( BidTypeExtensions::ToCardSuit( $suit ) == $card->Suit ) {
-            return self::TrumpValues[$card->Type->value];
+            return self::$TrumpValues[$card->Type->value];
         }
         
-        return self::NoTrumpValues[$card->Type->value];
+        return self::$NoTrumpValues[$card->Type->value];
     }
 }

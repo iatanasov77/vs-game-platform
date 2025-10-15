@@ -10,13 +10,15 @@ import { GameChatComponent } from './game-chat/game-chat.component';
 import { GameRoomsComponent } from './game-rooms/game-rooms.component';
 import { GamePlayersComponent } from './game-players/game-players.component';
 import { GameStatisticsComponent } from './game-statistics/game-statistics.component';
+import { BridgeBeloteStatisticsComponent } from './bridge-belote-statistics/bridge-belote-statistics.component';
 
 @NgModule({
     declarations: [
         GameChatComponent,
         GameRoomsComponent,
         GamePlayersComponent,
-        GameStatisticsComponent
+        GameStatisticsComponent,
+        BridgeBeloteStatisticsComponent
     ],
     imports: [
         CommonModule,
@@ -30,7 +32,8 @@ import { GameStatisticsComponent } from './game-statistics/game-statistics.compo
         GameChatComponent,
         GameRoomsComponent,
         GamePlayersComponent,
-        GameStatisticsComponent
+        GameStatisticsComponent,
+        BridgeBeloteStatisticsComponent
     ]
 })
 export class SideBarsModule { }

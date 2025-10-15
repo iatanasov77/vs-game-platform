@@ -36,7 +36,7 @@ class ScoreManager
         Collection $eastWestTricks,
         Collection $announces,
         int $hangingPoints,
-        PlayerPosition $lastTrickWinner
+        ?PlayerPosition $lastTrickWinner
     ): RoundResult {
         $result = new RoundResult( $contract );
         
@@ -48,7 +48,6 @@ class ScoreManager
             }
         );
         
-        $result->SouthNorthTotalInRoundPoints = 0;
         foreach( $activeSouthNorthAnnounces as $ann ) {
             $result->SouthNorthTotalInRoundPoints += $ann->Value;
         }
@@ -71,7 +70,6 @@ class ScoreManager
             }
         );
         
-        $result->EastWestTotalInRoundPoints = 0;
         foreach( $activeEastWestAnnounces as $ann ) {
             $result->EastWestTotalInRoundPoints += $ann->Value;
         }

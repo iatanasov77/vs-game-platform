@@ -175,9 +175,9 @@ abstract class Game implements GameInterface
         return $this->BlackPlayer->FirstMoveMade && $this->WhitePlayer->FirstMoveMade;
     }
     
-    public function PlayRound(): void
+    public function PlayRound(): ?PlayerPosition
     {
-        $this->roundManager->PlayRound();
+        return $this->roundManager->PlayRound();
     }
     
     public function SetContract( Bid $bid ): void

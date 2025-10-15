@@ -16,6 +16,7 @@ use App\Component\Rules\CardGame\Player as CardGamePlayer;
 use App\Component\Rules\CardGame\Card;
 use App\Component\Rules\CardGame\Bid;
 use App\Component\Rules\CardGame\CardExtensions;
+use App\Component\Rules\CardGame\GameMechanics\RoundResult;
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\BidType;
 
@@ -234,5 +235,17 @@ final class Mapper
         $bidDto->Type = BidType::fromBitMaskValue( $bid->Type->get() )->value();
         
         return $bidDto;
+    }
+    
+    public static function RoundResultToDto( RoundResult $score ): BridgeBeloteScoreDto
+    {
+        $scoreDto = new BridgeBeloteScoreDto();
+        
+        $scoreDto->SouthNorthPoints = $score->SouthNorthPoints;
+        $scoreDto->SouthNorthTotalInRoundPoints = $score->SouthNorthTotalInRoundPoints;
+        $scoreDto->EastWestPoints = $score->EastWestPoints;
+        $scoreDto->EastWestTotalInRoundPoints = $score->EastWestTotalInRoundPoints;
+        
+        return $scoreDto;
     }
 }

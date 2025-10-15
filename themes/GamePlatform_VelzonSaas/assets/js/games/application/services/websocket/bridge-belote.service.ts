@@ -28,6 +28,7 @@ import OpponentBidsActionDto from '../../dto/Actions/opponentBidsActionDto';
 import PlayingStartedActionDto from '../../dto/Actions/playingStartedActionDto';
 import PlayCardActionDto from '../../dto/Actions/playCardActionDto';
 import OpponentPlayCardActionDto from '../../dto/Actions/opponentPlayCardActionDto';
+import TrickEndedActionDto from '../../dto/Actions/trickEndedActionDto';
 
 import { Keys } from '../../utils/keys';
 
@@ -228,6 +229,16 @@ export class BridgeBeloteService extends AbstractGameService
 //                     playState: action.playState
 //                 };
 //                 this.appState.cardGame.setValue( cGame );
+                
+                break;
+            }
+            case ActionNames.trickEnded: {
+                const action = JSON.parse( message.data ) as TrickEndedActionDto;
+                console.log( 'WebSocket Action Trick Ended', action );
+                
+                this.appState.cardGame.setValue( action.game );
+                this.appState.pile.setValue( [] );
+                this.appState.bridgeBeloteScore.setValue( action.newScore );
                 
                 break;
             }

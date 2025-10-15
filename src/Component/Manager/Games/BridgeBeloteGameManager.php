@@ -290,11 +290,16 @@ class BridgeBeloteGameManager extends CardGameManager
     
     protected function ContinuePlay(): bool
     {
-        $this->Game->PlayRound();
+        $tricksWinner   = $this->Game->PlayRound();
         if ( $this->Game->PlayState == GameState::firstRound ) {
             $this->logger->log( 'Playing Card Game Round Started.', 'GameManager' );
             $this->StartGamePlay();
             return false;
+        }
+        
+        if ( $tricksWinner ) {
+            $score = $this->Game->GetNewScore();
+            $this->SendTrickWinner( $tricksWinner, $score );
         }
         
         return true;
@@ -355,7 +360,10 @@ class BridgeBeloteGameManager extends CardGameManager
 //             $action->nextPlayer = $this->Game->NextPlayer();
 //             $action->playState = $this->Game->PlayState;
             
+            $this->Game->AddTrickAction( $playCardAction );
             $this->Send( $client, $action );
+            
+            
         })();
         Async\await( $promise );
     }

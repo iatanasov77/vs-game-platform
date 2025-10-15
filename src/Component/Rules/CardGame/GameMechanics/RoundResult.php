@@ -11,15 +11,15 @@ class RoundResult
     
     public Bid $Contract;
     
-    public int $SouthNorthPoints;
+    public int $SouthNorthPoints = 0;
     
-    public int $SouthNorthTotalInRoundPoints;
+    public int $SouthNorthTotalInRoundPoints = 0;
     
-    public int $EastWestPoints;
+    public int $EastWestPoints = 0;
     
-    public int $EastWestTotalInRoundPoints;
+    public int $EastWestTotalInRoundPoints = 0;
     
     public bool $NoTricksForOneOfTheTeams;
     
-    public int $HangingPoints;
+    public int $HangingPoints = 0;
 }

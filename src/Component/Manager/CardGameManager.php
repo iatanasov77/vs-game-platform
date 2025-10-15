@@ -7,6 +7,7 @@ use Ratchet\RFC6455\Messaging\Frame;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Rules\CardGame\Game;
 use App\Component\Rules\CardGame\PlayCardAction;
+use App\Component\Rules\CardGame\GameMechanics\RoundResult;
 
 // Types
 use App\Component\Type\CardGameTeam;
@@ -20,6 +21,7 @@ use App\Component\Dto\Actions\BiddingStartedActionDto;
 use App\Component\Dto\Actions\BidMadeActionDto;
 use App\Component\Dto\Actions\PlayingStartedActionDto;
 use App\Component\Dto\Actions\PlayCardActionDto;
+use App\Component\Dto\Actions\TrickEndedActionDto;
 
 abstract class CardGameManager extends AbstractGameManager
 {
@@ -127,6 +129,20 @@ abstract class CardGameManager extends AbstractGameManager
         $this->Send( $this->Clients->get( PlayerPosition::West->value ), $playingStartedAction );
         
         $this->Game->PlayState = GameState::playing;
+    }
+    
+    protected function SendTrickWinner( PlayerPosition $winner, RoundResult $newScore ): void
+    {
+        $game = Mapper::CardGameToDto( $this->Game );
+        
+        $trickEndedAction = new TrickEndedActionDto();
+        $trickEndedAction->game = $game;
+        $trickEndedAction->newScore = Mapper::RoundResultToDto( $newScore );
+        
+        $this->Send( $this->Clients->get( PlayerPosition::South->value ), $trickEndedAction );
+        $this->Send( $this->Clients->get( PlayerPosition::East->value ), $trickEndedAction );
+        $this->Send( $this->Clients->get( PlayerPosition::North->value ), $trickEndedAction );
+        $this->Send( $this->Clients->get( PlayerPosition::West->value ), $trickEndedAction );
     }
     
     protected function SaveWinner( CardGameTeam $team ): ?array

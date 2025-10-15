@@ -49,7 +49,7 @@ class RoundManager
         }
     }
     
-    public function PlayRound(): void
+    public function PlayRound(): ?PlayerPosition
     {
         if ( $this->game->PlayState == GameState::firstBid ) {
             // Initialize the cards
@@ -80,6 +80,14 @@ class RoundManager
                 $this->DealCards( 3 );
             }
         }
+        
+        if ( $this->game->PlayState == GameState::playing ) {
+            if ( $this->tricksManager->GetTrickActionNumber() == 4 ) {
+                return $this->tricksManager->GetTricksWinner();
+            }
+        }
+        
+        return null;
     }
     
     public function SetContract( Bid $bid ): void
@@ -123,7 +131,7 @@ class RoundManager
         Collection $eastWestTricks,
         Collection $announces,
         int $hangingPoints,
-        PlayerPosition $lastTrickWinner
+        ?PlayerPosition $lastTrickWinner
     ): RoundResult {
         return $this->scoreManager->GetScore(
             $contract,

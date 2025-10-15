@@ -3,7 +3,7 @@
 use Doctrine\Common\Collections\Collection;
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\CardGameTeam;
-use App\Component\Rules\CardGame\Bid;
+use App\Component\Dto\BidDto;
 
 class CardGameDto extends GameDto
 {
@@ -12,7 +12,7 @@ class CardGameDto extends GameDto
     
     public array $validBids;
     public array $validCards;
-    public ?Bid $contract;
+    public ?BidDto $contract;
     
     public ?PlayerPosition $currentPlayer;
     public CardGameTeam $winner = CardGameTeam::Neither;

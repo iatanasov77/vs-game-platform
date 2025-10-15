@@ -392,6 +392,18 @@ declare module '_@/GamePlatform/Model/CardGame/bidDto' {
     export default BidDto;
 }
 
+declare module '_@/GamePlatform/Model/CardGame/bridgeBeloteScoreDto' {
+    interface BridgeBeloteScoreDto
+    {
+        SouthNorthPoints: number;
+        SouthNorthTotalInRoundPoints: number;
+        EastWestPoints: number;
+        EastWestTotalInRoundPoints: number;
+    }
+    
+    export default BridgeBeloteScoreDto;
+}
+
 /**
  * Common Interfaces
  */

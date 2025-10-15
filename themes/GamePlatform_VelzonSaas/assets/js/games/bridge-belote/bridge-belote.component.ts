@@ -29,8 +29,6 @@ export class BridgeBeloteComponent extends GameBaseComponent implements OnInit
     errors$: Observable<ErrorState>;
     
     lobbyButtonsVisible = true;
-    playAi              = false;
-    forGold             = false;
     
     constructor(
         @Inject( AuthService ) authService: AuthService,

@@ -25,6 +25,7 @@ import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
 import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
 import CardDto from '_@/GamePlatform/Model/CardGame/cardDto';
 import BidDto from '_@/GamePlatform/Model/CardGame/bidDto';
+import BridgeBeloteScoreDto from '_@/GamePlatform/Model/CardGame/bridgeBeloteScoreDto';
 
 // State
 import { StateObject } from './state-object';
@@ -74,7 +75,8 @@ export class AppStateService
     playerBids: StateObject<BidDto[]>;
     deck: StateObject<CardDto[]>;
     pile: StateObject<CardDto[]>;
-  
+    bridgeBeloteScore: StateObject<BridgeBeloteScoreDto>;
+    
     constructor()
     {
         this.busy = new StateObject<Busy>();
@@ -128,6 +130,7 @@ export class AppStateService
         this.deck.setValue( [] );
         this.pile = new StateObject<CardDto[]>();
         this.pile.setValue( [] );
+        this.bridgeBeloteScore = new StateObject<BridgeBeloteScoreDto>();
     }
 
     myTurn(): boolean

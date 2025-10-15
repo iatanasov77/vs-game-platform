@@ -223,7 +223,8 @@ final class GameFactory
         
         $game->Deck = new Deck();
         $game->Pile = new ArrayCollection();
-        $game->teamsTricks = [[], []];
+        $game->SouthNorthTricks = new ArrayCollection();
+        $game->EastWestTricks = new ArrayCollection();
         
         $game->AvailableBids = new ArrayCollection();
         $game->ValidCards = new ArrayCollection();

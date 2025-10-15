@@ -14,6 +14,7 @@ use App\Component\Rules\CardGame\Card;
 use App\Component\Rules\CardGame\Deck;
 use App\Component\Rules\CardGame\Bid;
 use App\Component\Rules\CardGame\PlayerPositionExtensions;
+use App\Component\Rules\CardGame\PlayCardAction;
 
 class RoundManager
 {
@@ -39,7 +40,7 @@ class RoundManager
         
         $this->contractManager = new ContractManager( $this->game, $this->logger );
         $this->tricksManager = new TricksManager( $this->game, $this->logger );
-//         $this->scoreManager = new ScoreManager();
+        $this->scoreManager = new ScoreManager( $this->game, $this->logger );
 
         $this->game->Deck = new Deck();
         $this->game->playerCards = new ArrayCollection();
@@ -99,6 +100,39 @@ class RoundManager
     public function IsBeloteAllowed( Collection $playerCards, EnumBitMask $contract, Collection $currentTrickActions, Card $playedCard ): bool
     {
         return $this->tricksManager->IsBeloteAllowed( $playerCards, $contract, $currentTrickActions, $playedCard );
+    }
+    
+    public function GetTrickActionNumber(): int
+    {
+        return $this->tricksManager->GetTrickActionNumber();
+    }
+    
+    public function GetTrickActions(): Collection
+    {
+        return $this->tricksManager->GetTrickActions();
+    }
+    
+    public function AddTrickAction( PlayCardAction $action ): void
+    {
+        $this->tricksManager->AddTrickAction( $action );
+    }
+    
+    public function GetScore(
+        Bid $contract,
+        Collection $southNorthTricks,
+        Collection $eastWestTricks,
+        Collection $announces,
+        int $hangingPoints,
+        PlayerPosition $lastTrickWinner
+    ): RoundResult {
+        return $this->scoreManager->GetScore(
+            $contract,
+            $southNorthTricks,
+            $eastWestTricks,
+            $announces,
+            $hangingPoints,
+            $lastTrickWinner
+        );
     }
     
     private function DealCards( int $count ): void

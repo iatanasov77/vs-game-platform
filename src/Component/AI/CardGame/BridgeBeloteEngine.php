@@ -4,6 +4,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 use App\Component\Type\BidType;
+use App\Component\Type\AnnounceType;
 use App\Component\Type\CardType;
 use App\Component\Type\CardSuit;
 use App\Component\GameLogger;
@@ -13,6 +14,7 @@ use App\Component\Rules\CardGame\GameMechanics\ValidAnnouncesService;
 use App\Component\Rules\CardGame\GameMechanics\TrickWinnerService;
 use App\Component\Rules\CardGame\Card;
 use App\Component\Rules\CardGame\PlayCardAction;
+use App\Component\Rules\CardGame\Announce;
 use App\Component\Rules\CardGame\PlayerPositionExtensions;
 
 // Contexts
@@ -58,7 +60,61 @@ class BridgeBeloteEngine extends Engine
         $this->trumpTheirsContractStrategy = new TrumpTheirsContractStrategy();
     }
     
-    public function GetBid( PlayerGetBidContext $context ): BidType
+    public function DoBid(): BidType
+    {
+        $context = new PlayerGetBidContext();
+        $context->MyPosition = $this->EngineGame->CurrentPlayer;
+        $context->Bids = $this->EngineGame->Bids;
+        $context->AvailableBids = $this->EngineGame->AvailableBids;
+        $context->MyCards = $this->EngineGame->playerCards[$this->EngineGame->CurrentPlayer->value];
+        
+        return $this->GetBid( $context );
+    }
+    
+    public function PlayCard(): PlayCardAction
+    {
+        $context = new PlayerPlayCardContext();
+        $context->MyPosition = $this->EngineGame->CurrentPlayer;
+        $context->CurrentContract = $this->EngineGame->CurrentContract;
+        $context->Announces = $this->EngineGame->GetAvailableAnnounces( $this->EngineGame->playerCards[$this->EngineGame->CurrentPlayer->value] );
+        $context->CurrentTrickActions = $this->EngineGame->GetTrickActions();
+        $context->RoundActions = $this->EngineGame->GetTrickActions();
+        $context->AvailableCardsToPlay = $this->EngineGame->playerCards[$this->EngineGame->CurrentPlayer->value];
+        $context->CurrentTrickNumber = $this->EngineGame->trickNumber;
+        
+        $action = $this->_PlayCard( $context );
+        
+        // Belote
+        if ( $action->Belote ) {
+            if ( $this->EngineGame->IsBeloteAllowed(
+                $this->EngineGame->playerCards[$this->EngineGame->CurrentPlayer->value],
+                $this->EngineGame->CurrentContract->Type,
+                $this->EngineGame->GetTrickActions(),
+                $action->Card
+            )
+            ) {
+                $announces[] = new Announce( AnnounceType::Belot, $action->Card );
+            } else {
+                $action->Belote = false;
+            }
+        }
+        
+        // Update information after the action
+        $this->EngineGame->playerCards[$this->EngineGame->CurrentPlayer->value]->Remove( $action->Card );
+        $action->Player = $this->EngineGame->CurrentPlayer;
+        $action->TrickNumber = $this->EngineGame->GetTrickActionNumber() + 1;
+        
+        $this->EngineGame->AddTrickAction( $action );
+        
+        return $action;
+    }
+    
+    protected function _GenerateTricksSequence( Collection &$sequences, Collection &$tricks, Game $game ): void
+    {
+        
+    }
+    
+    private function GetBid( PlayerGetBidContext $context ): BidType
     {
         $availableAnnounces = $this->validAnnouncesService->GetAvailableAnnounces( $context->MyCards );
         $this->logger->log( print_r( $availableAnnounces->toArray(), true ), 'BridgeBeloteEngine' );
@@ -124,13 +180,12 @@ class BridgeBeloteEngine extends Engine
             return $b <=> $a;
         });
         $bids = new ArrayCollection( \iterator_to_array( $bidsIterator ) );
-        $bids->first();
         $bid = $bids->first() ? BidType::fromValue( $bids->indexOf( $bids->key() ) ) : BidType::Pass;
         
         return $bid;
     }
     
-    public function PlayCard( PlayerPlayCardContext $context ): PlayCardAction
+    private function _PlayCard( PlayerPlayCardContext $context ): PlayCardAction
     {
         $playedCards = new ArrayCollection();
         foreach ( $context->RoundActions as $action ) {
@@ -175,11 +230,6 @@ class BridgeBeloteEngine extends Engine
                     $this->trickWinnerService->GetWinner( $context->CurrentContract, $context->CurrentTrickActions )
                 );
         }
-    }
-    
-    protected function _GenerateTricksSequence( Collection &$sequences, Collection &$tricks, Game $game ): void
-    {
-        
     }
     
     private static function CalculateAllTrumpsBidPoints(

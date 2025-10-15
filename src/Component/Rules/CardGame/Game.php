@@ -35,15 +35,14 @@ abstract class Game implements GameInterface
     /** @var Collection | Card[] */
     public $Pile;
     
-    /**
-     * Tricks Of Cards
-     *
-     * $teamsTricks[0] for Team1 (North-South)
-     * $teamsTricks[1] for Team2 (East-West)
-     *
-     * @var array
-     */
-    public $teamsTricks;
+    /** @var Collection | Card[] */
+    public $SouthNorthTricks;
+    
+    /** @var Collection | Card[] */
+    public $EastWestTricks;
+    
+    /** @var PlayerPosition */
+    public $LastTrickWinner;
     
     /** @var array | Player[] */
     public array $Players;
@@ -213,6 +212,21 @@ abstract class Game implements GameInterface
         $action = new PlayCardActionDto();
         
         return $action;
+    }
+    
+    public function GetTrickActionNumber(): int
+    {
+        return $this->roundManager->GetTrickActionNumber();
+    }
+    
+    public function GetTrickActions(): Collection
+    {
+        return $this->roundManager->GetTrickActions();
+    }
+    
+    public function AddTrickAction( PlayCardAction $action ): void
+    {
+        $this->roundManager->AddTrickAction( $action );
     }
     
     public function EndOfTrick( Collection $trickActions ): void

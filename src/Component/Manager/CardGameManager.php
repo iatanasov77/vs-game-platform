@@ -23,9 +23,6 @@ use App\Component\Dto\Actions\PlayCardActionDto;
 
 abstract class CardGameManager extends AbstractGameManager
 {
-    /** @var Collection | PlayCardAction[] */
-    protected $TrickActions;
-    
     public function StartGame(): void
     {
         $this->Game->ThinkStart = new \DateTime( 'now' );
@@ -93,8 +90,6 @@ abstract class CardGameManager extends AbstractGameManager
     
     protected function StartGamePlay(): void
     {
-        $this->TrickActions = new ArrayCollection();
-        
         $playingStartedAction = new PlayingStartedActionDto();
         
         $playingStartedAction->deck = \array_values( $this->Game->Deck->Cards()->map(

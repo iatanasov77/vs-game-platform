@@ -42,8 +42,7 @@ class TrickWinnerService
             );
             if ( $trumpSuitActions->count() ) {
                 // Trump in the trick cards
-                for ( $i = 1; $i < $trickActions->count(); $i++)
-                {
+                for ( $i = 1; $i < $trickActions->count(); $i++) {
                     if ( $trickActions[$i]->Card->Suit == $trumpSuit ) {
                         if ( $bestAction->Card->Suit != $trumpSuit ) {
                             $bestAction = $trickActions[$i];
@@ -52,9 +51,7 @@ class TrickWinnerService
                         }
                     }
                 }
-            }
-            else
-            {
+            } else {
                 // No trick in the cards
                 for ( $i = 1; $i < $trickActions->count(); $i++ ) {
                     if (

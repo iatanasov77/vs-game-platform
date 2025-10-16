@@ -1,3 +1,14 @@
+0.17.0	|	Release date: **16.10.2025**
+============================================
+* New Features:
+  - Create Drawing Card Game  Pile.
+  - Prepare CardGame TricksManager .
+  - Playing a Trick with AI Engine.
+  - Refactoring of CardGame Tricks Management.
+  - Ending a CardGame Trick.
+  - Start Playing All of the Round of Card Game.
+
+
 0.16.5	|	Release date: **09.10.2025**
 ============================================
 * New Features, Fixes and Improvements:

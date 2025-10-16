@@ -22,11 +22,13 @@ export class BoardButtonsComponent implements OnInit, OnChanges
     
     @Input() newVisible = false;
     @Input() exitVisible = false;
+    @Input() newRoundVisible = false;
     @Input() debugGameSoundsVisible = false;
     
     @Output() onLogin = new EventEmitter<void>();
     
     @Output() onNew = new EventEmitter<void>();
+    @Output() onNewRound = new EventEmitter<void>();
     @Output() onExit = new EventEmitter<void>();
     @Output() onOpenDebugGameSoundsDialog = new EventEmitter<void>();
     
@@ -86,6 +88,9 @@ export class BoardButtonsComponent implements OnInit, OnChanges
                 case 'exitVisible':
                     this.exitVisible = changedProp.currentValue;
                     break;
+                case 'newRoundVisible':
+                    this.newRoundVisible = changedProp.currentValue;
+                    break;
             }
         }
     }
@@ -103,6 +108,11 @@ export class BoardButtonsComponent implements OnInit, OnChanges
     newGame(): void
     {
         this.onNew.emit();
+    }
+    
+    newRound(): void
+    {
+        this.onNewRound.emit();
     }
     
     exitGame(): void

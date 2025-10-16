@@ -123,6 +123,7 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     exitVisible = true;
     gameBiddingVisible = false;
     gameContractVisible = false;
+    newRoundVisible = false;
     playerCardsDto: Array<CardDto[]> | undefined;
     playerBidsDto: BidDto[] | undefined = [];
     deckDto: CardDto[] | undefined = [];
@@ -348,6 +349,11 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
         this.waitForOpponent();
     }
     
+    newRound(): void
+    {
+    
+    }
+    
     exitGame(): void
     {
         clearTimeout( this.startedHandle );
@@ -468,6 +474,10 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
             this.playerBidsDto = [];
             this.gameBiddingVisible = false;
             this.gameContractVisible = true;
+        }
+        
+        if ( dto && dto.playState === GameState.roundEnded ) {
+            this.newRoundVisible = true;
         }
         
         // alert( 'Current Player: ' + dto?.currentPlayer + 'Play State: ' + dto?.playState );

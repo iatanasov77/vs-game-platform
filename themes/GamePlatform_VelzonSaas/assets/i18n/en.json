@@ -250,6 +250,7 @@
         "undo": "Undo",
         "roll": "Roll",
         "new_game": "New Game",
+        "new_round": "New Round",
         "exit_game": "Exit Game",
         "play_game": "Play",
         "invite_friend": "Invite a friend"

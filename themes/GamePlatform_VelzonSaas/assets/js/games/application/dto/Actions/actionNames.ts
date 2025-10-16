@@ -23,6 +23,7 @@
     playCard,
     opponentPlayCard,
     trickEnded,
+    roundEnded,
     
     serverWasTerminated
 }

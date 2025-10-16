@@ -33,11 +33,13 @@
             
             [newVisible]="newVisible"
             [exitVisible]="exitVisible"
+            [newRoundVisible]="newRoundVisible"
             
             [debugGameSoundsVisible]="debugGameSoundsVisible"
             
             (onLogin)="login()"
             (onNew)="newGame()"
+            (onNewRound)="newRound()"
             (onExit)="exitGame()"
             (onOpenDebugGameSoundsDialog)="openDebugGameSoundsDialog()"
             

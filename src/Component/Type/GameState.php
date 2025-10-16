@@ -15,5 +15,6 @@ enum GameState: int
     case firstBid               = 5;
     case bidding                = 6;
     case firstRound             = 7;
+    case roundEnded             = 8;
 }
     

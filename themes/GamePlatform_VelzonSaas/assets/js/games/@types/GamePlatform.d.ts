@@ -59,7 +59,8 @@ declare module '_@/GamePlatform/Model/Core/gameState' {
         // Card Games States
         firstBid,
         bidding,
-        firstRound
+        firstRound,
+        roundEnded
     }
     
     export = GameState;

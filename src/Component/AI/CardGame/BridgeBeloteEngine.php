@@ -76,6 +76,7 @@ class BridgeBeloteEngine extends Engine
         $context = new PlayerPlayCardContext();
         $context->MyPosition = $this->EngineGame->CurrentPlayer;
         $context->CurrentContract = $this->EngineGame->CurrentContract;
+        $context->MyCards = $this->EngineGame->playerCards[$this->EngineGame->CurrentPlayer->value];
         $context->Announces = $this->EngineGame->GetAvailableAnnounces( $this->EngineGame->playerCards[$this->EngineGame->CurrentPlayer->value] );
         $context->CurrentTrickActions = $this->EngineGame->GetTrickActions();
         $context->RoundActions = $this->EngineGame->GetTrickActions();

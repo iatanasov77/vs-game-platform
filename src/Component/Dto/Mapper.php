@@ -168,11 +168,12 @@ final class Mapper
             }
         )->toArray();
         
-        $gameDto->validCards = $game->ValidCards->map(
-            function( $entry ) {
-                return self::CardToDto( $entry );
+        $validCards = $game->ValidCards->map(
+            function( $entry ) use ( $game ) {
+                return self::CardToDto( $entry, $game->CurrentPlayer );
             }
         )->toArray();
+        $gameDto->validCards = \array_values( $validCards );
         
         $gameDto->contract = $game->CurrentContract ? self::BidToDto( $game->CurrentContract ) : null;
         

@@ -29,6 +29,7 @@ import PlayingStartedActionDto from '../../dto/Actions/playingStartedActionDto';
 import PlayCardActionDto from '../../dto/Actions/playCardActionDto';
 import OpponentPlayCardActionDto from '../../dto/Actions/opponentPlayCardActionDto';
 import TrickEndedActionDto from '../../dto/Actions/trickEndedActionDto';
+import RoundEndedActionDto from '../../dto/Actions/roundEndedActionDto';
 
 import { Keys } from '../../utils/keys';
 
@@ -242,6 +243,16 @@ export class BridgeBeloteService extends AbstractGameService
                 
                 break;
             }
+            case ActionNames.roundEnded: {
+                const action = JSON.parse( message.data ) as RoundEndedActionDto;
+                console.log( 'WebSocket Action Round Ended', action );
+                
+                this.appState.cardGame.setValue( action.game );
+                this.appState.pile.setValue( [] );
+                this.appState.bridgeBeloteScore.setValue( action.newScore );
+                
+                break;
+            }
             case ActionNames.gameEnded: {
                 //console.log( 'WebSocket Action Game Ended', action.actionName );
                 
@@ -339,6 +350,7 @@ export class BridgeBeloteService extends AbstractGameService
     {
         const prevPlayerCards = this.appState.playerCards.getValue();
         const playerCardsClone = JSON.parse( JSON.stringify( prevPlayerCards ) );
+        console.log( 'Player Cards', playerCardsClone );
         
         // remove card from playerCards
         const movedCard = <CardDto>(

@@ -26,6 +26,7 @@ enum ActionNames: int
     case playCard           = 19;
     case opponentPlayCard   = 20;
     case trickEnded         = 21;
+    case roundEnded         = 22;
     
-    case serverWasTerminated    = 22;
+    case serverWasTerminated    = 23;
 }

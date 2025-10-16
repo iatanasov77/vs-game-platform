@@ -1,5 +1,6 @@
 <?php namespace App\Component\Rules\CardGame\GameMechanics;
 
+use BitMask\EnumBitMask;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
@@ -10,29 +11,32 @@ use App\Component\Type\AnnounceType;
 use App\Component\Rules\CardGame\Helper;
 use App\Component\Rules\CardGame\Card;
 use App\Component\Rules\CardGame\Announce;
+use App\Component\Rules\CardGame\PlayerPositionExtensions;
+use App\Component\Rules\CardGame\BidTypeExtensions;
 
 class ValidAnnouncesService
 {
     use Helper;
     
-    public function IsBeloteAllowed( Collection $playerCards, BidType $contract, Collection $currentTrickActions, Card $playedCard ): bool
+    public function IsBeloteAllowed( Collection $playerCards, EnumBitMask $contract, Collection $currentTrickActions, Card $playedCard ): bool
     {
         if ( $playedCard->Type != CardType::Queen && $playedCard->Type != CardType::King ) {
             return false;
         }
         
-        if ( $contract.HasFlag( BidType.NoTrumps ) ) {
+        if ( $contract->has( BidType::NoTrumps ) ) {
             return false;
         }
         
-        if ( $contract.HasFlag( BidType.AllTrumps ) ) {
+        if ( $contract->has( BidType::AllTrumps ) ) {
             if ( $currentTrickActions->count() > 0 && $currentTrickActions[0]->Card->Suit != $playedCard->Suit ) {
                 // Belote is only allowed when playing card from the same suit as the first card played
                 return false;
             }
         } else {
+            $suit = BidType::fromBitMaskValue( $contract->Type->get() );
             // Clubs, Diamonds, Hearts or Spades
-            if ( $playedCard->Suit != $contract.ToCardSuit() ) {
+            if ( $playedCard->Suit != BidTypeExtensions::ToCardSuit( $suit ) ) {
                 // Belote is only allowed when playing card from the trump suit
                 return false;
             }
@@ -96,7 +100,7 @@ class ValidAnnouncesService
                 if (
                     $announce.CompareTo( $maxSameSuitAnnounce ) == 0
                     && $maxSameSuitAnnounce != null
-                    && ! $announce->Player->IsInSameTeamWith( $maxSameSuitAnnounce->Player )
+                    && ! PlayerPositionExtensions::IsInSameTeamWith( $announce->Player, $maxSameSuitAnnounce->Playern )
                 ) {
                     $sameMaxAnnounceInDifferentTeams = true;
                 }
@@ -116,7 +120,7 @@ class ValidAnnouncesService
             ) {
                 if (
                     $announce->CompareTo( $maxSameTypesAnnounce ) >= 0 ||
-                    ( $maxSameTypesAnnounce != null && $announce->Player->IsInSameTeamWith( $maxSameTypesAnnounce->Player ) )
+                    ( $maxSameTypesAnnounce != null && PlayerPositionExtensions::IsInSameTeamWith( $announce->Player, $maxSameTypesAnnounce->Player ) )
                 ) {
                     $announce->IsActive = true;
                 }
@@ -126,7 +130,7 @@ class ValidAnnouncesService
                 // Sequence
                 if (
                     $announce->CompareTo( $maxSameSuitAnnounce ) >= 0 ||
-                    ( $maxSameSuitAnnounce != null && $announce->Player.IsInSameTeamWith( $maxSameSuitAnnounce->Player ) )
+                    ( $maxSameSuitAnnounce != null && PlayerPositionExtensions::IsInSameTeamWith( $announce->Player, $maxSameSuitAnnounce->Playern ) )
                 ) {
                     $announce->IsActive = true;
                 }

@@ -15,6 +15,7 @@ export class Card
         angle: number,
         theme: IThemes,
         position: PlayerPosition,
+        highLighted: boolean,
         debugCards: boolean
     ): void {
         if ( ! cx ) {
@@ -43,6 +44,12 @@ export class Card
             width,
             height
         );
+        
+        if ( highLighted ) {
+            cx.globalAlpha = .50;
+            cx.fillStyle = "black";
+            cx.fillRect( 0, 0, width, height );
+        }
         
         cx.restore();
     }

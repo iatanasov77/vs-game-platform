@@ -63,6 +63,10 @@
             {{ 'menu.resign' | translate }}
         </button>
         
+        <button (click)="newRound()" *ngIf="newRoundVisible" class="default-button">
+            {{ 'game_board.new_round' | translate }}
+        </button>
+        
     </ng-container>
     
     <ng-container *ngIf="debugGameSoundsVisible">

@@ -1,11 +1,15 @@
 <?php namespace App\Component\Rules\CardGame;
 
+use BitMask\EnumBitMask;
 use App\Component\Type\CardSuit;
 use App\Component\Type\CardType;
 use App\Component\Type\BidType;
 
 class CardExtensions
 {
+    private static $NoTrumpValues = [ 0, 0, 0, 10, 2, 3, 4, 11 ];
+    private static $TrumpValues = [ 0, 0, 14, 10, 20, 3, 4, 11 ];
+    
     public static function SuitToString( CardSuit $cardSuit ): string
     {
         switch ( $cardSuit ) {
@@ -125,5 +129,27 @@ class CardExtensions
         }
         
         return $bidType;
+    }
+    
+    public static function GetValue( Card $card, EnumBitMask $contract ): int
+    {
+        if ( $contract->has( BidType::AllTrumps ) ) {
+            return self::$TrumpValues[$card->Type->value];
+        }
+        
+        if ( $contract->has( BidType::NoTrumps ) ) {
+            return self::$NoTrumpValues[$card->Type->value];
+        }
+        
+        if ( $contract->get() == BidType::Pass ) {
+            return 0;
+        }
+        
+        $suit = BidType::fromBitMaskValue( $contract->get() );
+        if ( BidTypeExtensions::ToCardSuit( $suit ) == $card->Suit ) {
+            return self::$TrumpValues[$card->Type->value];
+        }
+        
+        return self::$NoTrumpValues[$card->Type->value];
     }
 }

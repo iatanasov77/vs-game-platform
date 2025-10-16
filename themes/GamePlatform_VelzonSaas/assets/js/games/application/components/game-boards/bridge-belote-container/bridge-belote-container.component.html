@@ -16,10 +16,14 @@
         [game]="gameDto$ | async"
         [playerCards]="playerCardsDto"
         [playerBids]="playerBidsDto"
+        [deck]="deckDto"
+        [pile]="pileDto"
         [myPosition]="playerPosition$ | async"
         [themeName]="themeName"
         [timeLeft]="timeLeft$ | async"
         [lobbyButtonsVisible]="lobbyButtonsVisible"
+        (playCard)="doPlayCard($event)"
+        (playCardAnimFinished)="playCardAnimFinished()"
     ></bridge-belote-board>
     
     <div id="card-actions" class="card-actions">
@@ -29,11 +33,13 @@
             
             [newVisible]="newVisible"
             [exitVisible]="exitVisible"
+            [newRoundVisible]="newRoundVisible"
             
             [debugGameSoundsVisible]="debugGameSoundsVisible"
             
             (onLogin)="login()"
             (onNew)="newGame()"
+            (onNewRound)="newRound()"
             (onExit)="exitGame()"
             (onOpenDebugGameSoundsDialog)="openDebugGameSoundsDialog()"
             

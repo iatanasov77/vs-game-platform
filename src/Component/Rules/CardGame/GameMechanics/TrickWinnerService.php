@@ -4,6 +4,7 @@ use Doctrine\Common\Collections\Collection;
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\BidType;
 use App\Component\Rules\CardGame\Bid;
+use App\Component\Rules\CardGame\BidTypeExtensions;
 
 class TrickWinnerService
 {
@@ -11,7 +12,7 @@ class TrickWinnerService
     {
         $firstCard = $trickActions[0]->Card;
         $bestAction = $trickActions[0];
-        if ( $contract->Type->HasFlag( BidType::AllTrumps ) ) {
+        if ( $contract->Type->has( BidType::AllTrumps ) ) {
             for ( $i = 1; $i < $trickActions->count(); $i++ ) {
                 if (
                     $trickActions[$i]->Card->Suit == $firstCard->Suit
@@ -20,7 +21,7 @@ class TrickWinnerService
                     $bestAction = $trickActions[$i];
                 }
             }
-        } else if ( $contract->Type->HasFlag( BidType::NoTrumps ) ) {
+        } else if ( $contract->Type->has( BidType::NoTrumps ) ) {
             for ( $i = 1; $i < $trickActions->count(); $i++ ) {
                 if (
                     $trickActions[$i]->Card->Suit == $firstCard->Suit
@@ -30,7 +31,8 @@ class TrickWinnerService
                 }
             }
         } else {
-            $trumpSuit = $contract->Type->ToCardSuit();
+            $suit = BidType::fromBitMaskValue( $contract->Type->get() );
+            $trumpSuit = BidTypeExtensions::ToCardSuit( $suit );
             //// TODO: Remove this check and merge conditions
             
             $trumpSuitActions  = $trickActions->filter(
@@ -40,8 +42,7 @@ class TrickWinnerService
             );
             if ( $trumpSuitActions->count() ) {
                 // Trump in the trick cards
-                for ( $i = 1; $i < $trickActions->count(); $i++)
-                {
+                for ( $i = 1; $i < $trickActions->count(); $i++) {
                     if ( $trickActions[$i]->Card->Suit == $trumpSuit ) {
                         if ( $bestAction->Card->Suit != $trumpSuit ) {
                             $bestAction = $trickActions[$i];
@@ -50,9 +51,7 @@ class TrickWinnerService
                         }
                     }
                 }
-            }
-            else
-            {
+            } else {
                 // No trick in the cards
                 for ( $i = 1; $i < $trickActions->count(); $i++ ) {
                     if (

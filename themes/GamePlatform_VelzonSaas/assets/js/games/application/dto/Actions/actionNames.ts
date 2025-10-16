@@ -21,6 +21,9 @@
     opponentBids,
     playingStarted,
     playCard,
+    opponentPlayCard,
+    trickEnded,
+    roundEnded,
     
     serverWasTerminated
 }

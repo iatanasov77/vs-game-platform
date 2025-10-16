@@ -222,8 +222,9 @@ final class GameFactory
         $game->IsGoldGame = $forGold;
         
         $game->Deck = new Deck();
-        $game->Pile = [];
-        $game->teamsTricks = [[], []];
+        $game->Pile = new ArrayCollection();
+        $game->SouthNorthTricks = new ArrayCollection();
+        $game->EastWestTricks = new ArrayCollection();
         
         $game->AvailableBids = new ArrayCollection();
         $game->ValidCards = new ArrayCollection();

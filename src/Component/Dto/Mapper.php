@@ -16,6 +16,7 @@ use App\Component\Rules\CardGame\Player as CardGamePlayer;
 use App\Component\Rules\CardGame\Card;
 use App\Component\Rules\CardGame\Bid;
 use App\Component\Rules\CardGame\CardExtensions;
+use App\Component\Rules\CardGame\GameMechanics\RoundResult;
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\BidType;
 
@@ -167,16 +168,21 @@ final class Mapper
             }
         )->toArray();
         
-        $gameDto->validCards = $game->ValidCards->map(
-            function( $entry ) {
-                return self::CardToDto( $entry );
+        $validCards = $game->ValidCards->map(
+            function( $entry ) use ( $game ) {
+                return self::CardToDto( $entry, $game->CurrentPlayer );
             }
         )->toArray();
+        $gameDto->validCards = \array_values( $validCards );
         
         $gameDto->contract = $game->CurrentContract ? self::BidToDto( $game->CurrentContract ) : null;
         
         $gameDto->currentPlayer = $game->CurrentPlayer;
         $gameDto->playState = $game->PlayState;
+        
+        $gameDto->FirstToPlayInTheRound = $game->firstInRound;
+        $gameDto->RoundNumber = $game->roundNumber;
+        $gameDto->TrickNumber = $game->trickNumber;
         
         $gameDto->thinkTime = CardGame::ClientCountDown - (
             ( new \DateTime( 'now' ) )->getTimestamp() - $game->ThinkStart->getTimestamp()
@@ -184,10 +190,6 @@ final class Mapper
         
         $gameDto->goldMultiplier    = $game->GoldMultiplier;
         $gameDto->isGoldGame        = $game->IsGoldGame;
-        
-        $gameDto->deck = $game->Deck->Cards()->toArray();
-        $gameDto->pile = $game->Pile;
-        $gameDto->teamsTricks = $game->teamsTricks;
         
         return $gameDto;
     }
@@ -234,5 +236,17 @@ final class Mapper
         $bidDto->Type = BidType::fromBitMaskValue( $bid->Type->get() )->value();
         
         return $bidDto;
+    }
+    
+    public static function RoundResultToDto( RoundResult $score ): BridgeBeloteScoreDto
+    {
+        $scoreDto = new BridgeBeloteScoreDto();
+        
+        $scoreDto->SouthNorthPoints = $score->SouthNorthPoints;
+        $scoreDto->SouthNorthTotalInRoundPoints = $score->SouthNorthTotalInRoundPoints;
+        $scoreDto->EastWestPoints = $score->EastWestPoints;
+        $scoreDto->EastWestTotalInRoundPoints = $score->EastWestTotalInRoundPoints;
+        
+        return $scoreDto;
     }
 }

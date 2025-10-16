@@ -8,3 +8,4 @@ export * from './move-animation';
 export * from './card';
 export * from './card-area';
 export * from './card-drag';
+export * from './pile';

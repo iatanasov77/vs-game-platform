@@ -1,8 +1,13 @@
 <?php namespace App\Component\Manager;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+
 use Ratchet\RFC6455\Messaging\Frame;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Rules\CardGame\Game;
+use App\Component\Rules\CardGame\PlayCardAction;
+use App\Component\Rules\CardGame\GameMechanics\RoundResult;
 
 // Types
 use App\Component\Type\CardGameTeam;
@@ -15,6 +20,8 @@ use App\Component\Dto\Actions\GameCreatedActionDto;
 use App\Component\Dto\Actions\BiddingStartedActionDto;
 use App\Component\Dto\Actions\BidMadeActionDto;
 use App\Component\Dto\Actions\PlayingStartedActionDto;
+use App\Component\Dto\Actions\PlayCardActionDto;
+use App\Component\Dto\Actions\TrickEndedActionDto;
 
 abstract class CardGameManager extends AbstractGameManager
 {
@@ -49,11 +56,11 @@ abstract class CardGameManager extends AbstractGameManager
             
             $biddingStartedAction = new BiddingStartedActionDto();
             
-            $biddingStartedAction->deck = $this->Game->Deck->Cards()->map(
+            $biddingStartedAction->deck = \array_values( $this->Game->Deck->Cards()->map(
                 function( $entry ) {
                     return Mapper::CardToDto( $entry );
                 }
-            )->toArray();
+            )->toArray() );
             
             foreach ( $this->Game->Players as $key => $player ) {
                 $biddingStartedAction->playerCards[$key] = $this->Game->playerCards[$key]->map(
@@ -81,15 +88,17 @@ abstract class CardGameManager extends AbstractGameManager
     
     abstract protected function DoBid( BidMadeActionDto $action ): void;
     
+    abstract protected function PlayCard( PlayCardActionDto $action ): void;
+    
     protected function StartGamePlay(): void
     {
         $playingStartedAction = new PlayingStartedActionDto();
         
-        $playingStartedAction->deck = $this->Game->Deck->Cards()->map(
+        $playingStartedAction->deck = \array_values( $this->Game->Deck->Cards()->map(
             function( $entry ) {
                 return Mapper::CardToDto( $entry );
             }
-        )->toArray();
+        )->toArray() );
         
         foreach ( $this->Game->Players as $key => $player ) {
             $playingStartedAction->playerCards[$key] = $this->Game->playerCards[$key]->map(
@@ -97,12 +106,13 @@ abstract class CardGameManager extends AbstractGameManager
                     return Mapper::CardToDto( $entry, $player->PlayerPosition );
                 }
             )->toArray();
-            
-            // Debugging
-            if ( $player->PlayerPosition == PlayerPosition::South ) {
-                $this->Game->ValidCards = $this->Game->playerCards[$key];
-            }
         }
+        
+        $this->Game->ValidCards = $this->Game->GetValidCards(
+            $this->Game->playerCards[$this->Game->CurrentPlayer->value],
+            $this->Game->CurrentContract,
+            new ArrayCollection()
+        );
         
         $playingStartedAction->firstToPlay = $this->Game->CurrentPlayer;
         $playingStartedAction->contract = Mapper::BidToDto( $this->Game->CurrentContract );
@@ -117,6 +127,22 @@ abstract class CardGameManager extends AbstractGameManager
         $this->Send( $this->Clients->get( PlayerPosition::East->value ), $playingStartedAction );
         $this->Send( $this->Clients->get( PlayerPosition::North->value ), $playingStartedAction );
         $this->Send( $this->Clients->get( PlayerPosition::West->value ), $playingStartedAction );
+        
+        $this->Game->PlayState = GameState::playing;
+    }
+    
+    protected function SendTrickWinner( PlayerPosition $winner, RoundResult $newScore ): void
+    {
+        $game = Mapper::CardGameToDto( $this->Game );
+        
+        $trickEndedAction = new TrickEndedActionDto();
+        $trickEndedAction->game = $game;
+        $trickEndedAction->newScore = Mapper::RoundResultToDto( $newScore );
+        
+        $this->Send( $this->Clients->get( PlayerPosition::South->value ), $trickEndedAction );
+        $this->Send( $this->Clients->get( PlayerPosition::East->value ), $trickEndedAction );
+        $this->Send( $this->Clients->get( PlayerPosition::North->value ), $trickEndedAction );
+        $this->Send( $this->Clients->get( PlayerPosition::West->value ), $trickEndedAction );
     }
     
     protected function SaveWinner( CardGameTeam $team ): ?array

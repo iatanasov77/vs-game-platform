@@ -11,4 +11,5 @@ class CardDto
     
     public PlayerPosition $position;
     public string $cardIndex;
+    public bool $animate    = false;
 }

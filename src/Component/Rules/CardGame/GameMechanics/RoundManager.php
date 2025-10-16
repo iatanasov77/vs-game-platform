@@ -1,5 +1,6 @@
 <?php namespace App\Component\Rules\CardGame\GameMechanics;
 
+use BitMask\EnumBitMask;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
@@ -9,9 +10,11 @@ use App\Component\Type\PlayerPosition;
 use App\Component\Type\BidType;
 
 use App\Component\Rules\CardGame\Game;
+use App\Component\Rules\CardGame\Card;
 use App\Component\Rules\CardGame\Deck;
 use App\Component\Rules\CardGame\Bid;
 use App\Component\Rules\CardGame\PlayerPositionExtensions;
+use App\Component\Rules\CardGame\PlayCardAction;
 
 class RoundManager
 {
@@ -36,8 +39,8 @@ class RoundManager
         $this->logger = $logger;
         
         $this->contractManager = new ContractManager( $this->game, $this->logger );
-//         $this->tricksManager = new TricksManager( $this->game, $this->logger );
-//         $this->scoreManager = new ScoreManager();
+        $this->tricksManager = new TricksManager( $this->game, $this->logger );
+        $this->scoreManager = new ScoreManager( $this->game, $this->logger );
 
         $this->game->Deck = new Deck();
         $this->game->playerCards = new ArrayCollection();
@@ -46,7 +49,7 @@ class RoundManager
         }
     }
     
-    public function PlayRound(): void
+    public function PlayRound(): ?PlayerPosition
     {
         if ( $this->game->PlayState == GameState::firstBid ) {
             // Initialize the cards
@@ -73,15 +76,71 @@ class RoundManager
                 $this->logger->log( 'Consecutive Passes Exceeded !!!', 'RoundManager' );
                 $this->logger->log( 'CurrentContract: ' . \print_r( $this->game->CurrentContract, true ), 'RoundManager' );
                 
-                $this->game->PlayState = GameState::playing;
+                $this->game->PlayState = GameState::firstRound;
                 $this->DealCards( 3 );
             }
         }
+        
+        if ( $this->game->PlayState == GameState::playing ) {
+            if ( $this->tricksManager->GetTrickActionNumber() == 4 ) {
+                return $this->tricksManager->GetTricksWinner();
+            }
+        }
+        
+        return null;
     }
     
     public function SetContract( Bid $bid ): void
     {
         $this->contractManager->SetContract( $bid );
+    }
+    
+    public function GetValidCards( Collection $playerCards, Bid $currentContract, Collection $trickActions ): Collection
+    {
+        return $this->tricksManager->GetValidCards( $playerCards, $currentContract, $trickActions );
+    }
+    
+    public function GetAvailableAnnounces( Collection $playerCards ): Collection
+    {
+        return $this->tricksManager->GetAvailableAnnounces( $playerCards );
+    }
+    
+    public function IsBeloteAllowed( Collection $playerCards, EnumBitMask $contract, Collection $currentTrickActions, Card $playedCard ): bool
+    {
+        return $this->tricksManager->IsBeloteAllowed( $playerCards, $contract, $currentTrickActions, $playedCard );
+    }
+    
+    public function GetTrickActionNumber(): int
+    {
+        return $this->tricksManager->GetTrickActionNumber();
+    }
+    
+    public function GetTrickActions(): Collection
+    {
+        return $this->tricksManager->GetTrickActions();
+    }
+    
+    public function AddTrickAction( PlayCardAction $action ): void
+    {
+        $this->tricksManager->AddTrickAction( $action );
+    }
+    
+    public function GetScore(
+        Bid $contract,
+        Collection $southNorthTricks,
+        Collection $eastWestTricks,
+        Collection $announces,
+        int $hangingPoints,
+        ?PlayerPosition $lastTrickWinner
+    ): RoundResult {
+        return $this->scoreManager->GetScore(
+            $contract,
+            $southNorthTricks,
+            $eastWestTricks,
+            $announces,
+            $hangingPoints,
+            $lastTrickWinner
+        );
     }
     
     private function DealCards( int $count ): void
@@ -90,7 +149,10 @@ class RoundManager
         for ( $i = 0; $i < $count; $i++ )
         {
             while( true ) {
-                $this->game->playerCards[$dealToPlayer->value][] = $this->game->Deck->GetNextCard();
+                $card = $this->game->Deck->GetNextCard();
+                $this->game->Deck->RemoveCard( $card );
+                
+                $this->game->playerCards[$dealToPlayer->value][] = $card;
                 $dealToPlayer = PlayerPositionExtensions::Next( $dealToPlayer );
                 if( $dealToPlayer === $this->game->firstInRound ) {
                     break;

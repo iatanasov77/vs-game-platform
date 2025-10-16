@@ -1,0 +1,26 @@
+<div class="game-statistics-container float-end">
+    <table class="table caption-top">
+        <thead>
+            <tr>
+                <th class="border-end border-bottom p-2 font-weight-bold">{{ 'game_board.statistics.we' | translate }}</th>
+                <th class="border-start border-bottom p-2 font-weight-bold">{{ 'game_board.statistics.you' | translate }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="border-end border-bottom p-2">
+                    <div *ngFor="let points of wePoints">
+                        {{ points }}
+                    </div>
+                    
+                </td>
+                <td class="border-start border-bottom p-2">
+                    <div *ngFor="let points of youPoints">
+                        {{ points }}
+                    </div>
+                    
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

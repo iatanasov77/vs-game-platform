@@ -31,6 +31,11 @@ class Deck
         return $this->listOfCards[$this->currentCardIndex++];
     }
     
+    public function RemoveCard( Card $card ): void
+    {
+        $this->listOfCards->removeElement( $card );
+    }
+    
     public function Cards(): Collection
     {
         return $this->listOfCards;

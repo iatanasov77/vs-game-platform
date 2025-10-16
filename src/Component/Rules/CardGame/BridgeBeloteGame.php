@@ -1,11 +1,12 @@
 <?php namespace App\Component\Rules\CardGame;
 
+use BitMask\EnumBitMask;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\BidType;
-use App\Component\Rules\CardGame\GameMechanics\RoundManager;
+use App\Component\Rules\CardGame\GameMechanics\RoundResult;
 
 /**
  * BelotGameEngine in C#: https://github.com/NikolayIT/BelotGameEngine
@@ -21,20 +22,17 @@ class BridgeBeloteGame extends Game
     /** @var int */
     public $hangingPoints;
     
-    public function SetStartPosition(): void
-    {
-        $this->PlayGame();
-    }
+    /** @var Collection | Announce[] */
+    public $announces;
     
     public function PlayGame( PlayerPosition $firstToPlay = PlayerPosition::South ): void
     {
-        $this->roundManager = new RoundManager( $this, $this->logger );
+        parent::PlayGame( $firstToPlay );
         
         $this->southNorthPoints = 0;
         $this->eastWestPoints = 0;
-        $this->firstInRound = $firstToPlay;
-        $this->roundNumber = 1;
         $this->hangingPoints = 0;
+        $this->announces = new ArrayCollection();
     }
     
     public function NextPlayer(): PlayerPosition
@@ -57,8 +55,20 @@ class BridgeBeloteGame extends Game
         }
     }
     
-    public function MakeBid( PlayerGetBidContext $context ): BidType
+    public function IsBeloteAllowed( Collection $playerCards, EnumBitMask $contract, Collection $currentTrickActions, Card $playedCard ): bool
     {
-        return BidType::Pass;
+        return $this->roundManager->IsBeloteAllowed( $playerCards, $contract, $currentTrickActions, $playedCard );
+    }
+    
+    public function GetNewScore(): RoundResult
+    {
+        return $this->roundManager->GetScore(
+            $this->CurrentContract,
+            $this->SouthNorthTricks,
+            $this->EastWestTricks,
+            $this->announces,
+            $this->hangingPoints,
+            $this->LastTrickWinner
+        );
     }
 }

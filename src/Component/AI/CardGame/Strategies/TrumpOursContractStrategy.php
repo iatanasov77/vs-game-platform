@@ -1,18 +1,23 @@
 <?php namespace App\Component\AI\CardGame\Strategies;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\CardType;
+use App\Component\Type\BidType;
 use App\Component\Rules\CardGame\Context\PlayerPlayCardContext;
 use App\Component\Rules\CardGame\PlayCardAction;
 use App\Component\Rules\CardGame\Card;
 use App\Component\Rules\CardGame\BidTypeExtensions;
+use App\Component\Rules\CardGame\PlayerPositionExtensions;
 
 class TrumpOursContractStrategy implements IPlayStrategy
 {
     public function PlayFirst( PlayerPlayCardContext $context, Collection $playedCards ): PlayCardAction
     {
-        $trumpSuit = BidTypeExtensions::ToCardSuit( $context->CurrentContract->Type );
+        $suit = BidType::fromBitMaskValue( $context->CurrentContract->Type->get() );
+        $trumpSuit = BidTypeExtensions::ToCardSuit( $suit );
         $playedCardsFromTrump = $playedCards->filter(
             function( $entry ) use ( $trumpSuit ) {
                 return $entry->Suit == $trumpSuit;
@@ -106,57 +111,70 @@ class TrumpOursContractStrategy implements IPlayStrategy
         //// }
         
         $cardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
-        $cardToPlay = $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {
+        $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {
             return $b->NoTrumpOrder <=> $a->NoTrumpOrder;
-        })->first();
+        });
         
-        return new PlayCardAction( $cardToPlay ); // .Lowest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
+        $availableCards = new ArrayCollection( \iterator_to_array( $cardsToPlayIterator ) );
+        
+        return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
     }
     
     public function PlaySecond( PlayerPlayCardContext $context, Collection $playedCards ): PlayCardAction
     {
-        $trumpSuit = BidTypeExtensions::ToCardSuit( $context->CurrentContract->Type );
+        $suit = BidType::fromBitMaskValue( $context->CurrentContract->Type->get() );
+        $trumpSuit = BidTypeExtensions::ToCardSuit( $suit );
         $cardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
-        $cardToPlay = $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {
+        $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {
             return $b->NoTrumpOrder <=> $a->NoTrumpOrder;
-        })->first();
+        });
         
-        return new PlayCardAction( $cardToPlay ); // .Lowest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
+        $availableCards = new ArrayCollection( \iterator_to_array( $cardsToPlayIterator ) );
+        
+        return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
     }
     
     public function PlayThird( PlayerPlayCardContext $context, Collection $playedCards, PlayerPosition $trickWinner ): PlayCardAction
     {
-        $trumpSuit = BidTypeExtensions::ToCardSuit( $context->CurrentContract->Type );
+        $suit = BidType::fromBitMaskValue( $context->CurrentContract->Type->get() );
+        $trumpSuit = BidTypeExtensions::ToCardSuit( $suit );
         $cardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
-        $cardToPlay = $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {
+        $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {
             return $b->NoTrumpOrder <=> $a->NoTrumpOrder;
-        })->first();
+        });
         
-        return new PlayCardAction( $cardToPlay ); // .Lowest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
+        $availableCards = new ArrayCollection( \iterator_to_array( $cardsToPlayIterator ) );
+        
+        return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
     }
     
     public function PlayFourth( PlayerPlayCardContext $context, Collection $playedCards, PlayerPosition $trickWinner ): PlayCardAction
     {
-        $trumpSuit = BidTypeExtensions::ToCardSuit( $context->CurrentContract->Type );
+        $suit = BidType::fromBitMaskValue( $context->CurrentContract->Type->get() );
+        $trumpSuit = BidTypeExtensions::ToCardSuit( $suit );
         $cardsToPlay = $context->AvailableCardsToPlay->filter(
             function( $entry ) use ( $trumpSuit ) {
                 return $entry->Suit != $trumpSuit && $entry->Type != CardType::Ace;
             }
         );
-        if ( $trickWinner->IsInSameTeamWith( $context->MyPosition ) && $cardsToPlay->count() ) {
+        if ( PlayerPositionExtensions::IsInSameTeamWith( $trickWinner, $context->MyPosition ) && $cardsToPlay->count() ) {
             $cardsToPlayIterator = $cardsToPlay->getIterator();
-            $cardToPlay = $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {
+            $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {
                 return $b->NoTrumpOrder <=> $a->NoTrumpOrder;
-            })->last();
+            });
             
-            return new PlayCardAction( $cardToPlay ); // .Highest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
+            $availableCards = new ArrayCollection( \iterator_to_array( $cardsToPlayIterator ) );
+            
+            return new PlayCardAction( $availableCards->last() ); // .Highest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
         }
         
         $cardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
-        $cardToPlay = $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {
+        $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {
             return $b->NoTrumpOrder <=> $a->NoTrumpOrder;
-        })->first();
+        });
         
-        return new PlayCardAction( $cardToPlay ); // .Lowest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
+        $availableCards = new ArrayCollection( \iterator_to_array( $cardsToPlayIterator ) );
+        
+        return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
     }
 }

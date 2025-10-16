@@ -12,6 +12,8 @@ use App\Component\Type\BidType;
 use App\Component\Rules\CardGame\Context\PlayerGetBidContext;
 use App\Component\Rules\CardGame\Context\PlayerGetAnnouncesContext;
 use App\Component\Rules\CardGame\Context\PlayerPlayCardContext;
+
+use App\Component\Rules\CardGame\GameMechanics\RoundManager;
 use App\Component\Rules\CardGame\GameMechanics\RoundResult;
 
 use App\Component\Dto\Actions\PlayCardActionDto;
@@ -30,18 +32,17 @@ abstract class Game implements GameInterface
     /** @var Deck */
     public $Deck;
     
-    /** @var array */
+    /** @var Collection | Card[] */
     public $Pile;
     
-    /**
-     * Tricks Of Cards
-     *
-     * $teamsTricks[0] for Team1 (North-South)
-     * $teamsTricks[1] for Team2 (East-West)
-     *
-     * @var array
-     */
-    public $teamsTricks;
+    /** @var Collection | Card[] */
+    public $SouthNorthTricks;
+    
+    /** @var Collection | Card[] */
+    public $EastWestTricks;
+    
+    /** @var PlayerPosition */
+    public $LastTrickWinner;
     
     /** @var array | Player[] */
     public array $Players;
@@ -88,6 +89,9 @@ abstract class Game implements GameInterface
     /** @var int */
     public $roundNumber;
     
+    /** @var int */
+    public $trickNumber;
+    
     /** @var GameLogger */
     protected  $logger;
     
@@ -99,9 +103,21 @@ abstract class Game implements GameInterface
         $this->logger   = $logger;
     }
     
-    abstract public function SetStartPosition(): void;
-    
     abstract public function NextPlayer(): PlayerPosition;
+    
+    public function SetStartPosition(): void
+    {
+        $this->PlayGame();
+    }
+    
+    public function PlayGame( PlayerPosition $firstToPlay = PlayerPosition::South ): void
+    {
+        $this->roundManager = new RoundManager( $this, $this->logger );
+        
+        $this->firstInRound = $firstToPlay;
+        $this->roundNumber = 1;
+        $this->trickNumber = 1;
+    }
     
     public function SwitchPlayer(): void
     {
@@ -159,14 +175,24 @@ abstract class Game implements GameInterface
         return $this->BlackPlayer->FirstMoveMade && $this->WhitePlayer->FirstMoveMade;
     }
     
-    public function PlayRound(): void
+    public function PlayRound(): ?PlayerPosition
     {
-        $this->roundManager->PlayRound();
+        return $this->roundManager->PlayRound();
     }
     
     public function SetContract( Bid $bid ): void
     {
         $this->roundManager->SetContract( $bid );
+    }
+    
+    public function GetValidCards( Collection $playerCards, Bid $currentContract, Collection $trickActions ): Collection
+    {
+        return $this->roundManager->GetValidCards( $playerCards, $currentContract, $trickActions );
+    }
+    
+    public function GetAvailableAnnounces( Collection $playerCards ): Collection
+    {
+        return $this->roundManager->GetAvailableAnnounces( $playerCards );
     }
     
     public function GetBid( PlayerGetBidContext $context ): BidType
@@ -186,6 +212,21 @@ abstract class Game implements GameInterface
         $action = new PlayCardActionDto();
         
         return $action;
+    }
+    
+    public function GetTrickActionNumber(): int
+    {
+        return $this->roundManager->GetTrickActionNumber();
+    }
+    
+    public function GetTrickActions(): Collection
+    {
+        return $this->roundManager->GetTrickActions();
+    }
+    
+    public function AddTrickAction( PlayCardAction $action ): void
+    {
+        $this->roundManager->AddTrickAction( $action );
     }
     
     public function EndOfTrick( Collection $trickActions ): void

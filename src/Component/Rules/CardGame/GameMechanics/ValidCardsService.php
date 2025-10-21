@@ -5,6 +5,7 @@ use BitMask\EnumBitMask;
 
 use App\Component\Type\BidType;
 use App\Component\Type\CardSuit;
+use App\Component\Rules\CardGame\Card;
 use App\Component\Rules\CardGame\Helper;
 use App\Component\Rules\CardGame\BidTypeExtensions;
 use App\Component\Manager\AbstractGameManager;

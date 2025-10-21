@@ -34,7 +34,7 @@ class ValidAnnouncesService
                 return false;
             }
         } else {
-            $suit = BidType::fromBitMaskValue( $contract->Type->get() );
+            $suit = BidType::fromBitMaskValue( $contract->get() );
             // Clubs, Diamonds, Hearts or Spades
             if ( $playedCard->Suit != BidTypeExtensions::ToCardSuit( $suit ) ) {
                 // Belote is only allowed when playing card from the trump suit

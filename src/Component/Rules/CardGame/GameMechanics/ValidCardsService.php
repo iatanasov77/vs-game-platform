@@ -33,7 +33,8 @@ class ValidCardsService
         }
         
         // Playing Clubs, Diamonds, Hearts or Spades
-        $trumpSuit = BidTypeExtensions::ToCardSuit( $contract );
+        $suit = BidType::fromBitMaskValue( $contract->get() );
+        $trumpSuit = BidTypeExtensions::ToCardSuit( $suit );
         if ( $firstCardSuit == $trumpSuit ) {
             // Trump card played first
             return $this->GetValidCardsForAllTrumps( $playerCards, $currentTrickActions, $firstCardSuit );
@@ -56,7 +57,13 @@ class ValidCardsService
         CardSuit $firstCardSuit
     ): Collection {
     
-        if ( $playerCards->HasAnyOfSuit( $firstCardSuit ) ) {
+        $playerCardsOfSuit = $playerCards->filter(
+            function( $entry ) use ( $firstCardSuit ) {
+                return $entry->Suit == $firstCardSuit;
+            }
+        );
+        
+        if ( $playerCardsOfSuit ) {
             $biggestCard = $this->BiggestTrumpCard( $currentTrickActions, $firstCardSuit );
             
             $biggerPlayerCards  = $playerCards->filter(

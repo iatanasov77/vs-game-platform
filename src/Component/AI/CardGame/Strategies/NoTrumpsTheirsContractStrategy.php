@@ -66,9 +66,10 @@ class NoTrumpsTheirsContractStrategy implements IPlayStrategy
         
         if ( PlayerPositionExtensions::IsInSameTeamWith( $trickWinner, $context->MyPosition ) && $cardsToPlay->count() ) {
             $availableCardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
-            $cardsToPlay = $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
+            $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
                 return $a->NoTrumpOrder <=> $b->NoTrumpOrder;
             });
+            $cardsToPlay = new ArrayCollection( \iterator_to_array( $availableCardsToPlayIterator ) );
                 
             return new PlayCardAction(
                 $cardsToPlay->filter(

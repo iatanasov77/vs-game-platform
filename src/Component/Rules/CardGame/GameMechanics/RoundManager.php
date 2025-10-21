@@ -66,7 +66,7 @@ class RoundManager
         }
         
         if ( $this->game->PlayState == GameState::bidding ) {
-            if ( ! $this->game->CurrentContract && $this->game->ConsecutivePasses == 4 ) {
+            if ( $this->game->ConsecutivePasses == 4 ) {
                 $this->logger->log( 'Consecutive Passes Exceeded !!!', 'RoundManager' );
                 
                 $this->game->PlayState = GameState::ended;

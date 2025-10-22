@@ -1,5 +1,6 @@
 <?php namespace App\Component\Rules\CardGame;
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
@@ -95,12 +96,16 @@ abstract class Game implements GameInterface
     /** @var GameLogger */
     protected  $logger;
     
+    /** @var EventDispatcherInterface */
+    protected $eventDispatcher;
+    
     /** @var RoundManager */
     protected $roundManager;
     
-    public function __construct( GameLogger $logger )
+    public function __construct( GameLogger $logger, EventDispatcherInterface $eventDispatcher )
     {
-        $this->logger   = $logger;
+        $this->logger           = $logger;
+        $this->eventDispatcher  = $eventDispatcher;
     }
     
     abstract public function NextPlayer(): PlayerPosition;
@@ -112,7 +117,7 @@ abstract class Game implements GameInterface
     
     public function PlayGame( PlayerPosition $firstToPlay = PlayerPosition::South ): void
     {
-        $this->roundManager = new RoundManager( $this, $this->logger );
+        $this->roundManager = new RoundManager( $this, $this->logger, $this->eventDispatcher );
         
         $this->firstInRound = $firstToPlay;
         $this->roundNumber = 1;

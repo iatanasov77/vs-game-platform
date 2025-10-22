@@ -351,7 +351,7 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     
     newRound(): void
     {
-    
+        this.wsService.startNewRound();
     }
     
     exitGame(): void
@@ -392,13 +392,6 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     cancelInvite(): void
     {
         this.exitGame();
-    }
-    
-    playWithFriends(): void
-    {
-        if ( this.appState && this.appState.game ) {
-            this.store.dispatch( startCardGame( { game: this.appState.game } ) );
-        }
     }
     
     selectGameRoom(): void
@@ -477,6 +470,7 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
         }
         
         if ( dto && dto.playState === GameState.roundEnded ) {
+            this.started = false;
             this.newRoundVisible = true;
         }
         

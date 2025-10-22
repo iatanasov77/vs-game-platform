@@ -4,6 +4,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use App\Component\GameLogger;
 use App\Component\GameService;
 use App\EventListener\Event\GameEndedEvent;
+use App\EventListener\Event\CardGameRoundEndedEvent;
 
 final class GamesEventListener implements EventSubscriberInterface
 {
@@ -23,6 +24,7 @@ final class GamesEventListener implements EventSubscriberInterface
     {
         return [
             GameEndedEvent::NAME => 'onGameEnded',
+            CardGameRoundEndedEvent::NAME => 'onCardGameRoundEnded',
         ];
     }
     
@@ -30,5 +32,11 @@ final class GamesEventListener implements EventSubscriberInterface
     {
         $this->logger->log( "GamesEventListener Game Ended !!!", 'GamesEventListener' );
         $this->gameService->Game_Ended( $event->getSender() );
+    }
+    
+    public function onCardGameRoundEnded( CardGameRoundEndedEvent $event ): void
+    {
+        $this->logger->log( "GamesEventListener Card Game Round Ended !!!", 'GamesEventListener' );
+        $this->gameService->Card_Game_Round_Ended( $event->getSender() );
     }
 }

@@ -1,5 +1,6 @@
 <?php namespace App\Component\Rules;
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use App\Component\GameLogger;
 use App\Component\Utils\Guid;
@@ -24,9 +25,13 @@ final class GameFactory
     /** @var GameLogger */
     private  $logger;
     
-    public function __construct( GameLogger $logger )
+    /** @var EventDispatcherInterface */
+    private $eventDispatcher;
+    
+    public function __construct( GameLogger $logger, EventDispatcherInterface $eventDispatcher )
     {
-        $this->logger   = $logger;
+        $this->logger           = $logger;
+        $this->eventDispatcher  = $eventDispatcher;
     }
     
     public function createGame( string $gameCode, ?string $gameVariant, bool $ForGold ): GameInterface
@@ -196,7 +201,7 @@ final class GameFactory
     
     private function createBridgeBeloteGame( bool $forGold ): GameInterface
     {
-        $game = new BridgeBeloteGame( $this->logger );
+        $game = new BridgeBeloteGame( $this->logger, $this->eventDispatcher );
         
         $game->Id           = Guid::NewGuid();
         

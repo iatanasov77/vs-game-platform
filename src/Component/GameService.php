@@ -22,6 +22,7 @@ use App\Component\Dto\GameCookieDto;
 use App\Component\Dto\Actions\ConnectionInfoActionDto;
 use App\Component\Dto\ConnectionDto;
 
+use App\Component\Rules\GameInterface;
 use App\Component\Rules\BoardGame\Helper as GameHelper;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerColor;
@@ -286,6 +287,20 @@ final class GameService
     {
         $this->logger->log( "Game_Ended for Game: {$sender->Game->Id}", 'GameService' );
         $this->AllGames->removeElement( $sender );
+    }
+    
+    public function Card_Game_Round_Ended( GameInterface $sender ): void
+    {
+        $this->logger->log( "Card_Game_Round_Ended for Game: {$sender->Id}", 'GameService' );
+        $managers = $this->AllGames->filter(
+            function( $entry ) use ( $sender ) {
+                return $entry->Game->Id == $sender->Id;
+            }
+        );
+        
+        foreach ( $managers as $manager ) {
+            $manager->EndRound();
+        }
     }
     
     private function TryReConnect( WebsocketClientInterface $webSocket, ?string $gameCookie, ?GamePlayer $dbUser, string $gameCode ): ?string

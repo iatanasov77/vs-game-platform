@@ -1,13 +1,14 @@
 <?php namespace App\Component\Rules\CardGame\GameMechanics;
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use BitMask\EnumBitMask;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
+use App\EventListener\Event\CardGameRoundEndedEvent;
 use App\Component\GameLogger;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerPosition;
-use App\Component\Type\BidType;
 
 use App\Component\Rules\CardGame\Game;
 use App\Component\Rules\CardGame\Card;
@@ -24,6 +25,9 @@ class RoundManager
     /** @var GameLogger */
     private  $logger;
     
+    /** @var EventDispatcherInterface */
+    private $eventDispatcher;
+    
     /** @var ContractManager */
     private ContractManager $contractManager;
     
@@ -33,10 +37,11 @@ class RoundManager
     /** @var ScoreManager */
     private ScoreManager $scoreManager;
     
-    public function __construct( Game $game, GameLogger $logger )
+    public function __construct( Game $game, GameLogger $logger, EventDispatcherInterface $eventDispatcher )
     {
-        $this->game = $game;
-        $this->logger = $logger;
+        $this->game             = $game;
+        $this->logger           = $logger;
+        $this->eventDispatcher  = $eventDispatcher;
         
         $this->contractManager = new ContractManager( $this->game, $this->logger );
         $this->tricksManager = new TricksManager( $this->game, $this->logger );
@@ -69,7 +74,8 @@ class RoundManager
             if ( $this->game->ConsecutivePasses == 4 ) {
                 $this->logger->log( 'Consecutive Passes Exceeded !!!', 'RoundManager' );
                 
-                $this->game->PlayState = GameState::ended;
+                $this->game->PlayState = GameState::roundEnded;
+                $this->eventDispatcher->dispatch( new CardGameRoundEndedEvent( $this->game ), CardGameRoundEndedEvent::NAME );
             }
             
             if ( $this->game->CurrentPlayer == $this->game->CurrentContract->Player && $this->game->ConsecutivePasses == 3 ) {

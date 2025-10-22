@@ -30,6 +30,8 @@ import PlayCardActionDto from '../../dto/Actions/playCardActionDto';
 import OpponentPlayCardActionDto from '../../dto/Actions/opponentPlayCardActionDto';
 import TrickEndedActionDto from '../../dto/Actions/trickEndedActionDto';
 import RoundEndedActionDto from '../../dto/Actions/roundEndedActionDto';
+import StartNewRoundActionDto from '../../dto/Actions/startNewRoundActionDto';
+import NewRoundStartedActionDto from '../../dto/Actions/newRoundStartedActionDto';
 
 import { Keys } from '../../utils/keys';
 
@@ -248,8 +250,25 @@ export class BridgeBeloteService extends AbstractGameService
                 console.log( 'WebSocket Action Round Ended', action );
                 
                 this.appState.cardGame.setValue( action.game );
+                
+                const playerCardsClone = [...this.appState.playerCards.getValue()];
+                for ( let i = 0; i < playerCardsClone.length; i++  ) {
+                    playerCardsClone[i] = [];
+                }
+                this.appState.playerCards.setValue( playerCardsClone );
+                
+                this.appState.playerBids.setValue( [] );
+                this.appState.deck.setValue( [] );
                 this.appState.pile.setValue( [] );
                 this.appState.bridgeBeloteScore.setValue( action.newScore );
+                
+                break;
+            }
+            case ActionNames.newRoundStarted: {
+                const action = JSON.parse( message.data ) as NewRoundStartedActionDto;
+                console.log( 'WebSocket Action NewRoundStartedActionDto', action );
+                
+                this.appState.cardGame.setValue( action.game );
                 
                 break;
             }
@@ -388,5 +407,13 @@ export class BridgeBeloteService extends AbstractGameService
             TrickNumber: game.TrickNumber
         };
         this.sendMessage( JSON.stringify( opponentPlayCardAction ) );
+    }
+    
+    startNewRound(): void
+    {
+        const startNewRoundAction: StartNewRoundActionDto = {
+            actionName: ActionNames.startNewRound,
+        };
+        this.sendMessage( JSON.stringify( startNewRoundAction ) );
     }
 }

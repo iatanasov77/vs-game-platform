@@ -24,6 +24,8 @@
     opponentPlayCard,
     trickEnded,
     roundEnded,
+    startNewRound,
+    newRoundStarted,
     
     serverWasTerminated
 }

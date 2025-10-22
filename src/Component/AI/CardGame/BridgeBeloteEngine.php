@@ -189,6 +189,8 @@ class BridgeBeloteEngine extends Engine
         $bids = new ArrayCollection( \iterator_to_array( $bidsIterator ) );
         $bid = $bids->first() ? BidType::fromValue( $bids->indexOf( $bids->key() ) ) : BidType::Pass;
         
+        $this->logger->log( print_r( $bid, true ), 'BridgeBeloteEngine' );
+        
         return $bid;
     }
     

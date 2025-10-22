@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\Collection;
 use Ratchet\RFC6455\Messaging\Frame;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Rules\CardGame\Game;
+use App\Component\Rules\CardGame\Deck;
 use App\Component\Rules\CardGame\PlayCardAction;
 use App\Component\Rules\CardGame\GameMechanics\RoundResult;
 
@@ -22,6 +23,7 @@ use App\Component\Dto\Actions\BidMadeActionDto;
 use App\Component\Dto\Actions\PlayingStartedActionDto;
 use App\Component\Dto\Actions\PlayCardActionDto;
 use App\Component\Dto\Actions\TrickEndedActionDto;
+use App\Component\Dto\Actions\RoundEndedActionDto;
 
 abstract class CardGameManager extends AbstractGameManager
 {
@@ -84,6 +86,31 @@ abstract class CardGameManager extends AbstractGameManager
             $this->Send( $this->Clients->get( PlayerPosition::North->value ), $biddingStartedAction );
             $this->Send( $this->Clients->get( PlayerPosition::West->value ), $biddingStartedAction );
         }
+    }
+    
+    public function EndRound(): void
+    {
+        $this->logger->log( "Card_Game_Round_Ended !!!", 'GameManager' );
+        
+        $score = $this->Game->GetNewScore();
+        
+        $action = new RoundEndedActionDto();
+        $action->game = Mapper::CardGameToDto( $this->Game );
+        $action->newScore = Mapper::RoundResultToDto( $score );
+        
+        $this->Send( $this->Clients->get( PlayerPosition::South->value ), $action );
+        $this->Send( $this->Clients->get( PlayerPosition::East->value ), $action );
+        $this->Send( $this->Clients->get( PlayerPosition::North->value ), $action );
+        $this->Send( $this->Clients->get( PlayerPosition::West->value ), $action );
+    }
+    
+    public function StartNewRound(): void
+    {
+        $this->Game->roundNumber++;
+        $this->Game->PlayState = GameState::firstBid;
+        $this->Game->Deck = new Deck();
+        
+        $this->StartGame();
     }
     
     abstract protected function DoBid( BidMadeActionDto $action ): void;

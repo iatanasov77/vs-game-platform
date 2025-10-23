@@ -303,6 +303,16 @@ class BridgeBeloteGameManager extends CardGameManager
         if ( $tricksWinner ) {
             $score = $this->Game->GetNewScore();
             $this->SendTrickWinner( $tricksWinner, $score );
+            
+            if ( $this->Game->PlayState != GameState::roundEnded && $this->AisTurn() ) {
+                $socket = $this->Clients->first();
+                $this->EnginPlayCard( $socket );
+                
+                $promise = Async\async( function () use ( $socket ) {
+                    $this->NewTurn( $socket );
+                })();
+                Async\await( $promise );
+            }
         }
         
         return true;
@@ -355,18 +365,28 @@ class BridgeBeloteGameManager extends CardGameManager
             $sleepMileseconds   = \rand( 700, 1200 );
             Async\delay( $sleepMileseconds / 1000 );
             
+            $nextPlayer = $this->Game->NextPlayer();
+            $this->Game->AddTrickAction( $playCardAction );
+            $this->Game->ValidCards = $this->Game->GetValidCards(
+                $this->Game->playerCards[$nextPlayer->value],
+                $this->Game->CurrentContract,
+                $this->Game->GetTrickActions()
+            );
+            
             $action = new OpponentPlayCardActionDto();
             $action->Card = Mapper::CardToDto( $playCardAction->Card, $playCardAction->Player );
             $action->Belote = $playCardAction->Belote;
             $action->Player = $playCardAction->Player;
             $action->TrickNumber = $playCardAction->TrickNumber;
-//             $action->nextPlayer = $this->Game->NextPlayer();
-//             $action->playState = $this->Game->PlayState;
             
-            $this->Game->AddTrickAction( $playCardAction );
+            $action->validCards = $this->Game->ValidCards->map(
+                function( $entry ) use ( $nextPlayer ) {
+                    return Mapper::CardToDto( $entry, $nextPlayer ); // PlayerPosition::South
+                }
+            )->getValues(); // ->toArray();
+            $action->nextPlayer = $nextPlayer;
+            
             $this->Send( $client, $action );
-            
-            
         })();
         Async\await( $promise );
     }

@@ -19,7 +19,7 @@ trait Helper
     protected function OrderTrickActionsByCardNoTrumpOrder( Collection $trickActions, string $direction ): Collection
     {
         $trickActionsIterator  = $trickActions->getIterator();
-        $trickActionsIterator->uasort( function ( $a, $b ) {
+        $trickActionsIterator->uasort( function ( $a, $b ) use ( $direction ) {
             return $direction == AbstractGameManager::COLLECTION_ORDER_DESC ?
                 $b->Card->NoTrumpOrder <=> $a->Card->NoTrumpOrder :
                 $a->Card->NoTrumpOrder <=> $b->Card->NoTrumpOrder

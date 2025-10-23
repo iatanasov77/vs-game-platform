@@ -14,13 +14,13 @@ class CardHelpers
     ): ?Card {
         foreach ( $availableCardsToPlay as $card ) {
             $playedCardsCount = $playedCards->filter(
-                function( $entry ) use $card {
+                function( $entry ) use ( $card ) {
                     return $entry && $entry->Suit == $card->Suit;
                 }
             )->count();
             
             $playerCardsCount = $playerCards->filter(
-                function( $entry ) use $card {
+                function( $entry ) use ( $card ) {
                     return $entry && $entry->Suit == $card->Suit;
                 }
             )->count();
@@ -103,13 +103,13 @@ class CardHelpers
     ): ?Card {
         foreach ( $availableCardsToPlay as $card ) {
             $playedCardsCount = $playedCards->filter(
-                function( $entry ) use $card {
+                function( $entry ) use ( $card ) {
                     return $entry && $entry->Suit == $card->Suit;
                 }
             )->count();
                 
             $playerCardsCount = $playerCards->filter(
-                function( $entry ) use $card {
+                function( $entry ) use ( $card ) {
                     return $entry && $entry->Suit == $card->Suit;
                 }
             )->count();

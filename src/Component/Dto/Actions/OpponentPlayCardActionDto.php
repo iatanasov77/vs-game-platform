@@ -17,4 +17,8 @@ class OpponentPlayCardActionDto extends ActionDto
     public PlayerPosition $Player;
     
     public int $TrickNumber;
+    
+    public array $validCards;
+    
+    public PlayerPosition $nextPlayer;
 }

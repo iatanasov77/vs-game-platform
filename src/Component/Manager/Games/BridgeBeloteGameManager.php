@@ -349,6 +349,8 @@ class BridgeBeloteGameManager extends CardGameManager
             
             $action = new OpponentBidsActionDto();
             $action->bid = Mapper::BidToDto( $bid );
+            
+            $action->validBids = $this->Game->AvailableBids->getValues();
             $action->nextPlayer = $this->Game->NextPlayer();
             $action->playState = $this->Game->PlayState;
             

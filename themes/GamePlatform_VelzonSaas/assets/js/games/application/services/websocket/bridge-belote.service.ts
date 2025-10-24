@@ -182,12 +182,13 @@ export class BridgeBeloteService extends AbstractGameService
                 
                 this.doBid( action.bid );
                 
-//                 const cGame = {
-//                     ...game,
-//                     currentPlayer: action.nextPlayer,
-//                     playState: action.playState
-//                 };
-//                 this.appState.cardGame.setValue( cGame );
+                const cGame = {
+                    ...game,
+                    validBids: action.validBids,
+                    currentPlayer: action.nextPlayer,
+                    playState: action.playState
+                };
+                this.appState.cardGame.setValue( cGame );
                 
                 break;
             }
@@ -360,6 +361,7 @@ export class BridgeBeloteService extends AbstractGameService
             actionName: ActionNames.opponentBids,
             bid: { ...bid, NextBids: [] },
             
+            validBids: [],
             nextPlayer: game.currentPlayer,
             playState: game.playState
         };

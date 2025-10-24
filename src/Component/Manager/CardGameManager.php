@@ -145,7 +145,7 @@ abstract class CardGameManager extends AbstractGameManager
         $playingStartedAction->contract = Mapper::BidToDto( $this->Game->CurrentContract );
         $playingStartedAction->validCards = $this->Game->ValidCards->map(
             function( $entry ) {
-                return Mapper::CardToDto( $entry, PlayerPosition::South );
+                return Mapper::CardToDto( $entry, $this->Game->CurrentPlayer );
             }
         )->toArray();
         $playingStartedAction->timer = Game::ClientCountDown;

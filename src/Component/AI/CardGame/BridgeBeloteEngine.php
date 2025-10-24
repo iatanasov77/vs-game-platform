@@ -51,7 +51,7 @@ class BridgeBeloteEngine extends Engine
         parent::__construct( $logger, $game );
         
         $this->validCardsService = new ValidCardsService();
-        $this->validAnnouncesService = new ValidAnnouncesService();
+        $this->validAnnouncesService = new ValidAnnouncesService( $this->logger );
         $this->trickWinnerService = new TrickWinnerService();
         
         $this->allTrumpsOursContractStrategy = new AllTrumpsOursContractStrategy();
@@ -124,7 +124,7 @@ class BridgeBeloteEngine extends Engine
     private function GetBid( PlayerGetBidContext $context ): BidType
     {
         $availableAnnounces = $this->validAnnouncesService->GetAvailableAnnounces( $context->MyCards );
-        $this->logger->log( print_r( $availableAnnounces->toArray(), true ), 'BridgeBeloteEngine' );
+        $this->logger->log( 'Available Announces for Player ' . $context->MyPosition->value . ': ' . \print_r( $availableAnnounces->toArray(), true ), 'BridgeBeloteEngine' );
         $announcePoints = \array_reduce(
             $availableAnnounces->toArray(),
             function( $carry, $item )
@@ -182,6 +182,12 @@ class BridgeBeloteEngine extends Engine
             );
         }
         
+        $bids = $bids->filter(
+            function( $entry ) {
+                return $entry >= 100;
+            }
+        );
+        
         $bidsIterator = $bids->getIterator();
         $bidsIterator->uasort( function ( $a, $b ) {
             return $b <=> $a;
@@ -189,7 +195,8 @@ class BridgeBeloteEngine extends Engine
         $bids = new ArrayCollection( \iterator_to_array( $bidsIterator ) );
         $bid = $bids->first() ? BidType::fromValue( $bids->indexOf( $bids->key() ) ) : BidType::Pass;
         
-        $this->logger->log( print_r( $bid, true ), 'BridgeBeloteEngine' );
+        $this->logger->log( 'Available Bids for Player ' . $context->MyPosition->value . ': ' . \print_r( $context->AvailableBids->toArray(), true ), 'BridgeBeloteEngine' );
+        $this->logger->log( 'Selected Bid for Player ' . $context->MyPosition->value . ': ' . \print_r( $bid, true ), 'BridgeBeloteEngine' );
         
         return $bid;
     }

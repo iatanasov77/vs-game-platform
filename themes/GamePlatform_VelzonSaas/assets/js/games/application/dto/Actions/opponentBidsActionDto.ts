@@ -6,6 +6,7 @@ import GameState from '_@/GamePlatform/Model/Core/gameState';
 
 interface OpponentBidsActionDto extends ActionDto {
     bid: BidDto;
+    validBids: BidDto[];
     nextPlayer: PlayerPosition;
     playState: GameState;
 }

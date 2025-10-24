@@ -4,6 +4,7 @@ use BitMask\EnumBitMask;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
+use App\Component\GameLogger;
 use App\Component\Type\BidType;
 use App\Component\Type\CardSuit;
 use App\Component\Type\CardType;
@@ -17,6 +18,14 @@ use App\Component\Rules\CardGame\BidTypeExtensions;
 class ValidAnnouncesService
 {
     use Helper;
+    
+    /** @var GameLogger */
+    private  $logger;
+    
+    public function __construct( GameLogger $logger )
+    {
+        $this->logger = $logger;
+    }
     
     public function IsBeloteAllowed( Collection $playerCards, EnumBitMask $contract, Collection $currentTrickActions, Card $playedCard ): bool
     {
@@ -212,8 +221,7 @@ class ValidAnnouncesService
                 if ( $suitedCards[$i]->Type->value == $previousCardValue + 1 ) {
                     $count++;
                 } else {
-                    switch ( $count )
-                    {
+                    switch ( $count ) {
                         case 3:
                             $combinations[] = new Announce( AnnounceType::SequenceOf3, $suitedCards[$i - 1] );
                             break;
@@ -235,8 +243,7 @@ class ValidAnnouncesService
                 $previousCardValue = $suitedCards[$i]->Type->value;
             }
             
-            switch ( $count )
-            {
+            switch ( $count ) {
                 case 3:
                     $combinations[] = new Announce( AnnounceType::SequenceOf3, $suitedCards[$suitedCards->count() - 1] );
                     break;

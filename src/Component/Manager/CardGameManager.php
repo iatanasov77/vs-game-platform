@@ -158,13 +158,12 @@ abstract class CardGameManager extends AbstractGameManager
         $this->Game->PlayState = GameState::playing;
     }
     
-    protected function SendTrickWinner( PlayerPosition $winner, RoundResult $newScore ): void
+    protected function SendTrickWinner( PlayerPosition $winner ): void
     {
         $game = Mapper::CardGameToDto( $this->Game );
         
         $trickEndedAction = new TrickEndedActionDto();
         $trickEndedAction->game = $game;
-        $trickEndedAction->newScore = Mapper::RoundResultToDto( $newScore );
         
         $this->Send( $this->Clients->get( PlayerPosition::South->value ), $trickEndedAction );
         $this->Send( $this->Clients->get( PlayerPosition::East->value ), $trickEndedAction );

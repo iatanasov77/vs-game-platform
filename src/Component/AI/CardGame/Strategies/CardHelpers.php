@@ -26,7 +26,7 @@ class CardHelpers
             )->count();
                 
             if ( $card->Type == CardType::Jack && $playedCardsCount + $playerCardsCount > $cardsThreshold ) {
-                return card;
+                return $card;
             }
             
             if ( $card->Type == CardType::Nine

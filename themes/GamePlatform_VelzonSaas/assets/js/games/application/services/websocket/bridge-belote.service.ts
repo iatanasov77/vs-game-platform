@@ -243,7 +243,6 @@ export class BridgeBeloteService extends AbstractGameService
                 
                 this.appState.cardGame.setValue( action.game );
                 this.appState.pile.setValue( [] );
-                this.appState.bridgeBeloteScore.setValue( action.newScore );
                 
                 break;
             }

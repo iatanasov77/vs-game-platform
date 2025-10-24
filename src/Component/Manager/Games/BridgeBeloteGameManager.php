@@ -301,8 +301,7 @@ class BridgeBeloteGameManager extends CardGameManager
         }
         
         if ( $tricksWinner ) {
-            $score = $this->Game->GetNewScore();
-            $this->SendTrickWinner( $tricksWinner, $score );
+            $this->SendTrickWinner( $tricksWinner );
             
             if ( $this->Game->PlayState != GameState::roundEnded && $this->AisTurn() ) {
                 $socket = $this->Clients->first();

@@ -1,3 +1,15 @@
+0.17.1	|	Release date: **28.10.2025**
+============================================
+* New Features:
+  - Ending and Starting Card Game Round.
+  - Improve Card Game AI Bidding.
+  - Remove Card Game Scoring From TrickendedAction.
+  - Ending BridgeBelote Round.
+* Bug-Fixes:
+  - Fix AI Engine that Play Wrong Cards.
+  - Fix Card Game Playing a Round.
+
+
 0.17.0	|	Release date: **16.10.2025**
 ============================================
 * New Features:

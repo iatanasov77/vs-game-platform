@@ -280,6 +280,7 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
         if ( ! this.game ) {
             return;
         }
+        //console.log( 'Valid Cards', this.game.validCards );
         
         // resetting all
         this.cardAreas.forEach( ( rect ) => {
@@ -752,7 +753,7 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
             let cardX = pa.x + pa.width / 2 - ( cardsWidth / 2 ) + ( c * this.cardOffset );
             let areaWidth = c == ( playerCards.length - 1 ) ? this.cardWidth : this.cardOffset;
             
-            this.cardAreas[c].set( cardX, cardY, areaWidth, this.cardHeight, playerCards[c] .cardIndex );
+            this.cardAreas[c].set( cardX, cardY, areaWidth, this.cardHeight, playerCards[c].cardIndex );
         }
     }
     

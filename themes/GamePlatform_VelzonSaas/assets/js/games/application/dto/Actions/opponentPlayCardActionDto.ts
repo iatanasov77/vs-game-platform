@@ -8,6 +8,9 @@ interface OpponentPlayCardActionDto extends ActionDto {
     Belote: boolean;
     Player: PlayerPosition;
     TrickNumber: number;
+    
+    validCards: CardDto[];
+    nextPlayer: PlayerPosition;
 }
 
 export default OpponentPlayCardActionDto;

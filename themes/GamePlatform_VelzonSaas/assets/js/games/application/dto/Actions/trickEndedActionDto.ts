@@ -5,7 +5,6 @@ import BridgeBeloteScoreDto from '_@/GamePlatform/Model/CardGame/bridgeBeloteSco
 
 interface TrickEndedActionDto extends ActionDto {
     game: CardGameDto;
-    newScore: BridgeBeloteScoreDto;
 }
 
 export default TrickEndedActionDto;

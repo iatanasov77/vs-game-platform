@@ -11,5 +11,4 @@ class TrickEndedActionDto extends ActionDto
     }
     
     public GameDto $game;
-    public BridgeBeloteScoreDto $newScore;
 }

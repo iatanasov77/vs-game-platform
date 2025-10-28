@@ -24,8 +24,12 @@
         <!--
          -- Card Games Buttons
         -->
-        <button *ngIf="gameCode == 'bridge-belote'" (click)="playWithComputer()" class="default-button">
+        <button *ngIf="gameCode == 'bridge-belote' && ! newRoundVisible" (click)="playWithComputer()" class="default-button">
             {{ 'game_board.play_with_computer' | translate }}
+        </button>
+        
+        <button (click)="newRound()" *ngIf="newRoundVisible" class="default-button">
+            {{ 'game_board.new_round' | translate }}
         </button>
         
         <!--
@@ -61,10 +65,6 @@
         <button class="red-button" (click)="resignClick()" *ngIf="! tutorial">
             <i class="fas fa-flag"></i>
             {{ 'menu.resign' | translate }}
-        </button>
-        
-        <button (click)="newRound()" *ngIf="newRoundVisible" class="default-button">
-            {{ 'game_board.new_round' | translate }}
         </button>
         
     </ng-container>

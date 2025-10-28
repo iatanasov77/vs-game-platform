@@ -66,3 +66,4 @@ services:
         class: App\Component\Rules\GameFactory
         arguments:
             - '@app_game_logger'
+            - '@event_dispatcher'

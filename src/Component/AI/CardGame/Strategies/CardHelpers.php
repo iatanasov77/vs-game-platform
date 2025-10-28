@@ -14,19 +14,19 @@ class CardHelpers
     ): ?Card {
         foreach ( $availableCardsToPlay as $card ) {
             $playedCardsCount = $playedCards->filter(
-                function( $entry ) use $card {
+                function( $entry ) use ( $card ) {
                     return $entry && $entry->Suit == $card->Suit;
                 }
             )->count();
             
             $playerCardsCount = $playerCards->filter(
-                function( $entry ) use $card {
+                function( $entry ) use ( $card ) {
                     return $entry && $entry->Suit == $card->Suit;
                 }
             )->count();
                 
             if ( $card->Type == CardType::Jack && $playedCardsCount + $playerCardsCount > $cardsThreshold ) {
-                return card;
+                return $card;
             }
             
             if ( $card->Type == CardType::Nine
@@ -103,13 +103,13 @@ class CardHelpers
     ): ?Card {
         foreach ( $availableCardsToPlay as $card ) {
             $playedCardsCount = $playedCards->filter(
-                function( $entry ) use $card {
+                function( $entry ) use ( $card ) {
                     return $entry && $entry->Suit == $card->Suit;
                 }
             )->count();
                 
             $playerCardsCount = $playerCards->filter(
-                function( $entry ) use $card {
+                function( $entry ) use ( $card ) {
                     return $entry && $entry->Suit == $card->Suit;
                 }
             )->count();

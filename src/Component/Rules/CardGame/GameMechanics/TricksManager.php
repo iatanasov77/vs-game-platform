@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use App\Component\GameLogger;
 use App\Component\Rules\CardGame\Game;
 
+use App\Component\Type\GameState;
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\BidType;
 use App\Component\Rules\CardGame\Context\PlayerGetAnnouncesContext;
@@ -46,7 +47,7 @@ class TricksManager
         
         $this->trickWinnerService = new TrickWinnerService();
         $this->validCardsService = new ValidCardsService();
-        $this->validAnnouncesService = new ValidAnnouncesService();
+        $this->validAnnouncesService = new ValidAnnouncesService( $this->logger );
         
         $this->TrickActions = new ArrayCollection();
     }
@@ -230,9 +231,11 @@ class TricksManager
             $this->game->LastTrickWinner = $winner;
         }
         
-        // The player that wins the trick plays first
-        $this->game->CurrentPlayer = $winner;
-        $this->TrickActions = new ArrayCollection();
+        if ( $this->game->PlayState == GameState::playing ) {
+            // The player that wins the trick plays first
+            $this->game->CurrentPlayer = $winner;
+            $this->TrickActions = new ArrayCollection();
+        }
         
         return $winner;
     }

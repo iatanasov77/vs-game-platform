@@ -17,6 +17,7 @@ class OpponentBidsActionDto extends ActionDto
     #[Context([BidDtoDenormalizer::class])]
     public BidDto $bid;
     
+    public array $validBids;
     public PlayerPosition $nextPlayer;
     public GameState $playState;
 }

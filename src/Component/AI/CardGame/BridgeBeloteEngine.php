@@ -10,6 +10,7 @@ use App\Component\Type\CardSuit;
 use App\Component\GameLogger;
 use App\Component\Type\PlayerPosition;
 use App\Component\Rules\CardGame\Game;
+use App\Component\Rules\CardGame\GameMechanics\ValidCardsService;
 use App\Component\Rules\CardGame\GameMechanics\ValidAnnouncesService;
 use App\Component\Rules\CardGame\GameMechanics\TrickWinnerService;
 use App\Component\Rules\CardGame\Card;
@@ -49,7 +50,8 @@ class BridgeBeloteEngine extends Engine
     {
         parent::__construct( $logger, $game );
         
-        $this->validAnnouncesService = new ValidAnnouncesService();
+        $this->validCardsService = new ValidCardsService();
+        $this->validAnnouncesService = new ValidAnnouncesService( $this->logger );
         $this->trickWinnerService = new TrickWinnerService();
         
         $this->allTrumpsOursContractStrategy = new AllTrumpsOursContractStrategy();
@@ -73,6 +75,12 @@ class BridgeBeloteEngine extends Engine
     
     public function PlayCard(): PlayCardAction
     {
+        $availableCards = $this->validCardsService->GetValidCards(
+            $this->EngineGame->playerCards[$this->EngineGame->CurrentPlayer->value],
+            $this->EngineGame->CurrentContract->Type,
+            $this->EngineGame->GetTrickActions()
+        );
+        
         $context = new PlayerPlayCardContext();
         $context->MyPosition = $this->EngineGame->CurrentPlayer;
         $context->CurrentContract = $this->EngineGame->CurrentContract;
@@ -80,7 +88,7 @@ class BridgeBeloteEngine extends Engine
         $context->Announces = $this->EngineGame->GetAvailableAnnounces( $this->EngineGame->playerCards[$this->EngineGame->CurrentPlayer->value] );
         $context->CurrentTrickActions = $this->EngineGame->GetTrickActions();
         $context->RoundActions = $this->EngineGame->GetTrickActions();
-        $context->AvailableCardsToPlay = $this->EngineGame->playerCards[$this->EngineGame->CurrentPlayer->value];
+        $context->AvailableCardsToPlay = $availableCards;
         $context->CurrentTrickNumber = $this->EngineGame->trickNumber;
         
         $action = $this->_PlayCard( $context );
@@ -116,7 +124,7 @@ class BridgeBeloteEngine extends Engine
     private function GetBid( PlayerGetBidContext $context ): BidType
     {
         $availableAnnounces = $this->validAnnouncesService->GetAvailableAnnounces( $context->MyCards );
-        $this->logger->log( print_r( $availableAnnounces->toArray(), true ), 'BridgeBeloteEngine' );
+        $this->logger->log( 'Available Announces for Player ' . $context->MyPosition->value . ': ' . \print_r( $availableAnnounces->toArray(), true ), 'BridgeBeloteEngine' );
         $announcePoints = \array_reduce(
             $availableAnnounces->toArray(),
             function( $carry, $item )
@@ -174,12 +182,21 @@ class BridgeBeloteEngine extends Engine
             );
         }
         
+        $bids = $bids->filter(
+            function( $entry ) {
+                return $entry >= 100;
+            }
+        );
+        
         $bidsIterator = $bids->getIterator();
         $bidsIterator->uasort( function ( $a, $b ) {
             return $b <=> $a;
         });
         $bids = new ArrayCollection( \iterator_to_array( $bidsIterator ) );
         $bid = $bids->first() ? BidType::fromValue( $bids->indexOf( $bids->key() ) ) : BidType::Pass;
+        
+        $this->logger->log( 'Available Bids for Player ' . $context->MyPosition->value . ': ' . \print_r( $context->AvailableBids->toArray(), true ), 'BridgeBeloteEngine' );
+        $this->logger->log( 'Selected Bid for Player ' . $context->MyPosition->value . ': ' . \print_r( $bid, true ), 'BridgeBeloteEngine' );
         
         return $bid;
     }

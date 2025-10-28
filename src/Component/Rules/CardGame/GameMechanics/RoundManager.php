@@ -89,6 +89,7 @@ class RoundManager
         
         if ( $this->game->PlayState == GameState::playing ) {
             if ( $this->tricksManager->GetTrickActionNumber() == 4 ) {
+                $this->game->trickNumber++;
                 return $this->tricksManager->GetTricksWinner();
             }
         }

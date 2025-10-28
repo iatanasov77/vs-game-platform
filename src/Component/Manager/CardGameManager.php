@@ -93,6 +93,7 @@ abstract class CardGameManager extends AbstractGameManager
         $this->logger->log( "Card_Game_Round_Ended !!!", 'GameManager' );
         
         $score = $this->Game->GetNewScore();
+        $this->Game->PlayState = GameState::roundEnded;
         
         $action = new RoundEndedActionDto();
         $action->game = Mapper::CardGameToDto( $this->Game );

@@ -64,7 +64,7 @@ class ValidCardsService
             }
         );
         
-        if ( $playerCardsOfSuit ) {
+        if ( $playerCardsOfSuit->count() ) {
             $biggestCard = $this->BiggestTrumpCard( $currentTrickActions, $firstCardSuit );
             
             $biggerPlayerCards  = $playerCards->filter(

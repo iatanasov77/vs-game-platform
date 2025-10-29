@@ -161,6 +161,11 @@ abstract class CardGameManager extends AbstractGameManager
     
     protected function SendTrickWinner( PlayerPosition $winner ): void
     {
+        $this->Game->ValidCards = $this->Game->GetValidCards(
+            $this->Game->playerCards[$winner->value],
+            $this->Game->CurrentContract,
+            new ArrayCollection()
+        );
         $game = Mapper::CardGameToDto( $this->Game );
         
         $trickEndedAction = new TrickEndedActionDto();

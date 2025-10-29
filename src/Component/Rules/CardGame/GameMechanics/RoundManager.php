@@ -174,7 +174,6 @@ class RoundManager
         foreach ( $this->game->playerCards as $k => $cards ) {
             $this->game->playerCards[$k] = $this->sortCardsBySuite( $cards );
         }
-        
     }
     
     private function sortCardsBySuite( Collection $cards ): Collection

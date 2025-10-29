@@ -109,7 +109,7 @@ class BridgeBeloteEngine extends Engine
         }
         
         // Update information after the action
-        $this->EngineGame->playerCards[$this->EngineGame->CurrentPlayer->value]->Remove( $action->Card );
+        $this->EngineGame->playerCards[$this->EngineGame->CurrentPlayer->value]->removeElement( $action->Card );
         $action->Player = $this->EngineGame->CurrentPlayer;
         $action->TrickNumber = $this->EngineGame->GetTrickActionNumber() + 1;
         

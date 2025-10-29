@@ -301,7 +301,7 @@ class BridgeBeloteGameManager extends CardGameManager
         }
         
         if ( $tricksWinner ) {
-            if ( $this->Game->trickNumber == 8 ) {
+            if ( $this->Game->trickNumber > 8 ) {
                 $this->Game->roundNumber++;
                 $this->Game->trickNumber = 1;
                 $this->EndRound();

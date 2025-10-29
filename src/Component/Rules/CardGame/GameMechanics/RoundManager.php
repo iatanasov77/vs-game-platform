@@ -10,8 +10,10 @@ use App\Component\GameLogger;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerPosition;
 
+use App\Component\Rules\CardGame\Helper;
 use App\Component\Rules\CardGame\Game;
 use App\Component\Rules\CardGame\Card;
+use App\Component\Type\CardSuit;
 use App\Component\Rules\CardGame\Deck;
 use App\Component\Rules\CardGame\Bid;
 use App\Component\Rules\CardGame\PlayerPositionExtensions;
@@ -19,6 +21,8 @@ use App\Component\Rules\CardGame\PlayCardAction;
 
 class RoundManager
 {
+    use Helper;
+    
     /** @var Game */
     private Game $game;
     
@@ -166,5 +170,36 @@ class RoundManager
                 }
             }
         }
+        
+        foreach ( $this->game->playerCards as $k => $cards ) {
+            $this->game->playerCards[$k] = $this->sortCardsBySuite( $cards );
+        }
+        
+    }
+    
+    private function sortCardsBySuite( Collection $cards ): Collection
+    {
+        // Group by suit
+        $cardsBySuit = [
+            CardSuit::Club->value       => new ArrayCollection(),
+            CardSuit::Diamond->value    => new ArrayCollection(),
+            CardSuit::Heart->value      => new ArrayCollection(),
+            CardSuit::Spade->value      => new ArrayCollection(),
+        ];
+        foreach ( $cards as $card ) {
+            $cardsBySuit[$card->Suit->value][] = $card;
+        }
+        
+        // Check each suit
+        for ( $suitIndex = 0; $suitIndex < 4; $suitIndex++ ) {
+            $cardsBySuit[$suitIndex] = $this->sortCards( $cardsBySuit[$suitIndex] );
+        }
+        
+        return new ArrayCollection( \array_merge(
+            $cardsBySuit[CardSuit::Club->value]->toArray(),
+            $cardsBySuit[CardSuit::Diamond->value]->toArray(),
+            $cardsBySuit[CardSuit::Heart->value]->toArray(),
+            $cardsBySuit[CardSuit::Spade->value]->toArray()
+        ));
     }
 }

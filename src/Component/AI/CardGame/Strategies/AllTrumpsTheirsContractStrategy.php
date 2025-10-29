@@ -26,8 +26,8 @@ class AllTrumpsTheirsContractStrategy implements IPlayStrategy
         
         // Play card of the same suit as one of my teammate's bids
         $teammate = PlayerPositionExtensions::GetTeammate( $context->MyPosition );
-        for ( $i = 0; $i < \count( Card::AllSuits ); $i++ ) {
-            $cardSuit = Card::AllSuits[$i];
+        for ( $i = 0; $i < \count( Card::$AllSuits ); $i++ ) {
+            $cardSuit = Card::$AllSuits[$i];
             $hasTeammateBid = ! $context->Bids->filter(
                 function( $entry ) use ( $teammate, $cardSuit ) {
                     return $entry && $entry->Player == $teammate && $entry->Type == CardExtensions::ToBidType( $cardSuit );
@@ -48,7 +48,7 @@ class AllTrumpsTheirsContractStrategy implements IPlayStrategy
             }
         }
         
-        for ( $i = 0; $i < \count( Card::AllSuits ); $i++ ) {
+        for ( $i = 0; $i < \count( Card::$AllSuits ); $i++ ) {
             $cardSuit = Card.AllSuits[$i];
             if ( $context.AvailableCardsToPlay->ontains( Card::GetCard( $cardSuit, CardType::Queen ) )
                 && $context.AvailableCardsToPlay->Contains( Card::GetCard( $cardSuit, CardType::King ) )

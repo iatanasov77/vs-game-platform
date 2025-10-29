@@ -31,7 +31,6 @@ import OpponentPlayCardActionDto from '../../dto/Actions/opponentPlayCardActionD
 import TrickEndedActionDto from '../../dto/Actions/trickEndedActionDto';
 import RoundEndedActionDto from '../../dto/Actions/roundEndedActionDto';
 import StartNewRoundActionDto from '../../dto/Actions/startNewRoundActionDto';
-import NewRoundStartedActionDto from '../../dto/Actions/newRoundStartedActionDto';
 
 import { Keys } from '../../utils/keys';
 
@@ -262,14 +261,6 @@ export class BridgeBeloteService extends AbstractGameService
                 this.appState.deck.setValue( [] );
                 this.appState.pile.setValue( [] );
                 this.appState.bridgeBeloteScore.setValue( action.newScore );
-                
-                break;
-            }
-            case ActionNames.newRoundStarted: {
-                const action = JSON.parse( message.data ) as NewRoundStartedActionDto;
-                console.log( 'WebSocket Action NewRoundStartedActionDto', action );
-                
-                this.appState.cardGame.setValue( action.game );
                 
                 break;
             }

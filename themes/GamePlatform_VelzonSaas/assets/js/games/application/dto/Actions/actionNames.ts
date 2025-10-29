@@ -25,7 +25,6 @@
     trickEnded,
     roundEnded,
     startNewRound,
-    newRoundStarted,
     
     serverWasTerminated
 }

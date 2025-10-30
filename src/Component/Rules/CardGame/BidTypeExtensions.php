@@ -24,5 +24,4 @@ class BidTypeExtensions
                 throw new \RuntimeException( 'BidTypeExtensions Error' );
         }
     }
-    
 }

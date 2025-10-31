@@ -642,7 +642,7 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
             return this.debugDrawPile();
         }
         
-        if ( ! this.pile.length ) { // this.game.pile.length
+        if ( ! this.pile.length ) {
             return;
         }
         

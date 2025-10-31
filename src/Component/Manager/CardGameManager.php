@@ -188,13 +188,18 @@ abstract class CardGameManager extends AbstractGameManager
         );
         $game = Mapper::CardGameToDto( $this->Game );
         
-        $trickEndedAction = new TrickEndedActionDto();
-        $trickEndedAction->game = $game;
-        
-        $this->Send( $this->Clients->get( PlayerPosition::South->value ), $trickEndedAction );
-        $this->Send( $this->Clients->get( PlayerPosition::East->value ), $trickEndedAction );
-        $this->Send( $this->Clients->get( PlayerPosition::North->value ), $trickEndedAction );
-        $this->Send( $this->Clients->get( PlayerPosition::West->value ), $trickEndedAction );
+        $promise = Async\async( function () use ( $game ) {
+            Async\delay( 1.2 );
+            
+            $trickEndedAction = new TrickEndedActionDto();
+            $trickEndedAction->game = $game;
+            
+            $this->Send( $this->Clients->get( PlayerPosition::South->value ), $trickEndedAction );
+            $this->Send( $this->Clients->get( PlayerPosition::East->value ), $trickEndedAction );
+            $this->Send( $this->Clients->get( PlayerPosition::North->value ), $trickEndedAction );
+            $this->Send( $this->Clients->get( PlayerPosition::West->value ), $trickEndedAction );
+        })();
+        Async\await( $promise );
     }
     
     protected function SaveWinner( CardGameTeam $team ): ?array

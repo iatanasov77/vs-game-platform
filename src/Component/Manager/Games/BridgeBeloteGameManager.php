@@ -297,6 +297,7 @@ class BridgeBeloteGameManager extends CardGameManager
                 return false;
             }
             
+            //sleep( 10 );
             $this->SendTrickWinner( $tricksWinner );
             
             if ( $this->Game->PlayState != GameState::roundEnded && $this->AisTurn() ) {

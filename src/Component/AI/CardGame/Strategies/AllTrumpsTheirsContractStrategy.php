@@ -1,6 +1,8 @@
 <?php namespace App\Component\AI\CardGame\Strategies;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\CardType;
 use App\Component\Rules\CardGame\Context\PlayerPlayCardContext;
@@ -50,7 +52,7 @@ class AllTrumpsTheirsContractStrategy implements IPlayStrategy
         }
         
         for ( $i = 0; $i < \count( Card::$AllSuits ); $i++ ) {
-            $cardSuit = Card.AllSuits[$i];
+            $cardSuit = Card::$AllSuits[$i];
             if ( $context->AvailableCardsToPlay->contains( Card::GetCard( $cardSuit, CardType::Queen ) )
                 && $context->AvailableCardsToPlay->contains( Card::GetCard( $cardSuit, CardType::King ) )
             ) {

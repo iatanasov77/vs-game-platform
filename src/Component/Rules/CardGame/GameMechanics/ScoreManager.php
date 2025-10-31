@@ -184,43 +184,38 @@ class ScoreManager
         // All trumps
         if ( $bidType->has( BidType::AllTrumps ) ) {
             if ( $points % 10 > 4 ) {
-                return ( $points / 10 ) + 1;
+                return \intval( ( $points / 10 ) + 1 );
             }
             
             if ( $points % 10 == 4 ) {
                 if ( $winner ) {
-                    return $points / 10;
+                    return \intval( $points / 10 );
                 }
                 
-                return ( $points / 10 ) + 1;
+                return \intval( ( $points / 10 ) + 1 );
             }
             
-            return $points / 10;
+            return \intval( $points / 10 );
         }
         
         // No trumps
         if ( $bidType->has( BidType::NoTrumps ) ) {
-            return self::RoundPoints( $points );
+            return \intval( $points / 10 );
         }
         
         // Trump
         if ( $points % 10 > 6 ) {
-            return ( $points / 10 ) + 1;
+            return \intval( ( $points / 10 ) + 1 );
         }
         
         if ( $points % 10 == 6 ) {
             if ( $winner ) {
-                return $points / 10;
+                return \intval( $points / 10 );
             }
             
-            return ( $points / 10 ) + 1;
+            return \intval( ( $points / 10 ) + 1 );
         }
         
-        return $points / 10;
-    }
-    
-    private static function RoundPoints( int $points ): int
-    {
-        return ( int ) \round( $points / 10 );
+        return \intval( $points / 10 );
     }
 }

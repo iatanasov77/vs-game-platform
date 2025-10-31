@@ -1,6 +1,8 @@
 <?php namespace App\Component\AI\CardGame\Strategies;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\CardType;
 use App\Component\Rules\CardGame\Context\PlayerPlayCardContext;

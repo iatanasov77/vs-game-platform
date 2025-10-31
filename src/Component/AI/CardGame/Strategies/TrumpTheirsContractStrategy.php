@@ -106,7 +106,6 @@ class TrumpTheirsContractStrategy implements IPlayStrategy
         $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
             return $a->NoTrumpOrder <=> $b->NoTrumpOrder;
         });
-        
         $availableCards = new ArrayCollection( \iterator_to_array( $availableCardsToPlayIterator ) );
         
         return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
@@ -118,7 +117,6 @@ class TrumpTheirsContractStrategy implements IPlayStrategy
         $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
             return $a->NoTrumpOrder <=> $b->NoTrumpOrder;
         });
-        
         $availableCards = new ArrayCollection( \iterator_to_array( $availableCardsToPlayIterator ) );
         
         return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
@@ -130,7 +128,6 @@ class TrumpTheirsContractStrategy implements IPlayStrategy
         $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
             return $a->NoTrumpOrder <=> $b->NoTrumpOrder;
         });
-        
         $availableCards = new ArrayCollection( \iterator_to_array( $availableCardsToPlayIterator ) );
         
         return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
@@ -144,13 +141,12 @@ class TrumpTheirsContractStrategy implements IPlayStrategy
             function( $entry ) use ( $trumpSuit ) {
                 return $entry->Suit != $trumpSuit && $entry->Type != CardType::Ace;
             }
-            );
+        );
         if ( PlayerPositionExtensions::IsInSameTeamWith( $trickWinner, $context->MyPosition ) && $cardsToPlay->count() ) {
             $availableCardsToPlayIterator = $cardsToPlay->getIterator();
             $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
                 return $a->NoTrumpOrder <=> $b->NoTrumpOrder;
             });
-            
             $availableCards = new ArrayCollection( \iterator_to_array( $availableCardsToPlayIterator ) );
             
             return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
@@ -160,7 +156,6 @@ class TrumpTheirsContractStrategy implements IPlayStrategy
         $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
             return $a->NoTrumpOrder <=> $b->NoTrumpOrder;
         });
-        
         $availableCards = new ArrayCollection( \iterator_to_array( $availableCardsToPlayIterator ) );
         
         return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)

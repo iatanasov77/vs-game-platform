@@ -3,7 +3,9 @@
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
+use React\Async;
 use Ratchet\RFC6455\Messaging\Frame;
+
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Rules\CardGame\Game;
 use App\Component\Rules\CardGame\Deck;
@@ -93,6 +95,7 @@ abstract class CardGameManager extends AbstractGameManager
         $this->logger->log( "Card_Game_Round_Ended !!!", 'GameManager' );
         
         $score = $this->Game->GetNewScore();
+        $this->Game->CurrentPlayer = $this->Game->firstInRound;
         $this->Game->PlayState = GameState::roundEnded;
         
         $action = new RoundEndedActionDto();
@@ -117,6 +120,23 @@ abstract class CardGameManager extends AbstractGameManager
     abstract protected function DoBid( BidMadeActionDto $action ): void;
     
     abstract protected function PlayCard( PlayCardActionDto $action ): void;
+    
+    protected function PlayRound( WebsocketClientInterface $socket ): void
+    {
+        if ( $this->Game->PlayState != GameState::roundEnded && $this->AisTurn() ) {
+            $this->logger->log( "NewTurn for AI", 'SwitchPlayer' );
+            if ( $this->Game->PlayState == GameState::bidding ) {
+                $this->EnginBids( $socket );
+            } else {
+                $this->EnginPlayCard( $socket );
+            }
+            
+            $promise = Async\async( function () use ( $socket ) {
+                $this->NewTurn( $socket );
+            })();
+            Async\await( $promise );
+        }
+    }
     
     protected function StartGamePlay(): void
     {

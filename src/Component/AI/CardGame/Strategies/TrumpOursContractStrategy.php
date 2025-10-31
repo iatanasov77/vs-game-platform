@@ -114,7 +114,6 @@ class TrumpOursContractStrategy implements IPlayStrategy
         $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {
             return $b->NoTrumpOrder <=> $a->NoTrumpOrder;
         });
-        
         $availableCards = new ArrayCollection( \iterator_to_array( $cardsToPlayIterator ) );
         
         return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
@@ -128,7 +127,6 @@ class TrumpOursContractStrategy implements IPlayStrategy
         $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {
             return $b->NoTrumpOrder <=> $a->NoTrumpOrder;
         });
-        
         $availableCards = new ArrayCollection( \iterator_to_array( $cardsToPlayIterator ) );
         
         return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
@@ -142,7 +140,6 @@ class TrumpOursContractStrategy implements IPlayStrategy
         $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {
             return $b->NoTrumpOrder <=> $a->NoTrumpOrder;
         });
-        
         $availableCards = new ArrayCollection( \iterator_to_array( $cardsToPlayIterator ) );
         
         return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
@@ -162,7 +159,6 @@ class TrumpOursContractStrategy implements IPlayStrategy
             $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {
                 return $b->NoTrumpOrder <=> $a->NoTrumpOrder;
             });
-            
             $availableCards = new ArrayCollection( \iterator_to_array( $cardsToPlayIterator ) );
             
             return new PlayCardAction( $availableCards->last() ); // .Highest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
@@ -172,7 +168,6 @@ class TrumpOursContractStrategy implements IPlayStrategy
         $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {
             return $b->NoTrumpOrder <=> $a->NoTrumpOrder;
         });
-        
         $availableCards = new ArrayCollection( \iterator_to_array( $cardsToPlayIterator ) );
         
         return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)

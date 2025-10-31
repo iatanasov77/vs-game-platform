@@ -148,7 +148,7 @@ export class BridgeBeloteService extends AbstractGameService
             }
             case ActionNames.biddingStarted: {
                 const biddingStartedAction = JSON.parse( message.data ) as BiddingStartedActionDto;
-                console.log( 'Bidding Started Action' + new Date().toLocaleTimeString(), biddingStartedAction );
+                //console.log( 'Bidding Started Action' + new Date().toLocaleTimeString(), biddingStartedAction );
                 
                 this.appState.playerCards.setValue( biddingStartedAction.playerCards );
                 const cGame = {
@@ -177,7 +177,7 @@ export class BridgeBeloteService extends AbstractGameService
                 //alert( 'WebSocket Action Opponent Move' );
                 
                 const action = JSON.parse( message.data ) as OpponentBidsActionDto;
-                console.log( 'WebSocket Action Opponent Bids', action );
+                //console.log( 'WebSocket Action Opponent Bids', action );
                 
                 this.doBid( action.bid );
                 
@@ -222,7 +222,7 @@ export class BridgeBeloteService extends AbstractGameService
             }
             case ActionNames.opponentPlayCard: {
                 const action = JSON.parse( message.data ) as OpponentPlayCardActionDto;
-                console.log( 'WebSocket Action Opponent Play Card', action );
+                //console.log( 'WebSocket Action Opponent Play Card', action );
                 
                 this.doPlayCard( action.Card );
                 
@@ -238,7 +238,7 @@ export class BridgeBeloteService extends AbstractGameService
             }
             case ActionNames.trickEnded: {
                 const action = JSON.parse( message.data ) as TrickEndedActionDto;
-                console.log( 'WebSocket Action Trick Ended', action );
+                //console.log( 'WebSocket Action Trick Ended', action );
                 
                 this.appState.cardGame.setValue( action.game );
                 this.appState.pile.setValue( [] );
@@ -338,7 +338,7 @@ export class BridgeBeloteService extends AbstractGameService
     
     sendBid( bid: BidDto ): void
     {
-        //console.log( 'Player Send Bid', bid );
+        console.log( 'Player Send Bid', bid );
         const game = this.appState.cardGame.getValue();
         
         const myBidAction: BidMadeActionDto = {

@@ -51,19 +51,20 @@ class AllTrumpsOursContractStrategy implements IPlayStrategy
         
         for ( $i = 0; $i < \count( Card::$AllSuits ); $i++ ) {
             $cardSuit = Card::$AllSuits[$i];
-            if ( $context.AvailableCardsToPlay->ontains( Card::GetCard( $cardSuit, CardType::Queen ) )
-                && $context.AvailableCardsToPlay->Contains( Card::GetCard( $cardSuit, CardType::King ) )
+            if ( $context->AvailableCardsToPlay->contains( Card::GetCard( $cardSuit, CardType::Queen ) )
+                && $context->AvailableCardsToPlay->contains( Card::GetCard( $cardSuit, CardType::King ) )
             ) {
                 return new PlayCardAction( Card::GetCard( $cardSuit, CardType::Queen ), true );
             }
         }
         
         $availableCardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
-        $cardToPlay = $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
+        $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
             return $a->TrumpOrder <=> $b->TrumpOrder;
-        })->first();
+        });
+        $availableCards = new ArrayCollection( \iterator_to_array( $availableCardsToPlayIterator ) );
         
-        return new PlayCardAction( $cardToPlay ); // .Lowest(x => x.TrumpOrder)
+        return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.TrumpOrder)
     }
     
     public function PlaySecond( PlayerPlayCardContext $context, Collection $playedCards ): PlayCardAction

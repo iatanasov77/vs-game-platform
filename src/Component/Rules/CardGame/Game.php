@@ -133,8 +133,15 @@ abstract class Game implements GameInterface
     public function SetFirstBidWinner(): void
     {
         if ( $this->PlayState == GameState::firstBid ) {
-            $this->CurrentPlayer = PlayerPosition::South;
-            //$this->CurrentPlayer = PlayerPosition::from( \rand( 0, 3 ) );
+            if ( $this->roundNumber == 1 ) {
+                $this->CurrentPlayer = PlayerPosition::South;
+                //$this->CurrentPlayer = PlayerPosition::from( \rand( 0, 3 ) );
+            } else {
+                $this->CurrentPlayer = $this->firstInRound;
+                $this->CurrentPlayer = $this->NextPlayer();
+                $this->firstInRound = $this->CurrentPlayer;
+            }
+            
             $this->PlayRound();
             $this->PlayState = GameState::bidding;
         }

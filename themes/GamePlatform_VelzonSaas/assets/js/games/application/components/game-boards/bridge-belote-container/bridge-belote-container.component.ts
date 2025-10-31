@@ -351,6 +351,8 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     
     newRound(): void
     {
+        this.gameContractVisible = false;
+        this.gameBiddingVisible = true;
         this.wsService.startNewRound();
     }
     

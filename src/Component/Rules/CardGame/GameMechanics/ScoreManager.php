@@ -150,7 +150,7 @@ class ScoreManager
             $result->SouthNorthPoints += self::RoundPointsByBidType( $contract->Type, $result->SouthNorthTotalInRoundPoints, true );
             
             // "Hanging" points are added to current hanging points
-            $result->HangingPoints = hangingPoints + self::RoundPointsByBidType(
+            $result->HangingPoints = $hangingPoints + self::RoundPointsByBidType(
                 $contract->Type,
                 $result->EastWestTotalInRoundPoints,
                 false

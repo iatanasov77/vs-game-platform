@@ -114,6 +114,7 @@ abstract class CardGameManager extends AbstractGameManager
         $this->Game->PlayState = GameState::firstBid;
         $this->Game->Deck = new Deck();
         
+        $this->Game->CurrentPlayer = $this->Game->firstInRound;
         $this->StartGame();
     }
     
@@ -123,6 +124,7 @@ abstract class CardGameManager extends AbstractGameManager
     
     protected function PlayRound( WebsocketClientInterface $socket ): void
     {
+        $this->logger->log( "Play Round !!! PlayState: " . $this->Game->PlayState->value . " CurrentPlayer: " . $this->Game->CurrentPlayer->value, 'GameManager' );
         if ( $this->Game->PlayState != GameState::roundEnded && $this->AisTurn() ) {
             $this->logger->log( "NewTurn for AI", 'SwitchPlayer' );
             if ( $this->Game->PlayState == GameState::bidding ) {
@@ -140,6 +142,8 @@ abstract class CardGameManager extends AbstractGameManager
     
     protected function StartGamePlay(): void
     {
+        $this->Game->CurrentPlayer = $this->Game->firstInRound;
+        
         $playingStartedAction = new PlayingStartedActionDto();
         
         $playingStartedAction->deck = \array_values( $this->Game->Deck->Cards()->map(
@@ -162,7 +166,7 @@ abstract class CardGameManager extends AbstractGameManager
             new ArrayCollection()
         );
         
-        $playingStartedAction->firstToPlay = $this->Game->CurrentPlayer;
+        $playingStartedAction->firstToPlay = $this->Game->firstInRound;
         $playingStartedAction->contract = Mapper::BidToDto( $this->Game->CurrentContract );
         $playingStartedAction->validCards = $this->Game->ValidCards->map(
             function( $entry ) {
@@ -177,6 +181,10 @@ abstract class CardGameManager extends AbstractGameManager
         $this->Send( $this->Clients->get( PlayerPosition::West->value ), $playingStartedAction );
         
         $this->Game->PlayState = GameState::playing;
+        
+        $this->logger->log( "Start Game Play !!!", 'GameManager' );
+        $socket = $this->Clients->get( PlayerPosition::South->value );
+        $this->PlayRound( $socket );
     }
     
     protected function SendTrickWinner( PlayerPosition $winner ): void

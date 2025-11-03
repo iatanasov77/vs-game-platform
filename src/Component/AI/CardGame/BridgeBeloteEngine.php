@@ -36,6 +36,9 @@ use App\Component\AI\CardGame\Strategies\TrumpTheirsContractStrategy;
  */
 class BridgeBeloteEngine extends Engine
 {
+    /** @var ValidCardsService */
+    private $validCardsService;
+    
     private ValidAnnouncesService $validAnnouncesService;
     private TrickWinnerService $trickWinnerService;
     

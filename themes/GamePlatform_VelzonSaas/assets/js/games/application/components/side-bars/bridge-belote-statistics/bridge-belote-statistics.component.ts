@@ -39,10 +39,14 @@ export class BridgeBeloteStatisticsComponent implements OnDestroy
     
     scoreChanged( dto: BridgeBeloteScoreDto ): void
     {
-        this.wePoints.push( dto.SouthNorthPoints );
-        this.youPoints.push( dto.EastWestPoints );
+        if ( dto.SouthNorthPoints ) {
+            this.wePoints.push( dto.SouthNorthPoints );
+            this.weTotalPoints = dto.SouthNorthTotalInRoundPoints;
+        }
         
-        this.weTotalPoints = dto.SouthNorthTotalInRoundPoints;
-        this.youTotalPoints = dto.EastWestTotalInRoundPoints;
+        if ( dto.EastWestPoints ) {
+            this.youPoints.push( dto.EastWestPoints );
+            this.youTotalPoints = dto.EastWestTotalInRoundPoints;
+        }
     }
 }

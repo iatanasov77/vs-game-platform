@@ -403,7 +403,7 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
     onOrientationChange(): void
     {
         this.recalculateGeometry();
-        console.log( 'orient change' );
+        //console.log( 'orient change' );
     }
     
     recalculateGeometry(): void

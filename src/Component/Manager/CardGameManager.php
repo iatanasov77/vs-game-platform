@@ -100,7 +100,22 @@ abstract class CardGameManager extends AbstractGameManager
         
         $action = new RoundEndedActionDto();
         $action->game = Mapper::CardGameToDto( $this->Game );
-        $action->newScore = Mapper::RoundResultToDto( $score );
+        
+        $newScore = Mapper::RoundResultToDto( $score );
+        $newScore->contract = Mapper::BidToDto( $this->Game->CurrentContract );
+        $action->newScore = $newScore;
+        
+        // Debug Tricks
+        $action->SouthNorthTricks = $this->Game->SouthNorthTricks->map(
+            function( $entry ) {
+                return Mapper::CardToDto( $entry );
+            }
+        )->toArray();
+        $action->EastWestTricks = $this->Game->EastWestTricks->map(
+            function( $entry ) {
+                return Mapper::CardToDto( $entry );
+            }
+        )->toArray();
         
         $this->Send( $this->Clients->get( PlayerPosition::South->value ), $action );
         $this->Send( $this->Clients->get( PlayerPosition::East->value ), $action );
@@ -115,6 +130,9 @@ abstract class CardGameManager extends AbstractGameManager
         $this->Game->Deck = new Deck();
         
         $this->Game->CurrentPlayer = $this->Game->firstInRound;
+        $this->Game->SouthNorthTricks = new ArrayCollection();
+        $this->Game->EastWestTricks = new ArrayCollection();
+        
         $this->StartGame();
     }
     

@@ -3,7 +3,6 @@
 use Doctrine\Common\Collections\Collection;
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\CardGameTeam;
-use App\Component\Dto\BidDto;
 
 class CardGameDto extends GameDto
 {

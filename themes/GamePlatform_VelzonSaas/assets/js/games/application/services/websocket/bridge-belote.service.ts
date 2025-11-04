@@ -123,7 +123,7 @@ export class BridgeBeloteService extends AbstractGameService
                 //console.log( 'WebSocket Action Game Created', action.actionName );
                 
                 const dto = JSON.parse( message.data ) as CardGameCreatedActionDto;
-                console.log( 'WebSocket Action Game Created', dto.game );
+                //console.log( 'WebSocket Action Game Created', dto.game );
                 this.appState.myPosition.setValue( dto.myPosition );
                 this.appState.cardGame.setValue( dto.game );
                 
@@ -193,7 +193,7 @@ export class BridgeBeloteService extends AbstractGameService
             }
             case ActionNames.playingStarted: {
                 const playingStartedAction = JSON.parse( message.data ) as PlayingStartedActionDto;
-                console.log( 'Playing Started Action' + new Date().toLocaleTimeString(), playingStartedAction );
+                //console.log( 'Playing Started Action' + new Date().toLocaleTimeString(), playingStartedAction );
                 
                 this.appState.playerCards.setValue( playingStartedAction.playerCards );
                 const cGame = {
@@ -232,7 +232,7 @@ export class BridgeBeloteService extends AbstractGameService
                     currentPlayer: action.nextPlayer
                 };
                 this.appState.cardGame.setValue( cGame );
-                console.log( 'Currnt Game', cGame );
+                //console.log( 'Current Game', cGame );
                 
                 break;
             }
@@ -338,7 +338,7 @@ export class BridgeBeloteService extends AbstractGameService
     
     sendBid( bid: BidDto ): void
     {
-        console.log( 'Player Send Bid', bid );
+        //console.log( 'Player Send Bid', bid );
         const game = this.appState.cardGame.getValue();
         
         const myBidAction: BidMadeActionDto = {

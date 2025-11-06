@@ -49,6 +49,17 @@ declare var $: any;
                 { params: { shown: 0 } }
             ),
             state(
+                'card-table-shown',
+                style({
+                    left: '{{ shown }}px',
+                    transform: 'scale(1)',
+                    opacity: 1,
+                    top: '-15px',
+                    color: 'black'
+                }),
+                { params: { shown: 0 } }
+            ),
+            state(
                 'shown-flipped',
                 style({
                     left: '{{ shown }}px',
@@ -109,10 +120,10 @@ export class MessagesComponent implements OnChanges
             this.state = 'initial';
             setTimeout( () => {
                 // My Workaround
-                if ( $( 'canvas.game-board' ).hasClass( 'flipped' ) || $( 'canvas.game-board' ).hasClass( 'rotated' ) ) {
+                if ( $( 'canvas.card-table' ).hasClass( 'flipped' ) || $( 'canvas.card-table' ).hasClass( 'rotated' ) ) {
                     this.state = 'shown-flipped';
                 } else {
-                    this.state = 'shown';
+                    this.state = 'card-table-shown';
                 }
                 this.animating = false;
             }, 100 );

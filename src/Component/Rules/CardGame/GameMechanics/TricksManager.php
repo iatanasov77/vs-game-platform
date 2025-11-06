@@ -227,7 +227,7 @@ class TricksManager
             $this->game->EastWestTricks[] = $this->TrickActions[3]->Card;
         }
         
-        if ( $this->TrickNumber == 8 ) {
+        if ( $this->TrickNumber > 8 ) {
             $this->game->LastTrickWinner = $winner;
         }
         

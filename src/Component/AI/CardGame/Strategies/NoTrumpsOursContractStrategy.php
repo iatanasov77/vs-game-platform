@@ -26,7 +26,6 @@ class NoTrumpsOursContractStrategy implements IPlayStrategy
         $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
             return $a->NoTrumpOrder <=> $b->NoTrumpOrder;
         });
-        
         $availableCards = new ArrayCollection( \iterator_to_array( $availableCardsToPlayIterator ) );
         
         return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.NoTrumpOrder)
@@ -38,7 +37,6 @@ class NoTrumpsOursContractStrategy implements IPlayStrategy
         $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
             return $a->NoTrumpOrder <=> $b->NoTrumpOrder;
         });
-        
         $availableCards = new ArrayCollection( \iterator_to_array( $availableCardsToPlayIterator ) );
         
         return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.NoTrumpOrder)
@@ -50,7 +48,6 @@ class NoTrumpsOursContractStrategy implements IPlayStrategy
         $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
             return $a->NoTrumpOrder <=> $b->NoTrumpOrder;
         });
-        
         $availableCards = new ArrayCollection( \iterator_to_array( $availableCardsToPlayIterator ) );
         
         return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.NoTrumpOrder)
@@ -69,12 +66,13 @@ class NoTrumpsOursContractStrategy implements IPlayStrategy
             && $cardsToPlay->count()
         ) {
             $availableCardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
-            $cardsToPlay = $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
+            $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
                 return $a->NoTrumpOrder <=> $b->NoTrumpOrder;
             });
+            $availableCards = new ArrayCollection( \iterator_to_array( $availableCardsToPlayIterator ) );
             
             return new PlayCardAction(
-                $cardsToPlay->filter(
+                $availableCards->filter(
                     function( $entry ) {
                         return $entry->Type != CardType::Ace && $entry->Type != CardType::Ten;
                     }

@@ -36,6 +36,9 @@ use App\Component\AI\CardGame\Strategies\TrumpTheirsContractStrategy;
  */
 class BridgeBeloteEngine extends Engine
 {
+    /** @var ValidCardsService */
+    private $validCardsService;
+    
     private ValidAnnouncesService $validAnnouncesService;
     private TrickWinnerService $trickWinnerService;
     
@@ -83,6 +86,7 @@ class BridgeBeloteEngine extends Engine
         
         $context = new PlayerPlayCardContext();
         $context->MyPosition = $this->EngineGame->CurrentPlayer;
+        $context->Bids = $this->EngineGame->Bids;
         $context->CurrentContract = $this->EngineGame->CurrentContract;
         $context->MyCards = $this->EngineGame->playerCards[$this->EngineGame->CurrentPlayer->value];
         $context->Announces = $this->EngineGame->GetAvailableAnnounces( $this->EngineGame->playerCards[$this->EngineGame->CurrentPlayer->value] );
@@ -109,7 +113,7 @@ class BridgeBeloteEngine extends Engine
         }
         
         // Update information after the action
-        $this->EngineGame->playerCards[$this->EngineGame->CurrentPlayer->value]->Remove( $action->Card );
+        $this->EngineGame->playerCards[$this->EngineGame->CurrentPlayer->value]->removeElement( $action->Card );
         $action->Player = $this->EngineGame->CurrentPlayer;
         $action->TrickNumber = $this->EngineGame->GetTrickActionNumber() + 1;
         

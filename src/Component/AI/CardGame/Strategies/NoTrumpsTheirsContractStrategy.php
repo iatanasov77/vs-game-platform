@@ -26,7 +26,6 @@ class NoTrumpsTheirsContractStrategy implements IPlayStrategy
         $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
             return $a->NoTrumpOrder <=> $b->NoTrumpOrder;
         });
-        
         $availableCards = new ArrayCollection( \iterator_to_array( $availableCardsToPlayIterator ) );
         
         return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.NoTrumpOrder)
@@ -38,7 +37,6 @@ class NoTrumpsTheirsContractStrategy implements IPlayStrategy
         $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
             return $a->NoTrumpOrder <=> $b->NoTrumpOrder;
         });
-        
         $availableCards = new ArrayCollection( \iterator_to_array( $availableCardsToPlayIterator ) );
         
         return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.NoTrumpOrder)
@@ -50,7 +48,6 @@ class NoTrumpsTheirsContractStrategy implements IPlayStrategy
         $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
             return $a->NoTrumpOrder <=> $b->NoTrumpOrder;
         });
-        
         $availableCards = new ArrayCollection( \iterator_to_array( $availableCardsToPlayIterator ) );
         
         return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.NoTrumpOrder)
@@ -84,7 +81,6 @@ class NoTrumpsTheirsContractStrategy implements IPlayStrategy
         $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
             return $a->NoTrumpOrder <=> $b->NoTrumpOrder;
         });
-        
         $availableCards = new ArrayCollection( \iterator_to_array( $availableCardsToPlayIterator ) );
         
         return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.NoTrumpOrder)

@@ -12,4 +12,8 @@ class RoundEndedActionDto extends ActionDto
     
     public GameDto $game;
     public BridgeBeloteScoreDto $newScore;
+    
+    // Debug Tricks
+    public array $SouthNorthTricks;
+    public array $EastWestTricks;
 }

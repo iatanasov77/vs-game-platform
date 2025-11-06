@@ -111,18 +111,18 @@ class ScoreManager
             
             $allPoints = $result->SouthNorthTotalInRoundPoints + $result->EastWestTotalInRoundPoints;
             if ( $result->SouthNorthTotalInRoundPoints > $result->EastWestTotalInRoundPoints ) {
-                $result->SouthNorthPoints += ( self::RoundPoints( $allPoints ) * $coefficient) + hangingPoints;
+                $result->SouthNorthPoints += ( \intval( $allPoints ) * $coefficient ) + $hangingPoints;
             } else if ( $result->EastWestTotalInRoundPoints > $result->SouthNorthTotalInRoundPoints ) {
-                $result->EastWestPoints += ( self::RoundPoints( $allPoints ) * $coefficient ) + hangingPoints;
+                $result->EastWestPoints += ( \intval( $allPoints ) * $coefficient ) + $hangingPoints;
             } else if ( $result->SouthNorthTotalInRoundPoints == $result->EastWestTotalInRoundPoints ) {
-                $result->HangingPoints = ( self::RoundPoints( $allPoints ) * $coefficient ) + hangingPoints;
+                $result->HangingPoints = ( \intval( $allPoints ) * $coefficient ) + $hangingPoints;
             }
         } else if (
             ( $contract->Player == PlayerPosition::South || $contract->Player == PlayerPosition::North ) &&
             $result->SouthNorthTotalInRoundPoints < $result->EastWestTotalInRoundPoints
         ) {
             // Inside -> all points goes to the other team
-            $result->EastWestPoints += self::RoundPoints( $result->SouthNorthTotalInRoundPoints + $result->EastWestTotalInRoundPoints ) + $hangingPoints;
+            $result->EastWestPoints += \intval( $result->SouthNorthTotalInRoundPoints + $result->EastWestTotalInRoundPoints ) + $hangingPoints;
         } else if (
             ( $contract->Player == PlayerPosition::South || $contract->Player == PlayerPosition::North )
             && $result->SouthNorthTotalInRoundPoints == $result->EastWestTotalInRoundPoints
@@ -141,7 +141,7 @@ class ScoreManager
             && $result->EastWestTotalInRoundPoints < $result->SouthNorthTotalInRoundPoints
         ) {
             // Inside -> all points goes to the other team
-            $result->SouthNorthPoints += self::RoundPoints( $result->SouthNorthTotalInRoundPoints + $result->EastWestTotalInRoundPoints ) + $hangingPoints;
+            $result->SouthNorthPoints += \intval( $result->SouthNorthTotalInRoundPoints + $result->EastWestTotalInRoundPoints ) + $hangingPoints;
         } else if (
             ( $contract->Player == PlayerPosition::East || $contract->Player == PlayerPosition::West )
             && $result->SouthNorthTotalInRoundPoints == $result->EastWestTotalInRoundPoints
@@ -150,7 +150,7 @@ class ScoreManager
             $result->SouthNorthPoints += self::RoundPointsByBidType( $contract->Type, $result->SouthNorthTotalInRoundPoints, true );
             
             // "Hanging" points are added to current hanging points
-            $result->HangingPoints = hangingPoints + self::RoundPointsByBidType(
+            $result->HangingPoints = $hangingPoints + self::RoundPointsByBidType(
                 $contract->Type,
                 $result->EastWestTotalInRoundPoints,
                 false
@@ -184,43 +184,38 @@ class ScoreManager
         // All trumps
         if ( $bidType->has( BidType::AllTrumps ) ) {
             if ( $points % 10 > 4 ) {
-                return ( $points / 10 ) + 1;
+                return \intval( ( $points / 10 ) + 1 );
             }
             
             if ( $points % 10 == 4 ) {
                 if ( $winner ) {
-                    return $points / 10;
+                    return \intval( $points / 10 );
                 }
                 
-                return ( $points / 10 ) + 1;
+                return \intval( ( $points / 10 ) + 1 );
             }
             
-            return $points / 10;
+            return \intval( $points / 10 );
         }
         
         // No trumps
         if ( $bidType->has( BidType::NoTrumps ) ) {
-            return self::RoundPoints( $points );
+            return \intval( $points / 10 );
         }
         
         // Trump
         if ( $points % 10 > 6 ) {
-            return ( $points / 10 ) + 1;
+            return \intval( ( $points / 10 ) + 1 );
         }
         
         if ( $points % 10 == 6 ) {
             if ( $winner ) {
-                return $points / 10;
+                return \intval( $points / 10 );
             }
             
-            return ( $points / 10 ) + 1;
+            return \intval( ( $points / 10 ) + 1 );
         }
         
-        return $points / 10;
-    }
-    
-    private static function RoundPoints( int $points ): int
-    {
-        return ( int ) \round( $points / 10 );
+        return \intval( $points / 10 );
     }
 }

@@ -111,7 +111,7 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     width: number = 710;
     height: number = 510;
     started = false;
-    messageCenter = 0;
+    messageCenter = -15;
     gameId = "";
     playAiFlag = false;
     forGoldFlag = false;
@@ -351,6 +351,8 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     
     newRound(): void
     {
+        this.gameContractVisible = false;
+        this.gameBiddingVisible = true;
         this.wsService.startNewRound();
     }
     

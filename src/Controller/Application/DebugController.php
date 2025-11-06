@@ -7,16 +7,16 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class DebugController extends AbstractController
 {
-    protected $container;
+    protected $serviceContainer;
     
     public function __construct( ContainerInterface $container )
     {
-        $this->container    = $container;
+        $this->serviceContainer = $container;
     }
     
     public function debugSession( Request $request ): Response
     {
-        $session    = $this->container->get( 'session' );
+        $session    = $this->serviceContainer->get( 'session' );
         $session->start();
         $session->set( 'debug_session', 'ECHO' );
         

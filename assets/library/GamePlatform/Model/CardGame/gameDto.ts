@@ -11,6 +11,7 @@ interface CardGameDto extends GameDto {
     
     currentPlayer: PlayerPosition;
     winner: CardGameTeam;
+    thinkTime: number;
     
     FirstToPlayInTheRound: PlayerPosition;
     RoundNumber: number;

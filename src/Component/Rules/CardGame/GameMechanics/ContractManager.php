@@ -28,6 +28,7 @@ class ContractManager
     
     public function StartNewRound(): void
     {
+        $this->game->ConsecutivePasses = 0;
         $this->game->CurrentContract = new Bid( $this->game->CurrentPlayer, BidType::Pass );
         $this->game->AvailableBids = $this->GetAvailableBids( $this->game->CurrentContract, $this->game->CurrentPlayer );
     }
@@ -48,7 +49,7 @@ class ContractManager
         $this->game->ConsecutivePasses = $bid->Type->has( BidType::Pass ) ? ++$this->game->ConsecutivePasses : 0;
         $this->game->AvailableBids = $this->GetAvailableBids( $this->game->CurrentContract, $this->game->CurrentPlayer );
         
-        $this->logger->log( 'AvailableBids: ' . \print_r( $this->game->AvailableBids->toArray(), true ), 'RoundManager' );
+        //$this->logger->log( 'AvailableBids: ' . \print_r( $this->game->AvailableBids->toArray(), true ), 'RoundManager' );
     }
     
     private function GetAvailableBids( ?Bid $currentContract, PlayerPosition $currentPlayer ): Collection

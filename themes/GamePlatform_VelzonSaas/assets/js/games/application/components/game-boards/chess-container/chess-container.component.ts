@@ -174,7 +174,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
         });
         
         this.store.subscribe( ( state: any ) => {
-            console.log( state.app.main );
+            //console.log( state.app.main );
             
             this.appState   = state.app.main;
             this.hasRooms   = this?.appState?.rooms?.length && this?.appState?.rooms?.length > 0 ? true : false;
@@ -455,7 +455,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
      */
     onMakeMove( coords: string ): void
     {
-        console.log( 'Move Coordinates', coords );
+        //console.log( 'Move Coordinates', coords );
     }
     
     onFlipped(): void

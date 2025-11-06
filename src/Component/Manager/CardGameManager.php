@@ -3,7 +3,9 @@
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
+use React\Async;
 use Ratchet\RFC6455\Messaging\Frame;
+
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Rules\CardGame\Game;
 use App\Component\Rules\CardGame\Deck;
@@ -93,11 +95,27 @@ abstract class CardGameManager extends AbstractGameManager
         $this->logger->log( "Card_Game_Round_Ended !!!", 'GameManager' );
         
         $score = $this->Game->GetNewScore();
+        $this->Game->CurrentPlayer = $this->Game->firstInRound;
         $this->Game->PlayState = GameState::roundEnded;
         
         $action = new RoundEndedActionDto();
         $action->game = Mapper::CardGameToDto( $this->Game );
-        $action->newScore = Mapper::RoundResultToDto( $score );
+        
+        $newScore = Mapper::RoundResultToDto( $score );
+        $newScore->contract = Mapper::BidToDto( $this->Game->CurrentContract );
+        $action->newScore = $newScore;
+        
+        // Debug Tricks
+        $action->SouthNorthTricks = $this->Game->SouthNorthTricks->map(
+            function( $entry ) {
+                return Mapper::CardToDto( $entry );
+            }
+        )->toArray();
+        $action->EastWestTricks = $this->Game->EastWestTricks->map(
+            function( $entry ) {
+                return Mapper::CardToDto( $entry );
+            }
+        )->toArray();
         
         $this->Send( $this->Clients->get( PlayerPosition::South->value ), $action );
         $this->Send( $this->Clients->get( PlayerPosition::East->value ), $action );
@@ -111,6 +129,10 @@ abstract class CardGameManager extends AbstractGameManager
         $this->Game->PlayState = GameState::firstBid;
         $this->Game->Deck = new Deck();
         
+        $this->Game->CurrentPlayer = $this->Game->firstInRound;
+        $this->Game->SouthNorthTricks = new ArrayCollection();
+        $this->Game->EastWestTricks = new ArrayCollection();
+        
         $this->StartGame();
     }
     
@@ -118,8 +140,28 @@ abstract class CardGameManager extends AbstractGameManager
     
     abstract protected function PlayCard( PlayCardActionDto $action ): void;
     
+    protected function PlayRound( WebsocketClientInterface $socket ): void
+    {
+        $this->logger->log( "Play Round !!! PlayState: " . $this->Game->PlayState->value . " CurrentPlayer: " . $this->Game->CurrentPlayer->value, 'GameManager' );
+        if ( $this->Game->PlayState != GameState::roundEnded && $this->AisTurn() ) {
+            $this->logger->log( "NewTurn for AI", 'SwitchPlayer' );
+            if ( $this->Game->PlayState == GameState::bidding ) {
+                $this->EnginBids( $socket );
+            } else {
+                $this->EnginPlayCard( $socket );
+            }
+            
+            $promise = Async\async( function () use ( $socket ) {
+                $this->NewTurn( $socket );
+            })();
+            Async\await( $promise );
+        }
+    }
+    
     protected function StartGamePlay(): void
     {
+        $this->Game->CurrentPlayer = $this->Game->firstInRound;
+        
         $playingStartedAction = new PlayingStartedActionDto();
         
         $playingStartedAction->deck = \array_values( $this->Game->Deck->Cards()->map(
@@ -142,7 +184,7 @@ abstract class CardGameManager extends AbstractGameManager
             new ArrayCollection()
         );
         
-        $playingStartedAction->firstToPlay = $this->Game->CurrentPlayer;
+        $playingStartedAction->firstToPlay = $this->Game->firstInRound;
         $playingStartedAction->contract = Mapper::BidToDto( $this->Game->CurrentContract );
         $playingStartedAction->validCards = $this->Game->ValidCards->map(
             function( $entry ) {
@@ -157,19 +199,33 @@ abstract class CardGameManager extends AbstractGameManager
         $this->Send( $this->Clients->get( PlayerPosition::West->value ), $playingStartedAction );
         
         $this->Game->PlayState = GameState::playing;
+        
+        $this->logger->log( "Start Game Play !!!", 'GameManager' );
+        $socket = $this->Clients->get( PlayerPosition::South->value );
+        $this->PlayRound( $socket );
     }
     
     protected function SendTrickWinner( PlayerPosition $winner ): void
     {
+        $this->Game->ValidCards = $this->Game->GetValidCards(
+            $this->Game->playerCards[$winner->value],
+            $this->Game->CurrentContract,
+            new ArrayCollection()
+        );
         $game = Mapper::CardGameToDto( $this->Game );
         
-        $trickEndedAction = new TrickEndedActionDto();
-        $trickEndedAction->game = $game;
-        
-        $this->Send( $this->Clients->get( PlayerPosition::South->value ), $trickEndedAction );
-        $this->Send( $this->Clients->get( PlayerPosition::East->value ), $trickEndedAction );
-        $this->Send( $this->Clients->get( PlayerPosition::North->value ), $trickEndedAction );
-        $this->Send( $this->Clients->get( PlayerPosition::West->value ), $trickEndedAction );
+        $promise = Async\async( function () use ( $game ) {
+            Async\delay( 1.2 );
+            
+            $trickEndedAction = new TrickEndedActionDto();
+            $trickEndedAction->game = $game;
+            
+            $this->Send( $this->Clients->get( PlayerPosition::South->value ), $trickEndedAction );
+            $this->Send( $this->Clients->get( PlayerPosition::East->value ), $trickEndedAction );
+            $this->Send( $this->Clients->get( PlayerPosition::North->value ), $trickEndedAction );
+            $this->Send( $this->Clients->get( PlayerPosition::West->value ), $trickEndedAction );
+        })();
+        Async\await( $promise );
     }
     
     protected function SaveWinner( CardGameTeam $team ): ?array

@@ -31,7 +31,6 @@ import OpponentPlayCardActionDto from '../../dto/Actions/opponentPlayCardActionD
 import TrickEndedActionDto from '../../dto/Actions/trickEndedActionDto';
 import RoundEndedActionDto from '../../dto/Actions/roundEndedActionDto';
 import StartNewRoundActionDto from '../../dto/Actions/startNewRoundActionDto';
-import NewRoundStartedActionDto from '../../dto/Actions/newRoundStartedActionDto';
 
 import { Keys } from '../../utils/keys';
 
@@ -137,11 +136,11 @@ export class BridgeBeloteService extends AbstractGameService
                 this.cookieService.deleteAll( Keys.gameIdKey );
                 // console.log('Settings cookie', cookie);
                 this.cookieService.set( Keys.gameIdKey, JSON.stringify( cookie ), 2 );
-                //this.statusMessageService.setTextMessage( dto.game );
+                this.statusMessageService.setTextMessage( dto.game );
                 
                 //this.store.dispatch( loadGameRooms( { gameSlug: window.gamePlatformSettings.gameSlug } ) );
                 
-                //this.appState.moveTimer.setValue( dto.game.thinkTime );
+                this.appState.moveTimer.setValue( dto.game.thinkTime );
                 this.sound.fadeIntro();
                 this.startTimer();
                 
@@ -149,7 +148,7 @@ export class BridgeBeloteService extends AbstractGameService
             }
             case ActionNames.biddingStarted: {
                 const biddingStartedAction = JSON.parse( message.data ) as BiddingStartedActionDto;
-                console.log( 'Bidding Started Action' + new Date().toLocaleTimeString(), biddingStartedAction );
+                //console.log( 'Bidding Started Action' + new Date().toLocaleTimeString(), biddingStartedAction );
                 
                 this.appState.playerCards.setValue( biddingStartedAction.playerCards );
                 const cGame = {
@@ -178,7 +177,7 @@ export class BridgeBeloteService extends AbstractGameService
                 //alert( 'WebSocket Action Opponent Move' );
                 
                 const action = JSON.parse( message.data ) as OpponentBidsActionDto;
-                console.log( 'WebSocket Action Opponent Bids', action );
+                //console.log( 'WebSocket Action Opponent Bids', action );
                 
                 this.doBid( action.bid );
                 
@@ -194,7 +193,7 @@ export class BridgeBeloteService extends AbstractGameService
             }
             case ActionNames.playingStarted: {
                 const playingStartedAction = JSON.parse( message.data ) as PlayingStartedActionDto;
-                console.log( 'Playing Started Action' + new Date().toLocaleTimeString(), playingStartedAction );
+                //console.log( 'Playing Started Action' + new Date().toLocaleTimeString(), playingStartedAction );
                 
                 this.appState.playerCards.setValue( playingStartedAction.playerCards );
                 const cGame = {
@@ -223,7 +222,7 @@ export class BridgeBeloteService extends AbstractGameService
             }
             case ActionNames.opponentPlayCard: {
                 const action = JSON.parse( message.data ) as OpponentPlayCardActionDto;
-                console.log( 'WebSocket Action Opponent Play Card', action );
+                //console.log( 'WebSocket Action Opponent Play Card', action );
                 
                 this.doPlayCard( action.Card );
                 
@@ -233,13 +232,13 @@ export class BridgeBeloteService extends AbstractGameService
                     currentPlayer: action.nextPlayer
                 };
                 this.appState.cardGame.setValue( cGame );
-                console.log( 'Currnt Game', cGame );
+                //console.log( 'Current Game', cGame );
                 
                 break;
             }
             case ActionNames.trickEnded: {
                 const action = JSON.parse( message.data ) as TrickEndedActionDto;
-                console.log( 'WebSocket Action Trick Ended', action );
+                //console.log( 'WebSocket Action Trick Ended', action );
                 
                 this.appState.cardGame.setValue( action.game );
                 this.appState.pile.setValue( [] );
@@ -262,14 +261,6 @@ export class BridgeBeloteService extends AbstractGameService
                 this.appState.deck.setValue( [] );
                 this.appState.pile.setValue( [] );
                 this.appState.bridgeBeloteScore.setValue( action.newScore );
-                
-                break;
-            }
-            case ActionNames.newRoundStarted: {
-                const action = JSON.parse( message.data ) as NewRoundStartedActionDto;
-                console.log( 'WebSocket Action NewRoundStartedActionDto', action );
-                
-                this.appState.cardGame.setValue( action.game );
                 
                 break;
             }
@@ -316,9 +307,9 @@ export class BridgeBeloteService extends AbstractGameService
                 
                 this.appState.myPosition.setValue( dto.position );
                 this.appState.cardGame.setValue( dto.game );
-                // this.appState.dices.setValue( dto.dices );
-                // this.appState.moveTimer.setValue( dto.game.thinkTime );
-                // this.statusMessageService.setTextMessage( dto.game );
+                
+                this.appState.moveTimer.setValue( dto.game.thinkTime );
+                this.statusMessageService.setTextMessage( dto.game );
                 this.startTimer();
                 
                 break;

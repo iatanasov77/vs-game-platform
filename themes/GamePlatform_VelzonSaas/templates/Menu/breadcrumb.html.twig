@@ -17,6 +17,9 @@
             		<li class="breadcrumb-item"><a href="{{ link.uri }}">{{ link.label | trans }}</a></li>
             	{% endif %}
             {%- else %}
+                {%- if link.uri starts with "/games/" %}
+                    <li class="breadcrumb-item"><a href="{{ path( 'app_games' ) }}">{{ 'vs_application.menu.list_games' | trans( {},'VSApplicationBundle' ) }}</a></li>
+                {% endif %}
                 <li class="breadcrumb-item active">{{ link.label | trans }}</li>
             {%- endif %}
         {%- endfor %}

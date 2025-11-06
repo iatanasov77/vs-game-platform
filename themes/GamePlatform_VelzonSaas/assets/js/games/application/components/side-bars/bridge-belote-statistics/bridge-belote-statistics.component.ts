@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { AppStateService } from '../../../state/app-state.service';
 import BridgeBeloteScoreDto from '_@/GamePlatform/Model/CardGame/bridgeBeloteScoreDto';
+import BidType from '_@/GamePlatform/Model/CardGame/bidType';
 
 import templateString from './bridge-belote-statistics.component.html'
 import cssString from './bridge-belote-statistics.component.scss'
@@ -39,10 +40,18 @@ export class BridgeBeloteStatisticsComponent implements OnDestroy
     
     scoreChanged( dto: BridgeBeloteScoreDto ): void
     {
-        this.wePoints.push( dto.SouthNorthPoints );
-        this.youPoints.push( dto.EastWestPoints );
+        if ( dto.contract == BidType.Pass ) {
+            return;
+        }
         
-        this.weTotalPoints = dto.SouthNorthTotalInRoundPoints;
-        this.youTotalPoints = dto.EastWestTotalInRoundPoints;
+        if ( dto.SouthNorthPoints ) {
+            this.wePoints.push( dto.SouthNorthPoints );
+            this.weTotalPoints = dto.SouthNorthTotalInRoundPoints;
+        }
+        
+        if ( dto.EastWestPoints ) {
+            this.youPoints.push( dto.EastWestPoints );
+            this.youTotalPoints = dto.EastWestTotalInRoundPoints;
+        }
     }
 }

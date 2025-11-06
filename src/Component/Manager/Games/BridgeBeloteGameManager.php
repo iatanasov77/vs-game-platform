@@ -190,6 +190,7 @@ class BridgeBeloteGameManager extends CardGameManager
         } else if ( $actionName == ActionNames::startNewRound ) {
             $this->logger->log( 'startNewRound action recieved from GameManager.', 'GameManager' );
             $this->StartNewRound();
+            $this->PlayRound( $socket );
         } else if ( $actionName == ActionNames::connectionInfo ) {
             $action = $this->serializer->deserialize( $actionText, ConnectionInfoActionDto::class, JsonEncoder::FORMAT );
             foreach ( $otherSockets as $otherSocket ) {
@@ -251,19 +252,7 @@ class BridgeBeloteGameManager extends CardGameManager
                 return;
             }
             
-            if ( $this->Game->PlayState != GameState::roundEnded && $this->AisTurn() ) {
-                $this->logger->log( "NewTurn for AI", 'SwitchPlayer' );
-                if ( $this->Game->PlayState == GameState::bidding ) {
-                    $this->EnginBids( $socket );
-                } else {
-                    $this->EnginPlayCard( $socket );
-                }
-                
-                $promise = Async\async( function () use ( $socket ) {
-                    $this->NewTurn( $socket );
-                })();
-                Async\await( $promise );
-            }
+            $this->PlayRound( $socket );
         }
     }
     
@@ -301,15 +290,17 @@ class BridgeBeloteGameManager extends CardGameManager
         }
         
         if ( $tricksWinner ) {
-            if ( $this->Game->trickNumber == 8 ) {
+            if ( $this->Game->trickNumber > 8 ) {
                 $this->Game->roundNumber++;
                 $this->Game->trickNumber = 1;
                 $this->EndRound();
                 return false;
             }
             
+            //sleep( 10 );
             $this->SendTrickWinner( $tricksWinner );
             
+            $this->logger->log( "Continue Play !!!", 'GameManager' );
             if ( $this->Game->PlayState != GameState::roundEnded && $this->AisTurn() ) {
                 $socket = $this->Clients->first();
                 $this->EnginPlayCard( $socket );

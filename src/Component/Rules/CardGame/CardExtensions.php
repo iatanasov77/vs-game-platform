@@ -141,7 +141,7 @@ class CardExtensions
             return self::$NoTrumpValues[$card->Type->value];
         }
         
-        if ( $contract->get() == BidType::Pass ) {
+        if ( $contract->get() == BidType::Pass->bitMaskValue() ) {
             return 0;
         }
         

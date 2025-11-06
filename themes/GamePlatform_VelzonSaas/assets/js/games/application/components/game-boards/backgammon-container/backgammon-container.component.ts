@@ -253,7 +253,7 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
         });
         
         this.store.subscribe( ( state: any ) => {
-            console.log( state.app.main );
+            //console.log( state.app.main );
             
             this.appState   = state.app.main;
             this.hasRooms   = this?.appState?.rooms?.length && this?.appState?.rooms?.length > 0 ? true : false;
@@ -798,7 +798,7 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
     {
         const game      = this.appStateService.boardGame.getValue();
         const myColor   = this.appStateService.myColor.getValue();
-        console.log( 'GameDto Object: ', game );
+        //console.log( 'GameDto Object: ', game );
         
         if ( ! gameId.length ) {
             this.gamePlayService.startBoardGame( 'normal' );

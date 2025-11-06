@@ -264,6 +264,7 @@ declare module '_@/GamePlatform/Model/CardGame/gameDto' {
         
         currentPlayer: PlayerPosition;
         winner: CardGameTeam;
+        thinkTime: number;
         
         FirstToPlayInTheRound: PlayerPosition;
         RoundNumber: number;
@@ -396,6 +397,7 @@ declare module '_@/GamePlatform/Model/CardGame/bidDto' {
 declare module '_@/GamePlatform/Model/CardGame/bridgeBeloteScoreDto' {
     interface BridgeBeloteScoreDto
     {
+        contract: any;
         SouthNorthPoints: number;
         SouthNorthTotalInRoundPoints: number;
         EastWestPoints: number;

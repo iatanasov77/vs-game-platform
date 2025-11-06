@@ -1,3 +1,22 @@
+0.17.2	|	Release date: **06.11.2025**
+============================================
+* Bug-Fixes and Improvements:
+  - Sort CardGame Player Cards.
+  - Fix BridgeBelote Engine PlayCard() Method.
+  - Fix Geting CardGame Valid Cards on tne End of Trick.
+  - Fix Playing the Card Game Round.
+  - Litle Refactoring
+  - Improve Breadcrumb.
+  - More Fixes Playing the Card Game Round.
+  - Rounding Card Game Players in Round.
+  - More Fixes.
+  - Add a Wait Time Before Send TrickEndedActionDto .
+  - Fix Playing Cards in Next Rounds.
+  - Improve Card Game Scoring.
+  - Improve Styling of Card Game Messages.
+  - Improve Card Game Status Messages.
+
+
 0.17.1	|	Release date: **28.10.2025**
 ============================================
 * New Features:

@@ -123,7 +123,7 @@ export class BridgeBeloteService extends AbstractGameService
                 //console.log( 'WebSocket Action Game Created', action.actionName );
                 
                 const dto = JSON.parse( message.data ) as CardGameCreatedActionDto;
-                //console.log( 'WebSocket Action Game Created', dto.game );
+                console.log( 'WebSocket Action Game Created', dto.game );
                 this.appState.myPosition.setValue( dto.myPosition );
                 this.appState.cardGame.setValue( dto.game );
                 
@@ -136,11 +136,11 @@ export class BridgeBeloteService extends AbstractGameService
                 this.cookieService.deleteAll( Keys.gameIdKey );
                 // console.log('Settings cookie', cookie);
                 this.cookieService.set( Keys.gameIdKey, JSON.stringify( cookie ), 2 );
-                //this.statusMessageService.setTextMessage( dto.game );
+                this.statusMessageService.setTextMessage( dto.game );
                 
                 //this.store.dispatch( loadGameRooms( { gameSlug: window.gamePlatformSettings.gameSlug } ) );
                 
-                //this.appState.moveTimer.setValue( dto.game.thinkTime );
+                this.appState.moveTimer.setValue( dto.game.thinkTime );
                 this.sound.fadeIntro();
                 this.startTimer();
                 
@@ -307,9 +307,9 @@ export class BridgeBeloteService extends AbstractGameService
                 
                 this.appState.myPosition.setValue( dto.position );
                 this.appState.cardGame.setValue( dto.game );
-                // this.appState.dices.setValue( dto.dices );
-                // this.appState.moveTimer.setValue( dto.game.thinkTime );
-                // this.statusMessageService.setTextMessage( dto.game );
+                
+                this.appState.moveTimer.setValue( dto.game.thinkTime );
+                this.statusMessageService.setTextMessage( dto.game );
                 this.startTimer();
                 
                 break;

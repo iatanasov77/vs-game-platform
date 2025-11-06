@@ -264,6 +264,7 @@ declare module '_@/GamePlatform/Model/CardGame/gameDto' {
         
         currentPlayer: PlayerPosition;
         winner: CardGameTeam;
+        thinkTime: number;
         
         FirstToPlayInTheRound: PlayerPosition;
         RoundNumber: number;

@@ -3,6 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { StatusMessage } from '../utils/status-message';
 
 // Core Interfaces
+import GameState from '_@/GamePlatform/Model/Core/gameState';
 import GameDto from '_@/GamePlatform/Model/Core/gameDto';
 import NewScoreDto from '_@/GamePlatform/Model/Core/newScoreDto';
 
@@ -34,7 +35,7 @@ export class StatusMessageService
     {
         if ( 'validMoves' in game ) {
             this.setBoardGameTextMessage( game );
-        } else if ( 'deck' in game ) {
+        } else if ( 'validCards' in game ) {
             this.setCardGameTextMessage( game );
         }
     }
@@ -159,7 +160,57 @@ export class StatusMessageService
     
     setCardGameTextMessage( game: CardGameDto ): void
     {
-    
+        const myPosition = this.appState.myPosition.getValue();
+        let message: StatusMessage;
+        
+        //alert( PlayerPosition[game.currentPlayer] );
+        if ( ! PlayerPosition[game.currentPlayer] ) {
+            return;
+        }
+        const currentPosition = this.trans.instant( PlayerPosition[game.currentPlayer] );
+        
+        if ( game ) {
+            switch ( game.playState ) {
+                case GameState.firstBid:
+                case GameState.bidding:
+                    this.appState.hideBusy();
+                    if ( myPosition === game.currentPlayer ) {
+                        const m = this.trans.instant( 'statusmessage.yourbid', {
+                            position: currentPosition
+                        });
+                        message = StatusMessage.info( m );
+                    } else {
+                        const m = this.trans.instant( 'statusmessage.waitingforbid', {
+                            position: currentPosition
+                        });
+                        message = StatusMessage.info( m );
+                    }
+                    break;
+                case GameState.firstRound:
+                case GameState.playing:
+                    this.appState.hideBusy();
+                    if ( myPosition === game.currentPlayer ) {
+                        const m = this.trans.instant( 'statusmessage.yourplaycard', {
+                            position: currentPosition
+                        });
+                        message = StatusMessage.info( m );
+                    } else {
+                        const m = this.trans.instant( 'statusmessage.waitingforplaycard', {
+                            position: currentPosition
+                        });
+                        message = StatusMessage.info( m );
+                    }
+                    break;
+                default:
+                    const m = this.trans.instant( 'statusmessage.unknownstate' );
+                    message = StatusMessage.info( m );
+            }
+        } else {
+            const m = this.trans.instant( 'statusmessage.gamenotstarted' );
+            message = StatusMessage.info( m );
+        }
+        
+        this.appState.statusMessage.setValue( message );
     }
     
     setBoardGameEnded( game: BoardGameDto, newScore: NewScoreDto ): void

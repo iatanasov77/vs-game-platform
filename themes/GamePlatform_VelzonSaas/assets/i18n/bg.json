@@ -120,7 +120,13 @@
         
         "youarenotloggedin": "You are NOT Logged in",
         "youmustselectroom": "You must select a Room",
-        "gamenotstarted": "Game is NOT Started"
+        "gamenotstarted": "Game is NOT Started",
+        
+        "unknownstate": "Unknown State",
+        "yourbid": "Your turn to bid.  ({{position}})",
+        "waitingforbid": "Waiting for {{position}} to bid.",
+        "yourplaycard": "Your turn to play card.  ({{position}})",
+        "waitingforplaycard": "Waiting for {{position}} to play card."
     },
     "black": "black",
     "white": "white",

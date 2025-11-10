@@ -336,9 +336,12 @@ class BridgeBeloteGameManager extends CardGameManager
     
     protected function EnginBids( WebsocketClientInterface $client ): void
     {
+        // Debug Player Cards
+        $playerCards = $this->Game->playerCards[$this->Game->CurrentPlayer->value];
+        
         $bid = new Bid( $this->Game->CurrentPlayer, $this->Engine->DoBid() );
         
-        $promise = Async\async( function () use ( $client, $bid ) {
+        $promise = Async\async( function () use ( $client, $bid, $playerCards ) {
             $sleepMileseconds   = \rand( 700, 1200 );
             Async\delay( $sleepMileseconds / 1000 );
             
@@ -350,6 +353,12 @@ class BridgeBeloteGameManager extends CardGameManager
             $action->validBids = $this->Game->AvailableBids->getValues();
             $action->nextPlayer = $this->Game->NextPlayer();
             $action->playState = $this->Game->PlayState;
+            
+            $action->MyCards = $playerCards->map(
+                function( $entry ) {
+                    return Mapper::CardToDto( $entry, $this->Game->CurrentPlayer );
+                }
+            );
             
             $this->Send( $client, $action );
         })();

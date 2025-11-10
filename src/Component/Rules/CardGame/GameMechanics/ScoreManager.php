@@ -91,12 +91,12 @@ class ScoreManager
         }
         
         // 9 points for no tricks
-        if ( $southNorthTricks->count() == 0 ) {
+        if ( $southNorthTricks->count() == 0 && ! $contract->Type->has( BidType::Pass ) ) {
             $result->EastWestTotalInRoundPoints += 90;
             $result->NoTricksForOneOfTheTeams = true;
         }
         
-        if ( $eastWestTricks->count() == 0 ) {
+        if ( $eastWestTricks->count() == 0 && ! $contract->Type->has( BidType::Pass ) ) {
             $result->SouthNorthTotalInRoundPoints += 90;
             $result->NoTricksForOneOfTheTeams = true;
         }

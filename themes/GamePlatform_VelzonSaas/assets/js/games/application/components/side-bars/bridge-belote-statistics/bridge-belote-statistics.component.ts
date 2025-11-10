@@ -20,8 +20,8 @@ export class BridgeBeloteStatisticsComponent implements OnDestroy
 {
     scoreSubs: Subscription;
     
-    wePoints: number[] = [];
-    youPoints: number[] = [];
+    wePoints: string[] = [];
+    youPoints: string[] = [];
     
     weTotalPoints: number= 0;
     youTotalPoints: number= 0;
@@ -46,13 +46,31 @@ export class BridgeBeloteStatisticsComponent implements OnDestroy
         }
         
         if ( dto.SouthNorthPoints ) {
-            this.wePoints.push( dto.SouthNorthPoints );
+            if ( this.wePoints.length ) {
+                let previousPoints = this.wePoints[this.wePoints.length - 1];
+                let pointsSum = parseInt( previousPoints ) + dto.SouthNorthPoints;
+                this.wePoints[this.wePoints.length - 1] = `${previousPoints} + ${dto.SouthNorthPoints}`;
+                this.wePoints.push( '' + pointsSum );
+            } else {
+                this.wePoints.push( '' + dto.SouthNorthPoints );
+            }
+            
             this.weTotalPoints = dto.SouthNorthTotalInRoundPoints;
+            console.log( 'SouthNorthPoints', this.wePoints );
         }
         
         if ( dto.EastWestPoints ) {
-            this.youPoints.push( dto.EastWestPoints );
+            if ( this.youPoints.length ) {
+                let previousPoints = this.youPoints[this.youPoints.length - 1];
+                let pointsSum = parseInt( previousPoints ) + dto.EastWestPoints;
+                this.youPoints[this.youPoints.length - 1] = `${previousPoints} + ${dto.EastWestPoints}`;
+                this.youPoints.push( '' + pointsSum );
+            } else {
+                this.youPoints.push( '' + dto.EastWestPoints );
+            }
+            
             this.youTotalPoints = dto.EastWestTotalInRoundPoints;
+            console.log( 'EastWestPoints', this.youPoints );
         }
     }
 }

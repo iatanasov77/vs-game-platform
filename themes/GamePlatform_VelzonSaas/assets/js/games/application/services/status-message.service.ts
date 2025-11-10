@@ -243,6 +243,13 @@ export class StatusMessageService
         }
     }
     
+    setCardGameRoundEnded(): void
+    {
+        const m = this.trans.instant( 'bridge-belote.round-manager.round-ended' );
+        const statusMessage = StatusMessage.info( m );
+        this.appState.statusMessage.setValue( statusMessage );
+    }
+    
     setCardGameEnded( game: CardGameDto, newScore: NewScoreDto ): void
     {
     

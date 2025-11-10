@@ -94,8 +94,8 @@ export class BridgeBeloteService extends AbstractGameService
         
         //console.log( 'User in State', this.appState.user );
         if ( this.appState.user.getValue() ) {
-            //this.statusMessageService.setWaitingForConnect();
-            this.statusMessageService.setNotGameStarted();
+            this.statusMessageService.setWaitingForConnect();
+            //this.statusMessageService.setNotGameStarted();
         } else {
             this.statusMessageService.setNotLoggedIn();
             this.appState.hideBusy();
@@ -174,8 +174,6 @@ export class BridgeBeloteService extends AbstractGameService
                 break;
             }
             case ActionNames.opponentBids: {
-                //alert( 'WebSocket Action Opponent Move' );
-                
                 const action = JSON.parse( message.data ) as OpponentBidsActionDto;
                 //console.log( 'WebSocket Action Opponent Bids', action );
                 
@@ -188,6 +186,7 @@ export class BridgeBeloteService extends AbstractGameService
                     playState: action.playState
                 };
                 this.appState.cardGame.setValue( cGame );
+                this.statusMessageService.setTextMessage( cGame );
                 
                 break;
             }
@@ -232,6 +231,7 @@ export class BridgeBeloteService extends AbstractGameService
                     currentPlayer: action.nextPlayer
                 };
                 this.appState.cardGame.setValue( cGame );
+                this.statusMessageService.setTextMessage( cGame );
                 //console.log( 'Current Game', cGame );
                 
                 break;
@@ -261,6 +261,7 @@ export class BridgeBeloteService extends AbstractGameService
                 this.appState.deck.setValue( [] );
                 this.appState.pile.setValue( [] );
                 this.appState.bridgeBeloteScore.setValue( action.newScore );
+                this.statusMessageService.setCardGameRoundEnded();
                 
                 break;
             }

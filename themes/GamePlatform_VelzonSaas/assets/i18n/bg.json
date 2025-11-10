@@ -267,6 +267,9 @@
         }
     },
     "bridge-belote": {
+        "round-manager": {
+            "round-ended": "Round Ended. Start new Round !"
+        },
         "bid-type": {
             "pass": "Pass",
             "clubs": "Clubs",

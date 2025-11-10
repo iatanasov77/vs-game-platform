@@ -40,6 +40,7 @@ export class BridgeBeloteStatisticsComponent implements OnDestroy
     
     scoreChanged( dto: BridgeBeloteScoreDto ): void
     {
+        console.log( 'BridgeBeloteScoreDto', dto );
         if ( dto.contract == BidType.Pass ) {
             return;
         }

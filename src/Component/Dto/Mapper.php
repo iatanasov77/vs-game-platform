@@ -162,11 +162,12 @@ final class Mapper
         
         $gameDto->players = self::CardGamePlayersToDto( $game->Players );
         
-        $gameDto->validBids = $game->AvailableBids->map(
+        $validBids = $game->AvailableBids->map(
             function( $entry ) {
                 return self::BidToDto( $entry );
             }
         )->toArray();
+        $gameDto->validBids = \array_values( $validBids );
         
         $validCards = $game->ValidCards->map(
             function( $entry ) use ( $game ) {

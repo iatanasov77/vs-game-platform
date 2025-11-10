@@ -318,7 +318,9 @@ class BridgeBeloteGameManager extends CardGameManager
     protected function DoBid( BidMadeActionDto $action ): void
     {
         $bid = new Bid( $action->bid->Player, BidType::fromValue( $action->bid->Type ) );
-        $this->Game->SetContract( $bid );
+        
+        $nextPlayer = $this->Game->NextPlayer();
+        $this->Game->SetContract( $bid, $nextPlayer );
     }
     
     protected function PlayCard( PlayCardActionDto $action ): void
@@ -345,13 +347,20 @@ class BridgeBeloteGameManager extends CardGameManager
             $sleepMileseconds   = \rand( 700, 1200 );
             Async\delay( $sleepMileseconds / 1000 );
             
-            $this->Game->SetContract( $bid );
+            $nextPlayer = $this->Game->NextPlayer();
+            $this->Game->SetContract( $bid, $nextPlayer );
             
             $action = new OpponentBidsActionDto();
             $action->bid = Mapper::BidToDto( $bid );
             
-            $action->validBids = $this->Game->AvailableBids->getValues();
-            $action->nextPlayer = $this->Game->NextPlayer();
+            $validBids = $this->Game->AvailableBids->map(
+                function( $entry ) {
+                    return Mapper::BidToDto( $entry );
+                }
+            )->toArray();
+            $action->validBids = \array_values( $validBids );
+            
+            $action->nextPlayer = $nextPlayer;
             $action->playState = $this->Game->PlayState;
             
             $action->MyCards = $playerCards->map(

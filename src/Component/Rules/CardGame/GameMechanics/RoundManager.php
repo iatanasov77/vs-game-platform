@@ -101,9 +101,9 @@ class RoundManager
         return null;
     }
     
-    public function SetContract( Bid $bid ): void
+    public function SetContract( Bid $bid, PlayerPosition $nextPlayer ): void
     {
-        $this->contractManager->SetContract( $bid );
+        $this->contractManager->SetContract( $bid, $nextPlayer );
     }
     
     public function GetValidCards( Collection $playerCards, Bid $currentContract, Collection $trickActions ): Collection

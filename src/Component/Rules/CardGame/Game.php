@@ -192,9 +192,9 @@ abstract class Game implements GameInterface
         return $this->roundManager->PlayRound();
     }
     
-    public function SetContract( Bid $bid ): void
+    public function SetContract( Bid $bid, PlayerPosition $nextPlayer ): void
     {
-        $this->roundManager->SetContract( $bid );
+        $this->roundManager->SetContract( $bid, $nextPlayer );
     }
     
     public function GetValidCards( Collection $playerCards, Bid $currentContract, Collection $trickActions ): Collection

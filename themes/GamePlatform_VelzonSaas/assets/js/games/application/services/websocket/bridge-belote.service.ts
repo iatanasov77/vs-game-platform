@@ -175,7 +175,7 @@ export class BridgeBeloteService extends AbstractGameService
             }
             case ActionNames.opponentBids: {
                 const action = JSON.parse( message.data ) as OpponentBidsActionDto;
-                console.log( 'WebSocket Action Opponent Bids', action );
+                //console.log( 'WebSocket Action Opponent Bids', action );
                 
                 this.doBid( action.bid );
                 

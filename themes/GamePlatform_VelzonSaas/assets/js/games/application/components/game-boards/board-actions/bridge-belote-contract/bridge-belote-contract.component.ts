@@ -1,7 +1,7 @@
 import { Component, Inject, Input, OnChanges, SimpleChanges, EventEmitter, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { GetAnnounceSymbols } from '../../../../models/announce';
+import { GetAnnounceSymbol } from '../../../../models/announce';
 import CardGameAnnounceSymbolModel from '_@/GamePlatform/Model/CardGameAnnounceSymbolModel';
 
 import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
@@ -39,7 +39,7 @@ export class BridgeBeloteContractComponent implements OnChanges
         @Inject( TranslateService ) private translate: TranslateService,
         @Inject( AppStateService ) private appStateService: AppStateService,
     ) {
-        this.announceSymbols = GetAnnounceSymbols();
+        this.announceSymbols = [];
         this.myPosition = this.appStateService.myPosition.getValue();
     }
         
@@ -58,6 +58,8 @@ export class BridgeBeloteContractComponent implements OnChanges
                     break;
                 case 'validBids':
                     this.validBids = changedProp.currentValue;
+                    this.getAnnounceSymbols();
+                    console.log( 'Valid Bids', this.validBids );
                     //alert( 'Valid Bids: ' + this.validBids.length );
                     break;
                 case 'contract':
@@ -78,6 +80,18 @@ export class BridgeBeloteContractComponent implements OnChanges
         }
         
         return '';
+    }
+    
+    getAnnounceSymbols(): void
+    {
+        this.announceSymbols = [];
+        var symbol;
+        for ( var i = 0; i < this.validBids.length; i++ ) {
+            symbol = GetAnnounceSymbol( this.validBids[i].Type );
+            if ( symbol ) {
+                this.announceSymbols.push( symbol );
+            }
+        }
     }
     
     getContractIcon(): string

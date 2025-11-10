@@ -76,11 +76,13 @@ abstract class CardGameManager extends AbstractGameManager
             
             $biddingStartedAction->firstToBid = $this->Game->CurrentPlayer;
             
-            $biddingStartedAction->validBids = $this->Game->AvailableBids->map(
+            $validBids = $this->Game->AvailableBids->map(
                 function( $entry ) {
                     return Mapper::BidToDto( $entry );
                 }
             )->toArray();
+            $biddingStartedAction->validBids = \array_values( $validBids );
+            
             $biddingStartedAction->timer = Game::ClientCountDown;
             
             $this->Send( $this->Clients->get( PlayerPosition::South->value ), $biddingStartedAction );

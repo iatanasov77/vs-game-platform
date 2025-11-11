@@ -31,6 +31,7 @@ import OpponentPlayCardActionDto from '../../dto/Actions/opponentPlayCardActionD
 import TrickEndedActionDto from '../../dto/Actions/trickEndedActionDto';
 import RoundEndedActionDto from '../../dto/Actions/roundEndedActionDto';
 import StartNewRoundActionDto from '../../dto/Actions/startNewRoundActionDto';
+import AnnounceMadeActionDto from '../../dto/Actions/announceMadeActionDto';
 
 import { Keys } from '../../utils/keys';
 
@@ -192,7 +193,7 @@ export class BridgeBeloteService extends AbstractGameService
             }
             case ActionNames.playingStarted: {
                 const playingStartedAction = JSON.parse( message.data ) as PlayingStartedActionDto;
-                //console.log( 'Playing Started Action' + new Date().toLocaleTimeString(), playingStartedAction );
+                console.log( 'Playing Started Action' + new Date().toLocaleTimeString(), playingStartedAction );
                 
                 this.appState.playerCards.setValue( playingStartedAction.playerCards );
                 const cGame = {

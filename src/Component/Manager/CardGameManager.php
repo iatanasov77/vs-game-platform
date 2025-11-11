@@ -113,6 +113,7 @@ abstract class CardGameManager extends AbstractGameManager
                 return Mapper::CardToDto( $entry );
             }
         )->toArray();
+        
         $action->EastWestTricks = $this->Game->EastWestTricks->map(
             function( $entry ) {
                 return Mapper::CardToDto( $entry );
@@ -176,6 +177,15 @@ abstract class CardGameManager extends AbstractGameManager
             $playingStartedAction->playerCards[$key] = $this->Game->playerCards[$key]->map(
                 function( $entry ) use ( $player ) {
                     return Mapper::CardToDto( $entry, $player->PlayerPosition );
+                }
+            )->toArray();
+            
+            // For Debugging
+            $playerAnnounces = $this->Game->GetAvailableAnnounces( $this->Game->playerCards[$key] );
+            $this->logger->log( "Player Announces" . \print_r( $playerAnnounces->toArray(), true ), 'GameManager' );
+            $playingStartedAction->playerAnnounces[$key] = $playerAnnounces->map(
+                function( $entry ) use ( $player ) {
+                    return Mapper::AnnounceToDto( $entry, $player->PlayerPosition );
                 }
             )->toArray();
         }

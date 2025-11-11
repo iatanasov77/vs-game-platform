@@ -24,10 +24,14 @@ class ScoreManager
     /** @var GameLogger */
     private  $logger;
     
+    /** @var ValidAnnouncesService */
+    private $validAnnouncesService;
+    
     public function __construct( Game $game, GameLogger $logger )
     {
         $this->game = $game;
         $this->logger = $logger;
+        $this->validAnnouncesService = new ValidAnnouncesService( $this->logger );
     }
     
     public function GetScore(
@@ -38,6 +42,8 @@ class ScoreManager
         int $hangingPoints,
         ?PlayerPosition $lastTrickWinner
     ): RoundResult {
+        $this->validAnnouncesService->UpdateActiveAnnounces( $this->game->announces );
+        
         $result = new RoundResult( $contract );
         
         // Sum all south-north points
@@ -49,7 +55,7 @@ class ScoreManager
         );
         
         foreach( $activeSouthNorthAnnounces as $ann ) {
-            $result->SouthNorthTotalInRoundPoints += $ann->Value;
+            $result->SouthNorthTotalInRoundPoints += $ann->Value();
         }
         
         foreach( $southNorthTricks as $card ) {
@@ -71,7 +77,7 @@ class ScoreManager
         );
         
         foreach( $activeEastWestAnnounces as $ann ) {
-            $result->EastWestTotalInRoundPoints += $ann->Value;
+            $result->EastWestTotalInRoundPoints += $ann->Value();
         }
         
         foreach( $eastWestTricks as $card ) {
@@ -175,7 +181,10 @@ class ScoreManager
                 $result->EastWestPoints += $hangingPoints;
             }
         }
-                
+        
+        $this->logger->log( "Active SouthNorth Announces: " . \print_r( $activeSouthNorthAnnounces->toArray(), true ), 'ScoreManager' );
+        $this->logger->log( "Active EastWest Announces: " . \print_r( $activeEastWestAnnounces->toArray(), true ), 'ScoreManager' );
+        
         return $result;
     }
     

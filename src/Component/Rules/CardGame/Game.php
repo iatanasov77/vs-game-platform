@@ -147,46 +147,6 @@ abstract class Game implements GameInterface
         }
     }
     
-    public function PlayersPassed(): bool
-    {
-        $lastBlack = 0;
-        $lastWhite = 0;
-        
-        for ( $i = 0; $i < 25; $i++ ) {
-            $checker    = $this->Points[$i]->Checkers->filter(
-                function( $entry ) {
-                    return $entry && $entry->Color === PlayerColor::Black;
-                }
-            );
-            
-            if ( $checker ) {
-                $lastBlack = $this->Points[$i]->GetNumber( PlayerColor::Black );
-                break;
-            }
-        }
-        
-        
-        for ( $i = 25 - 1; $i >= 1; $i-- ) {
-            $checker    = $this->Points[$i]->Checkers->filter(
-                function( $entry ) {
-                    return $entry && $entry->Color === PlayerColor::White;
-                }
-            );
-            
-            if ( $checker ) {
-                $lastWhite = $this->Points[$i]->GetNumber( PlayerColor::Black );
-                break;
-            }
-        }
-        
-        return $lastBlack > $lastWhite;
-    }
-    
-    public function ReallyStarted(): bool
-    {
-        return $this->BlackPlayer->FirstMoveMade && $this->WhitePlayer->FirstMoveMade;
-    }
-    
     public function PlayRound(): ?PlayerPosition
     {
         return $this->roundManager->PlayRound();

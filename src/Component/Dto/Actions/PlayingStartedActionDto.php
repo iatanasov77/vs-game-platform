@@ -12,6 +12,7 @@ class PlayingStartedActionDto extends ActionDto
     
     public array $deck; // CardDto[]
     public array $playerCards;
+    public array $playerAnnounces;
     public ?PlayerPosition $firstToPlay;
     public BidDto $contract;
     public array $validCards;

@@ -9,9 +9,9 @@ class Announce
     
     public PlayerPosition $Player;
     
-    private Card $Card;
+    public Card $Card;
     
-    private ?bool $IsActive;
+    public ?bool $IsActive;
     
     public function __construct( AnnounceType $type, Card $card )
     {

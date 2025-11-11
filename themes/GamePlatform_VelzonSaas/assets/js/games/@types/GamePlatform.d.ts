@@ -514,3 +514,34 @@ declare module '_@/GamePlatform/Model/CardGameAnnounceSymbolModel' {
     }
     export = CardGameAnnounceSymbolModel;
 }
+
+declare module '_@/GamePlatform/Model/CardGame/announceType' {
+    enum AnnounceType
+    {
+        Belot,
+        SequenceOf3,
+        SequenceOf4,
+        SequenceOf5,
+        SequenceOf6,
+        SequenceOf7,
+        SequenceOf8,
+        FourOfAKind,
+        FourNines,
+        FourJacks,
+    }
+    export = AnnounceType;
+}
+
+declare module '_@/GamePlatform/Model/CardGame/announceDto' {
+    import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
+    import AnnounceType from '_@/GamePlatform/Model/CardGame/announceType';
+    import CardDto from '_@/GamePlatform/Model/CardGame/cardDto';
+    
+    interface AnnounceDto
+    {
+        Player: PlayerPosition;
+        Type: AnnounceType;
+        Card: CardDto;
+    }
+    export = AnnounceDto;
+}

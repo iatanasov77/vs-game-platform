@@ -23,6 +23,7 @@ use App\Component\Rules\CardGame\Game;
 use App\Component\Rules\CardGame\Player;
 use App\Component\Rules\CardGame\Card;
 use App\Component\Rules\CardGame\Bid;
+use App\Component\Rules\CardGame\Announce;
 use App\Component\Rules\CardGame\PlayCardAction;
 use App\Component\AI\EngineFactory as AiEngineFactory;
 use App\Component\Utils\Guid;
@@ -34,6 +35,7 @@ use App\Entity\TempPlayer;
 // Types
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\BidType;
+use App\Component\Type\AnnounceType;
 use App\Component\Type\GameState;
 
 // DTO Actions
@@ -326,7 +328,24 @@ class BridgeBeloteGameManager extends CardGameManager
     protected function PlayCard( PlayCardActionDto $action ): void
     {
         $playedCard = Card::GetCard( $action->Card->Suit, $action->Card->Type );
-        $trickAction = new PlayCardAction( $playedCard, false );
+        $trickAction = new PlayCardAction( $playedCard, $this->Game->playerCards[$this->Game->CurrentPlayer->value]->count() > 1 );
+        
+        // Belote
+        if ( $trickAction->Belote ) {
+            $belote = $this->Game->IsBeloteAllowed(
+                $this->Game->playerCards[$this->Game->CurrentPlayer->value],
+                $this->Game->CurrentContract->Type,
+                $this->Game->GetTrickActions(),
+                $trickAction->Card
+            );
+            
+            if ( $belote ) {
+                $announce = new Announce( AnnounceType::Belot, $trickAction->Card );
+                
+                $announce->Player = $this->Game->CurrentPlayer;
+                $this->Game->announces[] = $announce;
+            }
+        }
         
         // Update information after the action
         $this->Game->playerCards[$this->Game->CurrentPlayer->value]->removeElement( $trickAction->Card );
@@ -377,6 +396,23 @@ class BridgeBeloteGameManager extends CardGameManager
     protected function EnginPlayCard( WebsocketClientInterface $client ): void
     {
         $playCardAction = $this->Engine->PlayCard();
+        
+        // Belote
+        if ( $playCardAction->Belote ) {
+            $belote = $this->Game->IsBeloteAllowed(
+                $this->Game->playerCards[$this->Game->CurrentPlayer->value],
+                $this->Game->CurrentContract->Type,
+                $this->Game->GetTrickActions(),
+                $playCardAction->Card
+            );
+            
+            if ( $belote ) {
+                $announce = new Announce( AnnounceType::Belot, $playCardAction->Card );
+                
+                $announce->Player = $this->Game->CurrentPlayer;
+                $this->Game->announces[] = $announce;
+            }
+        }
         
         $promise = Async\async( function () use ( $client, $playCardAction ) {
             $sleepMileseconds   = \rand( 700, 1200 );

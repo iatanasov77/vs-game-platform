@@ -2,16 +2,16 @@
 
 enum AnnounceType: int
 {
-    case Belot = 1;
-    case SequenceOf3 = 2; // 20
-    case SequenceOf4 = 3; // 50
-    case SequenceOf5 = 4; // 100
-    case SequenceOf6 = 5; // 100
-    case SequenceOf7 = 6; // 100
-    case SequenceOf8 = 7; // 100
-    case FourOfAKind = 8; // 100
-    case FourNines = 9; // 150
-    case FourJacks = 10; // 200
+    case Belot          = 0;
+    case SequenceOf3    = 1; // 20
+    case SequenceOf4    = 2; // 50
+    case SequenceOf5    = 3; // 100
+    case SequenceOf6    = 4; // 100
+    case SequenceOf7    = 5; // 100
+    case SequenceOf8    = 6; // 100
+    case FourOfAKind    = 7; // 100
+    case FourNines      = 8; // 150
+    case FourJacks      = 9; // 200
     
     public function toString(): string
     {

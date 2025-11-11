@@ -59,7 +59,7 @@ export class BridgeBeloteContractComponent implements OnChanges
                 case 'validBids':
                     this.validBids = changedProp.currentValue;
                     this.getAnnounceSymbols();
-                    console.log( 'Valid Bids', this.validBids );
+                    //console.log( 'Valid Bids', this.validBids );
                     //alert( 'Valid Bids: ' + this.validBids.length );
                     break;
                 case 'contract':

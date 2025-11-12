@@ -40,7 +40,7 @@ export class BridgeBeloteStatisticsComponent implements OnDestroy
     
     scoreChanged( dto: BridgeBeloteScoreDto ): void
     {
-        console.log( 'BridgeBeloteScoreDto', dto );
+        //console.log( 'BridgeBeloteScoreDto', dto );
         if ( dto.contract == BidType.Pass ) {
             return;
         }
@@ -56,7 +56,7 @@ export class BridgeBeloteStatisticsComponent implements OnDestroy
             }
             
             this.weTotalPoints = dto.SouthNorthTotalInRoundPoints;
-            console.log( 'SouthNorthPoints', this.wePoints );
+            //console.log( 'SouthNorthPoints', this.wePoints );
         }
         
         if ( dto.EastWestPoints ) {
@@ -70,7 +70,7 @@ export class BridgeBeloteStatisticsComponent implements OnDestroy
             }
             
             this.youTotalPoints = dto.EastWestTotalInRoundPoints;
-            console.log( 'EastWestPoints', this.youPoints );
+            //console.log( 'EastWestPoints', this.youPoints );
         }
     }
 }

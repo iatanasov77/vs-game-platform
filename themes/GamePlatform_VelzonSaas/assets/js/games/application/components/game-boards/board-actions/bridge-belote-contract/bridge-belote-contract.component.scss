@@ -2,11 +2,6 @@
 
 .announce-button {
     margin-left: 10px;
-    /*
-    position: relative;
-    top: -5px;
-    font-family: Times, serif;
-    */
     color: black;
     font-size: 40px;
     font-weight: bold;
@@ -19,4 +14,16 @@
 
 .announce-disabled {
     display: none;
+}
+
+span.player-position::first-letter {
+    text-transform: capitalize;
+}
+
+.contract-button {
+    margin-left: 10px;
+    color: black;
+    font-size: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
 }

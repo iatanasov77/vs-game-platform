@@ -387,6 +387,9 @@ declare module '_@/GamePlatform/Model/CardGame/bidDto' {
     interface BidDto
     {
         Player: PlayerPosition;
+        KontraPlayer?: PlayerPosition;
+        ReKontraPlayer?: PlayerPosition;
+        
         Type: BidType;
         NextBids: BidDto[];
     }

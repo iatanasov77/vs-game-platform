@@ -7,6 +7,8 @@ use App\Component\Type\BidType;
 class Bid
 {
     public PlayerPosition $Player;
+    public ?PlayerPosition $KontraPlayer = NULL;
+    public ?PlayerPosition $ReKontraPlayer = NULL;
     
     public EnumBitMask $Type;
     

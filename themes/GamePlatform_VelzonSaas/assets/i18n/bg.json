@@ -282,5 +282,9 @@
             "double": "Double",
             "re-double": "Re-Double"
         }
+    },
+    "card-game": {
+        "kontra": "Double",
+        "rekontra": "ReDouble"
     }
 }

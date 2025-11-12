@@ -4,6 +4,9 @@ import BidType from './bidType';
 interface BidDto
 {
     Player: PlayerPosition;
+    KontraPlayer?: PlayerPosition;
+    ReKontraPlayer?: PlayerPosition;
+    
     Type: BidType;
     NextBids: BidDto[];
 }

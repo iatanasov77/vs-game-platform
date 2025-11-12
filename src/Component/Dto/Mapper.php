@@ -234,7 +234,11 @@ final class Mapper
     public static function BidToDto( Bid $bid ): BidDto
     {
         $bidDto = new BidDto();
+        
         $bidDto->Player = $bid->Player;
+        $bidDto->KontraPlayer = $bid->KontraPlayer;
+        $bidDto->ReKontraPlayer = $bid->ReKontraPlayer;
+        
         $bidDto->Type = BidType::fromBitMaskValue( $bid->Type->get() )->value();
         
         return $bidDto;

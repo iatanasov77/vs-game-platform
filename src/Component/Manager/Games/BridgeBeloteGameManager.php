@@ -320,6 +320,8 @@ class BridgeBeloteGameManager extends CardGameManager
     protected function DoBid( BidMadeActionDto $action ): void
     {
         $bid = new Bid( $action->bid->Player, BidType::fromValue( $action->bid->Type ) );
+        $bid->KontraPlayer = $action->bid->KontraPlayer;
+        $bid->ReKontraPlayer = $action->bid->ReKontraPlayer;
         
         $nextPlayer = $this->Game->NextPlayer();
         $this->Game->SetContract( $bid, $nextPlayer );

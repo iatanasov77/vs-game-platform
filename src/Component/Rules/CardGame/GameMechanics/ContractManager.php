@@ -40,8 +40,16 @@ class ContractManager
         if ( $bid->Type->has( BidType::Double ) || $bid->Type->has( BidType::ReDouble ) ) {
             $this->game->CurrentContract->Type->remove( BidType::Double );
             $this->game->CurrentContract->Type->remove( BidType::ReDouble );
-            $this->game->CurrentContract->Type->set( $bid->Type );
-            $this->game->CurrentContract->Player = $this->game->CurrentPlayer;
+            $this->game->CurrentContract->Type->set( BidType::fromBitMaskValue( $bid->Type->get() ) );
+            
+            if ( $bid->Type->has( BidType::ReDouble ) ) {
+                $this->game->CurrentContract->ReKontraPlayer = $this->game->CurrentPlayer;
+            } else {
+                $this->game->CurrentContract->KontraPlayer = $this->game->CurrentPlayer;
+            }
+            
+            $this->logger->log( 'ConsecutivePasses After Kontra: ' . $this->game->ConsecutivePasses, 'RoundManager' );
+            $this->logger->log( 'After Kontra Has Bid Pass: ' . $bid->Type->has( BidType::Pass ), 'RoundManager' );
         } else if ( ! $bid->Type->has( BidType::Pass ) ) {
             $this->game->CurrentContract = $bid;
         }

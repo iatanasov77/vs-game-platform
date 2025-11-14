@@ -196,6 +196,8 @@ export class BridgeBeloteService extends AbstractGameService
                 console.log( 'Playing Started Action' + new Date().toLocaleTimeString(), playingStartedAction );
                 
                 this.appState.playerCards.setValue( playingStartedAction.playerCards );
+                this.appState.playerAnnounces.setValue( playingStartedAction.playerAnnounces );
+                
                 const cGame = {
                     ...game,
                     contract: playingStartedAction.contract,
@@ -211,6 +213,19 @@ export class BridgeBeloteService extends AbstractGameService
                 
                 this.appState.moveTimer.setValue( playingStartedAction.timer );
                 this.appState.opponentDone.setValue( true );
+                
+                break;
+            }
+            case ActionNames.announceMade: {
+                const action = JSON.parse( message.data ) as AnnounceMadeActionDto;
+                console.log( 'WebSocket Action Announce Made', action );
+                
+                const playerAnnounces = this.appState.playerAnnounces.getValue();
+                const playerPosition = action.announce.Player;
+                this.appState.playerAnnounces.setValue({
+                    ...playerAnnounces,
+                    [playerPosition]: [action.announce]
+                });
                 
                 break;
             }
@@ -243,6 +258,7 @@ export class BridgeBeloteService extends AbstractGameService
                 
                 this.appState.cardGame.setValue( action.game );
                 this.appState.pile.setValue( [] );
+                this.appState.playerAnnounces.setValue( [] );
                 
                 break;
             }
@@ -259,6 +275,7 @@ export class BridgeBeloteService extends AbstractGameService
                 this.appState.playerCards.setValue( playerCardsClone );
                 
                 this.appState.playerBids.setValue( [] );
+                this.appState.playerAnnounces.setValue( [] );
                 this.appState.deck.setValue( [] );
                 this.appState.pile.setValue( [] );
                 this.appState.bridgeBeloteScore.setValue( action.newScore );
@@ -387,6 +404,8 @@ export class BridgeBeloteService extends AbstractGameService
         const pileClone = [...this.appState.pile.getValue()];
         pileClone.push( card );
         this.appState.pile.setValue( pileClone );
+        
+        const game = this.appState.cardGame.getValue();
         
         // console.log( 'Do PlayCard', playerCardsClone );
     }

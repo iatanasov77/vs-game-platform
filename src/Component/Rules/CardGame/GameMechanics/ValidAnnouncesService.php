@@ -80,13 +80,13 @@ class ValidAnnouncesService
                 || $announce->Type == AnnounceType::FourNines
                 || $announce->Type == AnnounceType::FourOfAKind
             ) {
-                if ( announce.CompareTo(maxSameTypesAnnounce) > 0 ) {
+                if ( $announce->CompareTo( $maxSameTypesAnnounce ) > 0 ) {
                     $maxSameTypesAnnounce = $announce;
                 }
             } else {
                 // Sequence
                 if ( $announce->CompareTo( $maxSameSuitAnnounce ) > 0 ) {
-                    $maxSameSuitAnnounce = announce;
+                    $maxSameSuitAnnounce = $announce;
                 }
             }
         }
@@ -103,9 +103,9 @@ class ValidAnnouncesService
                 || $announce->Type == AnnounceType::SequenceOf8
             ) {
                 if (
-                    $announce.CompareTo( $maxSameSuitAnnounce ) == 0
+                    $announce->CompareTo( $maxSameSuitAnnounce ) == 0
                     && $maxSameSuitAnnounce != null
-                    && ! PlayerPositionExtensions::IsInSameTeamWith( $announce->Player, $maxSameSuitAnnounce->Playern )
+                    && ! PlayerPositionExtensions::IsInSameTeamWith( $announce->Player, $maxSameSuitAnnounce->Player )
                 ) {
                     $sameMaxAnnounceInDifferentTeams = true;
                 }
@@ -132,7 +132,7 @@ class ValidAnnouncesService
                 // Sequence
                 if (
                     $announce->CompareTo( $maxSameSuitAnnounce ) >= 0 ||
-                    ( $maxSameSuitAnnounce != null && PlayerPositionExtensions::IsInSameTeamWith( $announce->Player, $maxSameSuitAnnounce->Playern ) )
+                    ( $maxSameSuitAnnounce != null && PlayerPositionExtensions::IsInSameTeamWith( $announce->Player, $maxSameSuitAnnounce->Player ) )
                 ) {
                     $announce->IsActive = true;
                 }

@@ -53,6 +53,7 @@ import GameState from '_@/GamePlatform/Model/Core/gameState';
 import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
 import CardDto from '_@/GamePlatform/Model/CardGame/cardDto';
 import BidDto from '_@/GamePlatform/Model/CardGame/bidDto';
+import AnnounceDto from '_@/GamePlatform/Model/CardGame/announceDto';
 
 // Dialogs
 import { DebugGameSoundsComponent } from '../../game-dialogs/debug-game-sounds/debug-game-sounds.component';
@@ -102,6 +103,7 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     gameSubs: Subscription;
     playerCardsSubs: Subscription;
     playerBidsSubs: Subscription;
+    playerAnnouncesSubs: Subscription;
     deckSubs: Subscription;
     pileSubs: Subscription;
     oponnetDoneSubs: Subscription;
@@ -126,6 +128,7 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     newRoundVisible = false;
     playerCardsDto: Array<CardDto[]> | undefined;
     playerBidsDto: BidDto[] | undefined = [];
+    playerAnnouncesDto: Array<AnnounceDto[]> | undefined = [];
     deckDto: CardDto[] | undefined = [];
     pileDto: CardDto[] | undefined = [];
     validBids: BidDto[] = [];
@@ -159,6 +162,7 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
         this.gameDto$ = this.appStateService.cardGame.observe();
         this.playerCardsSubs = this.appStateService.playerCards.observe().subscribe( this.playerCardsChanged.bind( this ) );
         this.playerBidsSubs = this.appStateService.playerBids.observe().subscribe( this.playerBidsChanged.bind( this ) );
+        this.playerAnnouncesSubs = this.appStateService.playerAnnounces.observe().subscribe( this.playerAnnouncesChanged.bind( this ) );
         this.deckSubs = this.appStateService.deck.observe().subscribe( this.deckChanged.bind( this ) );
         this.pileSubs = this.appStateService.pile.observe().subscribe( this.pileChanged.bind( this ) );
         this.playerPosition$ = this.appStateService.myPosition.observe();
@@ -494,6 +498,12 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     playerBidsChanged( dto: BidDto[] ): void
     {
         this.playerBidsDto = dto;
+        this.fireResize();
+    }
+    
+    playerAnnouncesChanged( dto: Array<AnnounceDto[]> ): void
+    {
+        this.playerAnnouncesDto = dto;
         this.fireResize();
     }
     

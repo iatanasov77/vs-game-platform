@@ -180,7 +180,6 @@ abstract class CardGameManager extends AbstractGameManager
                 }
             )->toArray();
             
-            // For Debugging
             $playerAnnounces = $this->Game->GetAvailableAnnounces( $this->Game->playerCards[$key] );
             $this->logger->log( "Player Announces" . \print_r( $playerAnnounces->toArray(), true ), 'GameManager' );
             $playingStartedAction->playerAnnounces[$key] = $playerAnnounces->map(
@@ -188,6 +187,11 @@ abstract class CardGameManager extends AbstractGameManager
                     return Mapper::AnnounceToDto( $entry, $player->PlayerPosition );
                 }
             )->toArray();
+            
+            foreach ( $playerAnnounces as $announce ) {
+                $announce->Player = $player->PlayerPosition;
+                $this->Game->announces[] = $announce;
+            }
         }
         
         $this->Game->ValidCards = $this->Game->GetValidCards(

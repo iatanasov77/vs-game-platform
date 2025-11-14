@@ -105,11 +105,11 @@ class Announce
             return 1;
         }
         
-        if ( $this->Value > $other->Value ) {
+        if ( $this->Value() > $other->Value() ) {
             return 1;
         }
         
-        if ( $other->Value > $this->Value ) {
+        if ( $other->Value() > $this->Value() ) {
             return -1;
         }
         
@@ -121,6 +121,18 @@ class Announce
             return -1;
         }
         
-        return $this->Card->Type->CompareTo( $other->Card->Type );
+        // Implement this Bellow
+        // return $this->Card->Type->CompareTo( $other->Card->Type );
+        if ( $this->Card->Type->value < $other->Card->Type->value  ) {
+            return -1;
+        }
+        
+        if ( $this->Card->Type->value > $other->Card->Type->value ) {
+            return 1;
+        }
+        
+        if ( $this->Card->Type->value == $other->Card->Type->value ) {
+            return 0;
+        }
     }
 }

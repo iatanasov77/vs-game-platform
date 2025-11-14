@@ -47,6 +47,7 @@ use App\Component\Dto\Actions\BidMadeActionDto;
 use App\Component\Dto\Actions\OpponentBidsActionDto;
 use App\Component\Dto\Actions\PlayCardActionDto;
 use App\Component\Dto\Actions\OpponentPlayCardActionDto;
+use App\Component\Dto\Actions\AnnounceMadeActionDto;
 
 class BridgeBeloteGameManager extends CardGameManager
 {
@@ -346,6 +347,14 @@ class BridgeBeloteGameManager extends CardGameManager
                 
                 $announce->Player = $this->Game->CurrentPlayer;
                 $this->Game->announces[] = $announce;
+                
+                $action = new AnnounceMadeActionDto();
+                $action->announce = Mapper::AnnounceToDto( $announce, $this->Game->CurrentPlayer );
+                
+                $this->Send( $this->Clients->get( PlayerPosition::South->value ), $action );
+                $this->Send( $this->Clients->get( PlayerPosition::East->value ), $action );
+                $this->Send( $this->Clients->get( PlayerPosition::North->value ), $action );
+                $this->Send( $this->Clients->get( PlayerPosition::West->value ), $action );
             }
         }
         
@@ -413,6 +422,14 @@ class BridgeBeloteGameManager extends CardGameManager
                 
                 $announce->Player = $this->Game->CurrentPlayer;
                 $this->Game->announces[] = $announce;
+                
+                $action = new AnnounceMadeActionDto();
+                $action->announce = Mapper::AnnounceToDto( $announce, $this->Game->CurrentPlayer );
+                
+                $this->Send( $this->Clients->get( PlayerPosition::South->value ), $action );
+                $this->Send( $this->Clients->get( PlayerPosition::East->value ), $action );
+                $this->Send( $this->Clients->get( PlayerPosition::North->value ), $action );
+                $this->Send( $this->Clients->get( PlayerPosition::West->value ), $action );
             }
         }
         

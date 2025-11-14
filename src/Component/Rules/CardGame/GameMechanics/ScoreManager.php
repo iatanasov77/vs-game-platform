@@ -61,8 +61,7 @@ class ScoreManager
         foreach( $southNorthTricks as $card ) {
             $result->SouthNorthTotalInRoundPoints += CardExtensions::GetValue( $card, $contract->Type );
         }
-            
-            
+        
         if ( $lastTrickWinner == PlayerPosition::South || $lastTrickWinner == PlayerPosition::North ) {
             // Last 10
             $result->SouthNorthTotalInRoundPoints += 10;
@@ -117,18 +116,18 @@ class ScoreManager
             
             $allPoints = $result->SouthNorthTotalInRoundPoints + $result->EastWestTotalInRoundPoints;
             if ( $result->SouthNorthTotalInRoundPoints > $result->EastWestTotalInRoundPoints ) {
-                $result->SouthNorthPoints += ( \intval( $allPoints ) * $coefficient ) + $hangingPoints;
+                $result->SouthNorthPoints += ( \intval( $allPoints / 10 ) * $coefficient ) + $hangingPoints;
             } else if ( $result->EastWestTotalInRoundPoints > $result->SouthNorthTotalInRoundPoints ) {
-                $result->EastWestPoints += ( \intval( $allPoints ) * $coefficient ) + $hangingPoints;
+                $result->EastWestPoints += ( \intval( $allPoints / 10 ) * $coefficient ) + $hangingPoints;
             } else if ( $result->SouthNorthTotalInRoundPoints == $result->EastWestTotalInRoundPoints ) {
-                $result->HangingPoints = ( \intval( $allPoints ) * $coefficient ) + $hangingPoints;
+                $result->HangingPoints = ( \intval( $allPoints / 10 ) * $coefficient ) + $hangingPoints;
             }
         } else if (
             ( $contract->Player == PlayerPosition::South || $contract->Player == PlayerPosition::North ) &&
             $result->SouthNorthTotalInRoundPoints < $result->EastWestTotalInRoundPoints
         ) {
             // Inside -> all points goes to the other team
-            $result->EastWestPoints += \intval( $result->SouthNorthTotalInRoundPoints + $result->EastWestTotalInRoundPoints ) + $hangingPoints;
+            $result->EastWestPoints += \intval( ( $result->SouthNorthTotalInRoundPoints + $result->EastWestTotalInRoundPoints ) / 10 ) + $hangingPoints;
         } else if (
             ( $contract->Player == PlayerPosition::South || $contract->Player == PlayerPosition::North )
             && $result->SouthNorthTotalInRoundPoints == $result->EastWestTotalInRoundPoints
@@ -147,7 +146,7 @@ class ScoreManager
             && $result->EastWestTotalInRoundPoints < $result->SouthNorthTotalInRoundPoints
         ) {
             // Inside -> all points goes to the other team
-            $result->SouthNorthPoints += \intval( $result->SouthNorthTotalInRoundPoints + $result->EastWestTotalInRoundPoints ) + $hangingPoints;
+            $result->SouthNorthPoints += \intval( ( $result->SouthNorthTotalInRoundPoints + $result->EastWestTotalInRoundPoints ) / 10 ) + $hangingPoints;
         } else if (
             ( $contract->Player == PlayerPosition::East || $contract->Player == PlayerPosition::West )
             && $result->SouthNorthTotalInRoundPoints == $result->EastWestTotalInRoundPoints

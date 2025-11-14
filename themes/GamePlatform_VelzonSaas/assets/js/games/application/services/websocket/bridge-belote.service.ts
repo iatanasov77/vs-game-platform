@@ -31,6 +31,7 @@ import OpponentPlayCardActionDto from '../../dto/Actions/opponentPlayCardActionD
 import TrickEndedActionDto from '../../dto/Actions/trickEndedActionDto';
 import RoundEndedActionDto from '../../dto/Actions/roundEndedActionDto';
 import StartNewRoundActionDto from '../../dto/Actions/startNewRoundActionDto';
+import AnnounceMadeActionDto from '../../dto/Actions/announceMadeActionDto';
 
 import { Keys } from '../../utils/keys';
 
@@ -94,8 +95,8 @@ export class BridgeBeloteService extends AbstractGameService
         
         //console.log( 'User in State', this.appState.user );
         if ( this.appState.user.getValue() ) {
-            //this.statusMessageService.setWaitingForConnect();
-            this.statusMessageService.setNotGameStarted();
+            this.statusMessageService.setWaitingForConnect();
+            //this.statusMessageService.setNotGameStarted();
         } else {
             this.statusMessageService.setNotLoggedIn();
             this.appState.hideBusy();
@@ -123,7 +124,7 @@ export class BridgeBeloteService extends AbstractGameService
                 //console.log( 'WebSocket Action Game Created', action.actionName );
                 
                 const dto = JSON.parse( message.data ) as CardGameCreatedActionDto;
-                console.log( 'WebSocket Action Game Created', dto.game );
+                //console.log( 'WebSocket Action Game Created', dto.game );
                 this.appState.myPosition.setValue( dto.myPosition );
                 this.appState.cardGame.setValue( dto.game );
                 
@@ -174,8 +175,6 @@ export class BridgeBeloteService extends AbstractGameService
                 break;
             }
             case ActionNames.opponentBids: {
-                //alert( 'WebSocket Action Opponent Move' );
-                
                 const action = JSON.parse( message.data ) as OpponentBidsActionDto;
                 //console.log( 'WebSocket Action Opponent Bids', action );
                 
@@ -188,14 +187,17 @@ export class BridgeBeloteService extends AbstractGameService
                     playState: action.playState
                 };
                 this.appState.cardGame.setValue( cGame );
+                this.statusMessageService.setTextMessage( cGame );
                 
                 break;
             }
             case ActionNames.playingStarted: {
                 const playingStartedAction = JSON.parse( message.data ) as PlayingStartedActionDto;
-                //console.log( 'Playing Started Action' + new Date().toLocaleTimeString(), playingStartedAction );
+                console.log( 'Playing Started Action' + new Date().toLocaleTimeString(), playingStartedAction );
                 
                 this.appState.playerCards.setValue( playingStartedAction.playerCards );
+                this.appState.playerAnnounces.setValue( playingStartedAction.playerAnnounces );
+                
                 const cGame = {
                     ...game,
                     contract: playingStartedAction.contract,
@@ -211,6 +213,19 @@ export class BridgeBeloteService extends AbstractGameService
                 
                 this.appState.moveTimer.setValue( playingStartedAction.timer );
                 this.appState.opponentDone.setValue( true );
+                
+                break;
+            }
+            case ActionNames.announceMade: {
+                const action = JSON.parse( message.data ) as AnnounceMadeActionDto;
+                console.log( 'WebSocket Action Announce Made', action );
+                
+                const playerAnnounces = this.appState.playerAnnounces.getValue();
+                const playerPosition = action.announce.Player;
+                this.appState.playerAnnounces.setValue({
+                    ...playerAnnounces,
+                    [playerPosition]: [action.announce]
+                });
                 
                 break;
             }
@@ -232,6 +247,7 @@ export class BridgeBeloteService extends AbstractGameService
                     currentPlayer: action.nextPlayer
                 };
                 this.appState.cardGame.setValue( cGame );
+                this.statusMessageService.setTextMessage( cGame );
                 //console.log( 'Current Game', cGame );
                 
                 break;
@@ -242,12 +258,13 @@ export class BridgeBeloteService extends AbstractGameService
                 
                 this.appState.cardGame.setValue( action.game );
                 this.appState.pile.setValue( [] );
+                this.appState.playerAnnounces.setValue( [] );
                 
                 break;
             }
             case ActionNames.roundEnded: {
                 const action = JSON.parse( message.data ) as RoundEndedActionDto;
-                console.log( 'WebSocket Action Round Ended', action );
+                //console.log( 'WebSocket Action Round Ended', action );
                 
                 this.appState.cardGame.setValue( action.game );
                 
@@ -258,29 +275,30 @@ export class BridgeBeloteService extends AbstractGameService
                 this.appState.playerCards.setValue( playerCardsClone );
                 
                 this.appState.playerBids.setValue( [] );
+                this.appState.playerAnnounces.setValue( [] );
                 this.appState.deck.setValue( [] );
                 this.appState.pile.setValue( [] );
                 this.appState.bridgeBeloteScore.setValue( action.newScore );
+                this.statusMessageService.setCardGameRoundEnded();
                 
                 break;
             }
             case ActionNames.gameEnded: {
-                //console.log( 'WebSocket Action Game Ended', action.actionName );
+                console.log( 'WebSocket Action Game Ended', action.actionName );
                 
                 const endedAction = JSON.parse( message.data ) as CardGameEndedActionDto;
                 //console.log( 'game ended', endedAction.game.winner );
                 //console.log( 'WebSocket Action Game Ended', endedAction.game );
+                
                 this.appState.cardGame.setValue({
                     ...endedAction.game,
                     playState: GameState.ended
                 });
-                /*
                 this.statusMessageService.setGameEnded(
                     endedAction.game,
                     endedAction.newScore
                 );
                 this.appState.moveTimer.setValue( 0 );
-                */
                 break;
             }
             case ActionNames.connectionInfo: {
@@ -327,7 +345,15 @@ export class BridgeBeloteService extends AbstractGameService
     
     doBid( bid: BidDto ): void
     {
-        const playerPosition = bid.Player
+        var playerPosition;
+        if ( bid.ReKontraPlayer ) {
+            playerPosition = bid.ReKontraPlayer;
+        } else if ( bid.KontraPlayer ) {
+            playerPosition = bid.KontraPlayer;
+        } else {
+            playerPosition = bid.Player;
+        }
+        
         const playerBids = this.appState.playerBids.getValue();
         
         this.appState.playerBids.setValue({
@@ -353,7 +379,9 @@ export class BridgeBeloteService extends AbstractGameService
             
             validBids: [],
             nextPlayer: game.currentPlayer,
-            playState: game.playState
+            playState: game.playState,
+            
+            MyCards: undefined
         };
         this.sendMessage( JSON.stringify( opponentBidAction ) );
     }
@@ -375,6 +403,8 @@ export class BridgeBeloteService extends AbstractGameService
         const pileClone = [...this.appState.pile.getValue()];
         pileClone.push( card );
         this.appState.pile.setValue( pileClone );
+        
+        const game = this.appState.cardGame.getValue();
         
         // console.log( 'Do PlayCard', playerCardsClone );
     }

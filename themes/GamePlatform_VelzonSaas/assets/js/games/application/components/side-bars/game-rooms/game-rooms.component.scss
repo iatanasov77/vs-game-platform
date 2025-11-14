@@ -27,7 +27,7 @@
     width: 100%;
 }
 
-tbody, tr { display: block; }
+.game-rooms-tbody, .game-rooms-row { display: block; }
 
 .game-rooms-container table tr:after {
     content: ' ';

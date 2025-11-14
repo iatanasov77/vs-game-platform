@@ -1,6 +1,7 @@
 <?php namespace App\Component\Dto\Actions;
 
 use Symfony\Component\Serializer\Attribute\Context;
+use Doctrine\Common\Collections\Collection;
 use App\Component\Serializer\Normalizer\BidDtoDenormalizer;
 use App\Component\Dto\BidDto;
 use App\Component\Type\PlayerPosition;
@@ -20,4 +21,7 @@ class OpponentBidsActionDto extends ActionDto
     public array $validBids;
     public PlayerPosition $nextPlayer;
     public GameState $playState;
+    
+    // Debug Player Cards
+    public Collection $MyCards;
 }

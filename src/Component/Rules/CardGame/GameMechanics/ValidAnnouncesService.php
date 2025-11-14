@@ -72,32 +72,28 @@ class ValidAnnouncesService
     {
         $maxSameTypesAnnounce = null;
         $maxSameSuitAnnounce = null;
-        for ( $i = 0; $i < $announces->count(); $i++ ) {
-            $announce = $announces[$i];
-            if ( $announce->Type == AnnounceType::Belot )
-            {
+        foreach ( $announces as $announce ) {
+            if ( $announce->Type == AnnounceType::Belot ) {
+                
             } else if (
                 $announce->Type == AnnounceType::FourJacks
                 || $announce->Type == AnnounceType::FourNines
                 || $announce->Type == AnnounceType::FourOfAKind
             ) {
-                if ( announce.CompareTo(maxSameTypesAnnounce) > 0 ) {
+                if ( $announce->CompareTo( $maxSameTypesAnnounce ) > 0 ) {
                     $maxSameTypesAnnounce = $announce;
                 }
-            }
-            else
-            {
+            } else {
                 // Sequence
-                if ( $announce->CompareTo( $maxSameSuitAnnounce ) > 0 ){
-                    $maxSameSuitAnnounce = announce;
+                if ( $announce->CompareTo( $maxSameSuitAnnounce ) > 0 ) {
+                    $maxSameSuitAnnounce = $announce;
                 }
             }
         }
         
         // Check for same announces in different teams
         $sameMaxAnnounceInDifferentTeams = false;
-        for ( $i = 0; $i < $announces->count(); $i++ ) {
-            $announce = $announces[$i];
+        foreach ( $announces as $announce ) {
             if (
                 $announce->Type == AnnounceType::SequenceOf3
                 || $announce->Type == AnnounceType::SequenceOf4
@@ -107,9 +103,9 @@ class ValidAnnouncesService
                 || $announce->Type == AnnounceType::SequenceOf8
             ) {
                 if (
-                    $announce.CompareTo( $maxSameSuitAnnounce ) == 0
+                    $announce->CompareTo( $maxSameSuitAnnounce ) == 0
                     && $maxSameSuitAnnounce != null
-                    && ! PlayerPositionExtensions::IsInSameTeamWith( $announce->Player, $maxSameSuitAnnounce->Playern )
+                    && ! PlayerPositionExtensions::IsInSameTeamWith( $announce->Player, $maxSameSuitAnnounce->Player )
                 ) {
                     $sameMaxAnnounceInDifferentTeams = true;
                 }
@@ -117,12 +113,11 @@ class ValidAnnouncesService
         }
         
         // Mark announces that should be scored
-        for ( $i = 0; $i < $announces->count(); $i++ ) {
-            $announce = $announces[$i];
+        foreach ( $announces as $announce ) {
             $announce->IsActive = false;
             if ( $announce->Type == AnnounceType::Belot ) {
                 $announce->IsActive = true;
-            } else if (
+            } elseif (
                 $announce->Type == AnnounceType::FourJacks
                 || $announce->Type == AnnounceType::FourNines
                 || $announce->Type == AnnounceType::FourOfAKind
@@ -133,13 +128,11 @@ class ValidAnnouncesService
                 ) {
                     $announce->IsActive = true;
                 }
-            }
-            else if (!sameMaxAnnounceInDifferentTeams)
-            {
+            } elseif ( ! $sameMaxAnnounceInDifferentTeams ) {
                 // Sequence
                 if (
                     $announce->CompareTo( $maxSameSuitAnnounce ) >= 0 ||
-                    ( $maxSameSuitAnnounce != null && PlayerPositionExtensions::IsInSameTeamWith( $announce->Player, $maxSameSuitAnnounce->Playern ) )
+                    ( $maxSameSuitAnnounce != null && PlayerPositionExtensions::IsInSameTeamWith( $announce->Player, $maxSameSuitAnnounce->Player ) )
                 ) {
                     $announce->IsActive = true;
                 }
@@ -171,19 +164,17 @@ class ValidAnnouncesService
                 continue;
             }
             
-            switch ( $cardType ) {
-                case CardType::Jack:
-                    $combinations[] = new Announce( AnnounceType::FourJacks, Card::GetCard( CardSuit::Spade, $cardType ) );
-                    break;
-                case CardType::Nine:
-                    $combinations[] = new Announce( AnnounceType::FourNines, Card::GetCard( CardSuit::Spade, $cardType ) );
-                    break;
-                case CardType::Ace:
-                case CardType::King:
-                case CardType::Queen:
-                case CardType::Ten:
-                    $combinations[] = new Announce( AnnounceType::FourOfAKind, Card::GetCard( CardSuit::Spade, $cardType ) );
-                    break;
+            if ( $cardType == CardType::Jack ) {
+                $combinations[] = new Announce( AnnounceType::FourJacks, Card::GetCard( CardSuit::Spade, $cardType ) );
+            } elseif ( $cardType == CardType::Nine ) {
+                $combinations[] = new Announce( AnnounceType::FourNines, Card::GetCard( CardSuit::Spade, $cardType ) );
+            } elseif (
+                $cardType == CardType::Ace ||
+                $cardType == CardType::King ||
+                $cardType == CardType::Queen ||
+                $cardType == CardType::Ten
+            ) {
+                $combinations[] = new Announce( AnnounceType::FourOfAKind, Card::GetCard( CardSuit::Spade, $cardType ) );
             }
             
             // Remove these cards from the available combination cards
@@ -221,20 +212,14 @@ class ValidAnnouncesService
                 if ( $suitedCards[$i]->Type->value == $previousCardValue + 1 ) {
                     $count++;
                 } else {
-                    switch ( $count ) {
-                        case 3:
-                            $combinations[] = new Announce( AnnounceType::SequenceOf3, $suitedCards[$i - 1] );
-                            break;
-                        case 4:
-                            $combinations[] = new Announce( AnnounceType::SequenceOf4, $suitedCards[$i - 1] );
-                            break;
-                        case 5:
-                            $combinations[] = new Announce( AnnounceType::SequenceOf5, $suitedCards[$i - 1] );
-                            break;
-                        case 6:
-                            $combinations[] = new Announce( AnnounceType::SequenceOf6, $suitedCards[$i - 1] );
-                            break;
-                            //// Cases 7 and 8 cannot happen here, they are instead handled in the code after this for loop
+                    if ( $count == 3 ) {
+                        $combinations[] = new Announce( AnnounceType::SequenceOf3, $suitedCards[$i - 1] );
+                    } elseif ( $count == 4 ) {
+                        $combinations[] = new Announce( AnnounceType::SequenceOf4, $suitedCards[$i - 1] );
+                    } elseif ( $count == 5 ) {
+                        $combinations[] = new Announce( AnnounceType::SequenceOf5, $suitedCards[$i - 1] );
+                    } elseif ( $count == 6 ) {
+                        $combinations[] = new Announce( AnnounceType::SequenceOf6, $suitedCards[$i - 1] );
                     }
                     
                     $count = 1;
@@ -243,26 +228,19 @@ class ValidAnnouncesService
                 $previousCardValue = $suitedCards[$i]->Type->value;
             }
             
-            switch ( $count ) {
-                case 3:
-                    $combinations[] = new Announce( AnnounceType::SequenceOf3, $suitedCards[$suitedCards->count() - 1] );
-                    break;
-                case 4:
-                    $combinations[] = new Announce( AnnounceType::SequenceOf4, $suitedCards[$suitedCards->count() - 1] );
-                    break;
-                case 5:
-                    $combinations[] = new Announce( AnnounceType::SequenceOf5, $suitedCards[$suitedCards->count() - 1] );
-                    break;
-                case 6:
-                    $combinations[] = new Announce( AnnounceType::SequenceOf6, $suitedCards[$suitedCards->count() - 1] );
-                    break;
-                case 7:
-                    $combinations[] = new Announce( AnnounceType::SequenceOf7, $suitedCards[$suitedCards->count() - 1] );
-                    break;
-                case 8:
-                    $combinations[] = new Announce( AnnounceType::SequenceOf8, $suitedCards[$suitedCards->count() - 1] );
-                    $combinations[] = new Announce( AnnounceType::SequenceOf3, $suitedCards[$suitedCards->count() - 1] );
-                    break;
+            if ( $count == 3 ) {
+                $combinations[] = new Announce( AnnounceType::SequenceOf3, $suitedCards[$suitedCards->count() - 1] );
+            } elseif ( $count == 4 ) {
+                $combinations[] = new Announce( AnnounceType::SequenceOf4, $suitedCards[$suitedCards->count() - 1] );
+            } elseif ( $count == 5 ) {
+                $combinations[] = new Announce( AnnounceType::SequenceOf5, $suitedCards[$suitedCards->count() - 1] );
+            } elseif ( $count == 6 ) {
+                $combinations[] = new Announce( AnnounceType::SequenceOf6, $suitedCards[$suitedCards->count() - 1] );
+            } elseif ( $count == 7 ) {
+                $combinations[] = new Announce( AnnounceType::SequenceOf7, $suitedCards[$suitedCards->count() - 1] );
+            } elseif ( $count == 8 ) {
+                $combinations[] = new Announce( AnnounceType::SequenceOf8, $suitedCards[$suitedCards->count() - 1] );
+                $combinations[] = new Announce( AnnounceType::SequenceOf3, $suitedCards[$suitedCards->count() - 1] );
             }
         }
     }

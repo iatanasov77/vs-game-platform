@@ -26,6 +26,7 @@ use App\Component\Dto\Actions\PlayingStartedActionDto;
 use App\Component\Dto\Actions\PlayCardActionDto;
 use App\Component\Dto\Actions\TrickEndedActionDto;
 use App\Component\Dto\Actions\RoundEndedActionDto;
+use App\Component\Dto\Actions\GameEndedActionDto;
 
 abstract class CardGameManager extends AbstractGameManager
 {
@@ -76,11 +77,13 @@ abstract class CardGameManager extends AbstractGameManager
             
             $biddingStartedAction->firstToBid = $this->Game->CurrentPlayer;
             
-            $biddingStartedAction->validBids = $this->Game->AvailableBids->map(
+            $validBids = $this->Game->AvailableBids->map(
                 function( $entry ) {
                     return Mapper::BidToDto( $entry );
                 }
             )->toArray();
+            $biddingStartedAction->validBids = \array_values( $validBids );
+            
             $biddingStartedAction->timer = Game::ClientCountDown;
             
             $this->Send( $this->Clients->get( PlayerPosition::South->value ), $biddingStartedAction );
@@ -98,6 +101,10 @@ abstract class CardGameManager extends AbstractGameManager
         $this->Game->CurrentPlayer = $this->Game->firstInRound;
         $this->Game->PlayState = GameState::roundEnded;
         
+        $this->Game->southNorthPoints += $score->SouthNorthPoints;
+        $this->Game->eastWestPoints += $score->EastWestPoints;
+        $this->Game->hangingPoints = $score->HangingPoints;
+        
         $action = new RoundEndedActionDto();
         $action->game = Mapper::CardGameToDto( $this->Game );
         
@@ -111,6 +118,7 @@ abstract class CardGameManager extends AbstractGameManager
                 return Mapper::CardToDto( $entry );
             }
         )->toArray();
+        
         $action->EastWestTricks = $this->Game->EastWestTricks->map(
             function( $entry ) {
                 return Mapper::CardToDto( $entry );
@@ -121,6 +129,12 @@ abstract class CardGameManager extends AbstractGameManager
         $this->Send( $this->Clients->get( PlayerPosition::East->value ), $action );
         $this->Send( $this->Clients->get( PlayerPosition::North->value ), $action );
         $this->Send( $this->Clients->get( PlayerPosition::West->value ), $action );
+        
+        $winner = $this->GetWinner();
+        if ( $winner ) {
+            $this->logger->log( "{$winner->value} won Game {$this->Game->Id}", 'GameManager' );
+            $this->EndGame( $winner );
+        }
     }
     
     public function StartNewRound(): void
@@ -176,6 +190,19 @@ abstract class CardGameManager extends AbstractGameManager
                     return Mapper::CardToDto( $entry, $player->PlayerPosition );
                 }
             )->toArray();
+            
+            $playerAnnounces = $this->Game->GetAvailableAnnounces( $this->Game->playerCards[$key] );
+            $this->logger->log( "Player Announces" . \print_r( $playerAnnounces->toArray(), true ), 'GameManager' );
+            $playingStartedAction->playerAnnounces[$key] = $playerAnnounces->map(
+                function( $entry ) use ( $player ) {
+                    return Mapper::AnnounceToDto( $entry, $player->PlayerPosition );
+                }
+            )->toArray();
+            
+            foreach ( $playerAnnounces as $announce ) {
+                $announce->Player = $player->PlayerPosition;
+                $this->Game->announces[] = $announce;
+            }
         }
         
         $this->Game->ValidCards = $this->Game->GetValidCards(
@@ -230,20 +257,30 @@ abstract class CardGameManager extends AbstractGameManager
     
     protected function SaveWinner( CardGameTeam $team ): ?array
     {
-        
+        //return [$scoreBlack, $scoreWhite];
+        return [null, null];
     }
     
-    protected function GetWinner(): ?CardGameTeam
-    {
-        $winner = null;
-        
-        
-        return $winner;
-    }
+    abstract protected function GetWinner(): ?CardGameTeam;
     
-    protected function SendWinner( CardGameTeam $team, ?array $newScore ): void
+    protected function SendWinner( CardGameTeam $team, ?RoundResult $newScore = null ): void
     {
+        $game = Mapper::CardGameToDto( $this->Game );
+        $game->winner = $team;
+        $gameEndedAction = new GameEndedActionDto();
+        $gameEndedAction->game = $game;
         
+        //$gameEndedAction->newScore = $newScore ? $newScore[0] : null;
+        $this->Send( $this->Clients->get( PlayerPosition::South->value ), $gameEndedAction );
+        
+        //$gameEndedAction->newScore = $newScore ? $newScore[1] : null;
+        $this->Send( $this->Clients->get( PlayerPosition::East->value ), $gameEndedAction );
+        
+        //$gameEndedAction->newScore = $newScore ? $newScore[0] : null;
+        $this->Send( $this->Clients->get( PlayerPosition::North->value ), $gameEndedAction );
+        
+        //$gameEndedAction->newScore = $newScore ? $newScore[1] : null;
+        $this->Send( $this->Clients->get( PlayerPosition::West->value ), $gameEndedAction );
     }
     
     protected function Resign( PlayerPosition $winner ): void
@@ -252,14 +289,14 @@ abstract class CardGameManager extends AbstractGameManager
         $this->logger->log( "{$winner} won Game {$this->Game->Id} by resignition.", 'GameManager' );
     }
     
-    protected function EndGame( PlayerPosition $winner ): void
+    protected function EndGame( CardGameTeam $winner ): void
     {
         //$this->moveTimeOut->cancel();
         $this->Game->PlayState = GameState::ended;
         $this->logger->log( "The winner is {$winner->value}", 'EndGame' );
         
-        //$newScore = $this->SaveWinner( $winner );
-        //$this->SendWinner( $winner, $newScore );
+        $newScore = $this->SaveWinner( $winner );
+        $this->SendWinner( $winner );
     }
     
     protected function CloseConnections( WebsocketClientInterface $socket ): void

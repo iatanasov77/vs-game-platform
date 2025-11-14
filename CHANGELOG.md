@@ -1,3 +1,17 @@
+0.17.3	|	Release date: **14.11.2025**
+============================================
+* Bug-Fixes and Improvements:
+  - Improve Showing Status Messages in Bridge Belote Game.
+  - Fix Bridge Belote Scoring.
+  - Fix Bridge Belote Engine to Get Bids.
+  - Fix Showing the Ride Valid Bid Icons.
+  - Prepare Bridge Belote Card Game to Have Announces.
+  - Improve Showing Card Game Contract.
+  - Showing Announces on Front-End.
+  - Fix and Improve Bridge Belote Score.
+  - Ended a Bridge Belote Game.
+
+
 0.17.2	|	Release date: **06.11.2025**
 ============================================
 * Bug-Fixes and Improvements:

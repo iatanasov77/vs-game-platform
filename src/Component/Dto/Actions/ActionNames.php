@@ -28,6 +28,7 @@ enum ActionNames: int
     case trickEnded         = 21;
     case roundEnded         = 22;
     case startNewRound      = 23;
+    case announceMade       = 24;
     
-    case serverWasTerminated    = 24;
+    case serverWasTerminated    = 25;
 }

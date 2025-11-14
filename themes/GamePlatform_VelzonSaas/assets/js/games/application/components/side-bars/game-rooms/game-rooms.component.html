@@ -3,9 +3,9 @@
     
     <caption class="font-weight-bold text-nowrap">{{ 'game_board.rooms.title' | translate }}</caption>
     <table class="table caption-top">
-        <tbody *ngIf="! ( isFetchingRooms$ | async )">
+        <tbody *ngIf="! ( isFetchingRooms$ | async )" class="game-rooms-tbody">
             <ng-container *ngFor="let room of rooms">
-                <tr>
+                <tr class="game-rooms-row">
                     <td class="text-start p-1">
                         <ng-container *ngIf="room.isPlaying == true">
                             <span class="text-success">

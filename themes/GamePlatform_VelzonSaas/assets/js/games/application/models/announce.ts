@@ -90,7 +90,7 @@ export function GetAnnounceSymbols(): Array<CardGameAnnounceSymbolModel>
     return AnnounceSymbols;
 }
 
-export function GetAnnounceSymbol( symbolId: String )
+export function GetAnnounceSymbol( symbolId: BidType )
 {
     return AnnounceSymbols.find( ( x: any ) => x.id === symbolId );
 }

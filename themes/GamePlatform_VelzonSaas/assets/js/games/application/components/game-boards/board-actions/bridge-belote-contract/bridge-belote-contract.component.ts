@@ -1,7 +1,7 @@
 import { Component, Inject, Input, OnChanges, SimpleChanges, EventEmitter, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { GetAnnounceSymbols } from '../../../../models/announce';
+import { GetAnnounceSymbol } from '../../../../models/announce';
 import CardGameAnnounceSymbolModel from '_@/GamePlatform/Model/CardGameAnnounceSymbolModel';
 
 import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
@@ -39,7 +39,7 @@ export class BridgeBeloteContractComponent implements OnChanges
         @Inject( TranslateService ) private translate: TranslateService,
         @Inject( AppStateService ) private appStateService: AppStateService,
     ) {
-        this.announceSymbols = GetAnnounceSymbols();
+        this.announceSymbols = [];
         this.myPosition = this.appStateService.myPosition.getValue();
     }
         
@@ -58,11 +58,14 @@ export class BridgeBeloteContractComponent implements OnChanges
                     break;
                 case 'validBids':
                     this.validBids = changedProp.currentValue;
+                    this.getAnnounceSymbols();
+                    //console.log( 'Valid Bids', this.validBids );
                     //alert( 'Valid Bids: ' + this.validBids.length );
                     break;
                 case 'contract':
                     this.contract = changedProp.currentValue;
                     //alert( 'Valid Bids: ' + this.validBids.length );
+                    //console.log( 'Cuurent Contract', this.contract );
                     break;
                 case 'currentPlayer':
                     this.currentPlayer = changedProp.currentValue;
@@ -80,6 +83,54 @@ export class BridgeBeloteContractComponent implements OnChanges
         return '';
     }
     
+    getAnnounceSymbols(): void
+    {
+        this.announceSymbols = [];
+        var symbol;
+        for ( var i = 0; i < this.validBids.length; i++ ) {
+            symbol = GetAnnounceSymbol( this.validBids[i].Type );
+            if ( symbol ) {
+                this.announceSymbols.push( symbol );
+            }
+        }
+    }
+    
+    getContractPlayer(): string
+    {
+        if ( ! this.contract ) {
+            return '';
+        }
+        
+        return PlayerPosition[this.contract.Player];
+    }
+    
+    getContractKontraPlayer(): string
+    {
+        //console.log( 'Kontra Player', this?.contract?.KontraPlayer );
+        if ( ! this.contract ) {
+            return '';
+        }
+        
+        if ( this.contract.KontraPlayer == null ) {
+            return '';
+        }
+        
+        return PlayerPosition[this.contract.KontraPlayer];
+    }
+    
+    getContractReKontraPlayer(): string
+    {
+        if ( ! this.contract ) {
+            return '';
+        }
+        
+        if ( this.contract.ReKontraPlayer == null ) {
+            return '';
+        }
+        
+        return PlayerPosition[this.contract.ReKontraPlayer];
+    }
+    
     getContractIcon(): string
     {
         if ( ! this.contract ) {
@@ -89,22 +140,22 @@ export class BridgeBeloteContractComponent implements OnChanges
         //console.log( 'Current Contract', this.contract );
         switch ( this.contract.Type ) {
             case BidType.Clubs:
-                return '<i class="fi fi-sr-club"></i>';
+                return '( <i class="fi fi-sr-club"></i> )';
                 break;
             case BidType.Diamonds:
-                return '<i class="fi fi-sr-card-diamond"></i>';
+                return '( <i class="fi fi-sr-card-diamond"></i> )';
                 break;
             case BidType.Hearts:
-                return '<i class="fi fi-sr-heart"></i>';
+                return '( <i class="fi fi-sr-heart"></i> )';
                 break;
             case BidType.Spades:
-                return '<i class="fi fi-sr-spade"></i>';
+                return '( <i class="fi fi-sr-spade"></i> )';
                 break;
             case BidType.NoTrumps:
-                return 'a';
+                return '( a )';
                 break;
             case BidType.AllTrumps:
-                return 'j';
+                return '( j )';
                 break;
             default:
                 return '';

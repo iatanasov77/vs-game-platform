@@ -1,11 +1,10 @@
 <div>
     
     <div *ngIf="gameBiddingVisible && currentPlayer == myPosition">
-        <ng-container *ngFor="let icon of announceSymbols; let i = index">
+        <ng-container *ngFor="let icon of announceSymbols">
             <a href="javascript:void(0);"
                 id="{{ icon.key }}"
                 ngbTooltip="{{ icon.tooltip }}" placement="top"
-                [ngClass]="getClass( icon.id )"
                 (click)="makeBid( icon.id )"
             >
                 <span class="announce-button" [innerHTML]="icon.value"></span>
@@ -13,9 +12,21 @@
         </ng-container>
     </div>
     
-    <div *ngIf="gameContractVisible" class="float-end me-3">
-        <span class="announce-button">{{ 'game_board.game' | translate }}:</span>&nbsp;
-        <span class="announce-button" [innerHTML]="getContractIcon()"></span>
+    <div *ngIf="gameContractVisible" class="float-end me-3 mt-3">
+        <span class="contract-button">{{ 'game_board.game' | translate }}:</span>&nbsp;
+        
+        <span class="contract-button player-position" [innerHTML]="getContractPlayer()"></span>
+        <span class="contract-button" [innerHTML]="getContractIcon()"></span>
+        
+        <ng-container *ngIf="contract.KontraPlayer != null">
+            <span class="contract-button player-position" [innerHTML]="getContractKontraPlayer()"></span>
+            <span class="contract-button">( {{ 'card-game.kontra' | translate }} )</span>
+        </ng-container>
+        
+        <ng-container *ngIf="contract.ReKontraPlayer != null">
+            <span class="contract-button player-position" [innerHTML]="getContractReKontraPlayer()"></span>
+            <span class="contract-button">( {{ 'card-game.rekontra' | translate }} )</span>
+        </ng-container>
     </div>
     
 </div>

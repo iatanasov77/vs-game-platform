@@ -23,6 +23,7 @@ use App\Component\Rules\CardGame\Game;
 use App\Component\Rules\CardGame\Player;
 use App\Component\Rules\CardGame\Card;
 use App\Component\Rules\CardGame\Bid;
+use App\Component\Rules\CardGame\Announce;
 use App\Component\Rules\CardGame\PlayCardAction;
 use App\Component\AI\EngineFactory as AiEngineFactory;
 use App\Component\Utils\Guid;
@@ -34,7 +35,9 @@ use App\Entity\TempPlayer;
 // Types
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\BidType;
+use App\Component\Type\AnnounceType;
 use App\Component\Type\GameState;
+use App\Component\Type\CardGameTeam;
 
 // DTO Actions
 use App\Component\Dto\Mapper;
@@ -45,6 +48,7 @@ use App\Component\Dto\Actions\BidMadeActionDto;
 use App\Component\Dto\Actions\OpponentBidsActionDto;
 use App\Component\Dto\Actions\PlayCardActionDto;
 use App\Component\Dto\Actions\OpponentPlayCardActionDto;
+use App\Component\Dto\Actions\AnnounceMadeActionDto;
 
 class BridgeBeloteGameManager extends CardGameManager
 {
@@ -242,18 +246,13 @@ class BridgeBeloteGameManager extends CardGameManager
     
     protected function NewTurn( WebsocketClientInterface $socket ): void
     {
-        $winner = $this->GetWinner();
         $this->Game->SwitchPlayer();
         
-        if ( $winner ) {
-            $this->EndGame( $winner );
-        } else {
-            if ( ! $this->ContinuePlay() ) {
-                return;
-            }
-            
-            $this->PlayRound( $socket );
+        if ( ! $this->ContinuePlay() ) {
+            return;
         }
+        
+        $this->PlayRound( $socket );
     }
     
     protected function AisTurn(): bool
@@ -318,13 +317,42 @@ class BridgeBeloteGameManager extends CardGameManager
     protected function DoBid( BidMadeActionDto $action ): void
     {
         $bid = new Bid( $action->bid->Player, BidType::fromValue( $action->bid->Type ) );
-        $this->Game->SetContract( $bid );
+        $bid->KontraPlayer = $action->bid->KontraPlayer;
+        $bid->ReKontraPlayer = $action->bid->ReKontraPlayer;
+        
+        $nextPlayer = $this->Game->NextPlayer();
+        $this->Game->SetContract( $bid, $nextPlayer );
     }
     
     protected function PlayCard( PlayCardActionDto $action ): void
     {
         $playedCard = Card::GetCard( $action->Card->Suit, $action->Card->Type );
-        $trickAction = new PlayCardAction( $playedCard, false );
+        $trickAction = new PlayCardAction( $playedCard, $this->Game->playerCards[$this->Game->CurrentPlayer->value]->count() > 1 );
+        
+        // Belote
+        if ( $trickAction->Belote ) {
+            $belote = $this->Game->IsBeloteAllowed(
+                $this->Game->playerCards[$this->Game->CurrentPlayer->value],
+                $this->Game->CurrentContract->Type,
+                $this->Game->GetTrickActions(),
+                $trickAction->Card
+            );
+            
+            if ( $belote ) {
+                $announce = new Announce( AnnounceType::Belot, $trickAction->Card );
+                
+                $announce->Player = $this->Game->CurrentPlayer;
+                $this->Game->announces[] = $announce;
+                
+                $action = new AnnounceMadeActionDto();
+                $action->announce = Mapper::AnnounceToDto( $announce, $this->Game->CurrentPlayer );
+                
+                $this->Send( $this->Clients->get( PlayerPosition::South->value ), $action );
+                $this->Send( $this->Clients->get( PlayerPosition::East->value ), $action );
+                $this->Send( $this->Clients->get( PlayerPosition::North->value ), $action );
+                $this->Send( $this->Clients->get( PlayerPosition::West->value ), $action );
+            }
+        }
         
         // Update information after the action
         $this->Game->playerCards[$this->Game->CurrentPlayer->value]->removeElement( $trickAction->Card );
@@ -336,20 +364,36 @@ class BridgeBeloteGameManager extends CardGameManager
     
     protected function EnginBids( WebsocketClientInterface $client ): void
     {
+        // Debug Player Cards
+        $playerCards = $this->Game->playerCards[$this->Game->CurrentPlayer->value];
+        
         $bid = new Bid( $this->Game->CurrentPlayer, $this->Engine->DoBid() );
         
-        $promise = Async\async( function () use ( $client, $bid ) {
+        $promise = Async\async( function () use ( $client, $bid, $playerCards ) {
             $sleepMileseconds   = \rand( 700, 1200 );
             Async\delay( $sleepMileseconds / 1000 );
             
-            $this->Game->SetContract( $bid );
+            $nextPlayer = $this->Game->NextPlayer();
+            $this->Game->SetContract( $bid, $nextPlayer );
             
             $action = new OpponentBidsActionDto();
             $action->bid = Mapper::BidToDto( $bid );
             
-            $action->validBids = $this->Game->AvailableBids->getValues();
-            $action->nextPlayer = $this->Game->NextPlayer();
+            $validBids = $this->Game->AvailableBids->map(
+                function( $entry ) {
+                    return Mapper::BidToDto( $entry );
+                }
+            )->toArray();
+            $action->validBids = \array_values( $validBids );
+            
+            $action->nextPlayer = $nextPlayer;
             $action->playState = $this->Game->PlayState;
+            
+            $action->MyCards = $playerCards->map(
+                function( $entry ) {
+                    return Mapper::CardToDto( $entry, $this->Game->CurrentPlayer );
+                }
+            );
             
             $this->Send( $client, $action );
         })();
@@ -359,6 +403,31 @@ class BridgeBeloteGameManager extends CardGameManager
     protected function EnginPlayCard( WebsocketClientInterface $client ): void
     {
         $playCardAction = $this->Engine->PlayCard();
+        
+        // Belote
+        if ( $playCardAction->Belote ) {
+            $belote = $this->Game->IsBeloteAllowed(
+                $this->Game->playerCards[$this->Game->CurrentPlayer->value],
+                $this->Game->CurrentContract->Type,
+                $this->Game->GetTrickActions(),
+                $playCardAction->Card
+            );
+            
+            if ( $belote ) {
+                $announce = new Announce( AnnounceType::Belot, $playCardAction->Card );
+                
+                $announce->Player = $this->Game->CurrentPlayer;
+                $this->Game->announces[] = $announce;
+                
+                $action = new AnnounceMadeActionDto();
+                $action->announce = Mapper::AnnounceToDto( $announce, $this->Game->CurrentPlayer );
+                
+                $this->Send( $this->Clients->get( PlayerPosition::South->value ), $action );
+                $this->Send( $this->Clients->get( PlayerPosition::East->value ), $action );
+                $this->Send( $this->Clients->get( PlayerPosition::North->value ), $action );
+                $this->Send( $this->Clients->get( PlayerPosition::West->value ), $action );
+            }
+        }
         
         $promise = Async\async( function () use ( $client, $playCardAction ) {
             $sleepMileseconds   = \rand( 700, 1200 );
@@ -388,6 +457,21 @@ class BridgeBeloteGameManager extends CardGameManager
             $this->Send( $client, $action );
         })();
         Async\await( $promise );
+    }
+    
+    protected function GetWinner(): ?CardGameTeam
+    {
+        $winner = null;
+        
+        if ( $this->Game->southNorthPoints >= 151 ) {
+            $winner = CardGameTeam::SouthNorth;
+        }
+        
+        if ( $this->Game->eastWestPoints >= 151 ) {
+            $winner = CardGameTeam::EastWest;
+        }
+        
+        return $winner;
     }
     
     private function CreateTempPlayer( int $playerId, int $playerPositionId ): TempPlayer

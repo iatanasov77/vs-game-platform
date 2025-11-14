@@ -33,21 +33,29 @@ class ContractManager
         $this->game->AvailableBids = $this->GetAvailableBids( $this->game->CurrentContract, $this->game->CurrentPlayer );
     }
     
-    public function SetContract( Bid $bid ): void
+    public function SetContract( Bid $bid, PlayerPosition $nextPlayer ): void
     {
         $this->game->Bids[$bid->Player->value] = $bid;
         
         if ( $bid->Type->has( BidType::Double ) || $bid->Type->has( BidType::ReDouble ) ) {
             $this->game->CurrentContract->Type->remove( BidType::Double );
             $this->game->CurrentContract->Type->remove( BidType::ReDouble );
-            $this->game->CurrentContract->Type->set( $bid->Type );
-            $this->game->CurrentContract->Player = $this->game->CurrentPlayer;
+            $this->game->CurrentContract->Type->set( BidType::fromBitMaskValue( $bid->Type->get() ) );
+            
+            if ( $bid->Type->has( BidType::ReDouble ) ) {
+                $this->game->CurrentContract->ReKontraPlayer = $this->game->CurrentPlayer;
+            } else {
+                $this->game->CurrentContract->KontraPlayer = $this->game->CurrentPlayer;
+            }
+            
+            $this->logger->log( 'ConsecutivePasses After Kontra: ' . $this->game->ConsecutivePasses, 'RoundManager' );
+            $this->logger->log( 'After Kontra Has Bid Pass: ' . $bid->Type->has( BidType::Pass ), 'RoundManager' );
         } else if ( ! $bid->Type->has( BidType::Pass ) ) {
             $this->game->CurrentContract = $bid;
         }
         
         $this->game->ConsecutivePasses = $bid->Type->has( BidType::Pass ) ? ++$this->game->ConsecutivePasses : 0;
-        $this->game->AvailableBids = $this->GetAvailableBids( $this->game->CurrentContract, $this->game->CurrentPlayer );
+        $this->game->AvailableBids = $this->GetAvailableBids( $this->game->CurrentContract, $nextPlayer );
         
         //$this->logger->log( 'AvailableBids: ' . \print_r( $this->game->AvailableBids->toArray(), true ), 'RoundManager' );
     }
@@ -99,6 +107,8 @@ class ContractManager
                 $availableBids->set( BidType::Double->value(), new Bid( $currentPlayer, BidType::Double ) );
             }
         }
+        
+        $this->logger->log( 'Current Contract: ' . $cleanContract->get(), 'ContractManager' );
         
         return $availableBids;
     }

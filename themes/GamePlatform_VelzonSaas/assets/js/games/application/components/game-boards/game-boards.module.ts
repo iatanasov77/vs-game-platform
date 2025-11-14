@@ -6,7 +6,6 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { SharedModule } from '../shared/shared.module';
 import { GameDialogsModule } from '../game-dialogs/game-dialogs.module';
-import { GameStartComponent } from './board-actions/game-start/game-start.component';
 
 import { BridgeBeloteContainerComponent } from './bridge-belote-container/bridge-belote-container.component';
 import { BridgeBeloteBoardComponent } from './bridge-belote-board/bridge-belote-board.component';
@@ -25,8 +24,6 @@ import { NgxChessBoardModule } from 'ngx-chess-board';
 
 @NgModule({
     declarations: [
-        GameStartComponent,
-        
         BridgeBeloteContainerComponent,
         BridgeBeloteBoardComponent,
         BridgeBeloteContractComponent,
@@ -50,8 +47,6 @@ import { NgxChessBoardModule } from 'ngx-chess-board';
         NgxChessBoardModule.forRoot(),
     ],
     exports: [
-        GameStartComponent,
-        
         BridgeBeloteContainerComponent,
         BridgeBeloteBoardComponent,
         BridgeBeloteContractComponent,

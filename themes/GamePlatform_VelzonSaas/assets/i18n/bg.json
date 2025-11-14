@@ -267,6 +267,9 @@
         }
     },
     "bridge-belote": {
+        "round-manager": {
+            "round-ended": "Round Ended. Start new Round !"
+        },
         "bid-type": {
             "pass": "Pass",
             "clubs": "Clubs",
@@ -278,6 +281,22 @@
             "all-trumps": "All Trumps",
             "double": "Double",
             "re-double": "Re-Double"
+        },
+        "announce-type": {
+            "belot": "Belot",
+            "sequence-of-3": "Sequence Of 3",
+            "sequence-of-4": "Sequence Of 4",
+            "sequence-of-5": "Sequence Of 5",
+            "sequence-of-6": "Sequence Of 6",
+            "sequence-of-7": "Sequence Of 7",
+            "sequence-of-8": "Sequence Of 8",
+            "four-of-a-kind": "Four Of A Kind",
+            "four-nines": "Four Nines",
+            "four-jacks": "Four Jacks"
         }
+    },
+    "card-game": {
+        "kontra": "Double",
+        "rekontra": "ReDouble"
     }
 }

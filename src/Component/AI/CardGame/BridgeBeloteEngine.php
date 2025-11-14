@@ -128,7 +128,8 @@ class BridgeBeloteEngine extends Engine
     private function GetBid( PlayerGetBidContext $context ): BidType
     {
         $availableAnnounces = $this->validAnnouncesService->GetAvailableAnnounces( $context->MyCards );
-        $this->logger->log( 'Available Announces for Player ' . $context->MyPosition->value . ': ' . \print_r( $availableAnnounces->toArray(), true ), 'BridgeBeloteEngine' );
+        //$this->logger->log( 'Available Announces for Player ' . $context->MyPosition->value . ': ' . \print_r( $availableAnnounces->toArray(), true ), 'BridgeBeloteEngine' );
+        
         $announcePoints = \array_reduce(
             $availableAnnounces->toArray(),
             function( $carry, $item )
@@ -186,20 +187,22 @@ class BridgeBeloteEngine extends Engine
             );
         }
         
+        $this->logger->log( 'Bids Before Filter for Player ' . $context->MyPosition->value . ': ' . \print_r( $bids->toArray(), true ), 'BridgeBeloteEngine' );
         $bids = $bids->filter(
             function( $entry ) {
                 return $entry >= 100;
             }
         );
+        $this->logger->log( 'Bids After Filter for Player ' . $context->MyPosition->value . ': ' . \print_r( $bids->toArray(), true ), 'BridgeBeloteEngine' );
         
         $bidsIterator = $bids->getIterator();
         $bidsIterator->uasort( function ( $a, $b ) {
             return $b <=> $a;
         });
         $bids = new ArrayCollection( \iterator_to_array( $bidsIterator ) );
-        $bid = $bids->first() ? BidType::fromValue( $bids->indexOf( $bids->key() ) ) : BidType::Pass;
+        $bid = $bids->first() ? BidType::fromValue( $bids->key() ) : BidType::Pass;
         
-        $this->logger->log( 'Available Bids for Player ' . $context->MyPosition->value . ': ' . \print_r( $context->AvailableBids->toArray(), true ), 'BridgeBeloteEngine' );
+        //$this->logger->log( 'Available Bids for Player ' . $context->MyPosition->value . ': ' . \print_r( $context->AvailableBids->toArray(), true ), 'BridgeBeloteEngine' );
         $this->logger->log( 'Selected Bid for Player ' . $context->MyPosition->value . ': ' . \print_r( $bid, true ), 'BridgeBeloteEngine' );
         
         return $bid;
@@ -259,8 +262,7 @@ class BridgeBeloteEngine extends Engine
         int $announcePoints
     ): int {
         $bidPoints = $announcePoints / 3;
-        for ( $i = 0; $i < $cards->count(); $i++ ) {
-            $card = $cards[$i];
+        foreach ( $cards as $card ) {
             if ( $card->Type == CardType::Jack ) {
                 $bidPoints += 45;
             }
@@ -298,8 +300,7 @@ class BridgeBeloteEngine extends Engine
     private static function CalculateNoTrumpsBidPoints( Collection $cards ): int
     {
         $bidPoints = 0;
-        for ( $i = 0; $i < $cards->count(); $i++ ) {
-            $card = $cards[$i];
+        foreach ( $cards as $card ) {
             if ( $card->Type == CardType::Ace ) {
                 $bidPoints += 45;
             }
@@ -322,33 +323,23 @@ class BridgeBeloteEngine extends Engine
     private static function CalculateTrumpBidPoints( Collection $cards, CardSuit $trumpSuit, int $announcePoints ): int
     {
         $bidPoints = $announcePoints / 2;
-        for ( $i = 0; $i < $cards->count(); $i++ ) {
-            $card = $cards[$i];
+        foreach ( $cards as $card ) {
             if ( $card->Suit == $trumpSuit ) {
                 if ( $card->Type == CardType::Queen && $cards->contains( Card::GetCard( $trumpSuit, CardType::King ) ) ) {
                     $bidPoints += 25;
                 } else {
-                    switch ( $card->Type ) {
-                        case CardType::Jack:
-                            $bidPoints += 55;
-                            break;
-                        case CardType::Nine:
-                            $bidPoints += 35;
-                            break;
-                        case CardType::Ace:
-                            $bidPoints += 25;
-                            break;
-                        case CardType::Ten:
-                            $bidPoints += 20;
-                            break;
-                        case CardType::King:
-                        case CardType::Queen:
-                            $bidPoints += 16;
-                            break;
-                        case CardType::Seven:
-                        case CardType::Eight:
-                            $bidPoints += 15;
-                            break;
+                    if ( $card->Type == CardType::Jack ) {
+                        $bidPoints += 55;
+                    } elseif ( $card->Type == CardType::Nine ) {
+                        $bidPoints += 35;
+                    } elseif ( $card->Type == CardType::Ace ) {
+                        $bidPoints += 25;
+                    } elseif ( $card->Type == CardType::Ten ) {
+                        $bidPoints += 20;
+                    } elseif ( $card->Type == CardType::King || $card->Type == CardType::Queen ) {
+                        $bidPoints += 16;
+                    } elseif ( $card->Type == CardType::Seven || $card->Type == CardType::Eight ) {
+                        $bidPoints += 15;
                     }
                 }
                 
@@ -356,13 +347,10 @@ class BridgeBeloteEngine extends Engine
                 if ( $card->Type == CardType::Ten && $cards->contains( Card::GetCard( $card->Suit, CardType::Ace ) ) ) {
                     $bidPoints += 15;
                 } else {
-                    switch ( $card->Type ) {
-                        case CardType::Ace:
-                            $bidPoints += 20;
-                            break;
-                        case CardType::Ten:
-                            $bidPoints += 10;
-                            break;
+                    if ( $card->Type == CardType::Ace ) {
+                        $bidPoints += 20;
+                    } elseif ( $card->Type == CardType::Ten ) {
+                        $bidPoints += 10;
                     }
                 }
             }

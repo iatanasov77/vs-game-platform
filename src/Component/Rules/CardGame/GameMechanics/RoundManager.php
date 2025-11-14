@@ -82,9 +82,17 @@ class RoundManager
                 $this->eventDispatcher->dispatch( new CardGameRoundEndedEvent( $this->game ), CardGameRoundEndedEvent::NAME );
             }
             
-            if ( $this->game->CurrentPlayer == $this->game->CurrentContract->Player && $this->game->ConsecutivePasses == 3 ) {
+            //$this->logger->log( 'CurrentContract: ' . \print_r( $this->game->CurrentContract, true ), 'RoundManager' );
+            if ( $this->game->CurrentContract->ReKontraPlayer ) {
+                $lastBidPlayer = $this->game->CurrentContract->ReKontraPlayer;
+            } elseif ( $this->game->CurrentContract->KontraPlayer ) {
+                $lastBidPlayer = $this->game->CurrentContract->KontraPlayer;
+            } else {
+                $lastBidPlayer = $this->game->CurrentContract->Player;
+            }
+            
+            if ( $this->game->CurrentPlayer == $lastBidPlayer && $this->game->ConsecutivePasses == 3 ) {
                 $this->logger->log( 'Consecutive Passes Exceeded !!!', 'RoundManager' );
-                $this->logger->log( 'CurrentContract: ' . \print_r( $this->game->CurrentContract, true ), 'RoundManager' );
                 
                 $this->game->PlayState = GameState::firstRound;
                 $this->DealCards( 3 );
@@ -101,9 +109,9 @@ class RoundManager
         return null;
     }
     
-    public function SetContract( Bid $bid ): void
+    public function SetContract( Bid $bid, PlayerPosition $nextPlayer ): void
     {
-        $this->contractManager->SetContract( $bid );
+        $this->contractManager->SetContract( $bid, $nextPlayer );
     }
     
     public function GetValidCards( Collection $playerCards, Bid $currentContract, Collection $trickActions ): Collection

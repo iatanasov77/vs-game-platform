@@ -9,17 +9,13 @@
         <tbody>
             <tr>
                 <td class="pt-2">
-                    <div *ngFor="let points of wePoints; let isLast=last; let isFirst=first">
-                        <ng-container *ngIf="isFirst">{{ points }}</ng-container>
-                        <ng-container *ngIf="! isFirst"><br />{{ weTotalPoints }}</ng-container>
-                        <ng-container *ngIf="! isLast"> + {{ points }}</ng-container>
+                    <div *ngFor="let points of wePoints" class="row justify-content-start">
+                        <div class="col">{{ points }}</div>
                     </div>
                 </td>
                 <td class="pt-2">
-                    <div *ngFor="let points of youPoints; let isLast=last; let isFirst=first">
-                        <ng-container *ngIf="isFirst">{{ points }}</ng-container>
-                        <ng-container *ngIf="! isFirst"><br />{{ youTotalPoints }}</ng-container>
-                        <ng-container *ngIf="! isLast"> + {{ points }}</ng-container>
+                    <div *ngFor="let points of youPoints" class="row justify-content-start">
+                        <div class="col">{{ points }}</div>
                     </div>
                 </td>
             </tr>

@@ -29,6 +29,8 @@ import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
 import CardDto from '_@/GamePlatform/Model/CardGame/cardDto';
 import BidDto from '_@/GamePlatform/Model/CardGame/bidDto';
 import BidType from '_@/GamePlatform/Model/CardGame/bidType';
+import AnnounceDto from '_@/GamePlatform/Model/CardGame/announceDto';
+import AnnounceType from '_@/GamePlatform/Model/CardGame/announceType';
 
 import { CardGamePlayerArea } from '../../../models/card-game-player-area';
 import { Card, CardArea, CardDrag, Point, MoveAnimation, Pile } from '../../../models/';
@@ -68,6 +70,7 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
     @Input() game: CardGameDto | null = null;
     @Input() playerCards: Array<CardDto[]> | null = [];
     @Input() playerBids: BidDto[] = [];
+    @Input() playerAnnounces: Array<AnnounceDto[]> | null = [];
     @Input() deck: CardDto[] = [];
     @Input() pile: CardDto[] = [];
     @Input() myPosition: PlayerPosition | null = PlayerPosition.south;
@@ -113,6 +116,19 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
         'bridge-belote.bid-type.all-trumps',
         'bridge-belote.bid-type.double',
         'bridge-belote.bid-type.re-double'
+    ];
+    
+    announceTypes = [
+        'bridge-belote.announce-type.belot',
+        'bridge-belote.announce-type.sequence-of-3',
+        'bridge-belote.announce-type.sequence-of-4',
+        'bridge-belote.announce-type.sequence-of-5',
+        'bridge-belote.announce-type.sequence-of-6',
+        'bridge-belote.announce-type.sequence-of-7',
+        'bridge-belote.announce-type.sequence-of-8',
+        'bridge-belote.announce-type.four-of-a-kind',
+        'bridge-belote.announce-type.four-nines',
+        'bridge-belote.announce-type.four-jacks'
     ];
     
     constructor(
@@ -440,10 +456,11 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
         this.drawBoard( cx );
         
         // console.log( this.game );
-        if ( this.game && ! this.lobbyButtonsVisible ) {
+        if ( this.game && this.game.playState !== GameState.ended && ! this.lobbyButtonsVisible ) {
             this.drawDeck( cx );
             this.drawPlayers( cx );
             this.drawPlayerBids( cx );
+            this.drawPlayerAnnounces( cx );
             this.drawPile( cx );
             
             canvasEl.style.cursor = this.cxCursor;
@@ -574,6 +591,29 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
                 //console.log( 'Player Bid', this.playerBids[pa] );
                 //alert( 'Bid Player: ' + pa + ' Bid Type: ' + this.playerBids[pa].Type );
                 this.drawPlayerBid( this.playerAreas[pa], this.playerBids[pa] );
+            }
+        }
+    }
+    
+    drawPlayerAnnounces( cx: CanvasRenderingContext2D ): void
+    {
+        if ( ! cx ) {
+            return;
+        }
+        
+        if ( ! this.game ) {
+            return;
+        }
+        
+        if ( ! this.playerAnnounces ) {
+            return;
+        }
+        
+        for ( let pa = 0; pa < this.playerAreas.length; pa++ ) {
+            if ( this.playerAnnounces.hasOwnProperty( pa ) ) {
+                //console.log( 'Player Announce', this.playerAnnounces[pa] );
+                //alert( 'Announce Player: ' + pa + ' Announce Type: ' + this.playerAnnounces[pa].Type );
+                this.drawPlayerAnnounce( this.playerAreas[pa], this.playerAnnounces[pa] );
             }
         }
     }
@@ -847,6 +887,54 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
         this.cx.textAlign = "center";
         this.cx.font = "bold 10pt Courier";
         this.cx.fillText( this.translateService.instant( this.bidTypes[bid.Type] ), 0, 0 );
+        
+        this.cx.restore();
+    }
+    
+    drawPlayerAnnounce( playerArea: CardGamePlayerArea, playerAnnounces: AnnounceDto[] ): void
+    {
+        if ( ! this.cx ) {
+            return;
+        }
+        
+        var x: number, y: number, angle;
+        switch( playerArea.playerPosition ) {
+            case PlayerPosition.north:
+                x = this.width / 2;
+                y = playerArea.y + playerArea.height;
+                angle = 0;
+                break;
+            case PlayerPosition.south:
+                x = this.width / 2;
+                y = playerArea.y;
+                angle = Math.PI;
+                break;
+            case PlayerPosition.east:
+                x = playerArea.x;
+                y = playerArea.y + playerArea.height / 2;
+                angle = Math.PI / 2;
+                break;
+            case PlayerPosition.west:
+                x = playerArea.x + playerArea.width;
+                y = playerArea.y + playerArea.height / 2;
+                angle = -Math.PI / 2;
+                break;
+            default:
+                throw new Error( `Invalid Player Position ${playerArea.playerPosition}` );
+        }
+        
+        this.cx.save();
+        this.cx.translate( x, y );
+        this.cx.rotate( angle );
+        
+        this.cx.textAlign = "center";
+        this.cx.font = "bold 10pt Courier";
+        
+        for ( let a = 0; a < playerAnnounces.length; a++ ) {
+            //console.log( 'Announce', playerAnnounces[a] );
+            //console.log( 'Announce Type', playerAnnounces[a].Type );
+            this.cx.fillText( this.translateService.instant( this.announceTypes[playerAnnounces[a].Type] ), 0, 0 );
+        }
         
         this.cx.restore();
     }

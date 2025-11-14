@@ -284,22 +284,21 @@ export class BridgeBeloteService extends AbstractGameService
                 break;
             }
             case ActionNames.gameEnded: {
-                //console.log( 'WebSocket Action Game Ended', action.actionName );
+                console.log( 'WebSocket Action Game Ended', action.actionName );
                 
                 const endedAction = JSON.parse( message.data ) as CardGameEndedActionDto;
                 //console.log( 'game ended', endedAction.game.winner );
                 //console.log( 'WebSocket Action Game Ended', endedAction.game );
+                
                 this.appState.cardGame.setValue({
                     ...endedAction.game,
                     playState: GameState.ended
                 });
-                /*
                 this.statusMessageService.setGameEnded(
                     endedAction.game,
                     endedAction.newScore
                 );
                 this.appState.moveTimer.setValue( 0 );
-                */
                 break;
             }
             case ActionNames.connectionInfo: {

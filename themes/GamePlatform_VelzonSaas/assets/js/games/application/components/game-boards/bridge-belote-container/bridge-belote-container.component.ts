@@ -480,6 +480,13 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
             this.newRoundVisible = true;
         }
         
+        if ( dto && dto.playState === GameState.ended ) {
+            this.newVisible = true;
+            this.exitVisible = false;
+            this.newRoundVisible = false;
+            //this.lobbyButtonsVisibleChanged.emit( true );
+        }
+        
         // alert( 'Current Player: ' + dto?.currentPlayer + 'Play State: ' + dto?.playState );
         this.currentPlayer = dto?.currentPlayer;
     }

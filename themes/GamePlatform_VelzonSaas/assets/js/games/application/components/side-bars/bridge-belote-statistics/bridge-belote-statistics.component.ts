@@ -3,7 +3,9 @@ import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { AppStateService } from '../../../state/app-state.service';
 import BridgeBeloteScoreDto from '_@/GamePlatform/Model/CardGame/bridgeBeloteScoreDto';
+import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
 import BidType from '_@/GamePlatform/Model/CardGame/bidType';
+import GameState from '_@/GamePlatform/Model/Core/gameState';
 
 import templateString from './bridge-belote-statistics.component.html'
 import cssString from './bridge-belote-statistics.component.scss'
@@ -19,6 +21,7 @@ declare var $: any;
 export class BridgeBeloteStatisticsComponent implements OnDestroy
 {
     scoreSubs: Subscription;
+    gameSubs: Subscription;
     
     wePoints: string[] = [];
     youPoints: string[] = [];
@@ -31,11 +34,20 @@ export class BridgeBeloteStatisticsComponent implements OnDestroy
         @Inject( AppStateService ) private appStateService: AppStateService
     ) {
         this.scoreSubs = this.appStateService.bridgeBeloteScore.observe().subscribe( this.scoreChanged.bind( this ) );
+        this.gameSubs = this.appStateService.cardGame.observe().subscribe( this.gameChanged.bind( this ) );
     }
     
     ngOnDestroy()
     {
         this.scoreSubs.unsubscribe();
+    }
+    
+    gameChanged( dto: CardGameDto ): void
+    {
+        if ( dto && dto.playState === GameState.ended ) {
+            this.wePoints = [];
+            this.youPoints = [];
+        }
     }
     
     scoreChanged( dto: BridgeBeloteScoreDto ): void

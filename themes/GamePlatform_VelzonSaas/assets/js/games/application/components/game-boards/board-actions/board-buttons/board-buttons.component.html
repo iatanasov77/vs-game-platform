@@ -24,7 +24,7 @@
         <!--
          -- Card Games Buttons
         -->
-        <button *ngIf="gameCode == 'bridge-belote' && ! newRoundVisible" (click)="playWithComputer()" class="default-button">
+        <button *ngIf="gameCode == 'bridge-belote' && ! newRoundVisible && ! newVisible" (click)="playWithComputer()" class="default-button">
             {{ 'game_board.play_with_computer' | translate }}
         </button>
         

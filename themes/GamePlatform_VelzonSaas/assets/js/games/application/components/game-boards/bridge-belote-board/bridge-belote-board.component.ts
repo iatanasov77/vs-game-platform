@@ -456,7 +456,7 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
         this.drawBoard( cx );
         
         // console.log( this.game );
-        if ( this.game && ! this.lobbyButtonsVisible ) {
+        if ( this.game && this.game.playState !== GameState.ended && ! this.lobbyButtonsVisible ) {
             this.drawDeck( cx );
             this.drawPlayers( cx );
             this.drawPlayerBids( cx );

@@ -37,6 +37,7 @@ use App\Component\Type\PlayerPosition;
 use App\Component\Type\BidType;
 use App\Component\Type\AnnounceType;
 use App\Component\Type\GameState;
+use App\Component\Type\CardGameTeam;
 
 // DTO Actions
 use App\Component\Dto\Mapper;
@@ -245,18 +246,13 @@ class BridgeBeloteGameManager extends CardGameManager
     
     protected function NewTurn( WebsocketClientInterface $socket ): void
     {
-        $winner = $this->GetWinner();
         $this->Game->SwitchPlayer();
         
-        if ( $winner ) {
-            $this->EndGame( $winner );
-        } else {
-            if ( ! $this->ContinuePlay() ) {
-                return;
-            }
-            
-            $this->PlayRound( $socket );
+        if ( ! $this->ContinuePlay() ) {
+            return;
         }
+        
+        $this->PlayRound( $socket );
     }
     
     protected function AisTurn(): bool
@@ -461,6 +457,21 @@ class BridgeBeloteGameManager extends CardGameManager
             $this->Send( $client, $action );
         })();
         Async\await( $promise );
+    }
+    
+    protected function GetWinner(): ?CardGameTeam
+    {
+        $winner = null;
+        
+        if ( $this->Game->southNorthPoints >= 151 ) {
+            $winner = CardGameTeam::SouthNorth;
+        }
+        
+        if ( $this->Game->eastWestPoints >= 151 ) {
+            $winner = CardGameTeam::EastWest;
+        }
+        
+        return $winner;
     }
     
     private function CreateTempPlayer( int $playerId, int $playerPositionId ): TempPlayer

@@ -14,12 +14,9 @@ use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use App\Component\Manager\BoardGameManager;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Rules\BoardGame\Game;
-use App\Component\Rules\BoardGame\Player;
 use App\Component\AI\EngineFactory as AiEngineFactory;
-use App\Component\Utils\Guid;
 use App\Component\Websocket\WebSocketState;
 use App\Entity\GamePlayer;
-use App\Entity\TempPlayer;
 
 // Types
 use App\Component\Type\PlayerColor;
@@ -491,40 +488,5 @@ final class BackgammonGameManager extends BoardGameManager
             }
             )->first();
             //$this->logger->debug( $checkerFromPoint, 'CheckerFromPoint.txt' );
-    }
-    
-    private function CreateTempPlayer( int $playerId, int $playerPositionId ): TempPlayer
-    {
-        $player = $this->playersRepository->find( $playerId );
-        
-        if ( $this->Game->IsGoldGame && $player->getGold() < self::firstBet ) {
-            throw new \RuntimeException( "Black player dont have enough gold" ); // Should be guarder earlier
-        }
-        
-        if ( $this->Game->IsGoldGame && ! $this->IsAi( $player->getGuid() ) ) {
-            $player->setGold( self::firstBet );
-        }
-        
-        $tempPlayer = $this->tempPlayersFactory->createNew();
-        $tempPlayer->setGuid( Guid::NewGuid() );
-        $tempPlayer->setPlayer( $player );
-        $tempPlayer->setColor( $playerPositionId );
-        $tempPlayer->setName( $player->getName() );
-        $player->addGamePlayer( $tempPlayer );
-        
-        return $tempPlayer;
-    }
-    
-    private function InitializePlayer( GamePlayer $dbUser, bool $aiUser, Player &$player ): void
-    {
-        $player->Id = $dbUser != null ? $dbUser->getId() : 0;
-        $player->Guid = $dbUser != null ? $dbUser->getGuid() : Guid::Empty();
-        $player->Name = $dbUser != null ? $dbUser->getName() : "Guest";
-        $player->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $this->getPlayerPhotoUrl( $dbUser ) : "";
-        $player->Elo = $dbUser != null ? $dbUser->getElo() : 0;
-        
-        if ( $this->Game->IsGoldGame ) {
-            $player->Gold = $dbUser != null ? $dbUser->getGold() - self::firstBet : 0;
-        }
     }
 }

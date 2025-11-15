@@ -12,6 +12,7 @@ use App\Component\Type\PlayerPosition;
 use App\Component\Rules\BoardGame\BackgammonNormalGame;
 use App\Component\Rules\BoardGame\BackgammonTapaGame;
 use App\Component\Rules\BoardGame\BackgammonGulBaraGame;
+use App\Component\Rules\BoardGame\ChessGame;
 use App\Component\Rules\CardGame\BridgeBeloteGame;
 
 use App\Component\Rules\BoardGame\Player as BoardGamePlayer;
@@ -39,6 +40,9 @@ final class GameFactory
         switch ( $gameCode ) {
             case GameVariant::BACKGAMMON_CODE:
                 return $this->createBackgammonGame( $gameVariant, $ForGold );
+                break;
+            case GameVariant::CHESS_CODE:
+                return $this->createChessGame( $ForGold );
                 break;
             case GameVariant::BRIDGE_BELOTE_CODE:
                 return $this->createBridgeBeloteGame( $ForGold );
@@ -195,6 +199,48 @@ final class GameFactory
         $game->SetStartPosition();
         
         BackgammonTapaGame::CalcPointsLeft( $game );
+        
+        return $game;
+    }
+    
+    private function createChessGame( bool $forGold ): GameInterface
+    {
+        $game = new BackgammonNormalGame( $this->logger );
+        
+        $game->Id           = Guid::NewGuid();
+        $game->ValidMoves   = new ArrayCollection();
+        
+        $game->BlackPlayer = new BoardGamePlayer();
+        $game->BlackPlayer->PlayerColor = PlayerColor::Black;
+        $game->BlackPlayer->Name = "Guest";
+        
+        $game->WhitePlayer = new BoardGamePlayer();
+        $game->WhitePlayer->PlayerColor = PlayerColor::White;
+        $game->WhitePlayer->Name = "Guest";
+        
+        $game->Created = new \DateTime( 'now' );
+        
+        $game->GoldMultiplier = 1;
+        $game->IsGoldGame = $forGold;
+        $game->LastDoubler = null;
+        
+        $game->Points = new ArrayCollection(); // 24 points, 1 bar and 1 home,
+        
+        for ( $i = 0; $i < 26; $i++ ) {
+            $point  = new Point();
+            $point->BlackNumber = $i;
+            $point->WhiteNumber = 25 - $i;
+            
+            $game->Points[] = $point;
+        }
+        
+        $game->Bars = new ArrayCollection();
+        $game->Bars[PlayerColor::Black->value] = $game->Points->first();
+        $game->Bars[PlayerColor::White->value] = $game->Points->last();
+        
+        $game->SetStartPosition();
+        
+        //BackgammonNormalGame::CalcPointsLeft( $game );
         
         return $game;
     }

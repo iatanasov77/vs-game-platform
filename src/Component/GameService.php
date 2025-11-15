@@ -171,6 +171,7 @@ final class GameService
             // entering socket loop
             switch ( $gameCode ) {
                 case GameVariant::BACKGAMMON_CODE:
+                case GameVariant::CHESS_CODE:
                     $manager->Game->CurrentPlayer = PlayerColor::Black;
                     $manager->ConnectAndListen( $webSocket, $gamePlayer, $playAi );
                     $this->SendConnectionLost( $manager, PlayerColor::White->value );
@@ -194,6 +195,7 @@ final class GameService
             // entering socket loop
             switch ( $gameCode ) {
                 case GameVariant::BACKGAMMON_CODE:
+                case GameVariant::CHESS_CODE:
                     $color = $manager->Clients->get( PlayerColor::Black->value ) == null ? PlayerColor::Black : PlayerColor::White;
                     $colorName = $color === PlayerColor::Black ? 'Black' : 'White';
                     $this->logger->log( "{$colorName} player disconnected.", 'GameService' );
@@ -331,6 +333,7 @@ final class GameService
                 
                 switch ( $cookie->game ) {
                     case GameVariant::BACKGAMMON_CODE:
+                    case GameVariant::CHESS_CODE:
                         $color = $cookie->color;
                         if ( $gameManager && self::MyColor( $gameManager, $dbUser, $color ) ) {
                             $gameManager->Engine = AiEngineFactory::CreateBackgammonEngine(
@@ -371,6 +374,7 @@ final class GameService
         foreach ( $managers as $m ) {
             switch ( $gameCode ) {
                 case GameVariant::BACKGAMMON_CODE:
+                case GameVariant::CHESS_CODE:
                     // Guest vs guest must be allowed. When guest games are enabled.
                     if (
                         $m->Game->BlackPlayer->Id == $userId ||

@@ -87,7 +87,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
     @Output() lobbyButtonsVisibleChanged    = new EventEmitter<boolean>();
     
     @ViewChild( 'messages' ) messages: ElementRef | undefined;
-    @ViewChild( 'board', {static: false} ) board: NgxChessBoardView | undefined;
+    @ViewChild( 'board', { static: false } ) board!: NgxChessBoardView;
     
     gameDto$: Observable<BoardGameDto>;
     playerColor$: Observable<PlayerColor>;
@@ -113,6 +113,9 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
     animatingStake = false;
     playAiQuestion = false;
     introMuted = this.appStateService.user.getValue()?.muteIntro ?? false;
+    
+    whiteDisabled = true;
+    blackDisabled = true;
     
     gameDto: BoardGameDto | undefined;
     newVisible = false;
@@ -284,6 +287,13 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
             }
             
             if ( dto.isGoldGame ) this.sound.playCoin();
+            
+            if ( this.appStateService.myColor.getValue() == PlayerColor.black ) {
+                this.board.reverse();
+                this.blackDisabled = true;
+            } else {
+                this.whiteDisabled = true;
+            }
         }
         
         this.setUndoVisible();

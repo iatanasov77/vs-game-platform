@@ -16,7 +16,7 @@ class Player
     public $PlayerColor;
     
     /** @var int */
-    public $PointsLeft;
+    public $PointsLeft = 0;
     
     /** @var string */
     public $Photo;

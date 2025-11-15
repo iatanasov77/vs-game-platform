@@ -43,7 +43,7 @@ import { StatusMessage } from '../../../utils/status-message';
 
 // Services
 import { AuthService } from '../../../services/auth.service';
-import { BackgammonService } from '../../../services/websocket/backgammon.service';
+import { ChessService } from '../../../services/websocket/chess.service';
 import { StatusMessageService } from '../../../services/status-message.service';
 import { SoundService } from '../../../services/sound.service';
 import { GamePlayService } from '../../../services/game-play.service';
@@ -99,8 +99,8 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
     
     gameSubs: Subscription;
     
-    width = 450;
-    height = 450;
+    width = 535;
+    //height = 450;
     started = false;
     messageCenter = 0;
     rotated = false;
@@ -135,7 +135,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
         @Inject( ChangeDetectorRef ) private changeDetector: ChangeDetectorRef,
         
         @Inject( AuthService ) private authService: AuthService,
-        @Inject( BackgammonService ) private wsService: BackgammonService,
+        @Inject( ChessService ) private wsService: ChessService,
         @Inject( StatusMessageService ) private statusMessageService: StatusMessageService,
         @Inject( AppStateService ) private appStateService: AppStateService,
         @Inject( QueryParamsService ) private queryParamsService: QueryParamsService,
@@ -143,7 +143,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
         @Inject( CookieService ) private cookieService: CookieService,
         @Inject( GamePlayService ) private gamePlayService: GamePlayService,
         
-        @Inject( NgxChessBoardService ) private ngxChessBoardService: NgxChessBoardService,
+        //@Inject( NgxChessBoardService ) private ngxChessBoardService: NgxChessBoardService,
     ) {
         this.gameDto$ = this.appStateService.boardGame.observe();
         this.playerColor$ = this.appStateService.myColor.observe();
@@ -353,8 +353,6 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
             this.undoVisible = false;
             return;
         }
-        
-        //this.undoVisible = dices && dices.filter( ( d ) => d.used ).length > 0;
     }
     
     resignGame(): void

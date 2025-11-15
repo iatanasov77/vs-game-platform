@@ -290,32 +290,6 @@ final class BackgammonGameManager extends BoardGameManager
         //$this->logger->debug( $this->Game->Points, 'AfterDoAction.txt' );
     }
     
-    protected function CreateDbGame(): void
-    {
-        $blackPlayer = $this->CreateTempPlayer( $this->Game->BlackPlayer->Id, PlayerColor::Black->value );
-        $whitePlayer = $this->CreateTempPlayer( $this->Game->WhitePlayer->Id, PlayerColor::White->value );
-        
-        $gameBase   = $this->gameRepository->findOneBy(['slug' => $this->GameCode]);
-        $game       = $this->gamePlayFactory->createNew();
-        $game->setGame( $gameBase );
-        $game->setGuid( $this->Game->Id );
-        
-        $blackPlayer->setGame( $game );
-        $whitePlayer->setGame( $game );
-        
-        $game->addGamePlayer( $blackPlayer );
-        $game->addGamePlayer( $whitePlayer );
-        
-        $em = $this->doctrine->getManager();
-        $em->persist( $game );
-        $em->flush();
-    }
-    
-    protected function IsAi( ?string $guid ): bool
-    {
-        return $guid == GamePlayer::AiUser;
-    }
-    
     protected function GetHintAction(): HintMovesActionDto
     {
         $moves              = $this->Engine->GetBestMoves();
@@ -443,30 +417,6 @@ final class BackgammonGameManager extends BoardGameManager
         }
         $this->logger->log( "Points After DoMoves: " . \print_r( $this->Game->Points->toArray(), true ), 'DoMoves' );
         //$this->logger->log( "Black Player Points Left: " . $this->Game->BlackPlayer->PointsLeft, 'EndGame' );
-    }
-    
-    protected function NewTurn( WebsocketClientInterface $socket ): void
-    {
-        $winner = $this->GetWinner();
-        $this->Game->SwitchPlayer();
-        if ( $winner ) {
-            $this->EndGame( $winner );
-        } else {
-            $this->SendNewRoll();
-            
-            if ( $this->AisTurn() ) {
-                $this->logger->log( "NewTurn for AI", 'SwitchPlayer' );
-                $this->EnginMoves( $socket );
-            }
-        }
-    }
-    
-    protected function AisTurn(): bool
-    {
-        $plyr = $this->Game->CurrentPlayer == PlayerColor::Black ? $this->Game->BlackPlayer : $this->Game->WhitePlayer;
-        $this->logger->log( "AisTurn CurrentPlayer: " . \print_r( $plyr, true ) , 'SwitchPlayer' );
-        
-        return $plyr->IsAi();
     }
     
     protected function EnginMoves( WebsocketClientInterface $client ): void

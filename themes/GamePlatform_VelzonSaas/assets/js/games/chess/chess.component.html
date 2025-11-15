@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-1">
+    <div class="col-2">
         <game-chat></game-chat>
     </div>
     
@@ -12,13 +12,14 @@
             (lobbyButtonsVisibleChanged)="lobbyButtonsVisibleChanged($event)"
         ></app-chess-container>
         
+        <app-busy [busy]="busy$ | async" [lobbyButtonsVisible]="lobbyButtonsVisible"></app-busy>
         <app-error-handler
             [errors]="errors$ | async"
             (save)="saveErrorReport($event)"
         ></app-error-handler>
     </div>
     
-    <div class="col-3">
+    <div class="col-2">
         <game-players></game-players>
     </div>
 </div>

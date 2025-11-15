@@ -32,6 +32,7 @@ import TrickEndedActionDto from '../../dto/Actions/trickEndedActionDto';
 import RoundEndedActionDto from '../../dto/Actions/roundEndedActionDto';
 import StartNewRoundActionDto from '../../dto/Actions/startNewRoundActionDto';
 import AnnounceMadeActionDto from '../../dto/Actions/announceMadeActionDto';
+import StartNewGameActionDto from '../../dto/Actions/startNewGameActionDto';
 
 import { Keys } from '../../utils/keys';
 
@@ -104,7 +105,6 @@ export class BridgeBeloteService extends AbstractGameService
         
         this.appState.myConnection.setValue( { connected: true, pingMs: ping } );
         this.appState.cardGame.clearValue();
-        this.appState.dices.clearValue();
     }
     
     // Messages received from server.
@@ -440,5 +440,13 @@ export class BridgeBeloteService extends AbstractGameService
             actionName: ActionNames.startNewRound,
         };
         this.sendMessage( JSON.stringify( startNewRoundAction ) );
+    }
+    
+    startNewGame(): void
+    {
+        const startNewGameAction: StartNewGameActionDto = {
+            actionName: ActionNames.startNewGame,
+        };
+        this.sendMessage( JSON.stringify( startNewGameAction ) );
     }
 }

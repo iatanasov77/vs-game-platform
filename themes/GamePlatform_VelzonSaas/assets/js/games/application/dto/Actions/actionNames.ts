@@ -26,6 +26,7 @@
     roundEnded,
     startNewRound,
     announceMade,
+    startNewGame,
     
     serverWasTerminated
 }

@@ -195,6 +195,11 @@ class BridgeBeloteGameManager extends CardGameManager
             $this->logger->log( 'startNewRound action recieved from GameManager.', 'GameManager' );
             $this->StartNewRound();
             $this->PlayRound( $socket );
+        } else if ( $actionName == ActionNames::startNewGame ) {
+            // New Game in the Same GameSession / GameRoom
+            $this->logger->log( 'startNewGame action recieved from GameManager.', 'GameManager' );
+            $this->StartNewGame();
+            $this->PlayRound( $socket );
         } else if ( $actionName == ActionNames::connectionInfo ) {
             $action = $this->serializer->deserialize( $actionText, ConnectionInfoActionDto::class, JsonEncoder::FORMAT );
             foreach ( $otherSockets as $otherSocket ) {

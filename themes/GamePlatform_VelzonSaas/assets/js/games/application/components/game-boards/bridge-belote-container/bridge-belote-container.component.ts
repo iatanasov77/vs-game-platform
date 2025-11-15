@@ -346,11 +346,8 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     newGame(): void
     {
         this.newVisible = false;
-        this.started = false;
         
-        this.wsService.resetGame();
-        this.wsService.connect( '', false, false );
-        this.waitForOpponent();
+        this.wsService.startNewGame();
     }
     
     newRound(): void

@@ -85,7 +85,7 @@ declare global {
                     left: '{{ shown }}px',
                     transform: 'scale(1)',
                     opacity: 1,
-                    top: '-30px',
+                    top: '-10px',
                     color: 'black'
                 }),
                 { params: { shown: 0 } }

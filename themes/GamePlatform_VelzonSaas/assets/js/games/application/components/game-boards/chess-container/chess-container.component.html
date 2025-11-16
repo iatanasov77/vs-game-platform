@@ -22,7 +22,7 @@
     </div>
     
     <div
-        *ngIf="(gameDto$ | async)?.isGoldGame && ! lobbyButtonsVisible && game !== BACKGAMMON_GULBARA"
+        *ngIf="(gameDto$ | async)?.isGoldGame && ! lobbyButtonsVisible"
         class="players"
         [ngStyle]="{ height: height + 'px' }"
         [ngClass]="{ rotated: rotated, flipped: flipped }"

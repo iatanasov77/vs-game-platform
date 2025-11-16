@@ -138,10 +138,12 @@ final class ChessGameManager extends BoardGameManager
         
         // todo: visa på clienten även när det blir samma
         // English: visa for clients who are not allowed to contact them
+        /*
         while ( $this->Game->PlayState == GameState::firstThrow ) {
             $this->logger->log( 'First Throw State !!!', 'FirstThrowState' );
             
         }
+        */
         
         $this->moveTimeOut = new DeferredCancellation();
         if ( $this->EndGameOnTotalThinkTimeElapse ) {

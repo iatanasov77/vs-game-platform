@@ -31,5 +31,8 @@ enum ActionNames: int
     case announceMade       = 24;
     case startNewGame       = 25;
     
-    case serverWasTerminated    = 26;
+    // Chess Game Actions
+    case chessGameStarted   = 26;
+    
+    case serverWasTerminated    = 27;
 }

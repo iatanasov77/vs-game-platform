@@ -20,6 +20,7 @@ import ActionNames from '../../dto/Actions/actionNames';
 import DoublingActionDto from '../../dto/Actions/doublingActionDto';
 import HintMovesActionDto from '../../dto/Actions/hintMovesActionDto';
 import BoardGameCreatedActionDto from '../../dto/Actions/boardGameCreatedActionDto';
+import ChessGameStartedActionDto from '../../dto/Actions/chessGameStartedActionDto';
 import BoardGameEndedActionDto from '../../dto/Actions/boardGameEndedActionDto';
 import MovesMadeActionDto from '../../dto/Actions/movesMadeActionDto';
 import OpponentMoveActionDto from '../../dto/Actions/opponentMoveActionDto';
@@ -73,7 +74,7 @@ export class ChessService extends AbstractGameService
         });
         const url = this.url + this.serializer.serialize( tree );
         
-        alert( url );
+        //alert( url );
         this.socket = new WebSocket( url );
         this.socket.onmessage   = this.onMessage.bind( this );
         this.socket.onerror     = this.onError.bind( this );
@@ -137,6 +138,14 @@ export class ChessService extends AbstractGameService
                 this.appState.moveTimer.setValue( dto.game.thinkTime );
                 this.sound.fadeIntro();
                 this.startTimer();
+                
+                break;
+            }
+            case ActionNames.chessGameStarted: {
+                const action = JSON.parse( message.data ) as ChessGameStartedActionDto;
+                console.log( 'WebSocket Action Chess Game Started', action );
+                
+                this.appState.moveTimer.setValue( action.moveTimer );
                 
                 break;
             }

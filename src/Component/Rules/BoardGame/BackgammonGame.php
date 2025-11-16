@@ -9,6 +9,44 @@ use App\Component\Manager\AbstractGameManager;
 
 abstract class BackgammonGame extends Game
 {
+    /** @var Collection | Point[] */
+    public $Points;
+    
+    /** @var Collection | Dice[] */
+    public $Roll;
+    
+    /** @var Collection | Move[] */
+    public $ValidMoves;
+    
+    /** @var Collection | Point[] */
+    public $Bars;
+    
+    public function __set( $name, $value )
+    {
+        switch ( $name ) {
+            case 'Points':
+                $this->Points = $value;
+                
+                $trace = debug_backtrace();
+                //$this->logger->log( "Points Changed in File: {$trace[0]['file']} on line {$trace[0]['line']}", 'GenerateMoves' );
+                
+                break;
+            default:
+                throw new \RuntimeException( 'Undefined Property of Game Rules !!!' );
+        }
+    }
+    
+    public function __get( $name )
+    {
+        switch ( $name ) {
+            case 'Points':
+                return $this->Points;
+                break;
+            default:
+                throw new \RuntimeException( 'Undefined Property of Game Rules !!!' );
+        }
+    }
+    
     public function AddCheckers( int $count, PlayerColor $color, int $point ): void
     {
         $checker        = new Checker();
@@ -102,4 +140,8 @@ abstract class BackgammonGame extends Game
             }
         )->first();
     }
+    
+    abstract public function MakeMove( Move &$move ): ?Checker;
+    
+    abstract public function UndoMove( Move &$move, ?Checker $hitChecker ): void;
 }

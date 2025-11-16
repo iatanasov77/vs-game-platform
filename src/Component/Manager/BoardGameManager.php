@@ -176,20 +176,6 @@ abstract class BoardGameManager extends AbstractGameManager
         return $winner;
     }
     
-    protected function SendWinner( PlayerColor $color, ?array $newScore ): void
-    {
-        $game = Mapper::BoardGameToDto( $this->Game );
-        $game->winner = $color;
-        $gameEndedAction = new GameEndedActionDto();
-        $gameEndedAction->game = $game;
-        
-        $gameEndedAction->newScore = $newScore ? $newScore[0] : null;
-        $this->Send( $this->Clients->get( PlayerColor::Black->value ), $gameEndedAction );
-        
-        $gameEndedAction->newScore = $newScore ? $newScore[1] : null;
-        $this->Send( $this->Clients->get( PlayerColor::White->value ), $gameEndedAction );
-    }
-    
     protected function ReturnStakes(): void
     {
         $em     = $this->doctrine->getManager();
@@ -278,4 +264,6 @@ abstract class BoardGameManager extends AbstractGameManager
             $player->Gold = $dbUser != null ? $dbUser->getGold() - self::firstBet : 0;
         }
     }
+    
+    abstract protected function SendWinner( PlayerColor $color, ?array $newScore ): void;
 }

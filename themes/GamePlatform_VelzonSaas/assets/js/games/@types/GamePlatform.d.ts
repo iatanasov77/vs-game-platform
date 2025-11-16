@@ -56,6 +56,9 @@ declare module '_@/GamePlatform/Model/Core/gameState' {
         requestedDoubling,
         ended,
         
+        // Chess States
+        firstMove,
+        
         // Card Games States
         firstBid,
         bidding,

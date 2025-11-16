@@ -34,15 +34,6 @@ abstract class Game implements GameInterface
     /** @var PlayerColor */
     public $CurrentPlayer;
     
-    /** @var Collection | Point[] */
-    public $Points;
-    
-    /** @var Collection | Dice[] */
-    public $Roll;
-    
-    /** @var Collection | Move[] */
-    public $ValidMoves;
-    
     /** @var GameState */
     public $PlayState = GameState::firstThrow;
     
@@ -51,9 +42,6 @@ abstract class Game implements GameInterface
     
     /** @var \DateTime */
     public $ThinkStart;
-    
-    /** @var Collection | Point[] */
-    public $Bars;
     
     /** @var int */
     public $GoldMultiplier;
@@ -75,32 +63,6 @@ abstract class Game implements GameInterface
     
     /** @var GameLogger */
     protected  $logger;
-    
-    public function __set( $name, $value )
-    {
-        switch ( $name ) {
-            case 'Points':
-                $this->Points = $value;
-                
-                $trace = debug_backtrace();
-                //$this->logger->log( "Points Changed in File: {$trace[0]['file']} on line {$trace[0]['line']}", 'GenerateMoves' );
-                
-                break;
-            default:
-                throw new \RuntimeException( 'Undefined Property of Game Rules !!!' );
-        }
-    }
-    
-    public function __get( $name )
-    {
-        switch ( $name ) {
-            case 'Points':
-                return $this->Points;
-                break;
-            default:
-                throw new \RuntimeException( 'Undefined Property of Game Rules !!!' );
-        }
-    }
     
     public function __construct( GameLogger $logger )
     {
@@ -133,10 +95,6 @@ abstract class Game implements GameInterface
     abstract public function SetStartPosition(): void;
     
     abstract public function GenerateMoves(): array;
-    
-    abstract public function MakeMove( Move &$move ): ?Checker;
-    
-    abstract public function UndoMove( Move &$move, ?Checker $hitChecker ): void;
     
     public function SwitchPlayer(): void
     {
@@ -177,8 +135,6 @@ abstract class Game implements GameInterface
         
         return $colorCheckers->isEmpty(); // all have higher number than 18
     }
-    
-    abstract public function AddCheckers( int $count, PlayerColor $color, int $point ): void;
     
     public function PlayersPassed(): bool
     {

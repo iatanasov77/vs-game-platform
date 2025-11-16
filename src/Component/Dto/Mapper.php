@@ -3,8 +3,8 @@
 use Doctrine\Common\Collections\ArrayCollection;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 
-use App\Component\Type\PlayerColor;
 use App\Component\Rules\BoardGame\Game as BoardGame;
+use App\Component\Rules\BoardGame\BackgammonGame;
 use App\Component\Rules\BoardGame\Player as BoardGamePlayer;
 use App\Component\Rules\BoardGame\Point;
 use App\Component\Rules\BoardGame\Checker;
@@ -12,7 +12,6 @@ use App\Component\Rules\BoardGame\Dice;
 use App\Component\Rules\BoardGame\Move;
 
 use App\Component\Rules\CardGame\Game as CardGame;
-use App\Component\Rules\CardGame\Player as CardGamePlayer;
 use App\Component\Rules\CardGame\Card;
 use App\Component\Rules\CardGame\Bid;
 use App\Component\Rules\CardGame\Announce;
@@ -32,17 +31,19 @@ final class Mapper
         $gameDto->currentPlayer = $game->CurrentPlayer;
         $gameDto->playState = $game->PlayState;
         
-        $gameDto->points = $game->Points->map(
-            function( $entry ) {
-                return self::PointToDto( $entry );
-            }
-        );
-        
-        $gameDto->validMoves = $game->ValidMoves->map(
-            function( $entry ) {
-                return self::MoveToDto( $entry );
-            }
-        );
+        if ( $game instanceof BackgammonGame ) {
+            $gameDto->points = $game->Points->map(
+                function( $entry ) {
+                    return self::PointToDto( $entry );
+                }
+            );
+            
+            $gameDto->validMoves = $game->ValidMoves->map(
+                function( $entry ) {
+                    return self::MoveToDto( $entry );
+                }
+            );
+        }
         
         $gameDto->thinkTime = BoardGame::ClientCountDown - (
             ( new \DateTime( 'now' ) )->getTimestamp() - $game->ThinkStart->getTimestamp()

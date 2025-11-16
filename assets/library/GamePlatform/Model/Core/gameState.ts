@@ -6,6 +6,9 @@
     requestedDoubling,
     ended,
     
+    // Chess States
+    firstMove,
+        
     // Card Games States
     firstBid,
     bidding,

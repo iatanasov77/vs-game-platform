@@ -205,10 +205,10 @@ final class GameFactory
     
     private function createChessGame( bool $forGold ): GameInterface
     {
-        $game = new BackgammonNormalGame( $this->logger );
+        $game = new ChessGame( $this->logger );
         
         $game->Id           = Guid::NewGuid();
-        $game->ValidMoves   = new ArrayCollection();
+        //$game->ValidMoves   = new ArrayCollection();
         
         $game->BlackPlayer = new BoardGamePlayer();
         $game->BlackPlayer->PlayerColor = PlayerColor::Black;
@@ -224,8 +224,9 @@ final class GameFactory
         $game->IsGoldGame = $forGold;
         $game->LastDoubler = null;
         
-        $game->Points = new ArrayCollection(); // 24 points, 1 bar and 1 home,
-        
+        // @TODO Shouuld Used Chess Squares Not Points
+        //$game->Points = new ArrayCollection(); // Board divided into a grid of 64 squares (eight-by-eight) of alternating color
+        /*
         for ( $i = 0; $i < 26; $i++ ) {
             $point  = new Point();
             $point->BlackNumber = $i;
@@ -233,10 +234,7 @@ final class GameFactory
             
             $game->Points[] = $point;
         }
-        
-        $game->Bars = new ArrayCollection();
-        $game->Bars[PlayerColor::Black->value] = $game->Points->first();
-        $game->Bars[PlayerColor::White->value] = $game->Points->last();
+        */
         
         $game->SetStartPosition();
         

@@ -478,6 +478,20 @@ final class BackgammonGameManager extends BoardGameManager
         Async\await( $promise );
     }
     
+    protected function SendWinner( PlayerColor $color, ?array $newScore ): void
+    {
+        $game = Mapper::BoardGameToDto( $this->Game );
+        $game->winner = $color;
+        $gameEndedAction = new GameEndedActionDto();
+        $gameEndedAction->game = $game;
+        
+        $gameEndedAction->newScore = $newScore ? $newScore[0] : null;
+        $this->Send( $this->Clients->get( PlayerColor::Black->value ), $gameEndedAction );
+        
+        $gameEndedAction->newScore = $newScore ? $newScore[1] : null;
+        $this->Send( $this->Clients->get( PlayerColor::White->value ), $gameEndedAction );
+    }
+    
     protected function debugGetCheckerFromPoint()
     {
         //$this->logger->debug( $this->Game->Points, 'GamePoints.txt' );

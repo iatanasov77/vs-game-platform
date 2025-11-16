@@ -28,10 +28,10 @@ use App\Component\Type\GameState;
 // DTO Actions
 use App\Component\Dto\Mapper;
 use App\Component\Dto\Actions\ActionNames;
-use App\Component\Dto\Actions\ActionDto;
 use App\Component\Dto\Actions\ConnectionInfoActionDto;
 use App\Component\Dto\Actions\GameRestoreActionDto;
 use App\Component\Dto\Actions\GameCreatedActionDto;
+use App\Component\Dto\Actions\ChessGameStartedActionDto;
 use App\Component\Dto\Actions\HintMovesActionDto;
 use App\Component\Dto\Actions\MovesMadeActionDto;
 use App\Component\Dto\Actions\UndoActionDto;
@@ -134,16 +134,26 @@ final class ChessGameManager extends BoardGameManager
         $action->myColor = PlayerColor::White;
         $this->Send( $this->Clients->get( PlayerColor::White->value ), $action );
         
-        $this->Game->PlayState = GameState::firstThrow;
+        $this->Game->PlayState = GameState::firstMove;
         
         // todo: visa på clienten även när det blir samma
         // English: visa for clients who are not allowed to contact them
-        /*
-        while ( $this->Game->PlayState == GameState::firstThrow ) {
-            $this->logger->log( 'First Throw State !!!', 'FirstThrowState' );
+        while ( $this->Game->PlayState == GameState::firstMove ) {
+            $this->logger->log( 'First Throw State !!!', 'FirstMoveState' );
             
+            $this->Game->StartGame();
+            
+            $chessGameStartedActionDto = new ChessGameStartedActionDto();
+            
+            $chessGameStartedActionDto->playerToMove = $this->Game->CurrentPlayer;
+            $chessGameStartedActionDto->moveTimer = Game::ClientCountDown;
+            
+            //$this->logger->log( 'First Throw Valid Moves: ' . \print_r( $rollAction->validMoves, true ), 'FirstThrowState' );
+            //$this->logger->debug( $rollAction, 'FirstRoll.txt' );
+            
+            $this->Send( $this->Clients->get( PlayerColor::Black->value ), $chessGameStartedActionDto );
+            $this->Send( $this->Clients->get( PlayerColor::White->value ), $chessGameStartedActionDto );
         }
-        */
         
         $this->moveTimeOut = new DeferredCancellation();
         if ( $this->EndGameOnTotalThinkTimeElapse ) {
@@ -257,5 +267,19 @@ final class ChessGameManager extends BoardGameManager
         }
         
         //$this->logger->debug( $this->Game->Points, 'AfterDoAction.txt' );
+    }
+    
+    protected function SendWinner( PlayerColor $color, ?array $newScore ): void
+    {
+        $game = Mapper::BoardGameToDto( $this->Game );
+        $game->winner = $color;
+        $gameEndedAction = new GameEndedActionDto();
+        $gameEndedAction->game = $game;
+        
+        $gameEndedAction->newScore = $newScore ? $newScore[0] : null;
+        $this->Send( $this->Clients->get( PlayerColor::Black->value ), $gameEndedAction );
+        
+        $gameEndedAction->newScore = $newScore ? $newScore[1] : null;
+        $this->Send( $this->Clients->get( PlayerColor::White->value ), $gameEndedAction );
     }
 }

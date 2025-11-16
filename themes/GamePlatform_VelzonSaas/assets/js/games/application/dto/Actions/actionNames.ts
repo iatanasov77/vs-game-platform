@@ -28,6 +28,9 @@
     announceMade,
     startNewGame,
     
+    // Chess Game Actions
+    chessGameStarted,
+    
     serverWasTerminated
 }
 

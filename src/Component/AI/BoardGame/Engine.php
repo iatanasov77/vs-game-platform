@@ -141,8 +141,8 @@ abstract class Engine implements AiEngineInterface
         $otherScore = $this->Evaluate( $oponent, $this->EngineGame );
         
         $oppPips = $this->EngineGame->CurrentPlayer == PlayerColor::White ?
-        $this->EngineGame->BlackPlayer->PointsLeft :
-        $this->EngineGame->WhitePlayer->PointsLeft;
+                    $this->EngineGame->BlackPlayer->PointsLeft :
+                    $this->EngineGame->WhitePlayer->PointsLeft;
         
         $k = ( $myScore - $otherScore ) / $oppPips;
         

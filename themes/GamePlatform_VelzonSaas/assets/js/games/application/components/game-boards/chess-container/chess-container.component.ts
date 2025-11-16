@@ -114,8 +114,8 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
     playAiQuestion = false;
     introMuted = this.appStateService.user.getValue()?.muteIntro ?? false;
     
-    whiteDisabled = true;
-    blackDisabled = true;
+    whiteDisabled: boolean = true;
+    blackDisabled: boolean = true;
     
     gameDto: BoardGameDto | undefined;
     newVisible = false;
@@ -159,6 +159,13 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
         
         this.user$ = this.appStateService.user.observe();
         this.gameString$ = this.appStateService.gameString.observe();
+        
+        this.initFlags();
+        
+        if ( this.gameId.length ) {
+            //this.wsService.connect( this.gameId, this.playAiFlag, this.forGoldFlag );
+            this.playGame( this.gameId );
+        }
     }
     
     ngOnInit(): void
@@ -279,6 +286,8 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
     gameChanged( dto: BoardGameDto ): void
     {
         if ( ! this.started && dto ) {
+            this.appStateService.hideBusy();
+            
             if ( dto.playState === GameState.playing ) {
                 clearTimeout( this.startedHandle );
                 this.started = true;
@@ -290,9 +299,12 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
             
             if ( this.appStateService.myColor.getValue() == PlayerColor.black ) {
                 this.board.reverse();
-                this.blackDisabled = true;
+                this.blackDisabled = false;
+                
+                // Always White moves first, then players alternate moves.
+                this.board.move( "h2h4" );
             } else {
-                this.whiteDisabled = true;
+                this.whiteDisabled = false;
             }
         }
         
@@ -395,6 +407,15 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
         this.lobbyButtonsVisibleChanged.emit( true );
     }
     
+    getDoubling( color: PlayerColor ): Observable<number>
+    {
+        return this.gameDto$.pipe(
+            map( ( game ) => {
+                return game?.lastDoubler === color ? game?.goldMultiplier : 0;
+            })
+        );
+    }
+    
     async playAi()
     {
         this.playAiQuestion = false;
@@ -463,7 +484,10 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
      */
     onMakeMove( coords: string ): void
     {
-        //console.log( 'Move Coordinates', coords );
+        console.log( 'Move Coordinates', coords );
+        
+        var movesHistory = this.board?.getMoveHistory();
+        console.log( 'Moves History', movesHistory );
     }
     
     onFlipped(): void

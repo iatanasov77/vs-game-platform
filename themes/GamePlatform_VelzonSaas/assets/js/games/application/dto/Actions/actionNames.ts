@@ -30,6 +30,8 @@
     
     // Chess Game Actions
     chessGameStarted,
+    chessMoveMade,
+    chessOpponentMove,
     
     serverWasTerminated
 }

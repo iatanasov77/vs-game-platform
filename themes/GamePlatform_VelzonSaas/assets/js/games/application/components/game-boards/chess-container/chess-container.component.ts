@@ -53,7 +53,7 @@ import UserDto from '_@/GamePlatform/Model/Core/userDto';
 import GameState from '_@/GamePlatform/Model/Core/gameState';
 import BoardGameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
 import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
-import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
+import ChessMoveDto from '_@/GamePlatform/Model/BoardGame/chessMoveDto';
 
 import { Helper } from '../../../utils/helper';
 import { IThemes, DarkTheme } from './themes';
@@ -99,6 +99,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
     
     gameSubs: Subscription;
     
+    boardWidth = 535;
     width = 535;
     //height = 450;
     started = false;
@@ -268,12 +269,14 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
         const _innerWidth   = $( '#GameBoardContainer' ).width();
         
         this.width = Math.min( _innerWidth, 1024 );
+        this.boardWidth = this.width * 0.75;
+        
         const span = this.messages?.nativeElement as Element;
         // console.log( span.getElementsByTagName( 'span' ) );
         const spanWidth = span.getElementsByTagName( 'span' )[0].clientWidth;
         // alert( spanWidth );
         
-        this.messageCenter = this.width / 2 - spanWidth / 2;
+        this.messageCenter = this.boardWidth / 2 - spanWidth / 2;
     }
     
     fireResize(): void
@@ -484,10 +487,38 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
      */
     onMakeMove( coords: string ): void
     {
-        console.log( 'Move Coordinates', coords );
+        //console.log( 'Move Coordinates', coords );
         
-        var movesHistory = this.board?.getMoveHistory();
-        console.log( 'Moves History', movesHistory );
+        const lastMove = this.board.getMoveHistory().slice(-1)[0];
+        //console.log( 'Last Move', lastMove );
+        
+        if ( lastMove.color == "black" && this.appStateService.myColor.getValue() == PlayerColor.black ) {
+            const move: ChessMoveDto = {
+                color: PlayerColor.black,
+                from: lastMove.move.slice( 0, 2 ),
+                to: lastMove.move.slice( 2, 4 ),
+                nextMoves: [],
+                animate: false,
+                hint: false
+            };
+            
+            // if ( ! move.animate ) this.sound.playChecker();
+            this.wsService.doMove( move );
+            this.wsService.sendMove( move );
+        } else if ( lastMove.color == "white" && this.appStateService.myColor.getValue() == PlayerColor.white ) {
+            const move: ChessMoveDto = {
+                color: PlayerColor.black,
+                from: lastMove.move.slice( 0, 2 ),
+                to: lastMove.move.slice( 2, 4 ),
+                nextMoves: [],
+                animate: false,
+                hint: false
+            };
+            
+            // if ( ! move.animate ) this.sound.playChecker();
+            this.wsService.doMove( move );
+            this.wsService.sendMove( move );
+        }
     }
     
     onFlipped(): void

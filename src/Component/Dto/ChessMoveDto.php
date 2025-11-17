@@ -3,12 +3,12 @@
 use Doctrine\Common\Collections\Collection;
 use App\Component\Type\PlayerColor;
 
-class MoveDto
+class ChessMoveDto
 {
     public PlayerColor $color;
-    public int $from;
-    public int $to;
-    public Collection $nextMoves; // MoveDto[]
+    public string $from;
+    public string $to;
+    public Collection $nextMoves; // ChessMoveDto[]
     public bool $animate    = false;
     public bool $hint       = false;
 }

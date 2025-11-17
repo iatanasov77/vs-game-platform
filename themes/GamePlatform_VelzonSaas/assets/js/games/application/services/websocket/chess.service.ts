@@ -9,9 +9,8 @@ import GameCookieDto from '_@/GamePlatform/Model/Core/gameCookieDto';
 import GameState from '_@/GamePlatform/Model/Core/gameState';
 
 // BoardGame Interfaces
-import CheckerDto from '_@/GamePlatform/Model/BoardGame/checkerDto';
 import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
-import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
+import ChessMoveDto from '_@/GamePlatform/Model/BoardGame/chessMoveDto';
 import BoardGameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
 
 // Action Interfaces
@@ -22,8 +21,8 @@ import HintMovesActionDto from '../../dto/Actions/hintMovesActionDto';
 import BoardGameCreatedActionDto from '../../dto/Actions/boardGameCreatedActionDto';
 import ChessGameStartedActionDto from '../../dto/Actions/chessGameStartedActionDto';
 import BoardGameEndedActionDto from '../../dto/Actions/boardGameEndedActionDto';
-import MovesMadeActionDto from '../../dto/Actions/movesMadeActionDto';
-import OpponentMoveActionDto from '../../dto/Actions/opponentMoveActionDto';
+import ChessMoveMadeActionDto from '../../dto/Actions/chessMoveMadeActionDto';
+import ChessOpponentMoveActionDto from '../../dto/Actions/chessOpponentMoveActionDto';
 import UndoActionDto from '../../dto/Actions/undoActionDto';
 import ConnectionInfoActionDto from '../../dto/Actions/connectionInfoActionDto';
 import BoardGameRestoreActionDto from '../../dto/Actions/boardGameRestoreActionDto';
@@ -155,6 +154,7 @@ export class ChessService extends AbstractGameService
                 // This action is only sent to server.
                 break;
             }
+            
             case ActionNames.gameEnded: {
                 //console.log( 'WebSocket Action Game Ended', action.actionName );
                 
@@ -216,10 +216,10 @@ export class ChessService extends AbstractGameService
                 
                 break;
             }
-            case ActionNames.opponentMove: {
+            case ActionNames.chessOpponentMove: {
                 //alert( 'WebSocket Action Opponent Move' );
                 
-                const action = JSON.parse( message.data ) as OpponentMoveActionDto;
+                const action = JSON.parse( message.data ) as ChessOpponentMoveActionDto;
                 //console.log( 'WebSocket Action Opponent Move ' + new Date().toLocaleTimeString() );
                 
                 this.doMove( action.move );
@@ -292,9 +292,10 @@ export class ChessService extends AbstractGameService
     {
         super.resetGame();
         
-        this.userMoves = [];
+        this.chesUserMoves = [];
     }
     
+    /*
     doOpponentMove( move: MoveDto ): void
     {
         const game = this.appState.boardGame.getValue();
@@ -318,13 +319,15 @@ export class ChessService extends AbstractGameService
         
         this.appState.boardGame.setValue( gameClone );
     }
+    */
     
-    doMove( move: MoveDto ): void
+    doMove( move: ChessMoveDto ): void
     {
-        this.userMoves.push( { ...move, nextMoves: [] } ); // server does not need to know nextMoves.
+        this.chesUserMoves.push( { ...move, nextMoves: [] } ); // server does not need to know nextMoves.
         const prevGame = this.appState.boardGame.getValue();
         this.gameHistory.push( prevGame );
         
+        /*
         const gameClone = JSON.parse( JSON.stringify( prevGame ) ) as BoardGameDto;
         gameClone.validMoves = move.nextMoves;
         const isWhite = move.color === PlayerColor.white;
@@ -338,34 +341,6 @@ export class ChessService extends AbstractGameService
         const index = gameClone.points[from].checkers.indexOf( checker );
         gameClone.points[from].checkers.splice( index, 1 );
         
-        if ( move.color == PlayerColor.black ) {
-            gameClone.blackPlayer.pointsLeft -= move.to - move.from;
-        } else {
-            gameClone.whitePlayer.pointsLeft -= move.to - move.from;
-        }
-        // hitting opponent checker
-        const hit = gameClone.points[to].checkers.find(
-            ( c ) => c.color !== move.color
-        );
-        
-        const currentUrlparams = new URLSearchParams( window.location.search );
-        if ( hit ) {
-            if ( move.to < 25 ) {
-                this.sound.playCheckerWood();
-            }
-            
-            const hitIdx = gameClone.points[to].checkers.indexOf( hit );
-            gameClone.points[to].checkers.splice( hitIdx, 1 );
-            const barIdx = isWhite ? 0 : 25;
-            gameClone.points[barIdx].checkers.push( hit );
-            
-            if ( move.color == PlayerColor.black ) {
-                gameClone.whitePlayer.pointsLeft += 25 - move.to;
-            } else {
-                gameClone.blackPlayer.pointsLeft += 25 - move.to;
-            }
-        }
-        
         //push checker to new point
         gameClone.points[to].checkers.push( checker );
         this.appState.boardGame.setValue( gameClone );
@@ -376,8 +351,9 @@ export class ChessService extends AbstractGameService
             clone.push( move );
             this.appState.moveAnimations.setValue( clone );
         }
+        */
         
-        //console.log( 'Do Move', this.userMoves );
+        //console.log( 'Do Move', this.chesUserMoves );
     }
     
     undoMove(): void
@@ -385,7 +361,8 @@ export class ChessService extends AbstractGameService
         if ( this.gameHistory.length < 1 ) {
             return;
         }
-        const move = this.userMoves.pop();
+        /*
+        const move = this.chesUserMoves.pop();
         if ( ! move ) {
             return;
         }
@@ -396,21 +373,17 @@ export class ChessService extends AbstractGameService
         // console.log('pushing next animation');
         clone.push( { ...move, from: move.to, to: move.from } );
         this.appState.moveAnimations.setValue( clone );
+        */
     }
   
-    sendMoves(): void
+    sendMove( move: ChessMoveDto ): void
     {
-        const myColor = this.appState.myColor.getValue();
-        // Opponent moves are also stored in userMoves but we cant send them back.
-        const action: MovesMadeActionDto = {
-            actionName: ActionNames.movesMade,
-            moves: this.userMoves.filter( ( m ) => m.color === myColor )
+        // removing next moves to decrease bytes.
+        const action: ChessOpponentMoveActionDto = {
+            actionName: ActionNames.chessOpponentMove,
+            move: { ...move, nextMoves: [], animate: true }
         };
         this.sendMessage( JSON.stringify( action ) );
-        //console.log( 'Send Moves ' + new Date().toLocaleTimeString(), action.moves );
-        
-        this.userMoves = [];
-        this.gameHistory = [];
     }
     
     shiftMoveAnimationsQueue(): void
@@ -419,16 +392,6 @@ export class ChessService extends AbstractGameService
         const clone = [...this.appState.moveAnimations.getValue()];
         clone.shift();
         this.appState.moveAnimations.setValue( clone );
-    }
-    
-    sendMove( move: MoveDto ): void
-    {
-        // removing next moves to decrease bytes.
-        const action: OpponentMoveActionDto = {
-            actionName: ActionNames.opponentMove,
-            move: { ...move, nextMoves: [], animate: true }
-        };
-        this.sendMessage( JSON.stringify( action ) );
     }
     
     //This is when this player accepts a doubling.

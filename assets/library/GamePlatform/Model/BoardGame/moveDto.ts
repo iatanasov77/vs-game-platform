@@ -4,8 +4,8 @@ interface MoveDto
 {
     color: PlayerColor;
     from: number;
-    nextMoves: MoveDto[];
     to: number;
+    nextMoves: MoveDto[];
     animate: boolean;
     hint: boolean;
 }

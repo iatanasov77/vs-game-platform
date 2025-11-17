@@ -33,9 +33,9 @@ use App\Component\Dto\Actions\GameRestoreActionDto;
 use App\Component\Dto\Actions\GameCreatedActionDto;
 use App\Component\Dto\Actions\ChessGameStartedActionDto;
 use App\Component\Dto\Actions\HintMovesActionDto;
-use App\Component\Dto\Actions\MovesMadeActionDto;
+use App\Component\Dto\Actions\ChessMoveMadeActionDto;
 use App\Component\Dto\Actions\UndoActionDto;
-use App\Component\Dto\Actions\OpponentMoveActionDto;
+use App\Component\Dto\Actions\ChessOpponentMoveActionDto;
 use App\Component\Dto\Actions\DoublingActionDto;
 
 final class ChessGameManager extends BoardGameManager
@@ -180,9 +180,9 @@ final class ChessGameManager extends BoardGameManager
         $this->logger->log( "Doing action: {$actionName->value}", 'GameManager' );
         //$this->logger->debug( $this->Game->Points, 'BeforeDoAction.txt' );
         
-        if ( $actionName == ActionNames::movesMade ) {
+        if ( $actionName == ActionNames::chessMoveMade ) {
             $this->Game->ThinkStart = new \DateTime( 'now' );
-            $action = $this->serializer->deserialize( $actionText, MovesMadeActionDto::class, JsonEncoder::FORMAT );
+            $action = $this->serializer->deserialize( $actionText, ChessMoveMadeActionDto::class, JsonEncoder::FORMAT );
             
             if ( $socket == $this->Clients->get( PlayerColor::Black->value ) ) {
                 $this->Game->BlackPlayer->FirstMoveMade = true;
@@ -190,14 +190,14 @@ final class ChessGameManager extends BoardGameManager
                 $this->Game->WhitePlayer->FirstMoveMade = true;
             }
             
-            $this->DoMoves( $action );
+            //$this->DoMoves( $action );
             $promise = Async\async( function () use ( $action, $socket ) {
                 $this->NewTurn( $socket );
             })();
             Async\await( $promise );
             
-        } else if ( $actionName == ActionNames::opponentMove ) {
-            $action = $this->serializer->deserialize( $actionText, OpponentMoveActionDto::class, JsonEncoder::FORMAT );
+        } else if ( $actionName == ActionNames::chessOpponentMove ) {
+            $action = $this->serializer->deserialize( $actionText, ChessOpponentMoveActionDto::class, JsonEncoder::FORMAT );
             foreach ( $otherSockets as $otherSocket ) {
                 $this->Send( $otherSocket, $action );
             }
@@ -281,5 +281,47 @@ final class ChessGameManager extends BoardGameManager
         
         $gameEndedAction->newScore = $newScore ? $newScore[1] : null;
         $this->Send( $this->Clients->get( PlayerColor::White->value ), $gameEndedAction );
+    }
+    
+    protected function DoMoves( ChessMoveMadeActionDto $action ): void
+    {
+        $firstMove = Mapper::MoveToMove( $action->moves[0], $this->Game );
+        $validMove = $this->Game->ValidMoves->filter(
+            function( $entry ) use ( $firstMove ) {
+                //return $entry == $firstMove;
+                return
+                    $entry->From->GetNumber( $firstMove->Color ) == $firstMove->From->GetNumber( $firstMove->Color ) &&
+                    $entry->To->GetNumber( $firstMove->Color ) == $firstMove->To->GetNumber( $firstMove->Color )
+                ;
+            }
+        )->first();
+        
+        $this->logger->log( "Points Before DoMoves: " . \print_r( $this->Game->Points->toArray(), true ), 'DoMoves' );
+        for ( $i = 0; $i < count( $action->moves ); $i++ ) {
+            $moveDto = $action->moves[$i];
+            if ( $validMove == null ) {
+                // Preventing invalid moves to enter the state. Should not happen unless someones hacking the socket or serious bugs.
+                throw new \RuntimeException( "An attempt to make an invalid move was made" );
+            } else if ( $i < count( $action->moves ) - 1 ) {
+                $nextMove = Mapper::MoveToMove( $action->moves[$i + 1], $this->Game );
+                
+                // Going up the valid moves tree one step for every sent move.
+                $validMove = $validMove->NextMoves->filter(
+                    function( $entry ) use ( $nextMove ) {
+                        //return $entry == $nextMove;
+                        return
+                            $entry->From->GetNumber( $nextMove->Color ) == $nextMove->From->GetNumber( $nextMove->Color ) &&
+                            $entry->To->GetNumber( $nextMove->Color ) == $nextMove->To->GetNumber( $nextMove->Color )
+                        ;
+                    }
+                )->first();
+            }
+            
+            //$color  = $move->color;
+            $move   = Mapper::MoveToMove( $moveDto, $this->Game );
+            $this->Game->MakeMove( $move );
+        }
+        $this->logger->log( "Points After DoMoves: " . \print_r( $this->Game->Points->toArray(), true ), 'DoMoves' );
+        //$this->logger->log( "Black Player Points Left: " . $this->Game->BlackPlayer->PointsLeft, 'EndGame' );
     }
 }

@@ -182,8 +182,8 @@ declare module '_@/GamePlatform/Model/BoardGame/moveDto' {
     {
         color: PlayerColor;
         from: number;
-        nextMoves: MoveDto[];
         to: number;
+        nextMoves: MoveDto[];
         animate: boolean;
         hint: boolean;
     }
@@ -550,4 +550,20 @@ declare module '_@/GamePlatform/Model/CardGame/announceDto' {
         Card: CardDto;
     }
     export = AnnounceDto;
+}
+
+declare module '_@/GamePlatform/Model/BoardGame/chessMoveDto' {
+    import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
+    
+    interface ChessMoveDto
+    {
+        color: PlayerColor;
+        from: string;
+        to: string;
+        nextMoves: ChessMoveDto[];
+        animate: boolean;
+        hint: boolean;
+    }
+    
+    export = ChessMoveDto;
 }

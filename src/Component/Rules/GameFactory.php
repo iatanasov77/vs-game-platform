@@ -17,6 +17,7 @@ use App\Component\Rules\CardGame\BridgeBeloteGame;
 
 use App\Component\Rules\BoardGame\Player as BoardGamePlayer;
 use App\Component\Rules\BoardGame\Point;
+use App\Component\Rules\BoardGame\ChessSquare;
 
 use App\Component\Rules\CardGame\Player as CardGamePlayer;
 use App\Component\Rules\CardGame\Deck;
@@ -224,17 +225,18 @@ final class GameFactory
         $game->IsGoldGame = $forGold;
         $game->LastDoubler = null;
         
-        // @TODO Shouuld Used Chess Squares Not Points
-        //$game->Points = new ArrayCollection(); // Board divided into a grid of 64 squares (eight-by-eight) of alternating color
-        /*
-        for ( $i = 0; $i < 26; $i++ ) {
-            $point  = new Point();
-            $point->BlackNumber = $i;
-            $point->WhiteNumber = 25 - $i;
-            
-            $game->Points[] = $point;
+        $game->Squares = new ArrayCollection(); // Board divided into a grid of 64 squares (eight-by-eight) of alternating color
+        for ( $row = 1; $row <= 8; $row++ ) {
+            for ( $col = 1; $col <= 8; $col++ ) {
+                $square = new ChessSquare();
+                $square->Rank = $row;
+                $square->File = chr( $col + 64 );
+                
+                $game->Squares->set( "{$square->File}{$square->Rank}", $square ); // Initialize and add the new chess cell
+            }
         }
-        */
+        
+        $game->MovesHistory = new ArrayCollection();
         
         $game->SetStartPosition();
         

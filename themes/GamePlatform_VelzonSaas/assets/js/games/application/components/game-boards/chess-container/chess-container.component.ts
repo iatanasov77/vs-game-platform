@@ -117,6 +117,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
     
     whiteDisabled: boolean = true;
     blackDisabled: boolean = true;
+    showLegalMoves: boolean = true;
     
     gameDto: BoardGameDto | undefined;
     newVisible = false;

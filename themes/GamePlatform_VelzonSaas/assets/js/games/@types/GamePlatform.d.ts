@@ -552,6 +552,19 @@ declare module '_@/GamePlatform/Model/CardGame/announceDto' {
     export = AnnounceDto;
 }
 
+declare module '_@/GamePlatform/Model/BoardGame/playerColor' {
+    enum ChessMoveType
+    {
+        NormalMove,
+        CaputreMove,
+        TowerMove,
+        PromotionMove,
+        EnPassant
+    }
+    
+    export = ChessMoveType;
+}
+
 declare module '_@/GamePlatform/Model/BoardGame/chessMoveDto' {
     import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
     

@@ -88,7 +88,7 @@ trait Helper
             ;
         });
             
-            return new ArrayCollection( \iterator_to_array( $movesIterator ) );
+        return new ArrayCollection( \iterator_to_array( $movesIterator ) );
     }
     
     protected function getMovesOrderedByFromWhiteNumber( Collection $moves, string $direction ): Collection

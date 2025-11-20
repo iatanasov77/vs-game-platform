@@ -296,7 +296,7 @@ export class ChessService extends AbstractGameService
     }
     
     /*
-    doOpponentMove( move: MoveDto ): void
+    doOpponentMove( move: ChessMoveDto ): void
     {
         const game = this.appState.boardGame.getValue();
         const gameClone = JSON.parse( JSON.stringify( game ) ) as BoardGameDto;
@@ -323,6 +323,7 @@ export class ChessService extends AbstractGameService
     
     doMove( move: ChessMoveDto ): void
     {
+        console.log( 'Chess Moee', move );
         this.chesUserMoves.push( { ...move, nextMoves: [] } ); // server does not need to know nextMoves.
         const prevGame = this.appState.boardGame.getValue();
         this.gameHistory.push( prevGame );
@@ -378,12 +379,18 @@ export class ChessService extends AbstractGameService
   
     sendMove( move: ChessMoveDto ): void
     {
+        const myMovePieceAction: ChessMoveMadeActionDto = {
+            actionName: ActionNames.chessMoveMade,
+            move: { ...move, nextMoves: [], animate: true }
+        };
+        this.sendMessage( JSON.stringify( myMovePieceAction ) );
+        
         // removing next moves to decrease bytes.
-        const action: ChessOpponentMoveActionDto = {
+        const opponentMovePieceAction: ChessOpponentMoveActionDto = {
             actionName: ActionNames.chessOpponentMove,
             move: { ...move, nextMoves: [], animate: true }
         };
-        this.sendMessage( JSON.stringify( action ) );
+        this.sendMessage( JSON.stringify( opponentMovePieceAction ) );
     }
     
     shiftMoveAnimationsQueue(): void

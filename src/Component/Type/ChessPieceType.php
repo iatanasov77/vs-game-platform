@@ -7,5 +7,5 @@ enum ChessPieceType: int
     case Rook   = 2;
     case Bishop = 3;
     case Knight = 4;
-    case Pawn   = 5;					
+    case Pawn   = 5;
 }

@@ -9,7 +9,7 @@ class ChessPiece
      * 
      * @var int
      */
-    public $Moves;
+    public $Moves = 0;
     
     /** @var ChessSide */
     public $Side;

@@ -39,36 +39,62 @@ class ChessGame extends Game
     public function SetStartPosition(): void
     {
         // Now setup the board for black side
-        $this->Squares["A1"]->Piece = new ChessPiece( ChessPieceType::Rook, new ChessSide( PlayerColor::Black ) );
-        $this->Squares["H1"]->Piece = new ChessPiece( ChessPieceType::Rook, new ChessSide( PlayerColor::Black ) );
-        $this->Squares["B1"]->Piece = new ChessPiece( ChessPieceType::Knight, new ChessSide( PlayerColor::Black ) );
-        $this->Squares["G1"]->Piece = new ChessPiece( ChessPieceType::Knight, new ChessSide( PlayerColor::Black ) );
-        $this->Squares["C1"]->Piece = new ChessPiece( ChessPieceType::Bishop, new ChessSide( PlayerColor::Black ) );
-        $this->Squares["F1"]->Piece = new ChessPiece( ChessPieceType::Bishop, new ChessSide( PlayerColor::Black ) );
-        $this->Squares["E1"]->Piece = new ChessPiece( ChessPieceType::King, new ChessSide( PlayerColor::Black ) );
-        $this->Squares["D1"]->Piece = new ChessPiece( ChessPieceType::Queen, new ChessSide( PlayerColor::Black ) );
+        $this->Squares["A8"]->Piece = new ChessPiece( ChessPieceType::Rook, new ChessSide( PlayerColor::Black ) );
+        $this->Squares["H8"]->Piece = new ChessPiece( ChessPieceType::Rook, new ChessSide( PlayerColor::Black ) );
+        $this->Squares["B8"]->Piece = new ChessPiece( ChessPieceType::Knight, new ChessSide( PlayerColor::Black ) );
+        $this->Squares["G8"]->Piece = new ChessPiece( ChessPieceType::Knight, new ChessSide( PlayerColor::Black ) );
+        $this->Squares["C8"]->Piece = new ChessPiece( ChessPieceType::Bishop, new ChessSide( PlayerColor::Black ) );
+        $this->Squares["F8"]->Piece = new ChessPiece( ChessPieceType::Bishop, new ChessSide( PlayerColor::Black ) );
+        $this->Squares["E8"]->Piece = new ChessPiece( ChessPieceType::King, new ChessSide( PlayerColor::Black ) );
+        $this->Squares["D8"]->Piece = new ChessPiece( ChessPieceType::Queen, new ChessSide( PlayerColor::Black ) );
 		for ( $col = 1; $col <= 8; $col++ ) {
 		    $chrCol = chr( $col + 64 );
-		    $key = "{$chrCol}2";
+		    $key = "{$chrCol}7";
 		    $this->Squares[$key]->Piece = new ChessPiece( ChessPieceType::Pawn, new ChessSide( PlayerColor::Black ) );
 		}
 
 		// Now setup the board for white side
-		$this->Squares["A8"]->Piece = new ChessPiece( ChessPieceType::Rook, new ChessSide( PlayerColor::White ) );
-		$this->Squares["H8"]->Piece = new ChessPiece( ChessPieceType::Rook, new ChessSide( PlayerColor::White ) );
-		$this->Squares["B8"]->Piece = new ChessPiece( ChessPieceType::Knight, new ChessSide( PlayerColor::White ) );
-		$this->Squares["G8"]->Piece = new ChessPiece( ChessPieceType::Knight, new ChessSide( PlayerColor::White ) );
-		$this->Squares["C8"]->Piece = new ChessPiece( ChessPieceType::Bishop, new ChessSide( PlayerColor::White ) );
-		$this->Squares["F8"]->Piece = new ChessPiece( ChessPieceType::Bishop, new ChessSide( PlayerColor::White ) );
-		$this->Squares["E8"]->Piece = new ChessPiece( ChessPieceType::King, new ChessSide( PlayerColor::White ) );
-		$this->Squares["D8"]->Piece = new ChessPiece( ChessPieceType::Queen, new ChessSide( PlayerColor::White ) );
+		$this->Squares["A1"]->Piece = new ChessPiece( ChessPieceType::Rook, new ChessSide( PlayerColor::White ) );
+		$this->Squares["H1"]->Piece = new ChessPiece( ChessPieceType::Rook, new ChessSide( PlayerColor::White ) );
+		$this->Squares["B1"]->Piece = new ChessPiece( ChessPieceType::Knight, new ChessSide( PlayerColor::White ) );
+		$this->Squares["G1"]->Piece = new ChessPiece( ChessPieceType::Knight, new ChessSide( PlayerColor::White ) );
+		$this->Squares["C1"]->Piece = new ChessPiece( ChessPieceType::Bishop, new ChessSide( PlayerColor::White ) );
+		$this->Squares["F1"]->Piece = new ChessPiece( ChessPieceType::Bishop, new ChessSide( PlayerColor::White ) );
+		$this->Squares["E1"]->Piece = new ChessPiece( ChessPieceType::King, new ChessSide( PlayerColor::White ) );
+		$this->Squares["D1"]->Piece = new ChessPiece( ChessPieceType::Queen, new ChessSide( PlayerColor::White ) );
 		for ( $col=1; $col <= 8; $col++ ) {
 		    $chrCol = chr( $col + 64 );
-		    $key = "{$chrCol}7";
+		    $key = "{$chrCol}2";
 		    $this->Squares[$key]->Piece = new ChessPiece( ChessPieceType::Pawn, new ChessSide( PlayerColor::White ) );
 		}
 		
 		//$this->logger->log( "Squares: " . print_r( $this->Squares->toArray(), true ), 'GameManager' );
+    }
+    
+    public function MakeMove( ChessMove &$move ): ?ChessPiece
+    {
+        $this->logger->log( "MakeMove: " . print_r( $move, true ), 'GenerateMoves' );
+        
+        if ( $move->CapturedPiece ) {
+            
+        }
+        
+        $movedPiece = $this->Squares["{$move->From}"]->Piece;
+        $this->Squares["{$move->From}"]->Piece = null;
+        $this->Squares["{$move->To}"]->Piece = $movedPiece;
+        
+        return $move->CapturedPiece ?: null;
+    }
+    
+    public function UndoMove( ChessMove &$move, ?ChessPiece $capturedPiece ): void
+    {
+        $movedPiece = $this->Squares["{$move->To}"]->Piece;
+        $this->Squares["{$move->To}"]->Piece = null;
+        $this->Squares["{$move->From}"]->Piece = $movedPiece;
+        
+        if ( $capturedPiece != null ) {
+            $this->Squares["{$move->To}"]->Piece = $capturedPiece;
+        }
     }
     
     // get all the cell containg pieces of given side
@@ -85,7 +111,7 @@ class ChessGame extends Game
                 // check and add the current type cell
                 if (
                     $this->Squares[$key]->Piece != null &&
-                    $this->Squares[$key]->Piece->Color == $PlayerSide
+                    $this->Squares[$key]->Piece->Side->type == $PlayerSide
                 ) {
                     $CellNames[] = "{$this->Squares[$key]}"; // append the cell name to list
                 }
@@ -98,7 +124,9 @@ class ChessGame extends Game
     public function SetFirstMoveWinner(): void
     {
         if ( $this->PlayState == GameState::firstMove ) {
-            $this->CurrentPlayer = PlayerColor::Black;
+            // Always White moves first, then players alternate moves.
+            $this->CurrentPlayer = PlayerColor::White;
+            
             $this->PlayState = GameState::playing;
         }
     }

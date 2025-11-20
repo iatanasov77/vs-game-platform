@@ -552,7 +552,7 @@ declare module '_@/GamePlatform/Model/CardGame/announceDto' {
     export = AnnounceDto;
 }
 
-declare module '_@/GamePlatform/Model/BoardGame/playerColor' {
+declare module '_@/GamePlatform/Model/BoardGame/chessMoveType' {
     enum ChessMoveType
     {
         NormalMove,
@@ -565,14 +565,37 @@ declare module '_@/GamePlatform/Model/BoardGame/playerColor' {
     export = ChessMoveType;
 }
 
+declare module '_@/GamePlatform/Model/BoardGame/chessPieceType' {
+    enum ChessPieceType
+    {
+        King,
+        Queen,
+        Rook,
+        Bishop,
+        Knight,
+        Pawn
+    }
+    
+    export = ChessPieceType;
+}
+
 declare module '_@/GamePlatform/Model/BoardGame/chessMoveDto' {
     import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
+    import ChessMoveType from '_@/GamePlatform/Model/BoardGame/chessMoveType';
+    import ChessPieceType from '_@/GamePlatform/Model/BoardGame/chessPieceType';
     
     interface ChessMoveDto
     {
         color: PlayerColor;
+        type: ChessMoveType;
         from: string;
         to: string;
+        
+        piece: ChessPieceType;
+        capturedPiece?: ChessPieceType;
+        promoPiece?: ChessPieceType;
+        enpassantPiece?: ChessPieceType;
+        
         nextMoves: ChessMoveDto[];
         animate: boolean;
         hint: boolean;

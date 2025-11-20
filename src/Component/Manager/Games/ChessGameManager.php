@@ -63,7 +63,7 @@ final class ChessGameManager extends BoardGameManager
                     $this->GameVariant,
                     $this->logger,
                     $this->Game
-                    );
+                );
                 $this->CreateDbGame();
                 $this->StartGame();
                 
@@ -190,7 +190,7 @@ final class ChessGameManager extends BoardGameManager
                 $this->Game->WhitePlayer->FirstMoveMade = true;
             }
             
-            //$this->DoMoves( $action );
+            $this->DoMove( $action );
             $promise = Async\async( function () use ( $action, $socket ) {
                 $this->NewTurn( $socket );
             })();
@@ -269,6 +269,27 @@ final class ChessGameManager extends BoardGameManager
         //$this->logger->debug( $this->Game->Points, 'AfterDoAction.txt' );
     }
     
+    protected function NewTurn( WebsocketClientInterface $socket ): void
+    {
+        $winner = $this->GetWinner();
+        $this->Game->SwitchPlayer();
+        if ( $winner ) {
+            $this->EndGame( $winner );
+        } else {
+           if ( $this->AisTurn() ) {
+                $this->logger->log( "NewTurn for AI", 'SwitchPlayer' );
+                $this->EnginMoves( $socket );
+            }
+        }
+    }
+    
+    protected function GetWinner(): ?PlayerColor
+    {
+        $winner = null;
+        
+        return $winner;
+    }
+    
     protected function SendWinner( PlayerColor $color, ?array $newScore ): void
     {
         $game = Mapper::BoardGameToDto( $this->Game );
@@ -283,45 +304,46 @@ final class ChessGameManager extends BoardGameManager
         $this->Send( $this->Clients->get( PlayerColor::White->value ), $gameEndedAction );
     }
     
-    protected function DoMoves( ChessMoveMadeActionDto $action ): void
+    protected function DoMove( ChessMoveMadeActionDto $action ): void
     {
-        $firstMove = Mapper::MoveToMove( $action->moves[0], $this->Game );
-        $validMove = $this->Game->ValidMoves->filter(
-            function( $entry ) use ( $firstMove ) {
-                //return $entry == $firstMove;
-                return
-                    $entry->From->GetNumber( $firstMove->Color ) == $firstMove->From->GetNumber( $firstMove->Color ) &&
-                    $entry->To->GetNumber( $firstMove->Color ) == $firstMove->To->GetNumber( $firstMove->Color )
-                ;
-            }
-        )->first();
+        //$color  = $move->color;
+        $move   = Mapper::ChessMoveToChessMove( $action->move, $this->Game );
+        $this->Game->MakeMove( $move );
+    }
+    
+    protected function EnginMoves( WebsocketClientInterface $client ): void
+    {
+        $move = $this->Engine->GetBestMove();
+        $this->logger->log( 'Engine Best Move: ' . print_r( $move, true ), 'EnginMoves' );
         
-        $this->logger->log( "Points Before DoMoves: " . \print_r( $this->Game->Points->toArray(), true ), 'DoMoves' );
-        for ( $i = 0; $i < count( $action->moves ); $i++ ) {
-            $moveDto = $action->moves[$i];
-            if ( $validMove == null ) {
-                // Preventing invalid moves to enter the state. Should not happen unless someones hacking the socket or serious bugs.
-                throw new \RuntimeException( "An attempt to make an invalid move was made" );
-            } else if ( $i < count( $action->moves ) - 1 ) {
-                $nextMove = Mapper::MoveToMove( $action->moves[$i + 1], $this->Game );
-                
-                // Going up the valid moves tree one step for every sent move.
-                $validMove = $validMove->NextMoves->filter(
-                    function( $entry ) use ( $nextMove ) {
-                        //return $entry == $nextMove;
-                        return
-                            $entry->From->GetNumber( $nextMove->Color ) == $nextMove->From->GetNumber( $nextMove->Color ) &&
-                            $entry->To->GetNumber( $nextMove->Color ) == $nextMove->To->GetNumber( $nextMove->Color )
-                        ;
-                    }
-                )->first();
+        if ( ! $move ) {
+            return;
+        }
+        
+        $promise = Async\async( function () use ( $client, $move ) {
+            $sleepMileseconds   = \rand( 700, 1200 );
+            Async\delay( $sleepMileseconds / 1000 );
+            
+            $moveDto = Mapper::ChessMoveToDto( $move );
+            $moveDto->animate = true;
+            $dto = new ChessOpponentMoveActionDto();
+            $dto->move = $moveDto;
+            
+            $this->Game->MakeMove( $move );
+            
+            if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {
+                $this->Game->BlackPlayer->FirstMoveMade = true;
+            } else {
+                $this->Game->WhitePlayer->FirstMoveMade = true;
             }
             
-            //$color  = $move->color;
-            $move   = Mapper::MoveToMove( $moveDto, $this->Game );
-            $this->Game->MakeMove( $move );
-        }
-        $this->logger->log( "Points After DoMoves: " . \print_r( $this->Game->Points->toArray(), true ), 'DoMoves' );
-        //$this->logger->log( "Black Player Points Left: " . $this->Game->BlackPlayer->PointsLeft, 'EndGame' );
+            $this->Send( $client, $dto );
+        })();
+        Async\await( $promise );
+        
+        $promise = Async\async( function () use ( $client ) {
+            $this->NewTurn( $client );
+        })();
+        Async\await( $promise );
     }
 }

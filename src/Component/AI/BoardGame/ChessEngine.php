@@ -32,7 +32,7 @@ class ChessEngine extends Engine
     // Get the best move available to the player
     public function GetFixBestMove(): ChessMove
     {
-        TimeSpan ElapsedTime= new TimeSpan(1);		// Total elpased time
+        //TimeSpan ElapsedTime = new TimeSpan(1);		// Total elpased time
         $BestMove = null;		// The best move for the current position
         
         $currentSide = new ChessSide( $this->EngineGame->CurrentPlayer );
@@ -55,7 +55,7 @@ class ChessEngine extends Engine
             
             // If the score of the move we just tried is better than the score of the best move we had
             // so far, at this depth, then make this the best move.
-            if ( $move.Score > $alpha ) {
+            if ( $move->Score > $alpha ) {
                 $BestMove = $move;
                 $alpha = $move->Score;
             }
@@ -95,12 +95,13 @@ class ChessEngine extends Engine
             $EnemySide = new ChessSide( PlayerColor::Black );
         }
         
-        if ( $this->EngineGame->GetSideCell( $EnemySide )->count() <= 5 || $this->EngineGame->Rules->GenerateAllLegalMoves( $EnemySide )->count() <= 5 ) {
+        if ( $this->EngineGame->GetSideCell( $EnemySide->type )->count() <= 5 || $this->EngineGame->Rules->GenerateAllLegalMoves( $EnemySide )->count() <= 5 ) {
             $this->GameNearEnd = true;
         }
             
         $this->TotalMovesAnalyzed = 0;		// Reset the total moves anazlye counter
         
+        $depth = 10;
         //for ( depth = 1;; depth++ ) {	// Keep doing a depth search
             $alpha = self::MIN_SCORE;	// The famous Alpha & Beta are set to their initial values
             $beta  = self::MAX_SCORE;	// at the start of each increasing search depth iteration
@@ -142,6 +143,13 @@ class ChessEngine extends Engine
             */
         //}
         
+            
+        if ( $BestMove ) {
+            $BestMove->Color = $this->EngineGame->CurrentPlayer;
+            //$BestMove->Piece = $BestMove->From->Piece;
+            //$this->logger->log( 'Best Move Piece: ' . print_r( $this->EngineGame->Squares["{$BestMove->From}"], true ), 'EnginMoves' );
+        }
+            
         //m_Rules.ChessGame.NotifyComputerThinking(depth, MoveCounter, TotalMoves.Count, $this->TotalMovesAnalyzed, BestMove );
         return $BestMove;
     }

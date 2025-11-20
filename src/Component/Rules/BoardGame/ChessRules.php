@@ -22,6 +22,28 @@ class ChessRules
         $this->logger           = $logger;
     }
     
+    // Return true if the given side is checkmate
+    public function IsCheckMate( PlayerColor $PlayerSide ): bool
+    {
+        // if player is under check and he has no moves
+        if ( $this->IsUnderCheck( $PlayerSide ) && $this->GetCountOfPossibleMoves( $PlayerSide ) == 0 ) {
+            return true;	// player is checkmate
+        } else {
+            return false;
+        }
+    }
+    
+    // Return true if the given side is stalemate
+    public function IsStaleMate( PlayerColor $PlayerSide ): bool
+    {
+        // if player is not under check and he has no moves
+        if ( ! $this->IsUnderCheck( $PlayerSide ) && $this->GetCountOfPossibleMoves( $PlayerSide ) == 0 ) {
+            return true;	// player is checkmate
+        } else {
+            return false;
+        }
+    }
+    
     // Returns all the possible moves wether they are legal or not i.e. some moves may cause or leave check
     // so for the particular situation they may become illegal
     public function GetPossibleMoves( ChessSquare $source ): Collection
@@ -229,6 +251,13 @@ class ChessRules
     // Actually execute the move
     public function ExecuteMove( ChessMove $move ): void
     {
+        if ( ! $move->From || ! $this->game->Squares["{$move->From}"] ) {
+            return;
+        }
+        
+        //$this->logger->log( "MakeMove: " . print_r( $this->game->Squares["{$move->From}"], true ), 'GenerateMoves' );
+        //$this->logger->log( "MakeMove: {$move->From}", 'GenerateMoves' );
+        
         // Check and execute the the move
         switch ( $move->Type ) {
             case ChessMoveType::CaputreMove:	// Capture move
@@ -244,7 +273,7 @@ class ChessRules
                 break;
                 
             case ChessMoveType::PromotionMove:	// Promotion move
-                $DoPromoMove( $move );
+                $this->DoPromoMove( $move );
                 break;
                 
             case ChessMoveType::EnPassant:		// EnPassant move
@@ -273,7 +302,9 @@ class ChessRules
                 $key = "H{$move->From->Rank}";
                 $target = $this->game->Squares[$key];	// Get the rook orignal position
                 
-                $this->game->Squares["{$source}"]->Piece->Moves--;	// decrement moves
+                if ( $this->game->Squares["{$source}"]->Piece ) {
+                    $this->game->Squares["{$source}"]->Piece->Moves--;	// decrement moves
+                }
                 $this->game->Squares["{$target}"]->Piece = $this->game->Squares["{$source}"]->Piece;		// Move object at the destination
                 $this->game->Squares["{$source}"]->Piece = null;	// Empty the source location
             } else {	// Moving Left
@@ -282,7 +313,9 @@ class ChessRules
                 $key = "A{$move->From->Rank}";
                 $target = $this->game->Squares[$key];	// Get the rook orignal position
                 
-                $this->game->Squares["{$source}"]->Piece->Moves--;	// decrement moves
+                if ( $this->game->Squares["{$source}"]->Piece ) {
+                    $this->game->Squares["{$source}"]->Piece->Moves--;	// decrement moves
+                }
                 $this->game->Squares["{$target}"]->Piece = $this->game->Squares["{$source}"]->Piece;		// Move object at the destination
                 $this->game->Squares["{$source}"]->Piece = null;	// Empty the source location
             }
@@ -297,7 +330,7 @@ class ChessRules
                 $EnPassantCell =$this->TopCell( $move->To );	// Get the cell under target position
             }
             
-            $EnPassantCell->piece = $move->EnPassantPiece;	// set back the enpassant piece
+            $EnPassantCell->Piece = $move->EnPassantPiece;	// set back the enpassant piece
         }
     }
     
@@ -336,7 +369,7 @@ class ChessRules
         
         // loop all the owner squars and get his king cell
         foreach ( $OwnerCells as $ChessCell ) {
-            $Score += $this->game->Squares[$ChessCell]->piece->GetWeight();
+            $Score += $this->game->Squares[$ChessCell]->Piece->GetWeight();
         }
         
         //int iPossibleMoves = GetCountOfPossibleMoves(PlayerSide);
@@ -351,7 +384,7 @@ class ChessRules
         
         $Score = $this->AnalyzeBoard( $PlayerSide->type ) - $this->AnalyzeBoard( $PlayerSide->Enemy() ) - 25;
         
-        if ( IsCheckMate( $PlayerSide->Enemy() ) ) {	// If the player is check mate
+        if ( $this->IsCheckMate( $PlayerSide->Enemy() ) ) {	// If the player is check mate
             $Score = 1000000;
         }
             
@@ -371,7 +404,7 @@ class ChessRules
         
         // check if the move is of tower/castling type
         if ( $move->From->Piece && $move->From->Piece->Type == ChessPieceType::King ) {
-            if ( \abs( \ord( $move>To->File ) - \ord( $move->From->File ) ) > 1 ) { // king can move to other than neighbour cell only in tower move
+            if ( \abs( \ord( $move->To->File ) - \ord( $move->From->File ) ) > 1 ) { // king can move to other than neighbour cell only in tower move
                 $move->Type = ChessMoveType::TowerMove;
             }
         }
@@ -379,7 +412,7 @@ class ChessRules
         // check if the move is a pawn promotion move
         if ( $move->From->Piece && $move->From->Piece->Type == ChessPieceType::Pawn ) {
             // Pawn is being promoted
-            if ( $move>To->Rank == 8 || $move>To->Rank == 1 ) {
+            if ( $move->To->Rank == 8 || $move->To->Rank == 1 ) {
                 $move->Type = ChessMoveType::PromotionMove;
             }
         }
@@ -396,7 +429,10 @@ class ChessRules
     // Do the normal move i.e. desitnation is empty; simply move the source piece
     private function DoNormalMove( ChessMove $move ): void
     {
-        $this->game->Squares["{$move->From}"]->Piece->Moves++;	// incremenet moves
+        if ( $this->game->Squares["{$move->From}"]->Piece && $this->game->Squares["{$move->From}"]->Piece->Moves !== null ) {
+            $this->game->Squares["{$move->From}"]->Piece->Moves++;	// incremenet moves
+        }
+        
         $this->game->Squares["{$move->To}"]->Piece = $this->game->Squares["{$move->From}"]->Piece;		// Move object at the destination
         $this->game->Squares["{$move->From}"]->Piece = null;	// Empty the source location
     }
@@ -409,13 +445,23 @@ class ChessRules
         // Now check the direction of the king movement
         if ( \ord( $move->To->File ) > \ord( $move->From->File ) ) { // moving right
             $rockcell = $this->RightCell( $move->To );
-            $newmove = new ChessMove( $rockcell, $this->LeftCell( $move->To ) ); // create the move for rock
+            
+            // create the move for rock
+            $newmove = new ChessMove();
+            $newmove->From = $rockcell;
+            $newmove->To = $this->LeftCell( $move->To );
+            
             $this->DoNormalMove( $newmove ); // Move the rock
         } else {
             // Move to the left side
             $rockcell = $this->LeftCell( $move->To );
             $rockcell = $this->LeftCell( $rockcell );
-            $newmove = new ChessMove( $rockcell, $this->RightCell( $move->To ) ); // create the move for rock
+            
+            // create the move for rock
+            $newmove = new ChessMove();
+            $newmove->From = $rockcell;
+            $newmove->To = $this->RightCell( $move->To );
+            
             $this->DoNormalMove( $newmove ); // Move the rock
         }
     }
@@ -426,7 +472,8 @@ class ChessRules
         $this->DoNormalMove( $move );	// Do the normal move
         // check if promo piece is already selected by the user
         if ( $move->PromoPiece == null ) {
-            $this->game->Squares["{$move->To}"]->Piece = new ChessPiece( ChessPieceType::Queen, $this->game->Squares["{$move->To}"]->Piece->Side );	// Set the end cell to queen
+            $pieceSide = new ChessSide( $this->game->CurrentPlayer );
+            $this->game->Squares["{$move->To}"]->Piece = new ChessPiece( ChessPieceType::Queen, $pieceSide );	// Set the end cell to queen
         } else {
             $this->game->Squares["{$move->To}"]->Piece = $move->PromoPiece;
         }
@@ -440,7 +487,7 @@ class ChessRules
         } else {
             $EnPassantCell = $this->TopCell( $move->To );	// Get the cell under target position
             
-            $move->EnPassantPiece = $EnPassantCell->piece;				// Save a reference to the en passant cell
+            $move->EnPassantPiece = $EnPassantCell->Piece;				// Save a reference to the en passant cell
             $EnPassantCell->Piece = null;	// Empty the en-passant cell
             $this->DoNormalMove( $move );	// Move the pawn to it's target position
         }
@@ -450,7 +497,10 @@ class ChessRules
     {
         $this->game->Squares["{$move->To}"]->Piece = $move->CapturedPiece;		// Move object at the destination
         $this->game->Squares["{$move->From}"]->Piece = $move->Piece;	// Empty the source location
-        $this->game->Squares["{$move->From}"]->Piece->Moves--;	// decrement moves
+        
+        if ( $this->game->Squares["{$move->From}"]->Piece && $this->game->Squares["{$move->From}"]->Piece->Moves !== null ) {
+            $this->game->Squares["{$move->From}"]->Piece->Moves--;	// decrement moves
+        }
     }
     
     // Returns true if the last move was a pawn begin move. It's used for En Passant move detection
@@ -468,8 +518,27 @@ class ChessRules
         return null;
     }
     
+    // Returns a count of all the possilbe moves for given side
+    private function GetCountOfPossibleMoves( PlayerColor $PlayerSide ): int
+    {
+        $TotalMoves = 0;
+        
+        // Loop all the owner squars and get their possible moves
+        $PlayerCells = $this->game->GetSideCell( $PlayerSide );
+        foreach ( $PlayerCells as $CellName ) {
+            $moves = $this->GetLegalMoves( $this->game->Squares[$CellName] );	// Get all the legal moves for the owner piece
+            $TotalMoves += $moves->count();
+        }
+        
+        return $TotalMoves;
+    }
+    
     private function CauseCheck( ChessMove $move ): bool
     {
+        if ( ! $move->From || ! $this->game->Squares["{$move->From}"] ) {
+            return false;
+        }
+        
         $CauseCheck = false;
         $PlayerSide = $move->From->Piece->Side->type;
         

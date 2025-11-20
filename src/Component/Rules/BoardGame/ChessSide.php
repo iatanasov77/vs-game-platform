@@ -15,7 +15,7 @@ class ChessSide
     // Return true if the side is white
     public function isWhite(): bool
     {
-        return $this->ype == PlayerColor::White;
+        return $this->type == PlayerColor::White;
     }
     
     // Return true if the side is black

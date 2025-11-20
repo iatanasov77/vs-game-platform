@@ -287,6 +287,52 @@ final class BackgammonGameManager extends BoardGameManager
         //$this->logger->debug( $this->Game->Points, 'AfterDoAction.txt' );
     }
     
+    protected function NewTurn( WebsocketClientInterface $socket ): void
+    {
+        $winner = $this->GetWinner();
+        $this->Game->SwitchPlayer();
+        if ( $winner ) {
+            $this->EndGame( $winner );
+        } else {
+            $this->SendNewRoll();
+            
+            if ( $this->AisTurn() ) {
+                $this->logger->log( "NewTurn for AI", 'SwitchPlayer' );
+                $this->EnginMoves( $socket );
+            }
+        }
+    }
+    
+    protected function GetWinner(): ?PlayerColor
+    {
+        $winner = null;
+        if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {
+            if (
+                $this->Game->GetHome( PlayerColor::Black )->Checkers->filter(
+                    function( $entry ) {
+                        return $entry->Color == PlayerColor::Black;
+                    }
+                )->count() == 15
+            ) {
+                $this->Game->PlayState = GameState::ended;
+                $winner = PlayerColor::Black;
+            }
+        } else {
+            if (
+                $this->Game->GetHome( PlayerColor::White )->Checkers->filter(
+                    function( $entry ) {
+                        return $entry->Color == PlayerColor::White;
+                    }
+                )->count() == 15
+            ) {
+                $this->Game->PlayState = GameState::ended;
+                $winner = PlayerColor::White;
+            }
+        }
+        
+        return $winner;
+    }
+    
     protected function GetHintAction(): HintMovesActionDto
     {
         $moves              = $this->Engine->GetBestMoves();

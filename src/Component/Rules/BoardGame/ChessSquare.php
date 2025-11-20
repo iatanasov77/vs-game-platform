@@ -37,7 +37,7 @@ class ChessSquare
         if ( ! $this->Piece ) {
             return false;
         } else {
-            return $this->Piece->Side->type == other->Piece->Side->type;
+            return $this->Piece->Side->type == $other->Piece->Side->type;
         }
     }
     

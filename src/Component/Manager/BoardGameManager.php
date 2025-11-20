@@ -46,22 +46,6 @@ abstract class BoardGameManager extends AbstractGameManager
         return $guid == GamePlayer::AiUser;
     }
     
-    protected function NewTurn( WebsocketClientInterface $socket ): void
-    {
-        $winner = $this->GetWinner();
-        $this->Game->SwitchPlayer();
-        if ( $winner ) {
-            $this->EndGame( $winner );
-        } else {
-            $this->SendNewRoll();
-            
-            if ( $this->AisTurn() ) {
-                $this->logger->log( "NewTurn for AI", 'SwitchPlayer' );
-                $this->EnginMoves( $socket );
-            }
-        }
-    }
-    
     protected function AisTurn(): bool
     {
         $plyr = $this->Game->CurrentPlayer == PlayerColor::Black ? $this->Game->BlackPlayer : $this->Game->WhitePlayer;
@@ -144,36 +128,6 @@ abstract class BoardGameManager extends AbstractGameManager
         } else {
             return [null, null];
         }
-    }
-    
-    protected function GetWinner(): ?PlayerColor
-    {
-        $winner = null;
-        if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {
-            if (
-                $this->Game->GetHome( PlayerColor::Black )->Checkers->filter(
-                    function( $entry ) {
-                        return $entry->Color == PlayerColor::Black;
-                    }
-                )->count() == 15
-            ) {
-                $this->Game->PlayState = GameState::ended;
-                $winner = PlayerColor::Black;
-            }
-        } else {
-            if (
-                $this->Game->GetHome( PlayerColor::White )->Checkers->filter(
-                    function( $entry ) {
-                        return $entry->Color == PlayerColor::White;
-                    }
-                )->count() == 15
-            ) {
-                $this->Game->PlayState = GameState::ended;
-                $winner = PlayerColor::White;
-            }
-        }
-        
-        return $winner;
     }
     
     protected function ReturnStakes(): void
@@ -264,6 +218,10 @@ abstract class BoardGameManager extends AbstractGameManager
             $player->Gold = $dbUser != null ? $dbUser->getGold() - self::firstBet : 0;
         }
     }
+    
+    abstract protected function NewTurn( WebsocketClientInterface $socket ): void;
+    
+    abstract protected function GetWinner(): ?PlayerColor;
     
     abstract protected function SendWinner( PlayerColor $color, ?array $newScore ): void;
 }

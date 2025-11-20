@@ -10,6 +10,9 @@ use App\Component\Rules\BoardGame\Point;
 use App\Component\Rules\BoardGame\Checker;
 use App\Component\Rules\BoardGame\Dice;
 use App\Component\Rules\BoardGame\Move;
+use App\Component\Rules\BoardGame\ChessMove;
+use App\Component\Rules\BoardGame\ChessPiece;
+use App\Component\Rules\BoardGame\ChessSide;
 
 use App\Component\Rules\CardGame\Game as CardGame;
 use App\Component\Rules\CardGame\Card;
@@ -264,5 +267,49 @@ final class Mapper
         $scoreDto->EastWestTotalInRoundPoints = $score->EastWestTotalInRoundPoints;
         
         return $scoreDto;
+    }
+    
+    public static function ChessMoveToDto( ChessMove $move ): ChessMoveDto
+    {
+        $moveDto = new ChessMoveDto();
+        $moveDto->color = $move->Color;
+        $moveDto->type = $move->Type;
+        $moveDto->from = "{$move->From}";
+        $moveDto->to = "{$move->To}";
+        
+        /*
+        $moveDto->piece = $move->Piece->Type;
+        $moveDto->capturedPiece =  $move->CapturedPiece ? $move->CapturedPiece->Type : null;
+        $moveDto->promoPiece =  $move->PromoPiece ?$move->PromoPiece->Type : null;
+        $moveDto->enpassantPiece =  $move->EnPassantPiece ? $move->EnPassantPiece->Type : null;
+        */
+        
+        // recursing up in move tree
+        $moveDto->nextMoves = $move->NextMoves->map(
+            function( $entry ) {
+                return self::ChessMoveToDto( $entry );
+            }
+        ); // ->toArray();
+        
+        return $moveDto;
+    }
+    
+    public static function ChessMoveToChessMove( ChessMoveDto $dto, BoardGame $game ): ChessMove
+    {
+        $move   = new ChessMove();
+        $move->Color = $dto->color;
+        $move->Type = $dto->type;
+        
+        $move->From = $game->Squares[$dto->from];
+        $move->To = $game->Squares[$dto->to];
+
+        /*
+        $move->Piece = $dto->piece ? new ChessPiece( $dto->piece, new ChessSide( $dto->color ) ) : null;
+        $move->CapturedPiece = $dto->capturedPiece ? new ChessPiece( $dto->capturedPiece, new ChessSide( $dto->color ) ) : null;
+        $move->PromoPiece = $dto->promoPiece ? new ChessPiece( $dto->promoPiece, new ChessSide( $dto->color ) ) : null;
+        $move->EnPassantPiece = $dto->enpassantPiece ? new ChessPiece( $dto->enpassantPiece, new ChessSide( $dto->color ) ) : null;
+        */
+        
+        return $move;
     }
 }

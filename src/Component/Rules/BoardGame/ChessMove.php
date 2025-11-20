@@ -3,10 +3,14 @@
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
+use App\Component\Type\PlayerColor;
 use App\Component\Type\ChessMoveType;
 
 class ChessMove
 {
+    /** @var PlayerColor */
+    public $Color;
+    
     /** @var ChessSquare */
     public $From;
     

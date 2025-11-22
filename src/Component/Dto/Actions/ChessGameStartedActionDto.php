@@ -1,6 +1,7 @@
 <?php namespace App\Component\Dto\Actions;
 
 use App\Component\Type\PlayerColor;
+use App\Component\Dto\GameDto;
 
 class ChessGameStartedActionDto extends ActionDto
 {
@@ -11,4 +12,6 @@ class ChessGameStartedActionDto extends ActionDto
     
     public ?PlayerColor $playerToMove;
     public int $moveTimer;
+    
+    public GameDto $game;
 }

@@ -87,6 +87,7 @@ export class TutorialService
             isGoldGame: false,
             playState: GameState.playing,
             points: [],
+            squares: [],
             stake: 0,
             thinkTime: 1000,
             validMoves: [],

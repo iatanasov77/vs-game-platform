@@ -16,6 +16,9 @@ class ChessRules
     /** @var GameLogger */
     private  $logger;
     
+    /** @var Collection | ChessSquare[] */
+    private $gameSquares;
+    
     public function __construct( ChessGame $game, GameLogger $logger )
     {
         $this->game             = $game;
@@ -126,16 +129,18 @@ class ChessRules
     // sorted order
     public function GenerateAllLegalMoves( ChessSide $PlayerSide ): Collection
     {
+        $this->actualGameSquares();
+        
         $TotalMoves = new ArrayCollection();
         $PlayerCells = $this->game->GetSideCell( $PlayerSide->type );
         
         // Loop all the owner squars and get their possible moves
         foreach ( $PlayerCells as $CellName ) {
-            $moves = $this->GetLegalMoves( $this->game->Squares[$CellName] );	// Get all the legal moves for the owner piece
+            $moves = $this->GetLegalMoves( $this->gameSquares[$CellName] );	// Get all the legal moves for the owner piece
             
             foreach ( $moves as $dest ) {
                 $move = new ChessMove();
-                $move->From = $this->game->Squares[$CellName];
+                $move->From = $this->gameSquares[$CellName];
                 $move->To = $dest;
                 $this->SetMoveType( $move );				// Set the move type
                 
@@ -161,6 +166,35 @@ class ChessRules
         return new ArrayCollection( \iterator_to_array( $movesIterator ) );
     }
     
+    // Generate all the good capture moves. These are used for quiescent searching
+    public function GenerateGoodCaptureMoves( ChessSide $PlayerSide ): Collection
+    {
+        $TotalMoves = new ArrayCollection();
+        $PlayerCells = $this->game->GetSideCell( $PlayerSide );
+        
+        // Loop all the owner squars and get their possible moves
+        foreach ( $PlayerCells as $CellName ) {
+            // Currently we are only checking moves of high rank pieces
+            if ( $this->gameSquares[$CellName]->Piece->GetWeight() > 100 ) {
+                $moves = $this->GetLegalMoves( $this->gameSquares[$CellName] );	// Get all the legal moves for the owner piece
+                
+                foreach ( $moves as $dest ) {
+                    // Check only capture moves
+                    if ( $dest->Piece != null ) {
+                        $move = new ChessMove();
+                        $move->From = $this->gameSquares[$CellName];
+                        $move->To = $dest;
+                        
+                        //SetMoveType(move);		// Set the move type
+                        $TotalMoves[] = $move;	// Add the move to total moves
+                    }
+                }
+            }
+        }
+        
+        return $TotalMoves;
+    }
+    
     // Return the last executed move
     public function GetLastMove(): ?ChessMove
     {
@@ -178,7 +212,7 @@ class ChessRules
         $newRow = $cell->Rank - 1;
         $key = "{$cell->File}{$newRow}";
         
-        return $this->game->Squares->containsKey( $key ) ? $this->game->Squares[$key] : null;
+        return $this->gameSquares->containsKey( $key ) ? $this->gameSquares[$key] : null;
     }
     
     // Returns the cell on the left of the given cell
@@ -187,7 +221,7 @@ class ChessRules
         $newCol = \chr( \ord( $cell->File ) - 1 );
         $key = "{$newCol}{$cell->Rank}";
         
-        return $this->game->Squares->containsKey( $key ) ? $this->game->Squares[$key] : null;
+        return $this->gameSquares->containsKey( $key ) ? $this->gameSquares[$key] : null;
     }
     
     // Returns the cell on the right of the given cell
@@ -196,7 +230,7 @@ class ChessRules
         $newCol = \chr( \ord( $cell->File ) + 1 );
         $key = "{$newCol}{$cell->Rank}";
         
-        return $this->game->Squares->containsKey( $key ) ? $this->game->Squares[$key] : null;
+        return $this->gameSquares->containsKey( $key ) ? $this->gameSquares[$key] : null;
     }
     
     // Returns the cell on the bottom of the given cell
@@ -205,7 +239,7 @@ class ChessRules
         $newRow = $cell->Rank + 1;
         $key = "{$cell->File}{$newRow}";
         
-        return $this->game->Squares->containsKey( $key ) ? $this->game->Squares[$key] : null;
+        return $this->gameSquares->containsKey( $key ) ? $this->gameSquares[$key] : null;
     }
     
     // Returns the cell on the top-left of the current cell
@@ -215,7 +249,7 @@ class ChessRules
         $newCol = \chr( \ord( $cell->File ) - 1 );
         $key = "{$newCol}{$newRow}";
         
-        return $this->game->Squares->containsKey( $key ) ? $this->game->Squares[$key] : null;
+        return $this->gameSquares->containsKey( $key ) ? $this->gameSquares[$key] : null;
     }
     
     // Returns the cell on the top-right of the current cell
@@ -225,7 +259,7 @@ class ChessRules
         $newCol = \chr( \ord( $cell->File ) + 1 );
         $key = "{$newCol}{$newRow}";
         
-        return $this->game->Squares->containsKey( $key ) ? $this->game->Squares[$key] : null;
+        return $this->gameSquares->containsKey( $key ) ? $this->gameSquares[$key] : null;
     }
     
     // Returns the cell on the bottom-left of the current cell
@@ -235,7 +269,7 @@ class ChessRules
         $newCol = \chr( \ord( $cell->File ) - 1 );
         $key = "{$newCol}{$newRow}";
         
-        return $this->game->Squares->containsKey( $key ) ? $this->game->Squares[$key] : null;
+        return $this->gameSquares->containsKey( $key ) ? $this->gameSquares[$key] : null;
     }
     
     // Returns the cell on the bottom-right of the current cell
@@ -245,17 +279,17 @@ class ChessRules
         $newCol = \chr( \ord( $cell->File ) + 1 );
         $key = "{$newCol}{$newRow}";
         
-        return $this->game->Squares->containsKey( $key ) ? $this->game->Squares[$key] : null;
+        return $this->gameSquares->containsKey( $key ) ? $this->gameSquares[$key] : null;
     }
     
     // Actually execute the move
     public function ExecuteMove( ChessMove $move ): void
     {
-        if ( ! $move->From || ! $this->game->Squares["{$move->From}"] ) {
+        if ( ! $move->From || ! $this->gameSquares["{$move->From}"] ) {
             return;
         }
         
-        //$this->logger->log( "MakeMove: " . print_r( $this->game->Squares["{$move->From}"], true ), 'GenerateMoves' );
+        //$this->logger->log( "MakeMove: " . print_r( $this->gameSquares["{$move->From}"], true ), 'GenerateMoves' );
         //$this->logger->log( "MakeMove: {$move->From}", 'GenerateMoves' );
         
         // Check and execute the the move
@@ -300,24 +334,24 @@ class ChessRules
                 // Now move the rook back to it's orignal position
                 $source = $this->LeftCell( $move->To );	// Get the new position of the rock
                 $key = "H{$move->From->Rank}";
-                $target = $this->game->Squares[$key];	// Get the rook orignal position
+                $target = $this->gameSquares[$key];	// Get the rook orignal position
                 
-                if ( $this->game->Squares["{$source}"]->Piece ) {
-                    $this->game->Squares["{$source}"]->Piece->Moves--;	// decrement moves
+                if ( $this->gameSquares["{$source}"]->Piece ) {
+                    $this->gameSquares["{$source}"]->Piece->Moves--;	// decrement moves
                 }
-                $this->game->Squares["{$target}"]->Piece = $this->game->Squares["{$source}"]->Piece;		// Move object at the destination
-                $this->game->Squares["{$source}"]->Piece = null;	// Empty the source location
+                $this->gameSquares["{$target}"]->Piece = $this->gameSquares["{$source}"]->Piece;		// Move object at the destination
+                $this->gameSquares["{$source}"]->Piece = null;	// Empty the source location
             } else {	// Moving Left
                 // Now move the rook back to it's orignal position
                 $source = $this->RightCell( $move->To );	// Get the new position of the rock
                 $key = "A{$move->From->Rank}";
-                $target = $this->game->Squares[$key];	// Get the rook orignal position
+                $target = $this->gameSquares[$key];	// Get the rook orignal position
                 
-                if ( $this->game->Squares["{$source}"]->Piece ) {
-                    $this->game->Squares["{$source}"]->Piece->Moves--;	// decrement moves
+                if ( $this->gameSquares["{$source}"]->Piece ) {
+                    $this->gameSquares["{$source}"]->Piece->Moves--;	// decrement moves
                 }
-                $this->game->Squares["{$target}"]->Piece = $this->game->Squares["{$source}"]->Piece;		// Move object at the destination
-                $this->game->Squares["{$source}"]->Piece = null;	// Empty the source location
+                $this->gameSquares["{$target}"]->Piece = $this->gameSquares["{$source}"]->Piece;		// Move object at the destination
+                $this->gameSquares["{$source}"]->Piece = null;	// Empty the source location
             }
         }
         
@@ -337,21 +371,26 @@ class ChessRules
     // Return true if the given side type is under check state
     public function IsUnderCheck( PlayerColor $PlayerSide ): bool
     {
+        $this->actualGameSquares();
+        
         $OwnerKingCell=null;
         $OwnerCells = $this->game->GetSideCell( $PlayerSide );
         
         // loop all the owner squars and get his king cell
         foreach ( $OwnerCells as $CellName ) {
-            if ( $this->game->Squares[$CellName]->Piece->Type == ChessPieceType::King ) {
-                $OwnerKingCell = $this->game->Squares[$CellName]; // store the enemy cell position
+            if ( $this->gameSquares[$CellName]->Piece->Type == ChessPieceType::King ) {
+                $OwnerKingCell = $this->gameSquares[$CellName]; // store the enemy cell position
                 break;	// break the loop
             }
         }
         
         // Loop all the enemy squars and get their possible moves
         $EnemyCells = $this->game->GetSideCell( ( new ChessSide( $PlayerSide ) )->Enemy() );
+        //$this->logger->log( "Game Squares: " . \print_r( $this->gameSquares, true ), 'EnginMoves' );
         foreach ( $EnemyCells as $CellName ) {
-            $moves = $this->GetPossibleMoves( $this->game->Squares[$CellName] );	// Get the moves for the enemy piece
+            //$this->logger->log( "Player Side: {$PlayerSide->value}", 'EnginMoves' );
+            //$this->logger->log( "Cell Name: {$CellName}", 'EnginMoves' );
+            $moves = $this->GetPossibleMoves( $this->gameSquares[$CellName] );	// Get the moves for the enemy piece
             // King is directly under attack
             if ( $moves->contains( $OwnerKingCell ) ) {
                 return true;
@@ -369,7 +408,10 @@ class ChessRules
         
         // loop all the owner squars and get his king cell
         foreach ( $OwnerCells as $ChessCell ) {
-            $Score += $this->game->Squares[$ChessCell]->Piece->GetWeight();
+            if ( ! $this->gameSquares[$ChessCell]->Piece ) {
+                continue;
+            }
+            $Score += $this->gameSquares[$ChessCell]->Piece->GetWeight();
         }
         
         //int iPossibleMoves = GetCountOfPossibleMoves(PlayerSide);
@@ -389,6 +431,16 @@ class ChessRules
         }
             
         return $Score;
+    }
+    
+    private function actualGameSquares(): void
+    {
+        $this->gameSquares = new ArrayCollection();
+        $gameSquaresClone = $this->game->Squares->getValues();
+        
+        foreach ( $gameSquaresClone as $suqare ) {
+            $this->gameSquares->set( "{$suqare}", clone $suqare );
+        }
     }
     
     // return type of the move given the move object
@@ -429,12 +481,12 @@ class ChessRules
     // Do the normal move i.e. desitnation is empty; simply move the source piece
     private function DoNormalMove( ChessMove $move ): void
     {
-        if ( $this->game->Squares["{$move->From}"]->Piece && $this->game->Squares["{$move->From}"]->Piece->Moves !== null ) {
-            $this->game->Squares["{$move->From}"]->Piece->Moves++;	// incremenet moves
+        if ( $this->gameSquares["{$move->From}"]->Piece && $this->gameSquares["{$move->From}"]->Piece->Moves !== null ) {
+            $this->gameSquares["{$move->From}"]->Piece->Moves++;	// incremenet moves
         }
         
-        $this->game->Squares["{$move->To}"]->Piece = $this->game->Squares["{$move->From}"]->Piece;		// Move object at the destination
-        $this->game->Squares["{$move->From}"]->Piece = null;	// Empty the source location
+        $this->gameSquares["{$move->To}"]->Piece = $this->gameSquares["{$move->From}"]->Piece;		// Move object at the destination
+        $this->gameSquares["{$move->From}"]->Piece = null;	// Empty the source location
     }
     
     // Do the castling/tower move. King interchanges it's position with it's rock
@@ -473,9 +525,9 @@ class ChessRules
         // check if promo piece is already selected by the user
         if ( $move->PromoPiece == null ) {
             $pieceSide = new ChessSide( $this->game->CurrentPlayer );
-            $this->game->Squares["{$move->To}"]->Piece = new ChessPiece( ChessPieceType::Queen, $pieceSide );	// Set the end cell to queen
+            $this->gameSquares["{$move->To}"]->Piece = new ChessPiece( ChessPieceType::Queen, $pieceSide );	// Set the end cell to queen
         } else {
-            $this->game->Squares["{$move->To}"]->Piece = $move->PromoPiece;
+            $this->gameSquares["{$move->To}"]->Piece = $move->PromoPiece;
         }
     }
     
@@ -495,11 +547,11 @@ class ChessRules
     
     private function UndoNormalMove( ChessMove $move ): void
     {
-        $this->game->Squares["{$move->To}"]->Piece = $move->CapturedPiece;		// Move object at the destination
-        $this->game->Squares["{$move->From}"]->Piece = $move->Piece;	// Empty the source location
+        $this->gameSquares["{$move->To}"]->Piece = $move->CapturedPiece;		// Move object at the destination
+        $this->gameSquares["{$move->From}"]->Piece = $move->Piece;	// Empty the source location
         
-        if ( $this->game->Squares["{$move->From}"]->Piece && $this->game->Squares["{$move->From}"]->Piece->Moves !== null ) {
-            $this->game->Squares["{$move->From}"]->Piece->Moves--;	// decrement moves
+        if ( $this->gameSquares["{$move->From}"]->Piece && $this->gameSquares["{$move->From}"]->Piece->Moves !== null ) {
+            $this->gameSquares["{$move->From}"]->Piece->Moves--;	// decrement moves
         }
     }
     
@@ -526,7 +578,7 @@ class ChessRules
         // Loop all the owner squars and get their possible moves
         $PlayerCells = $this->game->GetSideCell( $PlayerSide );
         foreach ( $PlayerCells as $CellName ) {
-            $moves = $this->GetLegalMoves( $this->game->Squares[$CellName] );	// Get all the legal moves for the owner piece
+            $moves = $this->GetLegalMoves( $this->gameSquares[$CellName] );	// Get all the legal moves for the owner piece
             $TotalMoves += $moves->count();
         }
         
@@ -535,7 +587,7 @@ class ChessRules
     
     private function CauseCheck( ChessMove $move ): bool
     {
-        if ( ! $move->From || ! $this->game->Squares["{$move->From}"] ) {
+        if ( ! $move->From || ! $this->gameSquares["{$move->From}"] ) {
             return false;
         }
         
@@ -934,7 +986,7 @@ class ChessRules
         }
         
         // Check castling or tower moves for the king
-        if ( $this->game->Squares["{$source}"]->Piece->Moves == 0 ) {
+        if ( $this->gameSquares["{$source}"]->Piece->Moves == 0 ) {
             $CastlingTarget = null;	// The cell where king will be moved in case of castling
             
             // As king has not yet moved, so castling is possible

@@ -144,12 +144,17 @@ export class ChessService extends AbstractGameService
                 const action = JSON.parse( message.data ) as ChessGameStartedActionDto;
                 console.log( 'WebSocket Action Chess Game Started', action );
                 
+                this.appState.boardGame.setValue({
+                    ...game,
+                    currentPlayer: action.game.currentPlayer
+                });
+                
                 this.appState.moveTimer.setValue( action.moveTimer );
                 
                 break;
             }
-            case ActionNames.movesMade: {
-                //console.log( 'WebSocket Action Moves Made', action.actionName );
+            case ActionNames.chessMoveMade: {
+                console.log( 'WebSocket Action Move Made', action.actionName );
                 
                 // This action is only sent to server.
                 break;
@@ -217,10 +222,8 @@ export class ChessService extends AbstractGameService
                 break;
             }
             case ActionNames.chessOpponentMove: {
-                //alert( 'WebSocket Action Opponent Move' );
-                
                 const action = JSON.parse( message.data ) as ChessOpponentMoveActionDto;
-                //console.log( 'WebSocket Action Opponent Move ' + new Date().toLocaleTimeString() );
+                console.log( 'WebSocket Action Opponent Move ', action );
                 
                 this.doMove( action.move );
                 
@@ -323,36 +326,20 @@ export class ChessService extends AbstractGameService
     
     doMove( move: ChessMoveDto ): void
     {
-        console.log( 'Chess Moee', move );
+        //console.log( 'Chess Moee', move );
         this.chesUserMoves.push( { ...move, nextMoves: [] } ); // server does not need to know nextMoves.
         const prevGame = this.appState.boardGame.getValue();
         this.gameHistory.push( prevGame );
         
-        /*
         const gameClone = JSON.parse( JSON.stringify( prevGame ) ) as BoardGameDto;
-        gameClone.validMoves = move.nextMoves;
-        const isWhite = move.color === PlayerColor.white;
-        const from = isWhite ? 25 - move.from : move.from;
-        const to = isWhite ? 25 - move.to : move.to;
-        
-        // remove moved checker
-        const checker = <CheckerDto>(
-            gameClone.points[from].checkers.find((c) => c.color === move.color)
-        );
-        const index = gameClone.points[from].checkers.indexOf( checker );
-        gameClone.points[from].checkers.splice( index, 1 );
-        
-        //push checker to new point
-        gameClone.points[to].checkers.push( checker );
+        gameClone.currentPlayer = move.color;
         this.appState.boardGame.setValue( gameClone );
         
-        if ( move.animate ) {
-            const clone = [...this.appState.moveAnimations.getValue()];
-            // console.log('pushing next animation');
-            clone.push( move );
-            this.appState.moveAnimations.setValue( clone );
+        const myColor = this.appState.myColor.getValue();
+        const oponent = myColor === PlayerColor.black ? PlayerColor.white : PlayerColor.black
+        if ( move.color === oponent ) {
+            this.appState.chessOpponentMove.setValue( move );
         }
-        */
         
         //console.log( 'Do Move', this.chesUserMoves );
     }
@@ -388,7 +375,8 @@ export class ChessService extends AbstractGameService
         // removing next moves to decrease bytes.
         const opponentMovePieceAction: ChessOpponentMoveActionDto = {
             actionName: ActionNames.chessOpponentMove,
-            move: { ...move, nextMoves: [], animate: true }
+            move: { ...move, nextMoves: [], animate: true },
+            myColor: this.appState.myColor.getValue()
         };
         this.sendMessage( JSON.stringify( opponentMovePieceAction ) );
     }

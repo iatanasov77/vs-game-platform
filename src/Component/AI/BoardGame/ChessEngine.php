@@ -2,13 +2,13 @@
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+
+use Amp\DeferredCancellation;
+
 use App\Component\Type\PlayerColor;
-use App\Component\Type\ChessPieceType;
 use App\Component\Rules\BoardGame\Game;
 use App\Component\Rules\BoardGame\ChessSide;
-use App\Component\Rules\BoardGame\ChessSquare;
 use App\Component\Rules\BoardGame\ChessMove;
-use App\Component\Manager\AbstractGameManager;
 
 class ChessEngine extends Engine
 {
@@ -24,13 +24,19 @@ class ChessEngine extends Engine
     /** @var int */
     private $TotalMovesAnalyzed;	// Total no. of moves analzyed by the player
     
+    /** @var DeferredCancellation */
+    private $moveTimeOutMoves;
+    
+    /** @var DeferredCancellation */
+    private $moveTimeOutDepth;
+    
     protected function _GenerateMovesSequence( Collection &$sequences, Collection &$moves, int $diceIndex, Game $game ): void
     {
         
     }
     
     // Get the best move available to the player
-    public function GetFixBestMove(): ChessMove
+    public function GetFixBestMove(): ?ChessMove
     {
         //TimeSpan ElapsedTime = new TimeSpan(1);		// Total elpased time
         $BestMove = null;		// The best move for the current position
@@ -65,7 +71,7 @@ class ChessEngine extends Engine
     }
     
     // Get the best move available to the player
-    public function GetBestMove(): ChessMove
+    public function GetBestMove(): ?ChessMove
     {
         // TimeSpan ElapsedTime = new TimeSpan(1);		// Total elpased time
         $BestMove = null;		// The best move for the current position
@@ -79,8 +85,7 @@ class ChessEngine extends Engine
         // So, it means that when we have less moves, we can search more deeply and which means
         // better chess game.
         
-        //DateTime ThinkStartTime = DateTime.Now;
-        //int MoveCounter;
+        $ThinkStartTime = new \DateTime( 'now' );
         //Random RandGenerator= new Random();
         
         // Game is near the end, or the current player is under check
@@ -101,8 +106,10 @@ class ChessEngine extends Engine
             
         $this->TotalMovesAnalyzed = 0;		// Reset the total moves anazlye counter
         
-        $depth = 10;
-        //for ( depth = 1;; depth++ ) {	// Keep doing a depth search
+        //$depth = 10;
+        for ( $depth = 1;; $depth++ ) {	// Keep doing a depth search
+            $this->logger->log( "Depth: {$depth}", 'EnginMoves' );
+            
             $alpha = self::MIN_SCORE;	// The famous Alpha & Beta are set to their initial values
             $beta  = self::MAX_SCORE;	// at the start of each increasing search depth iteration
             $MoveCounter = 0;	// Initialize the move counter variable
@@ -126,22 +133,21 @@ class ChessEngine extends Engine
                     $alpha = $move->Score;
                 }
                 
-                //m_Rules.ChessGame.NotifyComputerThinking(depth, MoveCounter, TotalMoves.Count, $this->TotalMovesAnalyzed, BestMove );
-                /*
-                // Check if the user time has expired
-                ElapsedTime=DateTime.Now - ThinkStartTime;
-                if ( ElapsedTime.Ticks > (m_MaxThinkTime.Ticks) ) {	// More than 75 percent time is available
-                    break;							// Force break the loop
+                $this->moveTimeOutMoves = new DeferredCancellation();
+                $this->TimeTickMoves( $ThinkStartTime );
+                if ( $this->moveTimeOutMoves->isCancelled() ) {
+                    $this->logger->log( "Total Moves Loop Breaked !!!", 'EnginMoves' );
+                    break 1; // Force break the loop
                 }
-                */
             }
-            /*
-            // Check if the user time has expired
-            ElapsedTime=DateTime.Now - ThinkStartTime;
-            if ( ElapsedTime.Ticks > (m_MaxThinkTime.Ticks*0.25))	// More than 75 percent time is available
-                break;							// Force break the loop
-            */
-        //}
+            
+            $this->moveTimeOutDepth = new DeferredCancellation();
+            $this->TimeTickDepth( $ThinkStartTime );
+            if ( $this->moveTimeOutDepth->isCancelled() ) {
+                $this->logger->log( "Depth Loop Breaked !!!", 'EnginMoves' );
+                break; // Force break the loop
+            }
+        }
         
             
         if ( $BestMove ) {
@@ -259,5 +265,27 @@ class ChessEngine extends Engine
         }
         
         return $alpha;
+    }
+    
+    private function TimeTickMoves( \DateTime $ThinkStartTime ): void
+    {
+        if ( ! $this->moveTimeOutMoves->isCancelled() ) {
+            $ellapsed = ( new \DateTime( 'now' ) )->getTimestamp() - $ThinkStartTime->getTimestamp();
+            //$this->logger->log( "Time Tick Moves Elapsed: {$ellapsed}", 'EnginMoves' );
+            if ( $ellapsed > 4 ) {
+                $this->moveTimeOutMoves->cancel();
+            }
+        }
+    }
+    
+    private function TimeTickDepth( \DateTime $ThinkStartTime ): void
+    {
+        if ( ! $this->moveTimeOutDepth->isCancelled() ) {
+            $ellapsed = ( new \DateTime( 'now' ) )->getTimestamp() - $ThinkStartTime->getTimestamp();
+            //$this->logger->log( "Time Tick Depth Elapsed: {$ellapsed}", 'EnginMoves' );
+            if ( $ellapsed > ( 4 * 0.25 ) ) {
+                $this->moveTimeOutDepth->cancel();
+            }
+        }
     }
 }

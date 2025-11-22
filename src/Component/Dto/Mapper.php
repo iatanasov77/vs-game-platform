@@ -5,12 +5,14 @@ use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 
 use App\Component\Rules\BoardGame\Game as BoardGame;
 use App\Component\Rules\BoardGame\BackgammonGame;
+use App\Component\Rules\BoardGame\ChessGame;
 use App\Component\Rules\BoardGame\Player as BoardGamePlayer;
 use App\Component\Rules\BoardGame\Point;
 use App\Component\Rules\BoardGame\Checker;
 use App\Component\Rules\BoardGame\Dice;
 use App\Component\Rules\BoardGame\Move;
 use App\Component\Rules\BoardGame\ChessMove;
+use App\Component\Rules\BoardGame\ChessSquare;
 use App\Component\Rules\BoardGame\ChessPiece;
 use App\Component\Rules\BoardGame\ChessSide;
 
@@ -44,6 +46,14 @@ final class Mapper
             $gameDto->validMoves = $game->ValidMoves->map(
                 function( $entry ) {
                     return self::MoveToDto( $entry );
+                }
+            );
+        }
+        
+        if ( $game instanceof ChessGame ) {
+            $gameDto->squares = $game->Squares->map(
+                function( $entry ) {
+                    return self::ChessSquareToDto( $entry );
                 }
             );
         }
@@ -267,6 +277,28 @@ final class Mapper
         $scoreDto->EastWestTotalInRoundPoints = $score->EastWestTotalInRoundPoints;
         
         return $scoreDto;
+    }
+    
+    public static function ChessSquareToDto( ChessSquare $square ): ChessSquareDto
+    {
+        $chessSquareDto = new ChessSquareDto();
+        $chessSquareDto->Rank = $square->Rank;
+        $chessSquareDto->File = $square->File;
+        $chessSquareDto->Piece = self::ChessPieceToDto( $square->Piece );
+        
+        return $chessSquareDto;
+    }
+    
+    public static function ChessPieceToDto( ?ChessPiece $piece ): ?ChessPieceDto
+    {
+        if ( ! $piece ) {
+            return null;
+        }
+        
+        $chessPieceDto = new ChessPieceDto();
+        $chessPieceDto->Type = $piece->Type;
+        
+        return $chessPieceDto;
     }
     
     public static function ChessMoveToDto( ChessMove $move ): ChessMoveDto

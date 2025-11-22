@@ -100,6 +100,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
     gameString$: Observable<string>;
     
     gameSubs: Subscription;
+    oponentMoveSubs: Subscription;
     
     boardWidth = 535;
     width = 535;
@@ -163,6 +164,8 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
         
         this.user$ = this.appStateService.user.observe();
         this.gameString$ = this.appStateService.gameString.observe();
+        
+        this.oponentMoveSubs = this.appStateService.chessOpponentMove.observe().subscribe( this.oponentMove.bind( this ) );
         
         this.initFlags();
         
@@ -306,8 +309,14 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
             
             if ( dto.isGoldGame ) this.sound.playCoin();
             
-            if ( this.appStateService.myColor.getValue() == PlayerColor.black ) {
+            const myColor = this.appStateService.myColor.getValue();
+            if ( myColor === PlayerColor.black ) {
                 this.board.reverse();
+            }
+        }
+        
+        if ( dto ) {
+            if ( dto.currentPlayer === PlayerColor.black ) {
                 this.blackDisabled = false;
             } else {
                 this.whiteDisabled = false;
@@ -485,11 +494,31 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
         this.exitGame();
     }
     
+    oponentMove( dto: ChessMoveDto ): void
+    {
+        const moveCoords = `${dto.from.toLowerCase()}${dto.to.toLowerCase()}`;
+        this.board.move( moveCoords );
+        
+        const game = this.appStateService.boardGame.getValue();
+        this.appStateService.boardGame.setValue({
+            ...game,
+            currentPlayer: game.currentPlayer === PlayerColor.black ? PlayerColor.white : PlayerColor.black
+        });
+        
+    }
+    
     /*
      * The coords parameter contains source and destination position e.g. 'd2d4'.
      */
     onMakeMove( coords: string ): void
     {
+        const myColor = this.appStateService.myColor.getValue();
+        const currentPlayer = this.gameDto ? this.gameDto.currentPlayer : null;
+        alert( `onMakeMove currentPlayer: ${currentPlayer}` );
+        if ( ! this.myTurn() ) {
+            return;
+        }
+        
         const lastMove = this.board.getMoveHistory().slice(-1)[0];
         //console.log( 'Last Move', lastMove );
         

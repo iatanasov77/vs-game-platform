@@ -147,6 +147,7 @@ final class ChessGameManager extends BoardGameManager
             
             $chessGameStartedActionDto->playerToMove = $this->Game->CurrentPlayer;
             $chessGameStartedActionDto->moveTimer = Game::ClientCountDown;
+            $chessGameStartedActionDto->game = Mapper::BoardGameToDto( $this->Game );
             
             //$this->logger->log( 'First Throw Valid Moves: ' . \print_r( $rollAction->validMoves, true ), 'FirstThrowState' );
             //$this->logger->debug( $rollAction, 'FirstRoll.txt' );
@@ -330,6 +331,9 @@ final class ChessGameManager extends BoardGameManager
             $dto->move = $moveDto;
             
             $this->Game->MakeMove( $move );
+            
+            $dto->game = Mapper::BoardGameToDto( $this->Game );
+            $dto->myColor = $this->Game->CurrentPlayer;
             
             if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {
                 $this->Game->BlackPlayer->FirstMoveMade = true;

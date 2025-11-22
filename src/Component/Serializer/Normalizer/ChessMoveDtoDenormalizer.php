@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use App\Component\Dto\ChessMoveDto;
 use App\Component\Type\PlayerColor;
 use App\Component\Type\ChessMoveType;
+use App\Component\Type\ChessPieceType;
 
 /**
  * REFERENCES
@@ -29,6 +30,13 @@ class ChessMoveDtoDenormalizer implements DenormalizerInterface, DenormalizerAwa
         $dto->color     = PlayerColor::from( $data['color'] );
         $dto->type      = ChessMoveType::from( $data['type'] );
         $dto->nextMoves = new ArrayCollection( $data['nextMoves'] );
+        
+        /*
+        $dto->piece             = ChessPieceType::from( $data['type'] );
+        $dto->capturedPiece     = ChessPieceType::from( $data['type'] );
+        $dto->promoPiece        = ChessPieceType::from( $data['type'] );
+        $dto->enpassantPiece    = ChessPieceType::from( $data['type'] );
+        */
         
         return $dto;
     }

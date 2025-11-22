@@ -336,7 +336,7 @@ final class GameService
                     case GameVariant::CHESS_CODE:
                         $color = $cookie->color;
                         if ( $gameManager && self::MyColor( $gameManager, $dbUser, $color ) ) {
-                            $gameManager->Engine = AiEngineFactory::CreateBackgammonEngine(
+                            $gameManager->Engine = AiEngineFactory::CreateAiEngine(
                                 $gameManager->GameCode,
                                 $gameManager->GameVariant,
                                 $this->logger,

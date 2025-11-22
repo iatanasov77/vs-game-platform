@@ -19,6 +19,7 @@ import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
 import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
 import Toplist from '_@/GamePlatform/Model/BoardGame/toplist';
 import DiceDto from '_@/GamePlatform/Model/BoardGame/diceDto';
+import ChessMoveDto from '_@/GamePlatform/Model/BoardGame/chessMoveDto';
 
 // CardGame Interfaces
 import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
@@ -79,6 +80,8 @@ export class AppStateService
     pile: StateObject<CardDto[]>;
     bridgeBeloteScore: StateObject<BridgeBeloteScoreDto>;
     
+    chessOpponentMove: StateObject<ChessMoveDto>;
+    
     constructor()
     {
         this.busy = new StateObject<Busy>();
@@ -135,6 +138,8 @@ export class AppStateService
         this.pile = new StateObject<CardDto[]>();
         this.pile.setValue( [] );
         this.bridgeBeloteScore = new StateObject<BridgeBeloteScoreDto>();
+        
+        this.chessOpponentMove = new StateObject<ChessMoveDto>();
     }
 
     myTurn(): boolean

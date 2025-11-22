@@ -14,12 +14,9 @@ use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use App\Component\Manager\BoardGameManager;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Rules\BoardGame\Game;
-use App\Component\Rules\BoardGame\Player;
 use App\Component\AI\EngineFactory as AiEngineFactory;
-use App\Component\Utils\Guid;
 use App\Component\Websocket\WebSocketState;
 use App\Entity\GamePlayer;
-use App\Entity\TempPlayer;
 
 // Types
 use App\Component\Type\PlayerColor;
@@ -290,30 +287,50 @@ final class BackgammonGameManager extends BoardGameManager
         //$this->logger->debug( $this->Game->Points, 'AfterDoAction.txt' );
     }
     
-    protected function CreateDbGame(): void
+    protected function NewTurn( WebsocketClientInterface $socket ): void
     {
-        $blackPlayer = $this->CreateTempPlayer( $this->Game->BlackPlayer->Id, PlayerColor::Black->value );
-        $whitePlayer = $this->CreateTempPlayer( $this->Game->WhitePlayer->Id, PlayerColor::White->value );
-        
-        $gameBase   = $this->gameRepository->findOneBy(['slug' => $this->GameCode]);
-        $game       = $this->gamePlayFactory->createNew();
-        $game->setGame( $gameBase );
-        $game->setGuid( $this->Game->Id );
-        
-        $blackPlayer->setGame( $game );
-        $whitePlayer->setGame( $game );
-        
-        $game->addGamePlayer( $blackPlayer );
-        $game->addGamePlayer( $whitePlayer );
-        
-        $em = $this->doctrine->getManager();
-        $em->persist( $game );
-        $em->flush();
+        $winner = $this->GetWinner();
+        $this->Game->SwitchPlayer();
+        if ( $winner ) {
+            $this->EndGame( $winner );
+        } else {
+            $this->SendNewRoll();
+            
+            if ( $this->AisTurn() ) {
+                $this->logger->log( "NewTurn for AI", 'SwitchPlayer' );
+                $this->EnginMoves( $socket );
+            }
+        }
     }
     
-    protected function IsAi( ?string $guid ): bool
+    protected function GetWinner(): ?PlayerColor
     {
-        return $guid == GamePlayer::AiUser;
+        $winner = null;
+        if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {
+            if (
+                $this->Game->GetHome( PlayerColor::Black )->Checkers->filter(
+                    function( $entry ) {
+                        return $entry->Color == PlayerColor::Black;
+                    }
+                )->count() == 15
+            ) {
+                $this->Game->PlayState = GameState::ended;
+                $winner = PlayerColor::Black;
+            }
+        } else {
+            if (
+                $this->Game->GetHome( PlayerColor::White )->Checkers->filter(
+                    function( $entry ) {
+                        return $entry->Color == PlayerColor::White;
+                    }
+                )->count() == 15
+            ) {
+                $this->Game->PlayState = GameState::ended;
+                $winner = PlayerColor::White;
+            }
+        }
+        
+        return $winner;
     }
     
     protected function GetHintAction(): HintMovesActionDto
@@ -445,30 +462,6 @@ final class BackgammonGameManager extends BoardGameManager
         //$this->logger->log( "Black Player Points Left: " . $this->Game->BlackPlayer->PointsLeft, 'EndGame' );
     }
     
-    protected function NewTurn( WebsocketClientInterface $socket ): void
-    {
-        $winner = $this->GetWinner();
-        $this->Game->SwitchPlayer();
-        if ( $winner ) {
-            $this->EndGame( $winner );
-        } else {
-            $this->SendNewRoll();
-            
-            if ( $this->AisTurn() ) {
-                $this->logger->log( "NewTurn for AI", 'SwitchPlayer' );
-                $this->EnginMoves( $socket );
-            }
-        }
-    }
-    
-    protected function AisTurn(): bool
-    {
-        $plyr = $this->Game->CurrentPlayer == PlayerColor::Black ? $this->Game->BlackPlayer : $this->Game->WhitePlayer;
-        $this->logger->log( "AisTurn CurrentPlayer: " . \print_r( $plyr, true ) , 'SwitchPlayer' );
-        
-        return $plyr->IsAi();
-    }
-    
     protected function EnginMoves( WebsocketClientInterface $client ): void
     {
         $promise = Async\async( function () use ( $client ) {
@@ -531,6 +524,20 @@ final class BackgammonGameManager extends BoardGameManager
         Async\await( $promise );
     }
     
+    protected function SendWinner( PlayerColor $color, ?array $newScore ): void
+    {
+        $game = Mapper::BoardGameToDto( $this->Game );
+        $game->winner = $color;
+        $gameEndedAction = new GameEndedActionDto();
+        $gameEndedAction->game = $game;
+        
+        $gameEndedAction->newScore = $newScore ? $newScore[0] : null;
+        $this->Send( $this->Clients->get( PlayerColor::Black->value ), $gameEndedAction );
+        
+        $gameEndedAction->newScore = $newScore ? $newScore[1] : null;
+        $this->Send( $this->Clients->get( PlayerColor::White->value ), $gameEndedAction );
+    }
+    
     protected function debugGetCheckerFromPoint()
     {
         //$this->logger->debug( $this->Game->Points, 'GamePoints.txt' );
@@ -541,40 +548,5 @@ final class BackgammonGameManager extends BoardGameManager
             }
             )->first();
             //$this->logger->debug( $checkerFromPoint, 'CheckerFromPoint.txt' );
-    }
-    
-    private function CreateTempPlayer( int $playerId, int $playerPositionId ): TempPlayer
-    {
-        $player = $this->playersRepository->find( $playerId );
-        
-        if ( $this->Game->IsGoldGame && $player->getGold() < self::firstBet ) {
-            throw new \RuntimeException( "Black player dont have enough gold" ); // Should be guarder earlier
-        }
-        
-        if ( $this->Game->IsGoldGame && ! $this->IsAi( $player->getGuid() ) ) {
-            $player->setGold( self::firstBet );
-        }
-        
-        $tempPlayer = $this->tempPlayersFactory->createNew();
-        $tempPlayer->setGuid( Guid::NewGuid() );
-        $tempPlayer->setPlayer( $player );
-        $tempPlayer->setColor( $playerPositionId );
-        $tempPlayer->setName( $player->getName() );
-        $player->addGamePlayer( $tempPlayer );
-        
-        return $tempPlayer;
-    }
-    
-    private function InitializePlayer( GamePlayer $dbUser, bool $aiUser, Player &$player ): void
-    {
-        $player->Id = $dbUser != null ? $dbUser->getId() : 0;
-        $player->Guid = $dbUser != null ? $dbUser->getGuid() : Guid::Empty();
-        $player->Name = $dbUser != null ? $dbUser->getName() : "Guest";
-        $player->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $this->getPlayerPhotoUrl( $dbUser ) : "";
-        $player->Elo = $dbUser != null ? $dbUser->getElo() : 0;
-        
-        if ( $this->Game->IsGoldGame ) {
-            $player->Gold = $dbUser != null ? $dbUser->getGold() - self::firstBet : 0;
-        }
     }
 }

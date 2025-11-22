@@ -13,6 +13,9 @@ class BoardGameDto extends GameDto
     /** @var Collection | PointDto[] */
     public Collection $points;
     
+    /** @var Collection | ChessSquareDto[] */
+    public Collection $squares;
+    
     /** @var Collection | MoveDto[] */
     public Collection  $validMoves;
     

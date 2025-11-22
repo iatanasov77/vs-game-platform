@@ -1,3 +1,16 @@
+0.18.0	|	Release date: **22.11.2025**
+============================================
+* New Features:
+  - Create Playing a New Card Game in Same Gession after a Game is Ended.
+  - Prepare Chess Game Manager.
+  - Refactoring of Backgammon Game Rules.
+  - Start the Chess Game.
+  - Sending and Recieving Chess Moves From Websocket.
+  - Update Chess Game Rules and AI Engine.
+  - Update Chess Move Action From Oponent.
+  - Switch Game Players Chess Game Move.
+
+
 0.17.3	|	Release date: **14.11.2025**
 ============================================
 * Bug-Fixes and Improvements:

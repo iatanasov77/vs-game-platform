@@ -22,6 +22,7 @@ import GameCookieDto from '_@/GamePlatform/Model/Core/gameCookieDto';
 // Board Interfaces
 import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
 import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
+import ChessMoveDto from '_@/GamePlatform/Model/BoardGame/chessMoveDto';
 import DiceDto from '_@/GamePlatform/Model/BoardGame/diceDto';
 
 // Action Interfaces
@@ -63,6 +64,7 @@ export abstract class AbstractGameService
     url: string = '';
     
     userMoves: MoveDto[] = [];
+    chesUserMoves: ChessMoveDto[] = [];
     gameHistory: GameDto[] = [];
     dicesHistory: DiceDto[][] = [];
     connectTime = new Date();

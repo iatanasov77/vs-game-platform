@@ -294,7 +294,7 @@ class BridgeBeloteEngine extends Engine
             $bidPoints += 5;
         }
         
-        return $bidPoints;
+        return \intval( $bidPoints );
     }
     
     private static function CalculateNoTrumpsBidPoints( Collection $cards ): int
@@ -317,7 +317,7 @@ class BridgeBeloteEngine extends Engine
             }
         }
         
-        return $bidPoints;
+        return \intval( $bidPoints );
     }
     
     private static function CalculateTrumpBidPoints( Collection $cards, CardSuit $trumpSuit, int $announcePoints ): int
@@ -356,6 +356,6 @@ class BridgeBeloteEngine extends Engine
             }
         }
         
-        return $bidPoints;
+        return \intval( $bidPoints );
     }
 }

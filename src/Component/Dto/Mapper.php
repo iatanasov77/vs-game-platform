@@ -3,16 +3,20 @@
 use Doctrine\Common\Collections\ArrayCollection;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 
-use App\Component\Type\PlayerColor;
 use App\Component\Rules\BoardGame\Game as BoardGame;
+use App\Component\Rules\BoardGame\BackgammonGame;
+use App\Component\Rules\BoardGame\ChessGame;
 use App\Component\Rules\BoardGame\Player as BoardGamePlayer;
 use App\Component\Rules\BoardGame\Point;
 use App\Component\Rules\BoardGame\Checker;
 use App\Component\Rules\BoardGame\Dice;
 use App\Component\Rules\BoardGame\Move;
+use App\Component\Rules\BoardGame\ChessMove;
+use App\Component\Rules\BoardGame\ChessSquare;
+use App\Component\Rules\BoardGame\ChessPiece;
+use App\Component\Rules\BoardGame\ChessSide;
 
 use App\Component\Rules\CardGame\Game as CardGame;
-use App\Component\Rules\CardGame\Player as CardGamePlayer;
 use App\Component\Rules\CardGame\Card;
 use App\Component\Rules\CardGame\Bid;
 use App\Component\Rules\CardGame\Announce;
@@ -32,17 +36,27 @@ final class Mapper
         $gameDto->currentPlayer = $game->CurrentPlayer;
         $gameDto->playState = $game->PlayState;
         
-        $gameDto->points = $game->Points->map(
-            function( $entry ) {
-                return self::PointToDto( $entry );
-            }
-        );
+        if ( $game instanceof BackgammonGame ) {
+            $gameDto->points = $game->Points->map(
+                function( $entry ) {
+                    return self::PointToDto( $entry );
+                }
+            );
+            
+            $gameDto->validMoves = $game->ValidMoves->map(
+                function( $entry ) {
+                    return self::MoveToDto( $entry );
+                }
+            );
+        }
         
-        $gameDto->validMoves = $game->ValidMoves->map(
-            function( $entry ) {
-                return self::MoveToDto( $entry );
-            }
-        );
+        if ( $game instanceof ChessGame ) {
+            $gameDto->squares = $game->Squares->map(
+                function( $entry ) {
+                    return self::ChessSquareToDto( $entry );
+                }
+            );
+        }
         
         $gameDto->thinkTime = BoardGame::ClientCountDown - (
             ( new \DateTime( 'now' ) )->getTimestamp() - $game->ThinkStart->getTimestamp()
@@ -263,5 +277,71 @@ final class Mapper
         $scoreDto->EastWestTotalInRoundPoints = $score->EastWestTotalInRoundPoints;
         
         return $scoreDto;
+    }
+    
+    public static function ChessSquareToDto( ChessSquare $square ): ChessSquareDto
+    {
+        $chessSquareDto = new ChessSquareDto();
+        $chessSquareDto->Rank = $square->Rank;
+        $chessSquareDto->File = $square->File;
+        $chessSquareDto->Piece = self::ChessPieceToDto( $square->Piece );
+        
+        return $chessSquareDto;
+    }
+    
+    public static function ChessPieceToDto( ?ChessPiece $piece ): ?ChessPieceDto
+    {
+        if ( ! $piece ) {
+            return null;
+        }
+        
+        $chessPieceDto = new ChessPieceDto();
+        $chessPieceDto->Type = $piece->Type;
+        
+        return $chessPieceDto;
+    }
+    
+    public static function ChessMoveToDto( ChessMove $move ): ChessMoveDto
+    {
+        $moveDto = new ChessMoveDto();
+        $moveDto->color = $move->Color;
+        $moveDto->type = $move->Type;
+        $moveDto->from = "{$move->From}";
+        $moveDto->to = "{$move->To}";
+        
+        /*
+        $moveDto->piece = $move->Piece->Type;
+        $moveDto->capturedPiece =  $move->CapturedPiece ? $move->CapturedPiece->Type : null;
+        $moveDto->promoPiece =  $move->PromoPiece ?$move->PromoPiece->Type : null;
+        $moveDto->enpassantPiece =  $move->EnPassantPiece ? $move->EnPassantPiece->Type : null;
+        */
+        
+        // recursing up in move tree
+        $moveDto->nextMoves = $move->NextMoves->map(
+            function( $entry ) {
+                return self::ChessMoveToDto( $entry );
+            }
+        ); // ->toArray();
+        
+        return $moveDto;
+    }
+    
+    public static function ChessMoveToChessMove( ChessMoveDto $dto, BoardGame $game ): ChessMove
+    {
+        $move   = new ChessMove();
+        $move->Color = $dto->color;
+        $move->Type = $dto->type;
+        
+        $move->From = $game->Squares[$dto->from];
+        $move->To = $game->Squares[$dto->to];
+
+        /*
+        $move->Piece = $dto->piece ? new ChessPiece( $dto->piece, new ChessSide( $dto->color ) ) : null;
+        $move->CapturedPiece = $dto->capturedPiece ? new ChessPiece( $dto->capturedPiece, new ChessSide( $dto->color ) ) : null;
+        $move->PromoPiece = $dto->promoPiece ? new ChessPiece( $dto->promoPiece, new ChessSide( $dto->color ) ) : null;
+        $move->EnPassantPiece = $dto->enpassantPiece ? new ChessPiece( $dto->enpassantPiece, new ChessSide( $dto->color ) ) : null;
+        */
+        
+        return $move;
     }
 }

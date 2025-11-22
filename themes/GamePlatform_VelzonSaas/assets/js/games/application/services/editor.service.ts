@@ -311,6 +311,7 @@ export class EditorService
                     whiteNumber: 0
                 }
             ],
+            squares: [],
             validMoves: [],
             thinkTime: 39.9999889,
             goldMultiplier: 1,

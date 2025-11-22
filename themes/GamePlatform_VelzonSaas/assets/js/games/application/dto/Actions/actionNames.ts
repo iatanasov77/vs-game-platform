@@ -26,6 +26,12 @@
     roundEnded,
     startNewRound,
     announceMade,
+    startNewGame,
+    
+    // Chess Game Actions
+    chessGameStarted,
+    chessMoveMade,
+    chessOpponentMove,
     
     serverWasTerminated
 }

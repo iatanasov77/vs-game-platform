@@ -7,9 +7,12 @@ use App\Component\Rules\GameInterface;
 use App\Component\GameLogger;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerColor;
+use App\Component\Rules\BoardGame\Helper as GameHelper;
 
 abstract class Game implements GameInterface
 {
+    use GameHelper;
+    
     /** @var int */
     const ClientCountDown = 40;
     
@@ -31,15 +34,6 @@ abstract class Game implements GameInterface
     /** @var PlayerColor */
     public $CurrentPlayer;
     
-    /** @var Collection | Point[] */
-    public $Points;
-    
-    /** @var Collection | Dice[] */
-    public $Roll;
-    
-    /** @var Collection | Move[] */
-    public $ValidMoves;
-    
     /** @var GameState */
     public $PlayState = GameState::firstThrow;
     
@@ -48,9 +42,6 @@ abstract class Game implements GameInterface
     
     /** @var \DateTime */
     public $ThinkStart;
-    
-    /** @var Collection | Point[] */
-    public $Bars;
     
     /** @var int */
     public $GoldMultiplier;
@@ -72,32 +63,6 @@ abstract class Game implements GameInterface
     
     /** @var GameLogger */
     protected  $logger;
-    
-    public function __set( $name, $value )
-    {
-        switch ( $name ) {
-            case 'Points':
-                $this->Points = $value;
-                
-                $trace = debug_backtrace();
-                //$this->logger->log( "Points Changed in File: {$trace[0]['file']} on line {$trace[0]['line']}", 'GenerateMoves' );
-                
-                break;
-            default:
-                throw new \RuntimeException( 'Undefined Property of Game Rules !!!' );
-        }
-    }
-    
-    public function __get( $name )
-    {
-        switch ( $name ) {
-            case 'Points':
-                return $this->Points;
-                break;
-            default:
-                throw new \RuntimeException( 'Undefined Property of Game Rules !!!' );
-        }
-    }
     
     public function __construct( GameLogger $logger )
     {
@@ -130,10 +95,6 @@ abstract class Game implements GameInterface
     abstract public function SetStartPosition(): void;
     
     abstract public function GenerateMoves(): array;
-    
-    abstract public function MakeMove( Move &$move ): ?Checker;
-    
-    abstract public function UndoMove( Move &$move, ?Checker $hitChecker ): void;
     
     public function SwitchPlayer(): void
     {
@@ -173,55 +134,6 @@ abstract class Game implements GameInterface
         );
         
         return $colorCheckers->isEmpty(); // all have higher number than 18
-    }
-    
-    abstract public function AddCheckers( int $count, PlayerColor $color, int $point ): void;
-    
-    public function SetFirstRollWinner(): void
-    {
-        // $this->logger->log( 'Existing Rolls: ' . \print_r( $this->Roll, true ), 'FirstThrowState' );
-        
-        if ( $this->PlayState == GameState::firstThrow ) {
-            if ( $this->Roll[0]->Value > $this->Roll[1]->Value ) {
-                $this->CurrentPlayer = PlayerColor::Black;
-                $this->BlackStarts++;
-            } else if ( $this->Roll[0]->Value < $this->Roll[1]->Value ) {
-                $this->CurrentPlayer = PlayerColor::White;
-                $this->WhiteStarts++;
-            }
-            
-            if ( $this->Roll[0]->Value != $this->Roll[1]->Value ) {
-                $this->PlayState = GameState::playing;
-            }
-        }
-    }
-    
-    public function FakeRoll( int $v1, int $v2 ): void
-    {
-        $this->Roll = new ArrayCollection( Dice::GetDices( $v1, $v2 ) );
-        $this->SetFirstRollWinner();
-    }
-    
-    public function RollDice(): void
-    {
-        $this->Roll = new ArrayCollection( Dice::Roll() );
-        $this->SetFirstRollWinner();
-        
-        // $this->logger->log( 'CurrentPlayer: ' . $this->CurrentPlayer->value, 'FirstThrowState' );
-        $this->ClearMoves( $this->ValidMoves );
-        $this->_GenerateMoves( $this->ValidMoves );
-        
-        Game::$DebugValidMoves++;
-        //$this->logger->debug( $this->ValidMoves, 'ValidMoves_' . Game::$DebugValidMoves .  '.txt' );
-    }
-    
-    public function GetHome( PlayerColor $color ): Point
-    {
-        return $this->Points->filter(
-            function( $entry ) use ( $color ) {
-                return $entry->GetNumber( $color ) == 25;
-            }
-        )->first();
     }
     
     public function PlayersPassed(): bool
@@ -274,76 +186,6 @@ abstract class Game implements GameInterface
             }
         }
         $moves->clear();
-    }
-    
-    protected function AtHomeAndOtherAtBar(): void
-    {
-        $this->AddCheckers( 3, PlayerColor::Black, 21 );
-        $this->AddCheckers( 2, PlayerColor::Black, 22 );
-        $this->AddCheckers( 5, PlayerColor::Black, 23 );
-        $this->AddCheckers( 3, PlayerColor::Black, 24 );
-        $this->AddCheckers( 2, PlayerColor::Black, 25 );
-        
-        $this->AddCheckers( 2, PlayerColor::White, 19 );
-        $this->AddCheckers( 2, PlayerColor::White, 20 );
-        $this->AddCheckers( 3, PlayerColor::White, 21 );
-        $this->AddCheckers( 2, PlayerColor::White, 22 );
-        $this->AddCheckers( 2, PlayerColor::White, 23 );
-        $this->AddCheckers( 1, PlayerColor::White, 24 );
-        $this->AddCheckers( 2, PlayerColor::White, 0 );
-        
-    }
-    
-    protected function OneMoveToVictory(): void
-    {
-        //Only one move to victory
-        $this->AddCheckers( 14, PlayerColor::Black, 25 );
-        $this->AddCheckers( 14, PlayerColor::White, 25 );
-        
-        $this->AddCheckers( 1, PlayerColor::Black, 24 );
-        $this->AddCheckers( 1, PlayerColor::White, 24 );
-    }
-    
-    protected function DebugBlocked(): void
-    {
-        $this->AddCheckers( 3, PlayerColor::Black, 20 );
-        $this->AddCheckers( 3, PlayerColor::White, 20 );
-        
-        $this->AddCheckers( 3, PlayerColor::Black, 21 );
-        $this->AddCheckers( 3, PlayerColor::White, 21 );
-        
-        $this->AddCheckers( 3, PlayerColor::Black, 22 );
-        $this->AddCheckers( 3, PlayerColor::White, 22 );
-        
-        $this->AddCheckers( 3, PlayerColor::Black, 23 );
-        $this->AddCheckers( 3, PlayerColor::White, 23 );
-        
-        $this->AddCheckers( 2, PlayerColor::Black, 24 );
-        $this->AddCheckers( 2, PlayerColor::White, 24 );
-        
-        $this->AddCheckers( 1, PlayerColor::Black, 0 );
-        $this->AddCheckers( 1, PlayerColor::White, 0 );
-    }
-    
-    protected function DebugBearingOff(): void
-    {
-        $this->AddCheckers( 3, PlayerColor::Black, 20 );
-        $this->AddCheckers( 3, PlayerColor::White, 20 );
-        
-        $this->AddCheckers( 3, PlayerColor::Black, 21 );
-        $this->AddCheckers( 3, PlayerColor::White, 21 );
-        
-        $this->AddCheckers( 3, PlayerColor::Black, 22 );
-        $this->AddCheckers( 3, PlayerColor::White, 22 );
-        
-        $this->AddCheckers( 3, PlayerColor::Black, 23 );
-        $this->AddCheckers( 3, PlayerColor::White, 23 );
-        
-        $this->AddCheckers( 2, PlayerColor::Black, 24 );
-        $this->AddCheckers( 2, PlayerColor::White, 24 );
-        
-        $this->AddCheckers( 1, PlayerColor::Black, 19 );
-        $this->AddCheckers( 1, PlayerColor::White, 19 );
     }
     
     abstract protected function _GenerateMoves( Collection &$moves ): void;

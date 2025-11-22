@@ -12,10 +12,12 @@ use App\Component\Type\PlayerPosition;
 use App\Component\Rules\BoardGame\BackgammonNormalGame;
 use App\Component\Rules\BoardGame\BackgammonTapaGame;
 use App\Component\Rules\BoardGame\BackgammonGulBaraGame;
+use App\Component\Rules\BoardGame\ChessGame;
 use App\Component\Rules\CardGame\BridgeBeloteGame;
 
 use App\Component\Rules\BoardGame\Player as BoardGamePlayer;
 use App\Component\Rules\BoardGame\Point;
+use App\Component\Rules\BoardGame\ChessSquare;
 
 use App\Component\Rules\CardGame\Player as CardGamePlayer;
 use App\Component\Rules\CardGame\Deck;
@@ -39,6 +41,9 @@ final class GameFactory
         switch ( $gameCode ) {
             case GameVariant::BACKGAMMON_CODE:
                 return $this->createBackgammonGame( $gameVariant, $ForGold );
+                break;
+            case GameVariant::CHESS_CODE:
+                return $this->createChessGame( $ForGold );
                 break;
             case GameVariant::BRIDGE_BELOTE_CODE:
                 return $this->createBridgeBeloteGame( $ForGold );
@@ -195,6 +200,47 @@ final class GameFactory
         $game->SetStartPosition();
         
         BackgammonTapaGame::CalcPointsLeft( $game );
+        
+        return $game;
+    }
+    
+    private function createChessGame( bool $forGold ): GameInterface
+    {
+        $game = new ChessGame( $this->logger );
+        
+        $game->Id           = Guid::NewGuid();
+        //$game->ValidMoves   = new ArrayCollection();
+        
+        $game->BlackPlayer = new BoardGamePlayer();
+        $game->BlackPlayer->PlayerColor = PlayerColor::Black;
+        $game->BlackPlayer->Name = "Guest";
+        
+        $game->WhitePlayer = new BoardGamePlayer();
+        $game->WhitePlayer->PlayerColor = PlayerColor::White;
+        $game->WhitePlayer->Name = "Guest";
+        
+        $game->Created = new \DateTime( 'now' );
+        
+        $game->GoldMultiplier = 1;
+        $game->IsGoldGame = $forGold;
+        $game->LastDoubler = null;
+        
+        $game->Squares = new ArrayCollection(); // Board divided into a grid of 64 squares (eight-by-eight) of alternating color
+        for ( $row = 1; $row <= 8; $row++ ) {
+            for ( $col = 1; $col <= 8; $col++ ) {
+                $square = new ChessSquare();
+                $square->Rank = $row;
+                $square->File = chr( $col + 64 );
+                
+                $game->Squares->set( "{$square->File}{$square->Rank}", $square ); // Initialize and add the new chess cell
+            }
+        }
+        
+        $game->MovesHistory = new ArrayCollection();
+        
+        $game->SetStartPosition();
+        
+        //BackgammonNormalGame::CalcPointsLeft( $game );
         
         return $game;
     }

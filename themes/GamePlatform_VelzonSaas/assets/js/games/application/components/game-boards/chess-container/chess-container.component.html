@@ -22,7 +22,7 @@
     </div>
     
     <div
-        *ngIf="(gameDto$ | async)?.isGoldGame && ! lobbyButtonsVisible && game !== BACKGAMMON_GULBARA"
+        *ngIf="(gameDto$ | async)?.isGoldGame && ! lobbyButtonsVisible"
         class="players"
         [ngStyle]="{ height: height + 'px' }"
         [ngClass]="{ rotated: rotated, flipped: flipped }"
@@ -50,9 +50,12 @@
     </div>
     
     <ngx-chess-board #board
-        [size]="width"
+        [size]="boardWidth"
         [lightTileColor]="theme.lightTileColor"
         [darkTileColor]="theme.darkTileColor"
+        [lightDisabled]="whiteDisabled"
+        [darkDisabled]="blackDisabled"
+        [showLegalMoves]="showLegalMoves"
         
         (moveChange)="onMakeMove( $event )"
     ></ngx-chess-board>

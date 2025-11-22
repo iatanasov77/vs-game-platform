@@ -56,6 +56,9 @@ declare module '_@/GamePlatform/Model/Core/gameState' {
         requestedDoubling,
         ended,
         
+        // Chess States
+        firstMove,
+        
         // Card Games States
         firstBid,
         bidding,
@@ -153,6 +156,7 @@ declare module '_@/GamePlatform/Model/BoardGame/gameDto' {
     import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
     import PointDto from '_@/GamePlatform/Model/BoardGame/pointDto';
     import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
+    import ChessSquareDto from '_@/GamePlatform/Model/BoardGame/chessSquareDto';
 
     interface BoardGameDto extends GameDto
     {
@@ -161,6 +165,7 @@ declare module '_@/GamePlatform/Model/BoardGame/gameDto' {
         currentPlayer: PlayerColor;
         winner: PlayerColor;
         points: PointDto[];
+        squares: ChessSquareDto[];
         validMoves: MoveDto[];
         thinkTime: number;
         goldMultiplier: number;
@@ -179,8 +184,8 @@ declare module '_@/GamePlatform/Model/BoardGame/moveDto' {
     {
         color: PlayerColor;
         from: number;
-        nextMoves: MoveDto[];
         to: number;
+        nextMoves: MoveDto[];
         animate: boolean;
         hint: boolean;
     }
@@ -547,4 +552,80 @@ declare module '_@/GamePlatform/Model/CardGame/announceDto' {
         Card: CardDto;
     }
     export = AnnounceDto;
+}
+
+declare module '_@/GamePlatform/Model/BoardGame/chessMoveType' {
+    enum ChessMoveType
+    {
+        NormalMove,
+        CaputreMove,
+        TowerMove,
+        PromotionMove,
+        EnPassant
+    }
+    
+    export = ChessMoveType;
+}
+
+declare module '_@/GamePlatform/Model/BoardGame/chessPieceType' {
+    enum ChessPieceType
+    {
+        King,
+        Queen,
+        Rook,
+        Bishop,
+        Knight,
+        Pawn
+    }
+    
+    export = ChessPieceType;
+}
+
+declare module '_@/GamePlatform/Model/BoardGame/chessSquareDto' {
+    import ChessPieceDto from '_@/GamePlatform/Model/BoardGame/chessPieceDto';
+    
+    interface ChessSquareDto
+    {
+        Rank: number;
+        File: string;
+        Piece?: ChessPieceDto;
+    }
+    
+    export = ChessSquareDto;
+}
+
+declare module '_@/GamePlatform/Model/BoardGame/chessPieceDto' {
+    import ChessPieceType from '_@/GamePlatform/Model/BoardGame/chessPieceType';
+    
+    interface ChessPieceDto
+    {
+        Type: ChessPieceType;
+    }
+    
+    export = ChessPieceDto;
+}
+
+declare module '_@/GamePlatform/Model/BoardGame/chessMoveDto' {
+    import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
+    import ChessMoveType from '_@/GamePlatform/Model/BoardGame/chessMoveType';
+    import ChessPieceType from '_@/GamePlatform/Model/BoardGame/chessPieceType';
+    
+    interface ChessMoveDto
+    {
+        color: PlayerColor;
+        type: ChessMoveType;
+        from: string;
+        to: string;
+        
+        piece: ChessPieceType;
+        capturedPiece?: ChessPieceType;
+        promoPiece?: ChessPieceType;
+        enpassantPiece?: ChessPieceType;
+        
+        nextMoves: ChessMoveDto[];
+        animate: boolean;
+        hint: boolean;
+    }
+    
+    export = ChessMoveDto;
 }

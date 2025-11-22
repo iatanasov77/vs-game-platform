@@ -43,7 +43,7 @@ import { StatusMessage } from '../../../utils/status-message';
 
 // Services
 import { AuthService } from '../../../services/auth.service';
-import { BackgammonService } from '../../../services/websocket/backgammon.service';
+import { ChessService } from '../../../services/websocket/chess.service';
 import { StatusMessageService } from '../../../services/status-message.service';
 import { SoundService } from '../../../services/sound.service';
 import { GamePlayService } from '../../../services/game-play.service';
@@ -53,7 +53,9 @@ import UserDto from '_@/GamePlatform/Model/Core/userDto';
 import GameState from '_@/GamePlatform/Model/Core/gameState';
 import BoardGameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
 import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
-import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
+import ChessMoveType from '_@/GamePlatform/Model/BoardGame/chessMoveType';
+import ChessPieceType from '_@/GamePlatform/Model/BoardGame/chessPieceType';
+import ChessMoveDto from '_@/GamePlatform/Model/BoardGame/chessMoveDto';
 
 import { Helper } from '../../../utils/helper';
 import { IThemes, DarkTheme } from './themes';
@@ -87,7 +89,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
     @Output() lobbyButtonsVisibleChanged    = new EventEmitter<boolean>();
     
     @ViewChild( 'messages' ) messages: ElementRef | undefined;
-    @ViewChild( 'board', {static: false} ) board: NgxChessBoardView | undefined;
+    @ViewChild( 'board', { static: false } ) board!: NgxChessBoardView;
     
     gameDto$: Observable<BoardGameDto>;
     playerColor$: Observable<PlayerColor>;
@@ -98,9 +100,11 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
     gameString$: Observable<string>;
     
     gameSubs: Subscription;
+    oponentMoveSubs: Subscription;
     
-    width = 450;
-    height = 450;
+    boardWidth = 535;
+    width = 535;
+    height = 535;
     started = false;
     messageCenter = 0;
     rotated = false;
@@ -113,6 +117,10 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
     animatingStake = false;
     playAiQuestion = false;
     introMuted = this.appStateService.user.getValue()?.muteIntro ?? false;
+    
+    whiteDisabled: boolean = true;
+    blackDisabled: boolean = true;
+    showLegalMoves: boolean = true;
     
     gameDto: BoardGameDto | undefined;
     newVisible = false;
@@ -135,7 +143,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
         @Inject( ChangeDetectorRef ) private changeDetector: ChangeDetectorRef,
         
         @Inject( AuthService ) private authService: AuthService,
-        @Inject( BackgammonService ) private wsService: BackgammonService,
+        @Inject( ChessService ) private wsService: ChessService,
         @Inject( StatusMessageService ) private statusMessageService: StatusMessageService,
         @Inject( AppStateService ) private appStateService: AppStateService,
         @Inject( QueryParamsService ) private queryParamsService: QueryParamsService,
@@ -143,7 +151,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
         @Inject( CookieService ) private cookieService: CookieService,
         @Inject( GamePlayService ) private gamePlayService: GamePlayService,
         
-        @Inject( NgxChessBoardService ) private ngxChessBoardService: NgxChessBoardService,
+        //@Inject( NgxChessBoardService ) private ngxChessBoardService: NgxChessBoardService,
     ) {
         this.gameDto$ = this.appStateService.boardGame.observe();
         this.playerColor$ = this.appStateService.myColor.observe();
@@ -156,6 +164,15 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
         
         this.user$ = this.appStateService.user.observe();
         this.gameString$ = this.appStateService.gameString.observe();
+        
+        this.oponentMoveSubs = this.appStateService.chessOpponentMove.observe().subscribe( this.oponentMove.bind( this ) );
+        
+        this.initFlags();
+        
+        if ( this.gameId.length ) {
+            //this.wsService.connect( this.gameId, this.playAiFlag, this.forGoldFlag );
+            this.playGame( this.gameId );
+        }
     }
     
     ngOnInit(): void
@@ -256,14 +273,19 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
     onResize(): void
     {
         const _innerWidth   = $( '#GameBoardContainer' ).width();
+        const _innerHeight   = $( '#GameBoardContainer' ).height();
         
         this.width = Math.min( _innerWidth, 1024 );
+        this.boardWidth = this.width * 0.75;
+        
         const span = this.messages?.nativeElement as Element;
         // console.log( span.getElementsByTagName( 'span' ) );
         const spanWidth = span.getElementsByTagName( 'span' )[0].clientWidth;
         // alert( spanWidth );
         
-        this.messageCenter = this.width / 2 - spanWidth / 2;
+        this.messageCenter = this.boardWidth / 2 - spanWidth / 2;
+        
+        this.height = this.boardWidth; // Math.min( _innerHeight - 40, this.width * 0.6 );
     }
     
     fireResize(): void
@@ -276,6 +298,8 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
     gameChanged( dto: BoardGameDto ): void
     {
         if ( ! this.started && dto ) {
+            this.appStateService.hideBusy();
+            
             if ( dto.playState === GameState.playing ) {
                 clearTimeout( this.startedHandle );
                 this.started = true;
@@ -284,6 +308,19 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
             }
             
             if ( dto.isGoldGame ) this.sound.playCoin();
+            
+            const myColor = this.appStateService.myColor.getValue();
+            if ( myColor === PlayerColor.black ) {
+                this.board.reverse();
+            }
+        }
+        
+        if ( dto ) {
+            if ( dto.currentPlayer === PlayerColor.black ) {
+                this.blackDisabled = false;
+            } else {
+                this.whiteDisabled = false;
+            }
         }
         
         this.setUndoVisible();
@@ -353,8 +390,6 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
             this.undoVisible = false;
             return;
         }
-        
-        //this.undoVisible = dices && dices.filter( ( d ) => d.used ).length > 0;
     }
     
     resignGame(): void
@@ -385,6 +420,15 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
         this.gamePlayService.exitBoardGame();
         this.playAiQuestion = false;
         this.lobbyButtonsVisibleChanged.emit( true );
+    }
+    
+    getDoubling( color: PlayerColor ): Observable<number>
+    {
+        return this.gameDto$.pipe(
+            map( ( game ) => {
+                return game?.lastDoubler === color ? game?.goldMultiplier : 0;
+            })
+        );
     }
     
     async playAi()
@@ -450,12 +494,55 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
         this.exitGame();
     }
     
+    oponentMove( dto: ChessMoveDto ): void
+    {
+        const moveCoords = `${dto.from.toLowerCase()}${dto.to.toLowerCase()}`;
+        this.board.move( moveCoords );
+        
+        const game = this.appStateService.boardGame.getValue();
+        this.appStateService.boardGame.setValue({
+            ...game,
+            currentPlayer: game.currentPlayer === PlayerColor.black ? PlayerColor.white : PlayerColor.black
+        });
+        
+    }
+    
     /*
      * The coords parameter contains source and destination position e.g. 'd2d4'.
      */
     onMakeMove( coords: string ): void
     {
-        //console.log( 'Move Coordinates', coords );
+        const myColor = this.appStateService.myColor.getValue();
+        const currentPlayer = this.gameDto ? this.gameDto.currentPlayer : null;
+        alert( `onMakeMove currentPlayer: ${currentPlayer}` );
+        if ( ! this.myTurn() ) {
+            return;
+        }
+        
+        const lastMove = this.board.getMoveHistory().slice(-1)[0];
+        //console.log( 'Last Move', lastMove );
+        
+        //var pieceType: ChessPieceType = lastMove.piece as unknown as ChessPieceType;
+        const pieceType = ChessPieceType[lastMove.piece as keyof typeof ChessPieceType];
+        const playerColor = PlayerColor[lastMove.color as keyof typeof PlayerColor];
+        
+        const move: ChessMoveDto = {
+            color: playerColor,
+            type: ChessMoveType.NormalMove,
+            from: lastMove.move.slice( 0, 2 ).toUpperCase(),
+            to: lastMove.move.slice( 2, 4 ).toUpperCase(),
+            
+            piece: pieceType,
+            
+            nextMoves: [],
+            animate: false,
+            hint: false
+        };
+        //console.log( 'ChessMoveDto', move );
+        
+        // if ( ! move.animate ) this.sound.playChecker();
+        this.wsService.doMove( move );
+        this.wsService.sendMove( move );
     }
     
     onFlipped(): void

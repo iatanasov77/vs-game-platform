@@ -56,6 +56,10 @@ services:
         tags:
             # register the normalizer with a high priority (called earlier)
             - { name: 'serializer.normalizer', priority: 500 }
+    App\Component\Serializer\Normalizer\ChessMoveDtoDenormalizer:
+        tags:
+            # register the normalizer with a high priority (called earlier)
+            - { name: 'serializer.normalizer', priority: 500 }
     
     ##############################################################
     # Websocket Servers

@@ -8,6 +8,7 @@ use App\Component\Rules\GameInterface;
 use App\Component\AI\BoardGame\BackgammonNormalEngine;
 use App\Component\AI\BoardGame\BackgammonTapaEngine;
 use App\Component\AI\BoardGame\BackgammonGulBaraEngine;
+use App\Component\AI\BoardGame\ChessEngine;
 use App\Component\AI\CardGame\BridgeBeloteEngine;
 
 final class EngineFactory
@@ -17,6 +18,9 @@ final class EngineFactory
         switch ( $gameCode ) {
             case GameVariant::BACKGAMMON_CODE:
                 $engine = self::CreateBackgammonEngine( $gameVariant, $logger, $game );
+                break;
+            case GameVariant::CHESS_CODE:
+                $engine = new ChessEngine( $logger, $game );
                 break;
             case GameVariant::BRIDGE_BELOTE_CODE:
                 $engine = new BridgeBeloteEngine( $logger, $game );

@@ -1,6 +1,7 @@
 import {
     Component,
     Input,
+    OnInit,
     OnChanges,
     SimpleChanges
 } from '@angular/core';
@@ -13,10 +14,18 @@ import {
 } from '@angular/animations';
 import { StatusMessage, MessageLevel } from '../../../utils/status-message';
 
+import { GameVariant } from "../../../game.variant";
+
 import cssString from './messages.component.scss';
 import templateString from './messages.component.html';
 
 declare var $: any;
+
+declare global {
+    interface Window {
+        gamePlatformSettings: any;
+    }
+}
 
 @Component({
     selector: 'app-messages',
@@ -60,6 +69,28 @@ declare var $: any;
                 { params: { shown: 0 } }
             ),
             state(
+                'chess-board-shown',
+                style({
+                    left: '{{ shown }}px',
+                    transform: 'scale(1)',
+                    opacity: 1,
+                    top: '-30px',
+                    color: 'black'
+                }),
+                { params: { shown: 0 } }
+            ),
+            state(
+                'backgammon-board-shown',
+                style({
+                    left: '{{ shown }}px',
+                    transform: 'scale(1)',
+                    opacity: 1,
+                    top: '-10px',
+                    color: 'black'
+                }),
+                { params: { shown: 0 } }
+            ),
+            state(
                 'shown-flipped',
                 style({
                     left: '{{ shown }}px',
@@ -86,7 +117,7 @@ declare var $: any;
         ])
     ]
 })
-export class MessagesComponent implements OnChanges
+export class MessagesComponent implements OnInit, OnChanges
 {
     @Input() message: StatusMessage | null = StatusMessage.getDefault();
     // changing the coordinates will affect all animations coordinates.
@@ -96,6 +127,13 @@ export class MessagesComponent implements OnChanges
     
     state = 'hidden';
     animating = false;
+    
+    gameCode?:GameVariant;
+    
+    ngOnInit(): void
+    {
+        this.gameCode = window.gamePlatformSettings.gameSlug;
+    }
     
     ngOnChanges( changes: SimpleChanges ): void
     {
@@ -120,11 +158,25 @@ export class MessagesComponent implements OnChanges
             this.state = 'initial';
             setTimeout( () => {
                 // My Workaround
-                if ( $( 'canvas.card-table' ).hasClass( 'flipped' ) || $( 'canvas.card-table' ).hasClass( 'rotated' ) ) {
-                    this.state = 'shown-flipped';
-                } else {
-                    this.state = 'card-table-shown';
+                switch ( this.gameCode ) {
+                    case GameVariant.BRIDGE_BELOTE_CODE:
+                        if ( $( 'canvas.card-table' ).hasClass( 'flipped' ) || $( 'canvas.card-table' ).hasClass( 'rotated' ) ) {
+                            this.state = 'shown-flipped';
+                        } else {
+                            this.state = 'card-table-shown';
+                        }
+                        break;
+                    case GameVariant.CHESS_CODE:
+                        this.state = 'chess-board-shown';
+                        $( 'div.busy-container' ).css( {"top": "-20px"} );
+                        break;
+                    case GameVariant.BACKGAMMON_CODE:
+                        this.state = 'backgammon-board-shown';
+                        break;
+                    default:
+                        this.state = 'shown';
                 }
+                
                 this.animating = false;
             }, 100 );
         }, 500 );

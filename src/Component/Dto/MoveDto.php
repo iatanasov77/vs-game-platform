@@ -7,8 +7,8 @@ class MoveDto
 {
     public PlayerColor $color;
     public int $from;
-    public Collection $nextMoves; // MoveDto[]
     public int $to;
+    public Collection $nextMoves; // MoveDto[]
     public bool $animate    = false;
     public bool $hint       = false;
 }

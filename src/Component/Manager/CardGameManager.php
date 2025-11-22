@@ -150,6 +150,31 @@ abstract class CardGameManager extends AbstractGameManager
         $this->StartGame();
     }
     
+    public function StartNewGame(): void
+    {
+        $this->Game->Deck = new Deck();
+        $this->Game->Pile = new ArrayCollection();
+        $this->Game->SouthNorthTricks = new ArrayCollection();
+        $this->Game->EastWestTricks = new ArrayCollection();
+        
+        $this->Game->AvailableBids = new ArrayCollection();
+        $this->Game->ValidCards = new ArrayCollection();
+        $this->Game->Bids = new ArrayCollection();
+        $this->Game->announces = new ArrayCollection();
+        
+        $this->Game->roundNumber = 1;
+        $this->Game->trickNumber = 1;
+        $this->Game->southNorthPoints = 0;
+        $this->Game->eastWestPoints = 0;
+        $this->Game->hangingPoints = 0;
+        
+        $this->Game->firstInRound = PlayerPosition::South;
+        $this->Game->CurrentPlayer = $this->Game->firstInRound;
+        $this->Game->PlayState = GameState::firstBid;
+        
+        $this->StartGame();
+    }
+    
     abstract protected function DoBid( BidMadeActionDto $action ): void;
     
     abstract protected function PlayCard( PlayCardActionDto $action ): void;

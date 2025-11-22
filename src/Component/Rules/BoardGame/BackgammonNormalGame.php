@@ -3,17 +3,11 @@
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-use App\Component\Utils\Guid;
-use App\Component\Type\GameState;
 use App\Component\Type\PlayerColor;
-use App\Entity\GamePlayer;
-use App\Component\Rules\BoardGame\Helper as GameHelper;
 use App\Component\Manager\AbstractGameManager;
 
-class BackgammonNormalGame extends Game
+class BackgammonNormalGame extends BackgammonGame
 {   
-    use GameHelper;
-    
     public function SetStartPosition(): void
     {
         foreach ( $this->Points as $point ) {
@@ -40,53 +34,6 @@ class BackgammonNormalGame extends Game
         // AtHomeAndOtherAtBar2();
         // Test();
         // LegalMove();
-    }
-    
-    public function AddCheckers( int $count, PlayerColor $color, int $point ): void
-    {
-        $checker        = new Checker();
-        $checker->Color = $color;
-        
-        for ( $i = 0; $i < $count; $i++ ) {
-            $this->Points->filter(
-                function( $entry ) use ( $color, $point ) {
-                    return $entry->GetNumber( $color ) == $point;
-                }
-            )->first()->Checkers[]  = $checker;
-        }
-        
-        //$this->logger->debug( $this->Points, 'PointsAddCheckers.txt' );
-    }
-    
-    public function GenerateMoves(): array
-    {
-        $moves = new ArrayCollection();
-        $this->_GenerateMoves( $moves );
-        
-        // Making sure both dice are played
-        if ( $moves->NextMoves->count() ) {
-            $moves = $moves->filter(
-                function( $entry ) {
-                    return $entry->NextMoves->count() > 0;
-                }
-            )->toArray();
-        } else if ( $moves->count() ) {
-            // All moves have zero next move in this block
-            // Only one dice can be use and it must be the one with highest value
-            
-            $currentPlayer  = $this->CurrentPlayer;
-            $this->logger->log( 'CurrentPlayer: ' . \print_r( $currentPlayer, true ), 'GamePlay' );
-            $moves = $moves->filter(
-                function( $entry ) use ( $currentPlayer ) {
-                    return $entry->To->GetNumber( $currentPlayer ) - $entry->From->GetNumber( $currentPlayer );
-                }
-            );
-            $first = $moves->getMovesOrdered( $moves, AbstractGameManager::COLLECTION_ORDER_ASC )->first();
-            $moves->clear();
-            $moves[] = $first;
-        }
-        
-        return $moves;
     }
     
     public function MakeMove( Move &$move ): ?Checker
@@ -291,5 +238,75 @@ class BackgammonNormalGame extends Game
             
             $dice->Used = false;
         }
+    }
+    
+    protected function AtHomeAndOtherAtBar(): void
+    {
+        $this->AddCheckers( 3, PlayerColor::Black, 21 );
+        $this->AddCheckers( 2, PlayerColor::Black, 22 );
+        $this->AddCheckers( 5, PlayerColor::Black, 23 );
+        $this->AddCheckers( 3, PlayerColor::Black, 24 );
+        $this->AddCheckers( 2, PlayerColor::Black, 25 );
+        
+        $this->AddCheckers( 2, PlayerColor::White, 19 );
+        $this->AddCheckers( 2, PlayerColor::White, 20 );
+        $this->AddCheckers( 3, PlayerColor::White, 21 );
+        $this->AddCheckers( 2, PlayerColor::White, 22 );
+        $this->AddCheckers( 2, PlayerColor::White, 23 );
+        $this->AddCheckers( 1, PlayerColor::White, 24 );
+        $this->AddCheckers( 2, PlayerColor::White, 0 );
+        
+    }
+    
+    protected function OneMoveToVictory(): void
+    {
+        //Only one move to victory
+        $this->AddCheckers( 14, PlayerColor::Black, 25 );
+        $this->AddCheckers( 14, PlayerColor::White, 25 );
+        
+        $this->AddCheckers( 1, PlayerColor::Black, 24 );
+        $this->AddCheckers( 1, PlayerColor::White, 24 );
+    }
+    
+    protected function DebugBlocked(): void
+    {
+        $this->AddCheckers( 3, PlayerColor::Black, 20 );
+        $this->AddCheckers( 3, PlayerColor::White, 20 );
+        
+        $this->AddCheckers( 3, PlayerColor::Black, 21 );
+        $this->AddCheckers( 3, PlayerColor::White, 21 );
+        
+        $this->AddCheckers( 3, PlayerColor::Black, 22 );
+        $this->AddCheckers( 3, PlayerColor::White, 22 );
+        
+        $this->AddCheckers( 3, PlayerColor::Black, 23 );
+        $this->AddCheckers( 3, PlayerColor::White, 23 );
+        
+        $this->AddCheckers( 2, PlayerColor::Black, 24 );
+        $this->AddCheckers( 2, PlayerColor::White, 24 );
+        
+        $this->AddCheckers( 1, PlayerColor::Black, 0 );
+        $this->AddCheckers( 1, PlayerColor::White, 0 );
+    }
+    
+    protected function DebugBearingOff(): void
+    {
+        $this->AddCheckers( 3, PlayerColor::Black, 20 );
+        $this->AddCheckers( 3, PlayerColor::White, 20 );
+        
+        $this->AddCheckers( 3, PlayerColor::Black, 21 );
+        $this->AddCheckers( 3, PlayerColor::White, 21 );
+        
+        $this->AddCheckers( 3, PlayerColor::Black, 22 );
+        $this->AddCheckers( 3, PlayerColor::White, 22 );
+        
+        $this->AddCheckers( 3, PlayerColor::Black, 23 );
+        $this->AddCheckers( 3, PlayerColor::White, 23 );
+        
+        $this->AddCheckers( 2, PlayerColor::Black, 24 );
+        $this->AddCheckers( 2, PlayerColor::White, 24 );
+        
+        $this->AddCheckers( 1, PlayerColor::Black, 19 );
+        $this->AddCheckers( 1, PlayerColor::White, 19 );
     }
 }

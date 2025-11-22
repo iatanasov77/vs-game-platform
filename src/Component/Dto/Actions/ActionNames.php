@@ -29,6 +29,12 @@ enum ActionNames: int
     case roundEnded         = 22;
     case startNewRound      = 23;
     case announceMade       = 24;
+    case startNewGame       = 25;
     
-    case serverWasTerminated    = 25;
+    // Chess Game Actions
+    case chessGameStarted   = 26;
+    case chessMoveMade      = 27;
+    case chessOpponentMove  = 28;
+    
+    case serverWasTerminated    = 29;
 }

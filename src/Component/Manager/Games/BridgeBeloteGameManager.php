@@ -161,7 +161,6 @@ class BridgeBeloteGameManager extends CardGameManager
         array $otherSockets
     ): void {
         $this->logger->log( "Doing action: {$actionName->value}", 'GameManager' );
-        //$this->logger->debug( $this->Game->Points, 'BeforeDoAction.txt' );
         
         if ( $actionName == ActionNames::bidMade ) {
             $this->Game->ThinkStart = new \DateTime( 'now' );
@@ -195,6 +194,11 @@ class BridgeBeloteGameManager extends CardGameManager
             $this->logger->log( 'startNewRound action recieved from GameManager.', 'GameManager' );
             $this->StartNewRound();
             $this->PlayRound( $socket );
+        } else if ( $actionName == ActionNames::startNewGame ) {
+            // New Game in the Same GameSession / GameRoom
+            $this->logger->log( 'startNewGame action recieved from GameManager.', 'GameManager' );
+            $this->StartNewGame();
+            $this->PlayRound( $socket );
         } else if ( $actionName == ActionNames::connectionInfo ) {
             $action = $this->serializer->deserialize( $actionText, ConnectionInfoActionDto::class, JsonEncoder::FORMAT );
             foreach ( $otherSockets as $otherSocket ) {
@@ -207,8 +211,6 @@ class BridgeBeloteGameManager extends CardGameManager
             $this->logger->log( 'exitGame action recieved from GameManager.', 'GameManager' );
             $this->CloseConnections( $socket );
         }
-        
-        //$this->logger->debug( $this->Game->Points, 'AfterDoAction.txt' );
     }
     
     protected function CreateDbGame(): void

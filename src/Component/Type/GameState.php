@@ -11,10 +11,13 @@ enum GameState: int
     case requestedDoubling      = 3;
     case ended                  = 4;
     
+    // Chess States
+    case firstMove              = 5;
+    
     // Card Games States
-    case firstBid               = 5;
-    case bidding                = 6;
-    case firstRound             = 7;
-    case roundEnded             = 8;
+    case firstBid               = 6;
+    case bidding                = 7;
+    case firstRound             = 8;
+    case roundEnded             = 9;
 }
     

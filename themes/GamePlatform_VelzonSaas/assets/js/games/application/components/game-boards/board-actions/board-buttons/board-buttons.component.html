@@ -1,7 +1,7 @@
 <div class="p-1 float-start game-board-buttons-container">
-    <a *ngIf="! isLoggedIn" (click)="loginClick()" class="default-button">
+    <button *ngIf="! isLoggedIn" (click)="loginClick()" class="default-button">
         {{ 'dialogs.login' | translate }}
-    </a>
+    </button>
     
     <!--
      -- Backgammon Lobby Buttons

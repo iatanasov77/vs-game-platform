@@ -147,14 +147,22 @@ class ChessEngine extends Engine
                 break; // Force break the loop
             }
         }
-        
             
         if ( $BestMove ) {
             $BestMove->Color = $this->EngineGame->CurrentPlayer;
             //$BestMove->Piece = $BestMove->From->Piece;
             //$this->logger->log( 'Best Move Piece: ' . print_r( $this->EngineGame->Squares["{$BestMove->From}"], true ), 'EnginMoves' );
         }
+        
+        if ( ! $BestMove ) {
+            $legalMoves = $this->EngineGame->Rules->DebugLegalMoves( 'E1' );
+            $debugLegalMoves = \print_r( $legalMoves->toArray(), true );
+            $this->logger->log( "Legal Moves: {$debugLegalMoves}", 'EnginMoves' );
             
+            $debugTotalMoves = \print_r( $TotalMoves->toArray(), true );
+            $this->logger->log( "Total Moves: {$debugTotalMoves}", 'EnginMoves' );
+        }
+        
         //m_Rules.ChessGame.NotifyComputerThinking(depth, MoveCounter, TotalMoves.Count, $this->TotalMovesAnalyzed, BestMove );
         return $BestMove;
     }

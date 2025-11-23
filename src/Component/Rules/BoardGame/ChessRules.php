@@ -25,6 +25,11 @@ class ChessRules
         $this->logger           = $logger;
     }
     
+    public function DebugLegalMoves( string $cellKey ): Collection
+    {
+        return $this->GetLegalMoves( $this->gameSquares[$cellKey] );
+    }
+    
     // Return true if the given side is checkmate
     public function IsCheckMate( PlayerColor $PlayerSide ): bool
     {

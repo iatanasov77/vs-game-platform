@@ -56,4 +56,11 @@ class ChessSquare
         
         return $strLoc;	// return back the converted string
     }
+    
+    public function __clone()
+    {
+        if ( $this->Piece ) {
+            $this->Piece = clone $this->Piece;
+        }
+    }
 }

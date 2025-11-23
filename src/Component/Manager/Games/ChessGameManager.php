@@ -322,12 +322,12 @@ final class ChessGameManager extends BoardGameManager
                 $sleepMileseconds   = \rand( 700, 1200 );
                 Async\delay( $sleepMileseconds / 1000 );
                 
+                $this->Game->MakeMove( $move );
+                
                 $moveDto = Mapper::ChessMoveToDto( $move );
                 $moveDto->animate = true;
                 $dto = new ChessOpponentMoveActionDto();
                 $dto->move = $moveDto;
-                
-                $this->Game->MakeMove( $move );
                 
                 $dto->game = Mapper::BoardGameToDto( $this->Game );
                 $dto->myColor = $this->Game->CurrentPlayer;

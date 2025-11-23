@@ -7,6 +7,7 @@ use App\Component\GameLogger;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerColor;
 use App\Component\Type\ChessPieceType;
+use App\Component\Type\ChessMoveType;
 
 /**
  * Using 'ngx-chess-board': https://github.com/marwan-mohamed12/Pencil-chess-game
@@ -19,6 +20,9 @@ class ChessGame extends Game
     
     /** @var Collection | ChessSquare[] */
     public $Squares;
+    
+    /** @var Collection | ChessPiece[] */
+    public $CapturedPieces;
     
     /** @var Collection | ChessMove[] */
     public $MovesHistory;
@@ -33,6 +37,7 @@ class ChessGame extends Game
     {
         parent::__construct( $logger );
         
+        $this->CapturedPieces = new ArrayCollection();
         $this->Rules    = new ChessRules( $this, $logger );
     }
     
@@ -75,13 +80,19 @@ class ChessGame extends Game
     {
         $this->logger->log( "MakeMove: " . print_r( $move, true ), 'GenerateMoves' );
         
-        if ( $move->CapturedPiece ) {
-            
+        if ( $this->Squares["{$move->To}"]->Piece ) {
+            $this->CapturedPieces[] = $this->Squares["{$move->To}"]->Piece;
+            $move->Type = ChessMoveType::CaputreMove;
+            $move->CapturedPiece = $this->Squares["{$move->To}"]->Piece;
         }
         
         $movedPiece = $this->Squares["{$move->From}"]->Piece;
+        $movedPiece->Moves++;
         $this->Squares["{$move->From}"]->Piece = null;
         $this->Squares["{$move->To}"]->Piece = $movedPiece;
+        
+        $move->Piece = $movedPiece;
+        $this->MovesHistory[] = $move;
         
         return $move->CapturedPiece ?: null;
     }

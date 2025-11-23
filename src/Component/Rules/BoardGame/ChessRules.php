@@ -440,12 +440,11 @@ class ChessRules
     
     private function actualGameSquares(): void
     {
-        $this->gameSquares = new ArrayCollection();
-        $gameSquaresClone = $this->game->Squares->getValues();
-        
-        foreach ( $gameSquaresClone as $suqare ) {
-            $this->gameSquares->set( "{$suqare}", clone $suqare );
-        }
+        $this->gameSquares = $this->game->Squares->map(
+            function( $entry ) {
+                return clone $entry;
+            }
+        );
     }
     
     // return type of the move given the move object
@@ -900,6 +899,7 @@ class ChessRules
         
         // Check all the move squars available in bottom-left direction
         $newcell = $this->BottomLeftCell( $source );
+        //$this->logger->log( "Bishop BottomLeftCell: " . \print_r( $newcell, true ), 'EnginMoves' );
         while ( $newcell != null ) {	// move as long as cell is available in this direction
             if ( ! $newcell->Piece ) {	//next cell is available for move
                 $moves[] = $newcell;

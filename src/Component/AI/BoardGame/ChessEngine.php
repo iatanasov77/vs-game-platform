@@ -107,7 +107,7 @@ class ChessEngine extends Engine
         
         //$depth = 10;
         for ( $depth = 1;; $depth++ ) {	// Keep doing a depth search
-            $this->logger->log( "Depth: {$depth}", 'EnginMoves' );
+            //$this->logger->log( "Depth: {$depth}", 'EnginMoves' );
             
             $alpha = self::MIN_SCORE;	// The famous Alpha & Beta are set to their initial values
             $beta  = self::MAX_SCORE;	// at the start of each increasing search depth iteration

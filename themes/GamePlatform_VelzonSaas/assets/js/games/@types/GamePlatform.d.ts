@@ -596,10 +596,13 @@ declare module '_@/GamePlatform/Model/BoardGame/chessSquareDto' {
 
 declare module '_@/GamePlatform/Model/BoardGame/chessPieceDto' {
     import ChessPieceType from '_@/GamePlatform/Model/BoardGame/chessPieceType';
+    import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
     
     interface ChessPieceDto
     {
         Type: ChessPieceType;
+        Side: PlayerColor;
+        Moves: number;
     }
     
     export = ChessPieceDto;

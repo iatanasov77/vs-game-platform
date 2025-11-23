@@ -297,6 +297,8 @@ final class Mapper
         
         $chessPieceDto = new ChessPieceDto();
         $chessPieceDto->Type = $piece->Type;
+        $chessPieceDto->Side = $piece->Side->type;
+        $chessPieceDto->Moves = $piece->Moves;
         
         return $chessPieceDto;
     }

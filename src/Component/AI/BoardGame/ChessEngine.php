@@ -155,8 +155,10 @@ class ChessEngine extends Engine
         }
         
         if ( ! $BestMove ) {
-            $legalMoves = $this->EngineGame->Rules->DebugLegalMoves( 'E1' );
-            $debugLegalMoves = \print_r( $legalMoves->toArray(), true );
+            //$legalMovesForKing = $this->EngineGame->Rules->DebugLegalMoves( 'E1' );
+            $legalMovesForQueen = $this->EngineGame->Rules->DebugLegalMoves( 'D1' );
+            
+            $debugLegalMoves = \print_r( $legalMovesForQueen->toArray(), true );
             $this->logger->log( "Legal Moves: {$debugLegalMoves}", 'EnginMoves' );
             
             $debugTotalMoves = \print_r( $TotalMoves->toArray(), true );

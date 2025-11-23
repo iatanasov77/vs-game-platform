@@ -620,6 +620,8 @@ declare module '_@/GamePlatform/Model/BoardGame/chessMoveDto' {
         from: string;
         to: string;
         
+        causeCheck: boolean;
+        
         piece: ChessPieceType;
         capturedPiece?: ChessPieceType;
         promoPiece?: ChessPieceType;

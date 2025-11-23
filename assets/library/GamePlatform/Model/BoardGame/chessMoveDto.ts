@@ -9,6 +9,8 @@ interface ChessMoveDto
     from: string;
     to: string;
     
+    causeCheck: boolean;
+    
     piece: ChessPieceType;
     capturedPiece?: ChessPieceType;
     promoPiece?: ChessPieceType;

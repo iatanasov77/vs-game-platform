@@ -1,5 +1,6 @@
 import { Injectable, Inject, Injector } from '@angular/core';
 import { AbstractGameService } from './abstract-game.service';
+import {NgxChessBoardService} from 'ngx-chess-board';
 
 // NGRX Store
 import { loadGameRooms } from '../../+store/game.actions';
@@ -36,6 +37,7 @@ export class ChessService extends AbstractGameService
 {
     constructor(
         @Inject( Injector ) private injector: Injector,
+        //@Inject( NgxChessBoardService ) private ngxChessBoardService: NgxChessBoardService,
     ) {
         super( injector );
     }
@@ -226,7 +228,17 @@ export class ChessService extends AbstractGameService
                 const action = JSON.parse( message.data ) as ChessOpponentMoveActionDto;
                 console.log( 'WebSocket Action Opponent Move ', action );
                 
-                this.doMove( action.move );
+                if ( action.move ) {
+                    this.doMove( action.move );
+                } else {
+                    //this.ngxChessBoardService.moveChange.emit();
+                }
+                
+                const game = this.appState.boardGame.getValue();
+                this.appState.boardGame.setValue({
+                    ...game,
+                    currentPlayer: game.currentPlayer === PlayerColor.black ? PlayerColor.white : PlayerColor.black
+                });
                 
                 break;
             }

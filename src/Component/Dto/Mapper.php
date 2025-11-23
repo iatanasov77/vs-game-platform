@@ -311,6 +311,8 @@ final class Mapper
         $moveDto->from = "{$move->From}";
         $moveDto->to = "{$move->To}";
         
+        $moveDto->causeCheck = $move->CauseCheck;
+        
         /*
         $moveDto->piece = $move->Piece->Type;
         $moveDto->capturedPiece =  $move->CapturedPiece ? $move->CapturedPiece->Type : null;
@@ -336,6 +338,8 @@ final class Mapper
         
         $move->From = $game->Squares[$dto->from];
         $move->To = $game->Squares[$dto->to];
+        
+        $move->CauseCheck = $dto->causeCheck;
 
         /*
         $move->Piece = $dto->piece ? new ChessPiece( $dto->piece, new ChessSide( $dto->color ) ) : null;

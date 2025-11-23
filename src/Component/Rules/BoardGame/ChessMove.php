@@ -43,6 +43,7 @@ class ChessMove
     
     public function __construct()
     {
+        $this->CauseCheck   = false;
         $this->NextMoves    = new ArrayCollection();
     }
     

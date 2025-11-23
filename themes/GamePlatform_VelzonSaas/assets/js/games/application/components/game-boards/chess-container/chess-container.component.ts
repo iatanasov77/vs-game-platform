@@ -500,12 +500,6 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
         //alert( `OponentMove Coords: ${moveCoords}` );
         
         this.board.move( moveCoords );
-        
-        const game = this.appStateService.boardGame.getValue();
-        this.appStateService.boardGame.setValue({
-            ...game,
-            currentPlayer: game.currentPlayer === PlayerColor.black ? PlayerColor.white : PlayerColor.black
-        });
     }
     
     /*
@@ -532,6 +526,8 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
             type: ChessMoveType.NormalMove,
             from: lastMove.move.slice( 0, 2 ).toUpperCase(),
             to: lastMove.move.slice( 2, 4 ).toUpperCase(),
+            
+            causeCheck: lastMove.check,
             
             piece: pieceType,
             

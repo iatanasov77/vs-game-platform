@@ -12,6 +12,8 @@ class ChessMoveDto
     public string $from;
     public string $to;
     
+    public bool $causeCheck = false;
+    
     /** @var ChessPieceType */
     public $piece;
     

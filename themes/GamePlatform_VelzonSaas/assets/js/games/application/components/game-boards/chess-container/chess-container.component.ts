@@ -305,14 +305,14 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
                 this.started = true;
                 this.playAiQuestion = false;
                 this.lobbyButtonsVisibleChanged.emit( false );
+                
+                const myColor = this.appStateService.myColor.getValue();
+                if ( myColor === PlayerColor.black ) {
+                    this.board.reverse();
+                }
             }
             
             if ( dto.isGoldGame ) this.sound.playCoin();
-            
-            const myColor = this.appStateService.myColor.getValue();
-            if ( myColor === PlayerColor.black ) {
-                this.board.reverse();
-            }
         }
         
         if ( dto ) {
@@ -497,6 +497,8 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
     oponentMove( dto: ChessMoveDto ): void
     {
         const moveCoords = `${dto.from.toLowerCase()}${dto.to.toLowerCase()}`;
+        //alert( `OponentMove Coords: ${moveCoords}` );
+        
         this.board.move( moveCoords );
         
         const game = this.appStateService.boardGame.getValue();
@@ -504,7 +506,6 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
             ...game,
             currentPlayer: game.currentPlayer === PlayerColor.black ? PlayerColor.white : PlayerColor.black
         });
-        
     }
     
     /*
@@ -514,7 +515,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
     {
         const myColor = this.appStateService.myColor.getValue();
         const currentPlayer = this.gameDto ? this.gameDto.currentPlayer : null;
-        alert( `onMakeMove currentPlayer: ${currentPlayer}` );
+        //alert( `onMakeMove currentPlayer: ${currentPlayer}` );
         if ( ! this.myTurn() ) {
             return;
         }

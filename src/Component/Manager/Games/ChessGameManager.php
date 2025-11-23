@@ -317,33 +317,31 @@ final class ChessGameManager extends BoardGameManager
         $move = $this->Engine->GetBestMove();
         $this->logger->log( 'Engine Best Move: ' . print_r( $move, true ), 'EnginMoves' );
         
-        if ( ! $move ) {
-            return;
+        if ( $move ) {
+            $promise = Async\async( function () use ( $client, $move ) {
+                $sleepMileseconds   = \rand( 700, 1200 );
+                Async\delay( $sleepMileseconds / 1000 );
+                
+                $moveDto = Mapper::ChessMoveToDto( $move );
+                $moveDto->animate = true;
+                $dto = new ChessOpponentMoveActionDto();
+                $dto->move = $moveDto;
+                
+                $this->Game->MakeMove( $move );
+                
+                $dto->game = Mapper::BoardGameToDto( $this->Game );
+                $dto->myColor = $this->Game->CurrentPlayer;
+                
+                if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {
+                    $this->Game->BlackPlayer->FirstMoveMade = true;
+                } else {
+                    $this->Game->WhitePlayer->FirstMoveMade = true;
+                }
+                
+                $this->Send( $client, $dto );
+            })();
+            Async\await( $promise );
         }
-        
-        $promise = Async\async( function () use ( $client, $move ) {
-            $sleepMileseconds   = \rand( 700, 1200 );
-            Async\delay( $sleepMileseconds / 1000 );
-            
-            $moveDto = Mapper::ChessMoveToDto( $move );
-            $moveDto->animate = true;
-            $dto = new ChessOpponentMoveActionDto();
-            $dto->move = $moveDto;
-            
-            $this->Game->MakeMove( $move );
-            
-            $dto->game = Mapper::BoardGameToDto( $this->Game );
-            $dto->myColor = $this->Game->CurrentPlayer;
-            
-            if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {
-                $this->Game->BlackPlayer->FirstMoveMade = true;
-            } else {
-                $this->Game->WhitePlayer->FirstMoveMade = true;
-            }
-            
-            $this->Send( $client, $dto );
-        })();
-        Async\await( $promise );
         
         $promise = Async\async( function () use ( $client ) {
             $this->NewTurn( $client );

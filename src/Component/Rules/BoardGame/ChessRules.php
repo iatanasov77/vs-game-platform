@@ -605,7 +605,8 @@ class ChessRules
     // calculate the possible moves for the pawn object and insert them into passed array
     private function GetPawnMoves( ChessSquare $source, Collection &$moves ): void
     {
-        if ( $source->Piece->Side->isWhite() ) {
+        //if ( $source->Piece->Side->isWhite() ) {
+        if ( $source->Piece->Side->isBlack() ) { // In my Board The ranks are increasing from White to Black
             // Calculate moves for the white piece
             $newcell = $this->TopCell( $source );
             if ( $newcell && ! $newcell->Piece ) { // Top cell is available for the move

@@ -146,7 +146,8 @@ export class ChessService extends AbstractGameService
                 
                 this.appState.boardGame.setValue({
                     ...game,
-                    currentPlayer: action.game.currentPlayer
+                    currentPlayer: action.game.currentPlayer,
+                    playState: action.game.playState
                 });
                 
                 this.appState.moveTimer.setValue( action.moveTimer );
@@ -298,32 +299,6 @@ export class ChessService extends AbstractGameService
         this.chesUserMoves = [];
     }
     
-    /*
-    doOpponentMove( move: ChessMoveDto ): void
-    {
-        const game = this.appState.boardGame.getValue();
-        const gameClone = JSON.parse( JSON.stringify( game ) ) as BoardGameDto;
-        const isWhite = move.color === PlayerColor.white;
-        const from = isWhite ? 25 - move.from : move.from;
-        const to = isWhite ? 25 - move.to : move.to;
-        //const checker = <CheckerDto>gameClone.points[from].checkers.pop();
-        
-        // hitting opponent checker
-        const hit = gameClone.points[to].checkers.find(
-            ( c ) => c.color !== move.color
-        );
-        if ( hit ) {
-            gameClone.points[to].checkers.pop();
-            const barIdx = isWhite ? 0 : 25;
-            gameClone.points[barIdx].checkers.push( hit );
-        }
-        
-        //gameClone.points[to].checkers.push( checker );
-        
-        this.appState.boardGame.setValue( gameClone );
-    }
-    */
-    
     doMove( move: ChessMoveDto ): void
     {
         //console.log( 'Chess Moee', move );
@@ -337,6 +312,8 @@ export class ChessService extends AbstractGameService
         
         const myColor = this.appState.myColor.getValue();
         const oponent = myColor === PlayerColor.black ? PlayerColor.white : PlayerColor.black
+        //alert( `DoMove Oponent: ${oponent}` );
+        //alert( `DoMove Player: ${move.color}` );
         if ( move.color === oponent ) {
             this.appState.chessOpponentMove.setValue( move );
         }

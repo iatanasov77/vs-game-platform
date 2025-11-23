@@ -86,7 +86,6 @@ class ChessEngine extends Engine
         // better chess game.
         
         $ThinkStartTime = new \DateTime( 'now' );
-        //Random RandGenerator= new Random();
         
         // Game is near the end, or the current player is under check
         if ( $this->EngineGame->GetSideCell( $this->EngineGame->CurrentPlayer )->count() <= 5 || $TotalMoves->count() <= 5 ) {

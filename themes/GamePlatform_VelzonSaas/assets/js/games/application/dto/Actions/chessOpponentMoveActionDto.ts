@@ -9,6 +9,7 @@ interface ChessOpponentMoveActionDto extends ActionDto {
     myColor: PlayerColor;
     
     game?: BoardGameDto;
+    moveTimer?: number;
 }
 
 export default ChessOpponentMoveActionDto;

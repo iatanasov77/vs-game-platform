@@ -75,6 +75,7 @@ declare module '_@/GamePlatform/Model/Core/gameDto' {
     interface GameDto
     {
         id: string;
+        gameCode: string;
         playState: GameState;
     }
     

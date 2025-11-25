@@ -91,8 +91,7 @@ export class ChessService extends AbstractGameService
         
         //console.log( 'User in State', this.appState.user );
         if ( this.appState.user.getValue() ) {
-            //this.statusMessageService.setWaitingForConnect();
-            this.statusMessageService.setNotGameStarted();
+            this.statusMessageService.setWaitingForConnect();
         } else {
             this.statusMessageService.setNotLoggedIn();
             this.appState.hideBusy();
@@ -146,12 +145,14 @@ export class ChessService extends AbstractGameService
                 const action = JSON.parse( message.data ) as ChessGameStartedActionDto;
                 console.log( 'WebSocket Action Chess Game Started', action );
                 
-                this.appState.boardGame.setValue({
+                const cGame = {
                     ...game,
                     currentPlayer: action.game.currentPlayer,
                     playState: action.game.playState
-                });
+                };
                 
+                this.appState.boardGame.setValue( cGame );
+                this.statusMessageService.setTextMessage( cGame );
                 this.appState.moveTimer.setValue( action.moveTimer );
                 
                 break;
@@ -232,20 +233,18 @@ export class ChessService extends AbstractGameService
                     this.doMove( action.move );
                 } else {
                     //this.ngxChessBoardService.moveChange.emit();
+                    
+                    const cGame = {
+                        ...game,
+                        currentPlayer: game.currentPlayer === PlayerColor.black ? PlayerColor.white : PlayerColor.black
+                    };
+                    
+                    this.appState.boardGame.setValue( cGame );
+                    this.statusMessageService.setTextMessage( cGame );
+                    if ( action.moveTimer ) {
+                        this.appState.moveTimer.setValue( action.moveTimer );
+                    }
                 }
-                
-                const game = this.appState.boardGame.getValue();
-                this.appState.boardGame.setValue({
-                    ...game,
-                    currentPlayer: game.currentPlayer === PlayerColor.black ? PlayerColor.white : PlayerColor.black
-                });
-                
-                break;
-            }
-            case ActionNames.undoMove: {
-                //console.log( 'WebSocket Action Undo Move', action.actionName );
-                
-                this.undoMove();
                 
                 break;
             }
@@ -315,15 +314,18 @@ export class ChessService extends AbstractGameService
     {
         //console.log( 'Chess Moee', move );
         this.chesUserMoves.push( { ...move, nextMoves: [] } ); // server does not need to know nextMoves.
+        const myColor = this.appState.myColor.getValue();
+        const oponent = myColor === PlayerColor.black ? PlayerColor.white : PlayerColor.black
+        
         const prevGame = this.appState.boardGame.getValue();
         this.gameHistory.push( prevGame );
         
+        /*
         const gameClone = JSON.parse( JSON.stringify( prevGame ) ) as BoardGameDto;
         gameClone.currentPlayer = move.color;
         this.appState.boardGame.setValue( gameClone );
+        */
         
-        const myColor = this.appState.myColor.getValue();
-        const oponent = myColor === PlayerColor.black ? PlayerColor.white : PlayerColor.black
         //alert( `DoMove Oponent: ${oponent}` );
         //alert( `DoMove Player: ${move.color}` );
         if ( move.color === oponent ) {
@@ -431,5 +433,18 @@ export class ChessService extends AbstractGameService
         this.appState.moveTimer.setValue( 40 );
         this.sendMessage( JSON.stringify( action ) );
         this.statusMessageService.setWaitingForDoubleResponse();
+    }
+    
+    switchPlayer(): void
+    {
+        const game = this.appState.boardGame.getValue();
+        const cGame = {
+            ...game,
+            currentPlayer: game.currentPlayer === PlayerColor.black ? PlayerColor.white : PlayerColor.black
+        };
+        
+        this.appState.boardGame.setValue( cGame );
+        this.statusMessageService.setTextMessage( cGame );
+        this.appState.moveTimer.setValue( 40 );
     }
 }

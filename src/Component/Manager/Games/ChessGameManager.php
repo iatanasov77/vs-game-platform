@@ -335,6 +335,7 @@ final class ChessGameManager extends BoardGameManager
             }
             
             $dto->game = Mapper::BoardGameToDto( $this->Game );
+            $dto->moveTimer = Game::ClientCountDown;
             $dto->myColor = $this->Game->CurrentPlayer;
             
             if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {

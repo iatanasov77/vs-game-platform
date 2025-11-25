@@ -30,7 +30,10 @@ final class Mapper
     public static function BoardGameToDto( BoardGame $game ): BoardGameDto
     {
         $gameDto = new BoardGameDto();
+        
         $gameDto->id = $game->Id;
+        $gameDto->gameCode = $game->GameCode;
+        
         $gameDto->blackPlayer = self::BoardGamePlayerToDto( $game->BlackPlayer );
         $gameDto->whitePlayer = self::BoardGamePlayerToDto( $game->WhitePlayer );
         $gameDto->currentPlayer = $game->CurrentPlayer;
@@ -173,7 +176,9 @@ final class Mapper
     public static function CardGameToDto( CardGame $game ): CardGameDto
     {
         $gameDto = new CardGameDto();
+        
         $gameDto->id = $game->Id;
+        $gameDto->gameCode = $game->GameCode;
         
         $gameDto->players = self::CardGamePlayersToDto( $game->Players );
         

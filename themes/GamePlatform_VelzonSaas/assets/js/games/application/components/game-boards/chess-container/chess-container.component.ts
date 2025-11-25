@@ -500,6 +500,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
         //alert( `OponentMove Coords: ${moveCoords}` );
         
         this.board.move( moveCoords );
+        this.wsService.switchPlayer();
     }
     
     /*
@@ -538,6 +539,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
         //console.log( 'ChessMoveDto', move );
         
         // if ( ! move.animate ) this.sound.playChecker();
+        this.wsService.switchPlayer();
         this.wsService.doMove( move );
         this.wsService.sendMove( move );
     }

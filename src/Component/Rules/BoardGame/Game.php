@@ -25,6 +25,9 @@ abstract class Game implements GameInterface
     /** @var string */
     public $Id;
     
+    /** @var string */
+    public $GameCode;
+    
     /** @var Player */
     public $BlackPlayer;
     

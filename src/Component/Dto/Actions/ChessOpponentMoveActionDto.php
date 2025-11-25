@@ -20,4 +20,5 @@ class ChessOpponentMoveActionDto extends ActionDto
     public PlayerColor $myColor;
     
     public ?GameDto $game;
+    public ?int $moveTimer;
 }

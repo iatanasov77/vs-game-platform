@@ -9,9 +9,7 @@ use App\Component\Type\PlayerColor;
 use App\Component\Type\GameState;
 
 // DTO Actions
-use App\Component\Dto\Mapper;
 use App\Component\Dto\toplist\NewScoreDto;
-use App\Component\Dto\Actions\GameEndedActionDto;
 use App\Component\Utils\Guid;
 
 use App\Entity\GamePlayer;
@@ -156,7 +154,7 @@ abstract class BoardGameManager extends AbstractGameManager
     protected function Resign( PlayerColor $winner ): void
     {
         $this->EndGame( $winner );
-        $this->logger->log( "{$winner} won Game {$this->Game->Id} by resignition.", 'GameManager' );
+        $this->logger->log( "{$winner->value} won Game {$this->Game->Id} by resignition.", 'GameManager' );
     }
     
     protected function EndGame( PlayerColor $winner ): void

@@ -100,8 +100,7 @@ export class BackgammonService extends AbstractGameService
         
         //console.log( 'User in State', this.appState.user );
         if ( this.appState.user.getValue() ) {
-            //this.statusMessageService.setWaitingForConnect();
-            this.statusMessageService.setNotGameStarted();
+            this.statusMessageService.setWaitingForConnect();
         } else {
             this.statusMessageService.setNotLoggedIn();
             this.appState.hideBusy();

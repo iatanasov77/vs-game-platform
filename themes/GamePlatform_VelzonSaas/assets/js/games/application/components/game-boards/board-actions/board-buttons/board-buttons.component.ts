@@ -22,6 +22,7 @@ export class BoardButtonsComponent implements OnInit, OnChanges
     
     @Input() newVisible = false;
     @Input() exitVisible = false;
+    @Input() resignVisible = false;
     @Input() sendVisible = false;
     @Input() undoVisible = false;
     @Input() newRoundVisible = false;

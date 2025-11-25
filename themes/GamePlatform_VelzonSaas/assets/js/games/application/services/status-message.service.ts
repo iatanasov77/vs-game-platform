@@ -68,7 +68,10 @@ export class StatusMessageService
     
     setGameEnded( game: any, newScore: NewScoreDto ): void
     {
-        if ( 'validMoves' in game ) {
+        if (
+            game.gameCode == GameVariant.BACKGAMMON_CODE ||
+            game.gameCode == GameVariant.CHESS_CODE
+        ) {
             this.setBoardGameEnded( game, newScore );
         } else if ( 'deck' in game ) {
             this.setCardGameEnded( game, newScore );

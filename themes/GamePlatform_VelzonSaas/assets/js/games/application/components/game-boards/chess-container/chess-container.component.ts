@@ -125,6 +125,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
     gameDto: BoardGameDto | undefined;
     newVisible = false;
     exitVisible = true;
+    resignVisible = false;
     sendVisible = false;
     undoVisible = false;
     
@@ -325,6 +326,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
         }
         
         this.setUndoVisible();
+        this.setResignVisible();
         
         this.fireResize();
         this.newVisible = dto?.playState === GameState.ended;
@@ -391,6 +393,16 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
             this.undoVisible = false;
             return;
         }
+    }
+    
+    setResignVisible(): void
+    {
+        if ( ! this.myTurn() ) {
+            this.resignVisible = false;
+            return;
+        }
+        
+        this.resignVisible = true;
     }
     
     resignGame(): void

@@ -253,6 +253,8 @@ final class ChessGameManager extends BoardGameManager
             $this->Game->ThinkStart = new \DateTime( 'now' );
             $this->DoDoubling();
             $this->Game->SwitchPlayer();
+            
+            $otherSocket = $this->Game->OtherPlayer();
             $this->Send( $otherSocket, $action );
         } else if ( $actionName == ActionNames::requestHint ) {
             if ( ! $this->Game->IsGoldGame && $this->Game->CurrentPlayer == PlayerColor::Black ) {
@@ -266,7 +268,7 @@ final class ChessGameManager extends BoardGameManager
                 $this->Send( $otherSocket, $action );
             }
         } else if ( $actionName == ActionNames::resign ) {
-            $winner = $this->Clients->get( PlayerColor::Black->value ) == $otherSocket ? PlayerColor::Black : PlayerColor::White;
+            $winner = \in_array( $this->Clients->get( PlayerColor::Black->value ), $otherSockets ) ? PlayerColor::Black : PlayerColor::White;
             $this->Resign( $winner );
         } else if ( $actionName == ActionNames::exitGame ) {
             $this->logger->log( 'exitGame action recieved from GameManager.', 'GameManager' );

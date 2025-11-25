@@ -62,7 +62,7 @@
         </button>
         -->
         
-        <button class="red-button" (click)="resignClick()" *ngIf="! tutorial">
+        <button class="red-button" (click)="resignClick()" *ngIf="resignVisible">
             <i class="fas fa-flag"></i>
             {{ 'menu.resign' | translate }}
         </button>

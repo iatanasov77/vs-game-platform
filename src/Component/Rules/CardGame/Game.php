@@ -30,6 +30,9 @@ abstract class Game implements GameInterface
     /** @var string */
     public $Id;
     
+    /** @var string */
+    public $GameCode;
+    
     /** @var Deck */
     public $Deck;
     

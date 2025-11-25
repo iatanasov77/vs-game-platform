@@ -72,6 +72,7 @@ export class TutorialService
     private emptyGame(): BoardGameDto
     {
         const game: BoardGameDto = {
+            gameCode: 'backgammon',
             blackPlayer: {
                 name: 'You',
                 elo: 0,

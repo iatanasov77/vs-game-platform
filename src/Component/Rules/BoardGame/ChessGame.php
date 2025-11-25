@@ -7,6 +7,7 @@ use App\Component\GameLogger;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerColor;
 use App\Component\Type\ChessPieceType;
+use App\Component\Type\ChessMoveType;
 
 /**
  * Using 'ngx-chess-board': https://github.com/marwan-mohamed12/Pencil-chess-game
@@ -20,6 +21,9 @@ class ChessGame extends Game
     /** @var Collection | ChessSquare[] */
     public $Squares;
     
+    /** @var Collection | ChessPiece[] */
+    public $CapturedPieces;
+    
     /** @var Collection | ChessMove[] */
     public $MovesHistory;
     
@@ -29,11 +33,21 @@ class ChessGame extends Game
     /** @var bool */
     public $DoQuiescentSearch;		// Return true when computer should do Queiscent search
     
+    /** @var bool */
+    public $UnderCheck;
+    
+    /** @var PlayerColor */
+    public $CauseCheckPlayer;
+    
     public function __construct( GameLogger $logger )
     {
         parent::__construct( $logger );
         
+        $this->CapturedPieces = new ArrayCollection();
         $this->Rules    = new ChessRules( $this, $logger );
+        
+        $this->UnderCheck = false;
+        $this->CauseCheckPlayer = PlayerColor::Neither;
     }
     
     public function SetStartPosition(): void
@@ -73,15 +87,24 @@ class ChessGame extends Game
     
     public function MakeMove( ChessMove &$move ): ?ChessPiece
     {
-        $this->logger->log( "MakeMove: " . print_r( $move, true ), 'GenerateMoves' );
+        //$this->logger->log( "MakeMove: " . print_r( $move, true ), 'GenerateMoves' );
         
-        if ( $move->CapturedPiece ) {
-            
+        if ( $this->Squares["{$move->To}"]->Piece ) {
+            $this->CapturedPieces[] = $this->Squares["{$move->To}"]->Piece;
+            $move->Type = ChessMoveType::CaputreMove;
+            $move->CapturedPiece = $this->Squares["{$move->To}"]->Piece;
         }
         
         $movedPiece = $this->Squares["{$move->From}"]->Piece;
+        $movedPiece->Moves++;
         $this->Squares["{$move->From}"]->Piece = null;
         $this->Squares["{$move->To}"]->Piece = $movedPiece;
+        
+        $move->Piece = $movedPiece;
+        $this->MovesHistory[] = $move;
+        
+        $this->UnderCheck = $move->CauseCheck;
+        $this->CauseCheckPlayer = $this->UnderCheck ? $move->Color : PlayerColor::Neither;
         
         return $move->CapturedPiece ?: null;
     }
@@ -98,7 +121,7 @@ class ChessGame extends Game
     }
     
     // get all the cell containg pieces of given side
-    public function GetSideCell( PlayerColor $PlayerSide ): Collection
+    public function GetSideCell( PlayerColor $PlayerSide, Collection $allSquares ): Collection
     {
         $CellNames = new ArrayCollection();
         
@@ -110,10 +133,10 @@ class ChessGame extends Game
                 
                 // check and add the current type cell
                 if (
-                    $this->Squares[$key]->Piece != null &&
-                    $this->Squares[$key]->Piece->Side->type == $PlayerSide
+                    $allSquares[$key]->Piece != null &&
+                    $allSquares[$key]->Piece->Side->type == $PlayerSide
                 ) {
-                    $CellNames[] = "{$this->Squares[$key]}"; // append the cell name to list
+                    $CellNames[] = "{$allSquares[$key]}"; // append the cell name to list
                 }
             }
         }

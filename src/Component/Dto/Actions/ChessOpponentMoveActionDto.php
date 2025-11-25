@@ -16,8 +16,9 @@ class ChessOpponentMoveActionDto extends ActionDto
     
     /** @var ChessMoveDto $move */
     #[Context([ChessMoveDtoDenormalizer::class])]
-    public ChessMoveDto $move;
+    public ?ChessMoveDto $move;
     public PlayerColor $myColor;
     
     public ?GameDto $game;
+    public ?int $moveTimer;
 }

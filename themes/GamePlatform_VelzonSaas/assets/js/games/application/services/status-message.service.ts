@@ -17,6 +17,7 @@ import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
 
 import { SoundService } from './sound.service'
 import { AppStateService } from '../state/app-state.service';
+import { GameVariant } from '../game.variant'
 
 @Injectable({
     providedIn: 'root'
@@ -33,9 +34,12 @@ export class StatusMessageService
     
     setTextMessage( game: any ): void
     {
-        if ( 'validMoves' in game ) {
+        if (
+            game.gameCode == GameVariant.BACKGAMMON_CODE ||
+            game.gameCode == GameVariant.CHESS_CODE
+        ) {
             this.setBoardGameTextMessage( game );
-        } else if ( 'validCards' in game ) {
+        } else {
             this.setCardGameTextMessage( game );
         }
     }
@@ -64,7 +68,10 @@ export class StatusMessageService
     
     setGameEnded( game: any, newScore: NewScoreDto ): void
     {
-        if ( 'validMoves' in game ) {
+        if (
+            game.gameCode == GameVariant.BACKGAMMON_CODE ||
+            game.gameCode == GameVariant.CHESS_CODE
+        ) {
             this.setBoardGameEnded( game, newScore );
         } else if ( 'deck' in game ) {
             this.setCardGameEnded( game, newScore );

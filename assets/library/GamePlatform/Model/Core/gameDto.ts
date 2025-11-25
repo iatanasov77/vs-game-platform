@@ -2,6 +2,7 @@
 
 interface GameDto {
     id: string;
+    gameCode: string;
     playState: GameState;
 }
 

@@ -86,10 +86,12 @@ class ChessEngine extends Engine
         // better chess game.
         
         $ThinkStartTime = new \DateTime( 'now' );
-        //Random RandGenerator= new Random();
         
         // Game is near the end, or the current player is under check
-        if ( $this->EngineGame->GetSideCell( $this->EngineGame->CurrentPlayer )->count() <= 5 || $TotalMoves->count() <= 5 ) {
+        if (
+            $this->EngineGame->GetSideCell( $this->EngineGame->CurrentPlayer, $this->EngineGame->Rules->gameSquares )->count() <= 5 ||
+            $TotalMoves->count() <= 5
+        ) {
             $this->GameNearEnd = true;
         }
             
@@ -100,7 +102,10 @@ class ChessEngine extends Engine
             $EnemySide = new ChessSide( PlayerColor::Black );
         }
         
-        if ( $this->EngineGame->GetSideCell( $EnemySide->type )->count() <= 5 || $this->EngineGame->Rules->GenerateAllLegalMoves( $EnemySide )->count() <= 5 ) {
+        if (
+            $this->EngineGame->GetSideCell( $EnemySide->type, $this->EngineGame->Rules->gameSquares )->count() <= 5 ||
+            $this->EngineGame->Rules->GenerateAllLegalMoves( $EnemySide )->count() <= 5
+        ) {
             $this->GameNearEnd = true;
         }
             
@@ -108,7 +113,7 @@ class ChessEngine extends Engine
         
         //$depth = 10;
         for ( $depth = 1;; $depth++ ) {	// Keep doing a depth search
-            $this->logger->log( "Depth: {$depth}", 'EnginMoves' );
+            //$this->logger->log( "Depth: {$depth}", 'EnginMoves' );
             
             $alpha = self::MIN_SCORE;	// The famous Alpha & Beta are set to their initial values
             $beta  = self::MAX_SCORE;	// at the start of each increasing search depth iteration
@@ -148,14 +153,24 @@ class ChessEngine extends Engine
                 break; // Force break the loop
             }
         }
-        
             
         if ( $BestMove ) {
             $BestMove->Color = $this->EngineGame->CurrentPlayer;
             //$BestMove->Piece = $BestMove->From->Piece;
             //$this->logger->log( 'Best Move Piece: ' . print_r( $this->EngineGame->Squares["{$BestMove->From}"], true ), 'EnginMoves' );
         }
+        
+        if ( ! $BestMove ) {
+            //$legalMovesForKing = $this->EngineGame->Rules->DebugLegalMoves( 'E1' );
+            $legalMovesForQueen = $this->EngineGame->Rules->DebugLegalMoves( 'D1' );
             
+            $debugLegalMoves = \print_r( $legalMovesForQueen->toArray(), true );
+            //$this->logger->log( "Legal Moves: {$debugLegalMoves}", 'EnginMoves' );
+            
+            $debugTotalMoves = \print_r( $TotalMoves->toArray(), true );
+            //$this->logger->log( "Total Moves: {$debugTotalMoves}", 'EnginMoves' );
+        }
+        
         //m_Rules.ChessGame.NotifyComputerThinking(depth, MoveCounter, TotalMoves.Count, $this->TotalMovesAnalyzed, BestMove );
         return $BestMove;
     }

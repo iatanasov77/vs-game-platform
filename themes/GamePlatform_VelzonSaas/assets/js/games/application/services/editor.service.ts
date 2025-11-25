@@ -60,6 +60,7 @@ export class EditorService
     {
         const game: BoardGameDto = {
             id: '15f126cb-e84d-4fe7-9782-8767109eed49',
+            gameCode: 'backgammon',
             blackPlayer: {
                 name: 'Guest',
                 playerColor: 0,

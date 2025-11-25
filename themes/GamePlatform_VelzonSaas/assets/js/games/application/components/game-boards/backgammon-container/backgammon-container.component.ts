@@ -146,6 +146,7 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
     dicesVisible = false;
     newVisible = false;
     exitVisible = true;
+    resignVisible = false;
     acceptDoublingVisible = false;
     requestDoublingVisible = false;
     requestHintVisible = false;
@@ -423,6 +424,7 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
         this.setRollButtonVisible();
         this.setSendVisible();
         this.setUndoVisible();
+        this.setResignVisible();
         this.setDoublingVisible( dto );
         this.diceColor = dto?.currentPlayer;
         this.fireResize();
@@ -627,6 +629,16 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
         
         const dices = this.appStateService.dices.getValue();
         this.undoVisible = dices && dices.filter( ( d ) => d.used ).length > 0;
+    }
+    
+    setResignVisible(): void
+    {
+        if ( ! this.myTurn() || this.doublingRequested() ) {
+            this.resignVisible = false;
+            return;
+        }
+        
+        this.resignVisible = true;
     }
     
     resignGame(): void

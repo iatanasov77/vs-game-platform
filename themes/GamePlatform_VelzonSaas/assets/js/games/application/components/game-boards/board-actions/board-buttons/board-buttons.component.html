@@ -62,9 +62,17 @@
         </button>
         -->
         
-        <button class="red-button" (click)="resignClick()" *ngIf="! tutorial">
+        <button class="red-button" (click)="resignClick()" *ngIf="resignVisible">
             <i class="fas fa-flag"></i>
             {{ 'menu.resign' | translate }}
+        </button>
+        
+        <button (click)="sendMove()" *ngIf="sendVisible" class="default-button">
+            {{ 'game_board.done' | translate }}
+        </button>
+        
+        <button (click)="undoMove()" *ngIf="undoVisible" class="secondary-button">
+            {{ 'game_board.undo' | translate }}
         </button>
         
     </ng-container>

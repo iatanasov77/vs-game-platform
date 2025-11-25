@@ -25,6 +25,7 @@ class ChessMoveDtoDenormalizer implements DenormalizerInterface, DenormalizerAwa
         
         $dto->from      = $data['from'];
         $dto->to        = $data['to'];
+        $dto->causeCheck = $data['causeCheck'];
         $dto->animate   = $data['animate'];
         $dto->hint      = isset( $data['hint'] ) ? $data['hint'] : false;
         $dto->color     = PlayerColor::from( $data['color'] );

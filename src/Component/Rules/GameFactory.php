@@ -40,13 +40,13 @@ final class GameFactory
     {
         switch ( $gameCode ) {
             case GameVariant::BACKGAMMON_CODE:
-                return $this->createBackgammonGame( $gameVariant, $ForGold );
+                return $this->createBackgammonGame( $gameCode, $gameVariant, $ForGold );
                 break;
             case GameVariant::CHESS_CODE:
-                return $this->createChessGame( $ForGold );
+                return $this->createChessGame( $gameCode, $ForGold );
                 break;
             case GameVariant::BRIDGE_BELOTE_CODE:
-                return $this->createBridgeBeloteGame( $ForGold );
+                return $this->createBridgeBeloteGame( $gameCode, $ForGold );
                 break;
             default:
                 throw new \RuntimeException( 'Unknown Game Code !!!' );
@@ -56,28 +56,29 @@ final class GameFactory
         $this->Created          = new \DateTime( 'now' );
     }
     
-    private function createBackgammonGame( string $gameVariant, bool $ForGold ): GameInterface
+    private function createBackgammonGame( string $gameCode, string $gameVariant, bool $ForGold ): GameInterface
     {
         switch ( $gameVariant ) {
             case GameVariant::BACKGAMMON_NORMAL:
-                return $this->createBackgammonNormalGame( $ForGold );
+                return $this->createBackgammonNormalGame( $gameCode, $ForGold );
                 break;
             case GameVariant::BACKGAMMON_TAPA:
-                return $this->createBackgammonTapaGame( $ForGold );
+                return $this->createBackgammonTapaGame( $gameCode, $ForGold );
                 break;
             case GameVariant::BACKGAMMON_GULBARA:
-                return $this->createBackgammonGulBaraGame( $ForGold );
+                return $this->createBackgammonGulBaraGame( $gameCode, $ForGold );
                 break;
             default:
                 throw new \RuntimeException( 'Unknown Game Variant !!!' );
         }
     }
     
-    private function createBackgammonNormalGame( bool $forGold ): GameInterface
+    private function createBackgammonNormalGame( string $gameCode, bool $forGold ): GameInterface
     {
         $game = new BackgammonNormalGame( $this->logger );
         
         $game->Id           = Guid::NewGuid();
+        $game->GameCode     = $gameCode;
         $game->Roll         = new ArrayCollection();
         $game->ValidMoves   = new ArrayCollection();
         
@@ -116,11 +117,12 @@ final class GameFactory
         return $game;
     }
     
-    private function createBackgammonGulBaraGame( bool $forGold ): GameInterface
+    private function createBackgammonGulBaraGame( string $gameCode, bool $forGold ): GameInterface
     {
         $game = new BackgammonGulBaraGame( $this->logger );
         
         $game->Id           = Guid::NewGuid();
+        $game->GameCode     = $gameCode;
         $game->Points       = new ArrayCollection();
         $game->Roll         = new ArrayCollection();
         $game->ValidMoves   = new ArrayCollection();
@@ -160,11 +162,12 @@ final class GameFactory
         return $game;
     }
     
-    private function createBackgammonTapaGame( bool $forGold ): GameInterface
+    private function createBackgammonTapaGame( string $gameCode, bool $forGold ): GameInterface
     {
         $game = new BackgammonTapaGame( $this->logger );
         
         $game->Id           = Guid::NewGuid();
+        $game->GameCode     = $gameCode;
         $game->Points       = new ArrayCollection();
         $game->Roll         = new ArrayCollection();
         $game->ValidMoves   = new ArrayCollection();
@@ -204,11 +207,12 @@ final class GameFactory
         return $game;
     }
     
-    private function createChessGame( bool $forGold ): GameInterface
+    private function createChessGame( string $gameCode, bool $forGold ): GameInterface
     {
         $game = new ChessGame( $this->logger );
         
         $game->Id           = Guid::NewGuid();
+        $game->GameCode     = $gameCode;
         //$game->ValidMoves   = new ArrayCollection();
         
         $game->BlackPlayer = new BoardGamePlayer();
@@ -245,11 +249,12 @@ final class GameFactory
         return $game;
     }
     
-    private function createBridgeBeloteGame( bool $forGold ): GameInterface
+    private function createBridgeBeloteGame( string $gameCode, bool $forGold ): GameInterface
     {
         $game = new BridgeBeloteGame( $this->logger, $this->eventDispatcher );
         
         $game->Id           = Guid::NewGuid();
+        $game->GameCode     = $gameCode;
         
         $game->Players[PlayerPosition::South->value] = new CardGamePlayer();
         $game->Players[PlayerPosition::South->value]->PlayerPosition = PlayerPosition::South;

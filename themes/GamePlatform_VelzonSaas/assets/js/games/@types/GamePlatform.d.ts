@@ -75,6 +75,7 @@ declare module '_@/GamePlatform/Model/Core/gameDto' {
     interface GameDto
     {
         id: string;
+        gameCode: string;
         playState: GameState;
     }
     
@@ -596,10 +597,13 @@ declare module '_@/GamePlatform/Model/BoardGame/chessSquareDto' {
 
 declare module '_@/GamePlatform/Model/BoardGame/chessPieceDto' {
     import ChessPieceType from '_@/GamePlatform/Model/BoardGame/chessPieceType';
+    import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
     
     interface ChessPieceDto
     {
         Type: ChessPieceType;
+        Side: PlayerColor;
+        Moves: number;
     }
     
     export = ChessPieceDto;
@@ -616,6 +620,8 @@ declare module '_@/GamePlatform/Model/BoardGame/chessMoveDto' {
         type: ChessMoveType;
         from: string;
         to: string;
+        
+        causeCheck: boolean;
         
         piece: ChessPieceType;
         capturedPiece?: ChessPieceType;

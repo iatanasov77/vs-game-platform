@@ -29,6 +29,7 @@ use App\Component\Dto\Actions\ActionDto;
 use App\Component\Dto\Actions\ConnectionInfoActionDto;
 use App\Component\Dto\Actions\GameRestoreActionDto;
 use App\Component\Dto\Actions\GameCreatedActionDto;
+use App\Component\Dto\Actions\GameEndedActionDto;
 use App\Component\Dto\Actions\DicesRolledActionDto;
 use App\Component\Dto\Actions\RolledActionDto;
 use App\Component\Dto\Actions\HintMovesActionDto;
@@ -264,6 +265,8 @@ final class BackgammonGameManager extends BoardGameManager
             $this->Game->ThinkStart = new \DateTime( 'now' );
             $this->DoDoubling();
             $this->Game->SwitchPlayer();
+            
+            $otherSocket = $this->Game->OtherPlayer();
             $this->Send( $otherSocket, $action );
         } else if ( $actionName == ActionNames::requestHint ) {
             if ( ! $this->Game->IsGoldGame && $this->Game->CurrentPlayer == PlayerColor::Black ) {
@@ -277,7 +280,7 @@ final class BackgammonGameManager extends BoardGameManager
                 $this->Send( $otherSocket, $action );
             }
         } else if ( $actionName == ActionNames::resign ) {
-            $winner = $this->Clients->get( PlayerColor::Black->value ) == $otherSocket ? PlayerColor::Black : PlayerColor::White;
+            $winner = \in_array( $this->Clients->get( PlayerColor::Black->value ), $otherSockets ) ? PlayerColor::Black : PlayerColor::White;
             $this->Resign( $winner );
         } else if ( $actionName == ActionNames::exitGame ) {
             $this->logger->log( 'exitGame action recieved from GameManager.', 'GameManager' );

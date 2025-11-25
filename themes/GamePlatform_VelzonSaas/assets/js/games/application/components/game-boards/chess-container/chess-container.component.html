@@ -67,9 +67,14 @@
             
             [newVisible]="newVisible"
             [exitVisible]="exitVisible"
+            [resignVisible]="resignVisible"
+            [sendVisible]="sendVisible"
+            [undoVisible]="undoVisible"
             
             (onNew)="newGame()"
             (onExit)="exitGame()"
+            (onSendMove)="sendMove()"
+            (onUndoMove)="undoMove()"
             
             (onPlayGame)="playGame($event)"
             (onInviteFriend)="inviteFriend()"

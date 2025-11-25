@@ -30,7 +30,10 @@ final class Mapper
     public static function BoardGameToDto( BoardGame $game ): BoardGameDto
     {
         $gameDto = new BoardGameDto();
+        
         $gameDto->id = $game->Id;
+        $gameDto->gameCode = $game->GameCode;
+        
         $gameDto->blackPlayer = self::BoardGamePlayerToDto( $game->BlackPlayer );
         $gameDto->whitePlayer = self::BoardGamePlayerToDto( $game->WhitePlayer );
         $gameDto->currentPlayer = $game->CurrentPlayer;
@@ -173,7 +176,9 @@ final class Mapper
     public static function CardGameToDto( CardGame $game ): CardGameDto
     {
         $gameDto = new CardGameDto();
+        
         $gameDto->id = $game->Id;
+        $gameDto->gameCode = $game->GameCode;
         
         $gameDto->players = self::CardGamePlayersToDto( $game->Players );
         
@@ -297,6 +302,8 @@ final class Mapper
         
         $chessPieceDto = new ChessPieceDto();
         $chessPieceDto->Type = $piece->Type;
+        $chessPieceDto->Side = $piece->Side->type;
+        $chessPieceDto->Moves = $piece->Moves;
         
         return $chessPieceDto;
     }
@@ -308,6 +315,8 @@ final class Mapper
         $moveDto->type = $move->Type;
         $moveDto->from = "{$move->From}";
         $moveDto->to = "{$move->To}";
+        
+        $moveDto->causeCheck = $move->CauseCheck;
         
         /*
         $moveDto->piece = $move->Piece->Type;
@@ -334,6 +343,8 @@ final class Mapper
         
         $move->From = $game->Squares[$dto->from];
         $move->To = $game->Squares[$dto->to];
+        
+        $move->CauseCheck = $dto->causeCheck;
 
         /*
         $move->Piece = $dto->piece ? new ChessPiece( $dto->piece, new ChessSide( $dto->color ) ) : null;

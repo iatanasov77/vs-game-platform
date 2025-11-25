@@ -13,5 +13,5 @@ class ChessMoveMadeActionDto extends ActionDto
     
     /** @var ChessMoveDto $move */
     #[Context([ChessMoveDtoDenormalizer::class])]
-    public ChessMoveDto $move;
+    public ?ChessMoveDto $move;
 }

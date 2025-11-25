@@ -1,3 +1,16 @@
+0.18.1	|	Release date: **25.11.2025**
+============================================
+* Bug-Fixes and Improvements:
+  - Fix Chess Board Generate Pawn Moves.
+  - Debug Chess Game Generate Moves for AI Engine.
+  - Improve Chess Game Rules.
+  - Improve ChessMoveDto Actions with some More Properties.
+  - Fix Chess Game Status Messages.
+  - Improve Chess Game AI GetBestMove .
+  - Make to Can Undo a Move in Chess Game.
+  - Fix Resign Game for Board Games.
+
+
 0.18.0	|	Release date: **22.11.2025**
 ============================================
 * New Features:

@@ -17,7 +17,7 @@ class ChessRules
     private  $logger;
     
     /** @var Collection | ChessSquare[] */
-    private $gameSquares;
+    public $gameSquares;
     
     public function __construct( ChessGame $game, GameLogger $logger )
     {
@@ -83,10 +83,18 @@ class ChessRules
                 
             case ChessPieceType::Queen:	// Queen piece
                 $this->GetQueenMoves( $source, $LegalMoves );
+                
+//                 $debugLegalMoves = \print_r( $LegalMoves->toArray(), true );
+//                 $this->logger->log( "Queen Valid Moves: {$debugLegalMoves}", 'EnginMoves' );
+                
                 break;
                 
             case ChessPieceType::King:	// king piece
                 $this->GetKingMoves( $source, $LegalMoves );
+                
+//                 $debugLegalMoves = \print_r( $LegalMoves->toArray(), true );
+//                 $this->logger->log( "King Valid Moves: {$debugLegalMoves}", 'EnginMoves' );
+                
                 break;
         }
         
@@ -97,6 +105,10 @@ class ChessRules
     public function GetLegalMoves( ChessSquare $source ): Collection
     {
         $LegalMoves = $this->GetPossibleMoves( $source );	// Get the legal moves
+        
+        //$debugLegalMoves = \print_r( $LegalMoves->toArray(), true );
+        //$this->logger->log( "Get the legal moves: {$debugLegalMoves}", 'EnginMoves' );
+        
         $ToRemove = new ArrayCollection();	// contains a list of all the moves to remove
         
         // Now check and mark all the moves which moves user under check
@@ -105,6 +117,10 @@ class ChessRules
             $move = new ChessMove();
             $move->From = $source;
             $move->To = $target;
+            $move->Piece = $source->Piece;
+            $move->Type = $target->Piece ? ChessMoveType::CaputreMove : ChessMoveType::NormalMove;
+            $move->CapturedPiece = $target->Piece ?: null;
+            
             if ( $this->CauseCheck( $move ) ) {
                 $ToRemove[] = $target;
             }
@@ -122,6 +138,9 @@ class ChessRules
             }
         }
         
+        //$debugLegalMoves = \print_r( $ToRemove->toArray(), true );
+        //$this->logger->log( "To Remove Legal Moves: {$debugLegalMoves}", 'EnginMoves' );
+        
         // remove all the illegal moves
         foreach ( $ToRemove as $cell ) {
             $LegalMoves->removeElement( $cell );	// remove the illegal move
@@ -137,7 +156,7 @@ class ChessRules
         $this->actualGameSquares();
         
         $TotalMoves = new ArrayCollection();
-        $PlayerCells = $this->game->GetSideCell( $PlayerSide->type );
+        $PlayerCells = $this->game->GetSideCell( $PlayerSide->type, $this->gameSquares );
         
         // Loop all the owner squars and get their possible moves
         foreach ( $PlayerCells as $CellName ) {
@@ -174,8 +193,10 @@ class ChessRules
     // Generate all the good capture moves. These are used for quiescent searching
     public function GenerateGoodCaptureMoves( ChessSide $PlayerSide ): Collection
     {
+        $this->actualGameSquares();
+        
         $TotalMoves = new ArrayCollection();
-        $PlayerCells = $this->game->GetSideCell( $PlayerSide );
+        $PlayerCells = $this->game->GetSideCell( $PlayerSide, $this->gameSquares );
         
         // Loop all the owner squars and get their possible moves
         foreach ( $PlayerCells as $CellName ) {
@@ -374,12 +395,15 @@ class ChessRules
     }
     
     // Return true if the given side type is under check state
-    public function IsUnderCheck( PlayerColor $PlayerSide ): bool
+    public function IsUnderCheck( PlayerColor $PlayerSide, bool $actualizeGameSquares = true ): bool
     {
-        $this->actualGameSquares();
+        if ( $actualizeGameSquares ) {
+            $this->actualGameSquares();
+        }
+        $allSquares = $this->gameSquares;
         
         $OwnerKingCell=null;
-        $OwnerCells = $this->game->GetSideCell( $PlayerSide );
+        $OwnerCells = $this->game->GetSideCell( $PlayerSide, $allSquares );
         
         // loop all the owner squars and get his king cell
         foreach ( $OwnerCells as $CellName ) {
@@ -389,18 +413,22 @@ class ChessRules
             }
         }
         
+        /* This Create Infinite recursion? at ArrayCollection.php
+         * =======================================================
         // Loop all the enemy squars and get their possible moves
-        $EnemyCells = $this->game->GetSideCell( ( new ChessSide( $PlayerSide ) )->Enemy() );
+        $EnemyCells = $this->game->GetSideCell( ( new ChessSide( $PlayerSide ) )->Enemy(), $allSquares );
         //$this->logger->log( "Game Squares: " . \print_r( $this->gameSquares, true ), 'EnginMoves' );
         foreach ( $EnemyCells as $CellName ) {
             //$this->logger->log( "Player Side: {$PlayerSide->value}", 'EnginMoves' );
             //$this->logger->log( "Cell Name: {$CellName}", 'EnginMoves' );
             $moves = $this->GetPossibleMoves( $this->gameSquares[$CellName] );	// Get the moves for the enemy piece
+            
             // King is directly under attack
             if ( $moves->contains( $OwnerKingCell ) ) {
                 return true;
             }
         }
+        */
         
         return false;
     }
@@ -409,7 +437,7 @@ class ChessRules
     public function AnalyzeBoard( PlayerColor $PlayerSide ): int
     {
         $Score = 0;
-        $OwnerCells = $this->game->GetSideCell( $PlayerSide );
+        $OwnerCells = $this->game->GetSideCell( $PlayerSide, $this->gameSquares );
         
         // loop all the owner squars and get his king cell
         foreach ( $OwnerCells as $ChessCell ) {
@@ -580,7 +608,7 @@ class ChessRules
         $TotalMoves = 0;
         
         // Loop all the owner squars and get their possible moves
-        $PlayerCells = $this->game->GetSideCell( $PlayerSide );
+        $PlayerCells = $this->game->GetSideCell( $PlayerSide, $this->gameSquares );
         foreach ( $PlayerCells as $CellName ) {
             $moves = $this->GetLegalMoves( $this->gameSquares[$CellName] );	// Get all the legal moves for the owner piece
             $TotalMoves += $moves->count();
@@ -600,7 +628,9 @@ class ChessRules
         
         // To check if a move cause check, we actually need to execute and check the result of that move
         $this->ExecuteMove( $move );
-        $CauseCheck = $this->IsUnderCheck( $PlayerSide );
+//         $debugMove = \print_r( $move, true );
+//         $this->logger->log( "Cause Check Move: {$debugMove}", 'EnginMoves' );
+        $CauseCheck = $this->IsUnderCheck( $PlayerSide, false );
         $this->UndoMove( $move );	// undo the move
         
         return $CauseCheck;

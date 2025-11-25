@@ -319,7 +319,7 @@ final class ChessGameManager extends BoardGameManager
     protected function EnginMoves( WebsocketClientInterface $client ): void
     {
         $move = $this->Engine->GetBestMove();
-        $this->logger->log( 'Engine Best Move: ' . print_r( $move, true ), 'EnginMoves' );
+        //$this->logger->log( 'Engine Best Move: ' . print_r( $move, true ), 'EnginMoves' );
         
         $promise = Async\async( function () use ( $client, $move ) {
             $sleepMileseconds   = \rand( 700, 1200 );

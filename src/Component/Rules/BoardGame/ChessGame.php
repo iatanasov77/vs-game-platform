@@ -78,7 +78,7 @@ class ChessGame extends Game
     
     public function MakeMove( ChessMove &$move ): ?ChessPiece
     {
-        $this->logger->log( "MakeMove: " . print_r( $move, true ), 'GenerateMoves' );
+        //$this->logger->log( "MakeMove: " . print_r( $move, true ), 'GenerateMoves' );
         
         if ( $this->Squares["{$move->To}"]->Piece ) {
             $this->CapturedPieces[] = $this->Squares["{$move->To}"]->Piece;
@@ -109,7 +109,7 @@ class ChessGame extends Game
     }
     
     // get all the cell containg pieces of given side
-    public function GetSideCell( PlayerColor $PlayerSide ): Collection
+    public function GetSideCell( PlayerColor $PlayerSide, Collection $allSquares ): Collection
     {
         $CellNames = new ArrayCollection();
         
@@ -121,10 +121,10 @@ class ChessGame extends Game
                 
                 // check and add the current type cell
                 if (
-                    $this->Squares[$key]->Piece != null &&
-                    $this->Squares[$key]->Piece->Side->type == $PlayerSide
+                    $allSquares[$key]->Piece != null &&
+                    $allSquares[$key]->Piece->Side->type == $PlayerSide
                 ) {
-                    $CellNames[] = "{$this->Squares[$key]}"; // append the cell name to list
+                    $CellNames[] = "{$allSquares[$key]}"; // append the cell name to list
                 }
             }
         }

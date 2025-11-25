@@ -67,6 +67,14 @@
             {{ 'menu.resign' | translate }}
         </button>
         
+        <button (click)="sendMove()" *ngIf="sendVisible" class="default-button">
+            {{ 'game_board.done' | translate }}
+        </button>
+        
+        <button (click)="undoMove()" *ngIf="undoVisible" class="secondary-button">
+            {{ 'game_board.undo' | translate }}
+        </button>
+        
     </ng-container>
     
     <ng-container *ngIf="debugGameSoundsVisible">

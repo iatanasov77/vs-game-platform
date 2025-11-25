@@ -22,6 +22,8 @@ export class BoardButtonsComponent implements OnInit, OnChanges
     
     @Input() newVisible = false;
     @Input() exitVisible = false;
+    @Input() sendVisible = false;
+    @Input() undoVisible = false;
     @Input() newRoundVisible = false;
     @Input() debugGameSoundsVisible = false;
     
@@ -41,6 +43,9 @@ export class BoardButtonsComponent implements OnInit, OnChanges
     @Output() onRotate = new EventEmitter<void>();
     @Output() onFlip = new EventEmitter<void>();
     @Output() onResign = new EventEmitter<void>();
+    
+    @Output() onSendMove = new EventEmitter<void>();
+    @Output() onUndoMove = new EventEmitter<void>();
     
     gameCode = null;
     inviteId = null;
@@ -158,5 +163,15 @@ export class BoardButtonsComponent implements OnInit, OnChanges
     resignClick(): void
     {
         this.onResign.emit();
+    }
+    
+    sendMove(): void
+    {
+        this.onSendMove.emit();
+    }
+    
+    undoMove(): void
+    {
+        this.onUndoMove.emit();
     }
 }

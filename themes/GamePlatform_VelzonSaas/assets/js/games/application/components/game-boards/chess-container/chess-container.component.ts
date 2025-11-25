@@ -125,6 +125,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
     gameDto: BoardGameDto | undefined;
     newVisible = false;
     exitVisible = true;
+    sendVisible = false;
     undoVisible = false;
     
     appState?: MyGameState;
@@ -422,6 +423,48 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
         this.lobbyButtonsVisibleChanged.emit( true );
     }
     
+    sendMove(): void
+    {
+        this.sendVisible = false;
+        this.undoVisible = false;
+        
+        const lastMove = this.board.getMoveHistory().slice(-1)[0];
+        //console.log( 'Last Move', lastMove );
+        
+        //var pieceType: ChessPieceType = lastMove.piece as unknown as ChessPieceType;
+        const pieceType = ChessPieceType[lastMove.piece as keyof typeof ChessPieceType];
+        const playerColor = PlayerColor[lastMove.color as keyof typeof PlayerColor];
+        
+        const move: ChessMoveDto = {
+            color: playerColor,
+            type: ChessMoveType.NormalMove,
+            from: lastMove.move.slice( 0, 2 ).toUpperCase(),
+            to: lastMove.move.slice( 2, 4 ).toUpperCase(),
+            
+            causeCheck: lastMove.check,
+            
+            piece: pieceType,
+            
+            nextMoves: [],
+            animate: false,
+            hint: false
+        };
+        //console.log( 'ChessMoveDto', move );
+        
+        // if ( ! move.animate ) this.sound.playChecker();
+        this.wsService.switchPlayer();
+        this.wsService.doMove( move );
+        this.wsService.sendMove( move );
+    }
+    
+    undoMove(): void
+    {
+        this.sendVisible = false;
+        this.undoVisible = false;
+        
+        this.board.undo();
+    }
+    
     getDoubling( color: PlayerColor ): Observable<number>
     {
         return this.gameDto$.pipe(
@@ -515,33 +558,8 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
             return;
         }
         
-        const lastMove = this.board.getMoveHistory().slice(-1)[0];
-        //console.log( 'Last Move', lastMove );
-        
-        //var pieceType: ChessPieceType = lastMove.piece as unknown as ChessPieceType;
-        const pieceType = ChessPieceType[lastMove.piece as keyof typeof ChessPieceType];
-        const playerColor = PlayerColor[lastMove.color as keyof typeof PlayerColor];
-        
-        const move: ChessMoveDto = {
-            color: playerColor,
-            type: ChessMoveType.NormalMove,
-            from: lastMove.move.slice( 0, 2 ).toUpperCase(),
-            to: lastMove.move.slice( 2, 4 ).toUpperCase(),
-            
-            causeCheck: lastMove.check,
-            
-            piece: pieceType,
-            
-            nextMoves: [],
-            animate: false,
-            hint: false
-        };
-        //console.log( 'ChessMoveDto', move );
-        
-        // if ( ! move.animate ) this.sound.playChecker();
-        this.wsService.switchPlayer();
-        this.wsService.doMove( move );
-        this.wsService.sendMove( move );
+        this.sendVisible = true;
+        this.undoVisible = true;
     }
     
     onFlipped(): void

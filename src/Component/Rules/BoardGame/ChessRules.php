@@ -400,10 +400,9 @@ class ChessRules
         if ( $actualizeGameSquares ) {
             $this->actualGameSquares();
         }
-        $allSquares = $this->gameSquares;
         
         $OwnerKingCell=null;
-        $OwnerCells = $this->game->GetSideCell( $PlayerSide, $allSquares );
+        $OwnerCells = $this->game->GetSideCell( $PlayerSide, $this->gameSquares );
         
         // loop all the owner squars and get his king cell
         foreach ( $OwnerCells as $CellName ) {
@@ -416,7 +415,7 @@ class ChessRules
         /* This Create Infinite recursion? at ArrayCollection.php
          * =======================================================
         // Loop all the enemy squars and get their possible moves
-        $EnemyCells = $this->game->GetSideCell( ( new ChessSide( $PlayerSide ) )->Enemy(), $allSquares );
+        $EnemyCells = $this->game->GetSideCell( ( new ChessSide( $PlayerSide ) )->Enemy(), $this->gameSquares );
         //$this->logger->log( "Game Squares: " . \print_r( $this->gameSquares, true ), 'EnginMoves' );
         foreach ( $EnemyCells as $CellName ) {
             //$this->logger->log( "Player Side: {$PlayerSide->value}", 'EnginMoves' );

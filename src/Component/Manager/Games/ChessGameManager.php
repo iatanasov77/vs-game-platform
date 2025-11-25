@@ -15,6 +15,7 @@ use App\Component\Manager\BoardGameManager;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Rules\BoardGame\Game;
 use App\Component\Rules\BoardGame\Player;
+use App\Component\Rules\BoardGame\ChessMove;
 use App\Component\AI\EngineFactory as AiEngineFactory;
 use App\Component\Utils\Guid;
 use App\Component\Websocket\WebSocketState;
@@ -32,6 +33,7 @@ use App\Component\Dto\Actions\ConnectionInfoActionDto;
 use App\Component\Dto\Actions\GameRestoreActionDto;
 use App\Component\Dto\Actions\GameCreatedActionDto;
 use App\Component\Dto\Actions\ChessGameStartedActionDto;
+use App\Component\Dto\Actions\GameEndedActionDto;
 use App\Component\Dto\Actions\HintMovesActionDto;
 use App\Component\Dto\Actions\ChessMoveMadeActionDto;
 use App\Component\Dto\Actions\UndoActionDto;
@@ -70,7 +72,11 @@ final class ChessGameManager extends BoardGameManager
                 if ( $this->Game->CurrentPlayer == PlayerColor::White ) {
                     $promise = Async\async( function () {
                         $this->logger->log( "GameManager CurrentPlayer: White", 'GameManager' );
-                        $this->EnginMoves( $this->Clients->get( PlayerColor::Black->value ) );
+                        
+                        $move = $this->Engine->GetBestMove();
+                        //$this->logger->log( 'Engine Best Move: ' . print_r( $move, true ), 'EnginMoves' );
+                        
+                        $this->EnginMoves( $this->Clients->get( PlayerColor::Black->value ), $move );
                     })();
                     \React\Async\await( $promise );
                 }
@@ -274,19 +280,26 @@ final class ChessGameManager extends BoardGameManager
     {
         $winner = $this->GetWinner();
         $this->Game->SwitchPlayer();
-        if ( $winner ) {
-            $this->EndGame( $winner );
-        } else {
-           if ( $this->AisTurn() ) {
-                $this->logger->log( "NewTurn for AI", 'SwitchPlayer' );
-                $this->EnginMoves( $socket );
+        if ( $this->AisTurn() ) {
+            $this->logger->log( "NewTurn for AI", 'SwitchPlayer' );
+            
+            $move = $this->Engine->GetBestMove();
+            //$this->logger->log( 'Engine Best Move: ' . print_r( $move, true ), 'EnginMoves' );
+            
+            if ( $winner && ! $move ) {
+                $this->EndGame( $winner );
             }
+            
+            $this->EnginMoves( $socket, $move );
         }
     }
     
     protected function GetWinner(): ?PlayerColor
     {
         $winner = null;
+        if ( $this->Game->UnderCheck ) {
+            $winner = $this->Game->CauseCheckPlayer;
+        }
         
         return $winner;
     }
@@ -316,11 +329,8 @@ final class ChessGameManager extends BoardGameManager
         $this->Game->MakeMove( $move );
     }
     
-    protected function EnginMoves( WebsocketClientInterface $client ): void
+    protected function EnginMoves( WebsocketClientInterface $client, ?ChessMove $move ): void
     {
-        $move = $this->Engine->GetBestMove();
-        //$this->logger->log( 'Engine Best Move: ' . print_r( $move, true ), 'EnginMoves' );
-        
         $promise = Async\async( function () use ( $client, $move ) {
             $sleepMileseconds   = \rand( 700, 1200 );
             Async\delay( $sleepMileseconds / 1000 );

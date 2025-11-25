@@ -33,12 +33,21 @@ class ChessGame extends Game
     /** @var bool */
     public $DoQuiescentSearch;		// Return true when computer should do Queiscent search
     
+    /** @var bool */
+    public $UnderCheck;
+    
+    /** @var PlayerColor */
+    public $CauseCheckPlayer;
+    
     public function __construct( GameLogger $logger )
     {
         parent::__construct( $logger );
         
         $this->CapturedPieces = new ArrayCollection();
         $this->Rules    = new ChessRules( $this, $logger );
+        
+        $this->UnderCheck = false;
+        $this->CauseCheckPlayer = PlayerColor::Neither;
     }
     
     public function SetStartPosition(): void
@@ -93,6 +102,9 @@ class ChessGame extends Game
         
         $move->Piece = $movedPiece;
         $this->MovesHistory[] = $move;
+        
+        $this->UnderCheck = $move->CauseCheck;
+        $this->CauseCheckPlayer = $this->UnderCheck ? $move->Color : PlayerColor::Neither;
         
         return $move->CapturedPiece ?: null;
     }

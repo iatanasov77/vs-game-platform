@@ -14,6 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
+use App\Component\GamePlatform;
 use App\Entity\Game;
 use App\Entity\GameCategory;
 
@@ -34,7 +35,9 @@ class GameForm extends AbstractForm
     {
     	parent::buildForm( $builder, $options );
         
+    	$entity = $builder->getData();
         $currentLocale  = $this->requestStack->getCurrentRequest()->getLocale();
+        
         $builder
         	->add( 'locale', ChoiceType::class, [
                 'label'                 => 'vs_cms.form.locale',
@@ -49,9 +52,15 @@ class GameForm extends AbstractForm
                 'translation_domain'    => 'VSApplicationBundle',
             ])
             
-            ->add( 'notImplemented', CheckboxType::class, [
-                'label'                 => 'game_platform.form.game.not_implemented',
+            ->add( 'status', ChoiceType::class, [
+                'label'                 => 'game_platform.form.game.game_status',
                 'translation_domain'    => 'GamePlatform',
+                
+                'choices'               => \array_flip( GamePlatform::GAME_STATUS ),
+                'expanded'              => true,
+                'data'                  => empty( $entity->getStatus() ) ?
+                                            \array_key_first( GamePlatform::GAME_STATUS ) :
+                                            $entity->getStatus(),
             ])
             
             ->add( 'category', EntityType::class, [

@@ -65,9 +65,9 @@ class Game implements ResourceInterface
     #[ORM\OneToMany(targetEntity: GamePlay::class, mappedBy: "game", cascade: ["persist", "remove"], orphanRemoval: true)]
     private $gameSessions;
     
-    /** @var bool */
-    #[ORM\Column(name: "not_implemented", type: "boolean", options: ["default" => 1], nullable: true)]
-    private $notImplemented = true;
+    /** @var string */
+    #[ORM\Column(type: "string", columnDefinition: "ENUM('not_implemented', 'in_developement', 'in_developement_but', 'game_is_done')", options: ["default" => "symfony_route"])]
+    private $status;
     
     public function __construct()
     {
@@ -178,14 +178,14 @@ class Game implements ResourceInterface
         return $this;
     }
     
-    public function getNotImplemented()
+    public function getStatus()
     {
-        return $this->notImplemented;
+        return $this->status;
     }
     
-    public function setNotImplemented($notImplemented)
+    public function setStatus($status)
     {
-        $this->notImplemented = $notImplemented;
+        $this->status = $status;
         
         return $this;
     }

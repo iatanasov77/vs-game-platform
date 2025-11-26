@@ -33,6 +33,10 @@ class BridgeBeloteController extends GameController
             ],
         ];
         
+        if ( $game->getStatus() && $game->getStatus() != GamePlatform::GAME_STATUS_DONE ) {
+            $this->showGameStatus( $request, $game );
+        }
+        
         return new Response(
             $this->templatingEngine->render( $this->getTemplate( $gameSlug , 'Pages/Games/bridge-belote.html.twig' ), [
                 'game'          => $game,

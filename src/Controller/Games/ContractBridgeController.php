@@ -18,6 +18,10 @@ class ContractBridgeController extends GameController
             'timeoutBetweenPlayers' => $gamePlatformSettings->getTimeoutBetweenPlayers(),
         ];
         
+        if ( $game->getStatus() && $game->getStatus() != GamePlatform::GAME_STATUS_DONE ) {
+            $this->showGameStatus( $request, $game );
+        }
+        
         return new Response(
             $this->templatingEngine->render( $this->getTemplate( $gameSlug , 'Pages/Games/contract-bridge.html.twig' ), [
                 'game'          => $game,

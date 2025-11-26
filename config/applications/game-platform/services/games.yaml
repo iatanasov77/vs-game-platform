@@ -168,6 +168,7 @@ services:
             - '@twig'
             - '@vsapp.repository.games'
             - '@http_client'
+            - '@translator'
     
     App\Controller\Games\BridgeBeloteController:
         tags: ['controller.service_arguments']
@@ -177,6 +178,7 @@ services:
             - '@twig'
             - '@vsapp.repository.games'
             - '@http_client'
+            - '@translator'
             
     App\Controller\Games\ContractBridgeController:
         tags: ['controller.service_arguments']
@@ -186,6 +188,7 @@ services:
             - '@twig'
             - '@vsapp.repository.games'
             - '@http_client'
+            - '@translator'
             
     App\Controller\Games\ChessController:
         tags: ['controller.service_arguments']
@@ -195,6 +198,7 @@ services:
             - '@twig'
             - '@vsapp.repository.games'
             - '@http_client'
+            - '@translator'
             
     App\Controller\Games\BackgammonController:
         tags: ['controller.service_arguments']
@@ -204,3 +208,4 @@ services:
             - '@twig'
             - '@vsapp.repository.games'
             - '@http_client'
+            - '@translator'

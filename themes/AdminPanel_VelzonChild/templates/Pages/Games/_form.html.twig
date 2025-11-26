@@ -18,15 +18,18 @@
         </label>
     </div>
     
-    <div class="form-check form-check-secondary mb-3">
-        <input type="checkbox" id="game_form_notImplemented" name="game_form[notImplemented]"
-            class="form-check-input"
-            {% if form.vars.value.notImplemented %}checked="checked"{% endif %}
-        />
-        <label class="form-check-label" for="game_form_notImplemented">
-            {{ 'game_platform.form.game.not_implemented'|trans({}, 'GamePlatform') }}
-        </label>
-    </div>
+    <fieldset class="border border-dark rounded p-2 mt-3 mb-3">
+        <legend class="w-auto float-none ps-2 pe-2">{{ 'game_platform.form.game.game_status' | trans( {},'GamePlatform' ) }}</legend>
+    
+        <div class="form-group">
+           {% for child in form.status %}
+                <div class="custom-control custom-radio">
+                    {{- form_widget(child, {'attr': {'class': 'form-check-input me-2 mb-2'}}) -}}
+                    {{- form_label(child, null, {'label_attr': {'class': 'form-check-label'}}) -}}
+                </div>
+            {% endfor %}
+        </div>
+    </fieldset>
     
     <div class="form-group">
         {{ form_label(form.locale, null, {

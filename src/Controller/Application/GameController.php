@@ -3,12 +3,16 @@
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\HttpClient\Exception\ClientException;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Twig\Environment;
 use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTEncodeFailureException;
 use Vankosoft\ApplicationBundle\Component\Context\ApplicationContextInterface;
 use Vankosoft\ApiBundle\Exception\ApiLoginException;
 use Vankosoft\ApplicationBundle\Component\Status;
+use App\Component\GamePlatform;
+use App\Entity\Game;
 
 /**
  * Extending From All Game Controllers
@@ -27,16 +31,21 @@ class GameController extends AbstractController
     /** @var HttpClientInterface */
     protected $httpClient;
     
+    /** @var TranslatorInterface */
+    protected $translator;
+    
     public function __construct(
         ApplicationContextInterface $applicationContext,
         Environment $templatingEngine,
         EntityRepository $gamesRepository,
-        HttpClientInterface $httpClient
+        HttpClientInterface $httpClient,
+        TranslatorInterface $translator
     ) {
         $this->applicationContext   = $applicationContext;
         $this->templatingEngine     = $templatingEngine;
         $this->gamesRepository      = $gamesRepository;
         $this->httpClient           = $httpClient;
+        $this->translator           = $translator;
     }
     
     protected function getTemplate( string $gameSlug, string $template ): string
@@ -70,6 +79,24 @@ class GameController extends AbstractController
         }
         catch ( JWTEncodeFailureException $e ) {
             throw new ApiLoginException( 'JWTEncodeFailureException: ' . $e->getMessage() );
+        }
+    }
+    
+    protected function showGameStatus( Request $request, Game $game ): void
+    {
+        if ( $request->hasSession() ) {
+            switch ( $game->getStatus() ) {
+                case GamePlatform::GAME_STATUS_IN_DEVELOPEMENT:
+                    $message = $this->translator->trans( 'game_platform.game_status.in_developement', [], 'GamePlatform' );
+                    break;
+                case GamePlatform::GAME_STATUS_IN_DEVELOPEMENT_BUT:
+                    $message = $this->translator->trans( 'game_platform.game_status.in_developement_but', [], 'GamePlatform' );
+                    break;
+                default:
+                    $message = $this->translator->trans( 'game_platform.game_status.not_implemented', [], 'GamePlatform' );
+            }
+            
+            $request->getSession()->getFlashBag()->add( 'notice', $message );
         }
     }
 }

@@ -1,4 +1,9 @@
 game_platform:
+    game_status:
+        not_implemented: The Game is Not Implemented YET !!!
+        in_developement: The Game is In Developement !!!
+        in_developement_but: The Game is In Developement But You can Play with Computer(AI) !!!
+    
     template:
         page_title_game_platform_application_listing: Game Platform Applications
         page_title_game_platform_settings_listing: Game Platform Settings
@@ -84,7 +89,11 @@ game_platform:
             parent_game: Parent Game
             parent_game_placeholder: '-- Choose a Parent Game'
             parent_game_help: Choose a Parent Game if this Game is a Game Variant
+            game_status: Game Status
             not_implemented: Not Implemented
+            in_developement: In Developement
+            in_developement_but: In Developement But Play With Computer (AI) is Done
+            game_is_done: Game is Done
             
         game_room:
             game: Game

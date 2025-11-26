@@ -1,3 +1,9 @@
+1.0.0	|	Release date: **26.11.2025**
+============================================
+* New Features:
+  - Add Game Status in Game Entity.
+
+
 0.18.1	|	Release date: **25.11.2025**
 ============================================
 * Bug-Fixes and Improvements:

@@ -35,6 +35,7 @@ import { Keys } from '../../../utils/keys';
 // Dialogs
 import { RequirementsDialogComponent } from '../../game-dialogs/requirements-dialog/requirements-dialog.component';
 import { CreateInviteGameDialogComponent } from '../../game-dialogs/create-invite-game-dialog/create-invite-game-dialog.component';
+import { UserLoginDialogComponent } from '../../game-dialogs/user-login-dialog/user-login-dialog.component';
 
 // App State
 import { AppStateService } from '../../../state/app-state.service';
@@ -547,6 +548,16 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
     cancelInvite(): void
     {
         this.exitGame();
+    }
+    
+    login(): void
+    {
+        const modalRef = this.ngbModal.open( UserLoginDialogComponent );
+        
+        modalRef.componentInstance.closeModal.subscribe( () => {
+            // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
+            modalRef.dismiss();
+        });
     }
     
     oponentMove( dto: ChessMoveDto ): void

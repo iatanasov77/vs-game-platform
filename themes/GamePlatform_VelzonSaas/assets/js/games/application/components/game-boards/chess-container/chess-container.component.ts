@@ -88,6 +88,8 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
     @Input() hasPlayer: boolean             = false;
     
     @Output() lobbyButtonsVisibleChanged    = new EventEmitter<boolean>();
+    @Output() isStarted                     = new EventEmitter<boolean>();
+    @Output() isPlayAi                      = new EventEmitter<boolean>();
     
     @ViewChild( 'messages' ) messages: ElementRef | undefined;
     @ViewChild( 'board', { static: false } ) board!: NgxChessBoardView;
@@ -279,7 +281,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
         const _innerHeight   = $( '#GameBoardContainer' ).height();
         
         this.width = Math.min( _innerWidth, 1024 );
-        this.boardWidth = this.width * 0.75;
+        this.boardWidth = this.width * 0.7;
         
         const span = this.messages?.nativeElement as Element;
         // console.log( span.getElementsByTagName( 'span' ) );
@@ -308,6 +310,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
                 this.started = true;
                 this.playAiQuestion = false;
                 this.lobbyButtonsVisibleChanged.emit( false );
+                this.isStarted.emit( true );
                 
                 const myColor = this.appStateService.myColor.getValue();
                 if ( myColor === PlayerColor.black ) {
@@ -434,6 +437,8 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
         this.gamePlayService.exitBoardGame();
         this.playAiQuestion = false;
         this.lobbyButtonsVisibleChanged.emit( true );
+        this.isStarted.emit( false );
+        this.isPlayAi.emit( false );
     }
     
     sendMove(): void
@@ -496,6 +501,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
             await Helper.delay( 500 );
         }
         
+        this.isPlayAi.emit( true );
         this.wsService.connect( '', true, this.forGoldFlag );
     }
     
@@ -621,6 +627,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
         this.wsService.connect( gameId, this.playAiFlag, this.forGoldFlag );
         
         this.lobbyButtonsVisibleChanged.emit( false );
+        this.isPlayAi.emit( this.playAiFlag );
         this.waitForOpponent();
         window.dispatchEvent( new Event( 'resize' ) );
         

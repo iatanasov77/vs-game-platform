@@ -94,6 +94,8 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
     @Input() hasPlayer: boolean             = false;
     
     @Output() lobbyButtonsVisibleChanged    = new EventEmitter<boolean>();
+    @Output() isStarted                     = new EventEmitter<boolean>();
+    @Output() isPlayAi                      = new EventEmitter<boolean>();
     
     @ViewChild( 'dices' ) dices: ElementRef | undefined;
     @ViewChild( 'backgammonBoardButtons' ) backgammonBoardButtons: ElementRef | undefined;
@@ -412,6 +414,7 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
                 clearTimeout( this.startedHandle );
                 this.started = true;
                 this.playAiQuestion = false;
+                this.isStarted.emit( true );
                 this.lobbyButtonsVisibleChanged.emit( false );
             }
             
@@ -666,6 +669,8 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
         this.gamePlayService.exitBoardGame();
         this.playAiQuestion = false;
         this.lobbyButtonsVisibleChanged.emit( true );
+        this.isStarted.emit( false );
+        this.isPlayAi.emit( false );
     }
     
     requestDoubling(): void
@@ -704,6 +709,7 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
             await Helper.delay( 500 );
         }
         
+        this.isPlayAi.emit( true );
         this.wsService.connect( '', true, this.forGoldFlag );
     }
     
@@ -820,6 +826,7 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
         this.wsService.connect( gameId, this.playAiFlag, this.forGoldFlag );
         
         this.lobbyButtonsVisibleChanged.emit( false );
+        this.isPlayAi.emit( this.playAiFlag );
         this.waitForOpponent();
         window.dispatchEvent( new Event( 'resize' ) );
         

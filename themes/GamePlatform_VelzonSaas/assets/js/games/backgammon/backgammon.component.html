@@ -1,6 +1,6 @@
 <div class="row">
-    <div class="col-2">
-        <div>
+    <div class="col-2 app-chat">
+        <div *ngIf="isStarted && ! isPlayAi">
             <game-chat></game-chat>
         </div>
     </div>
@@ -14,6 +14,8 @@
             [introPlaying]="introPlaying"
             [hasPlayer]="hasPlayer"
             (lobbyButtonsVisibleChanged)="lobbyButtonsVisibleChanged($event)"
+            (isStarted)="gameIsStarted($event)"
+            (isPlayAi)="gameIsPlayAi($event)"
         ></app-backgammon-container>
         
         <app-busy [busy]="busy$ | async" [lobbyButtonsVisible]="lobbyButtonsVisible"></app-busy>

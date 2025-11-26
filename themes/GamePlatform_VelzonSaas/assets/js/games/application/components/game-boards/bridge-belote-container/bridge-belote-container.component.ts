@@ -90,6 +90,9 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
     @Input() hasPlayer: boolean         = false;
     
     @Output() lobbyButtonsVisibleChanged    = new EventEmitter<boolean>();
+    @Output() isStarted                     = new EventEmitter<boolean>();
+    @Output() isPlayAi                      = new EventEmitter<boolean>();
+    
     @ViewChild( 'messages' ) messages: ElementRef | undefined;
     
     gameDto$: Observable<CardGameDto>;
@@ -366,6 +369,8 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
         this.gamePlayService.exitCardGame();
         this.playAiQuestion = false;
         this.lobbyButtonsVisibleChanged.emit( true );
+        this.isStarted.emit( false );
+        this.isPlayAi.emit( false );
     }
     
     inviteFriend(): void
@@ -427,6 +432,7 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
             await Helper.delay( 500 );
         }
         
+        this.isPlayAi.emit( true );
         this.wsService.connect( '', true, this.forGoldFlag );
     }
     
@@ -458,6 +464,7 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
                 
                 this.playAiQuestion = false;
                 this.lobbyButtonsVisibleChanged.emit( false );
+                this.isStarted.emit( true );
             }
         }
         
@@ -563,6 +570,7 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
         this.wsService.connect( gameId, this.playAiFlag, this.forGoldFlag );
         
         this.lobbyButtonsVisibleChanged.emit( false );
+        this.isPlayAi.emit( this.playAiFlag );
         window.dispatchEvent( new Event( 'resize' ) );
         
         this.statusMessageService.setWaitingForConnect();

@@ -9,6 +9,8 @@
             [isLoggedIn]="isLoggedIn"
             [hasPlayer]="hasPlayer"
             (lobbyButtonsVisibleChanged)="lobbyButtonsVisibleChanged($event)"
+            (isStarted)="gameIsStarted($event)"
+            (isPlayAi)="gameIsPlayAi($event)"
         ></bridge-belote-container>
         
         <app-error-handler

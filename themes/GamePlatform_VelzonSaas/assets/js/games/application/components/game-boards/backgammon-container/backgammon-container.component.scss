@@ -1,5 +1,9 @@
 @use '../../../../../backgamon_styles/buttons.scss';
 
+.app-chat {
+    min-width: 175px;
+}
+
 .backgamon-container {
     animation: fadein 2s;
     position: relative;

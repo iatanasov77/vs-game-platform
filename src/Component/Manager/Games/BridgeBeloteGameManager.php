@@ -390,7 +390,7 @@ class BridgeBeloteGameManager extends CardGameManager
             
             $action->MyCards = $playerCards->map(
                 function( $entry ) {
-                    return Mapper::CardToDto( $entry, $this->Game->CurrentPlayer );
+                    return Mapper::CardToDto( $entry, $this->Game->GameCode, $this->Game->CurrentPlayer );
                 }
             );
             
@@ -441,14 +441,14 @@ class BridgeBeloteGameManager extends CardGameManager
             );
             
             $action = new OpponentPlayCardActionDto();
-            $action->Card = Mapper::CardToDto( $playCardAction->Card, $playCardAction->Player );
+            $action->Card = Mapper::CardToDto( $playCardAction->Card, $this->Game->GameCode, $playCardAction->Player );
             $action->Belote = $playCardAction->Belote;
             $action->Player = $playCardAction->Player;
             $action->TrickNumber = $playCardAction->TrickNumber;
             
             $action->validCards = $this->Game->ValidCards->map(
                 function( $entry ) use ( $nextPlayer ) {
-                    return Mapper::CardToDto( $entry, $nextPlayer ); // PlayerPosition::South
+                    return Mapper::CardToDto( $entry, $this->Game->GameCode, $nextPlayer ); // PlayerPosition::South
                 }
             )->getValues(); // ->toArray();
             $action->nextPlayer = $nextPlayer;

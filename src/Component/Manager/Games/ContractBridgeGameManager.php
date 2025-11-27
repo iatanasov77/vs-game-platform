@@ -382,19 +382,19 @@ class ContractBridgeGameManager extends CardGameManager
                 function( $entry ) {
                     return Mapper::BidToDto( $entry );
                 }
-                )->toArray();
-                $action->validBids = \array_values( $validBids );
-                
-                $action->nextPlayer = $nextPlayer;
-                $action->playState = $this->Game->PlayState;
-                
-                $action->MyCards = $playerCards->map(
-                    function( $entry ) {
-                        return Mapper::CardToDto( $entry, $this->Game->CurrentPlayer );
-                    }
-                    );
-                
-                $this->Send( $client, $action );
+            )->toArray();
+            $action->validBids = \array_values( $validBids );
+            
+            $action->nextPlayer = $nextPlayer;
+            $action->playState = $this->Game->PlayState;
+            
+            $action->MyCards = $playerCards->map(
+                function( $entry ) {
+                    return Mapper::CardToDto( $entry, $this->Game->GameCode, $this->Game->CurrentPlayer );
+                }
+            );
+            
+            $this->Send( $client, $action );
         })();
         Async\await( $promise );
     }
@@ -441,14 +441,14 @@ class ContractBridgeGameManager extends CardGameManager
                 );
             
             $action = new OpponentPlayCardActionDto();
-            $action->Card = Mapper::CardToDto( $playCardAction->Card, $playCardAction->Player );
+            $action->Card = Mapper::CardToDto( $playCardAction->Card, $this->Game->GameCode, $playCardAction->Player );
             $action->Belote = $playCardAction->Belote;
             $action->Player = $playCardAction->Player;
             $action->TrickNumber = $playCardAction->TrickNumber;
             
             $action->validCards = $this->Game->ValidCards->map(
                 function( $entry ) use ( $nextPlayer ) {
-                    return Mapper::CardToDto( $entry, $nextPlayer ); // PlayerPosition::South
+                    return Mapper::CardToDto( $entry, $this->Game->GameCode, $nextPlayer ); // PlayerPosition::South
                 }
                 )->getValues(); // ->toArray();
                 $action->nextPlayer = $nextPlayer;

@@ -62,14 +62,14 @@ abstract class CardGameManager extends AbstractGameManager
             
             $biddingStartedAction->deck = \array_values( $this->Game->Deck->Cards()->map(
                 function( $entry ) {
-                    return Mapper::CardToDto( $entry );
+                    return Mapper::CardToDto( $entry, $this->Game->GameCode );
                 }
             )->toArray() );
             
             foreach ( $this->Game->Players as $key => $player ) {
                 $biddingStartedAction->playerCards[$key] = $this->Game->playerCards[$key]->map(
                     function( $entry ) use ( $player ) {
-                        return Mapper::CardToDto( $entry, $player->PlayerPosition );
+                        return Mapper::CardToDto( $entry, $this->Game->GameCode, $player->PlayerPosition );
                     }
                 )->toArray();
             }
@@ -114,13 +114,13 @@ abstract class CardGameManager extends AbstractGameManager
         // Debug Tricks
         $action->SouthNorthTricks = $this->Game->SouthNorthTricks->map(
             function( $entry ) {
-                return Mapper::CardToDto( $entry );
+                return Mapper::CardToDto( $entry, $this->Game->GameCode );
             }
         )->toArray();
         
         $action->EastWestTricks = $this->Game->EastWestTricks->map(
             function( $entry ) {
-                return Mapper::CardToDto( $entry );
+                return Mapper::CardToDto( $entry, $this->Game->GameCode );
             }
         )->toArray();
         
@@ -204,14 +204,14 @@ abstract class CardGameManager extends AbstractGameManager
         
         $playingStartedAction->deck = \array_values( $this->Game->Deck->Cards()->map(
             function( $entry ) {
-                return Mapper::CardToDto( $entry );
+                return Mapper::CardToDto( $entry, $this->Game->GameCode );
             }
         )->toArray() );
         
         foreach ( $this->Game->Players as $key => $player ) {
             $playingStartedAction->playerCards[$key] = $this->Game->playerCards[$key]->map(
                 function( $entry ) use ( $player ) {
-                    return Mapper::CardToDto( $entry, $player->PlayerPosition );
+                    return Mapper::CardToDto( $entry, $this->Game->GameCode, $player->PlayerPosition );
                 }
             )->toArray();
             
@@ -239,7 +239,7 @@ abstract class CardGameManager extends AbstractGameManager
         $playingStartedAction->contract = Mapper::BidToDto( $this->Game->CurrentContract );
         $playingStartedAction->validCards = $this->Game->ValidCards->map(
             function( $entry ) {
-                return Mapper::CardToDto( $entry, $this->Game->CurrentPlayer );
+                return Mapper::CardToDto( $entry, $this->Game->GameCode, $this->Game->CurrentPlayer );
             }
         )->toArray();
         $playingStartedAction->timer = Game::ClientCountDown;

@@ -10,6 +10,7 @@ use App\Component\AI\BoardGame\BackgammonTapaEngine;
 use App\Component\AI\BoardGame\BackgammonGulBaraEngine;
 use App\Component\AI\BoardGame\ChessEngine;
 use App\Component\AI\CardGame\BridgeBeloteEngine;
+use App\Component\AI\CardGame\ContractBridgeEngine;
 
 final class EngineFactory
 {
@@ -24,6 +25,9 @@ final class EngineFactory
                 break;
             case GameVariant::BRIDGE_BELOTE_CODE:
                 $engine = new BridgeBeloteEngine( $logger, $game );
+                break;
+            case GameVariant::CONTRACT_BRIDGE_CODE:
+                $engine = new ContractBridgeEngine( $logger, $game );
                 break;
             default:
                 throw new \RuntimeException( 'Unknown Game Code !!!' );

@@ -1,7 +1,7 @@
 <?php namespace App\Component\Dto;
 
 use App\Component\Type\CardSuit;
-use App\Component\Type\CardType;
+use App\Component\Type\BridgeBeloteCardType as CardType;
 use App\Component\Type\PlayerPosition;
 
 class CardDto

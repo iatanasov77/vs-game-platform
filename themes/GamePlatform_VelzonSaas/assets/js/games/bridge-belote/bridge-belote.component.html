@@ -4,14 +4,14 @@
     </div>
     
     <div class="col-8">
-        <bridge-belote-container
+        <card-game-container
             [lobbyButtonsVisible]="lobbyButtonsVisible"
             [isLoggedIn]="isLoggedIn"
             [hasPlayer]="hasPlayer"
             (lobbyButtonsVisibleChanged)="lobbyButtonsVisibleChanged($event)"
             (isStarted)="gameIsStarted($event)"
             (isPlayAi)="gameIsPlayAi($event)"
-        ></bridge-belote-container>
+        ></card-game-container>
         
         <app-error-handler
             [errors]="errors$ | async"

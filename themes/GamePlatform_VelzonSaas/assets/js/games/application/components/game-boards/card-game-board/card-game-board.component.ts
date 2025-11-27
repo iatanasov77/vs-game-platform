@@ -44,8 +44,10 @@ import {
     CardGameTheme
 } from '../../../models/themes';
 
-import templateString from './bridge-belote-board.component.html'
-import styleString from './bridge-belote-board.component.scss'
+import { GameVariant } from '../../../game.variant';
+
+import templateString from './card-game-board.component.html'
+import styleString from './card-game-board.component.scss'
 
 declare global {
     interface Window {
@@ -54,14 +56,14 @@ declare global {
 }
 
 @Component({
-    selector: 'bridge-belote-board',
+    selector: 'card-game-board',
     
     template: templateString || 'Template Not Loaded !!!',
     styles: [
         styleString || 'CSS Not Loaded !!!'
     ]
 })
-export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
+export class CardGameBoardComponent implements AfterViewInit, OnChanges
 {
     @ViewChild( 'canvas' ) public canvas: ElementRef | undefined;
     
@@ -620,6 +622,10 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
     
     drawCards( playerCards: CardDto[], playerPosition: number ): void
     {
+        if ( ! this.game ) {
+            return;
+        }
+        
         var highLight, card, pa, cardX, cardY, angle, xOffset = 0, yOffset = 0;
         var cardsWidth = this.cardWidth + ( ( playerCards.length - 1 ) * this.cardOffset );
         for ( let c = 0; c < playerCards.length; c++ ) {
@@ -652,8 +658,18 @@ export class BridgeBeloteBoardComponent implements AfterViewInit, OnChanges
                 angle = 0;
             }
             
+            var cardImagesPath;
+            switch ( this.game.gameCode ) {
+                case GameVariant.BRIDGE_BELOTE_CODE:
+                    cardImagesPath = '/build/gameplatform-velzonsaas-theme/images/CardGame/Cards/BridgeBelote';
+                    break;
+                default:
+                    cardImagesPath = '/build/gameplatform-velzonsaas-theme/images/CardGame/Cards/ContractBridge';
+            }
+            
             Card.draw(
                 this.cx,
+                cardImagesPath,
                 playerCards[c],
                 { x: cardX, y: cardY },
                 this.cardWidth,

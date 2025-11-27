@@ -6,7 +6,19 @@
     </div>
     
     <div class="col-8">
-        <h1>NOT IMPLEMENTED !!!</h1>
+        <card-game-container
+            [lobbyButtonsVisible]="lobbyButtonsVisible"
+            [isLoggedIn]="isLoggedIn"
+            [hasPlayer]="hasPlayer"
+            (lobbyButtonsVisibleChanged)="lobbyButtonsVisibleChanged($event)"
+            (isStarted)="gameIsStarted($event)"
+            (isPlayAi)="gameIsPlayAi($event)"
+        ></card-game-container>
+        
+        <app-error-handler
+            [errors]="errors$ | async"
+            (save)="saveErrorReport($event)"
+        ></app-error-handler>
     </div>
     
     <div class="col-2">

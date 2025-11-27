@@ -39,7 +39,7 @@ import { Keys } from '../../utils/keys';
 @Injectable({
     providedIn: 'root'
 })
-export class BridgeBeloteService extends AbstractGameService
+export class CardGameService extends AbstractGameService
 {
     constructor(
         @Inject( Injector ) private injector: Injector,

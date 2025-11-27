@@ -9,8 +9,7 @@ use Ratchet\RFC6455\Messaging\Frame;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Rules\CardGame\Game;
 use App\Component\Rules\CardGame\Deck;
-use App\Component\Rules\CardGame\PlayCardAction;
-use App\Component\Rules\CardGame\GameMechanics\RoundResult;
+use App\Component\Rules\CardGame\BridgeBeloteGameMechanics\RoundResult;
 
 // Types
 use App\Component\Type\CardGameTeam;

@@ -4,7 +4,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 
 use App\Component\Type\PlayerPosition;
-use App\Component\Type\CardType;
+use App\Component\Type\BridgeBeloteCardType as CardType;
 use App\Component\Type\BidType;
 use App\Component\Rules\CardGame\Context\PlayerPlayCardContext;
 use App\Component\Rules\CardGame\PlayCardAction;

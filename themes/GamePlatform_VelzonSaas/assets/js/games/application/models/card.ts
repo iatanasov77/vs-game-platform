@@ -8,6 +8,7 @@ export class Card
 {
     static draw(
         cx: CanvasRenderingContext2D | null,
+        cardImagesPath: string,
         card: CardDto,
         point: Point,
         width: number,
@@ -26,11 +27,11 @@ export class Card
         const image = new Image( width, height );
         
         if ( position === PlayerPosition.south || debugCards ) {
-            let imgSrc = `/build/gameplatform-velzonsaas-theme/images/CardGame/Cards/BridgeBelote/${card.cardIndex}.png`;
+            let imgSrc = `${cardImagesPath}/${card.cardIndex}.png`;
             
             image.src = imgSrc;
         } else {
-            image.src = "/build/gameplatform-velzonsaas-theme/images/CardGame/Cards/BridgeBelote/back.png";
+            image.src = `${cardImagesPath}/back.png`;
         }
         
         cx.save();

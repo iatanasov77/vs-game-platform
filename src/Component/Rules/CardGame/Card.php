@@ -3,7 +3,7 @@
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use App\Component\Type\CardSuit;
-use App\Component\Type\CardType;
+use App\Component\Type\BridgeBeloteCardType as CardType;
 
 class Card
 {

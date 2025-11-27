@@ -1,5 +1,6 @@
 import { NgModule, InjectionToken, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { APP_BASE_HREF } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -21,6 +22,7 @@ import { GlobalErrorService } from '../application/services/global-error-service
 import { SvaraComponent } from './svara.component';
 import { SharedModule } from '../application/components/shared/shared.module';
 import { GameBoardsModule } from '../application/components/game-boards/game-boards.module';
+import { SideBarsModule } from '../application/components/side-bars/side-bars.module';
 
 export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppState>>( 'Game Reducers' );
 
@@ -34,6 +36,7 @@ export function HttpLoaderFactory( http: HttpClient ) {
     ],
     imports: [
         BrowserModule,
+        BrowserAnimationsModule,
         MatTooltipModule,
         NgbModule,
         
@@ -49,6 +52,7 @@ export function HttpLoaderFactory( http: HttpClient ) {
         
         SharedModule,
         GameBoardsModule,
+        SideBarsModule,
         
         StoreModule.forRoot([
             loginReducer,

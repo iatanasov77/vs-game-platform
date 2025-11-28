@@ -8,7 +8,7 @@
         ></app-messages>
     </div>
     
-    <bridge-belote-board
+    <card-game-board
         class="game-board"
         
         [width]="width"
@@ -25,7 +25,7 @@
         [lobbyButtonsVisible]="lobbyButtonsVisible"
         (playCard)="doPlayCard($event)"
         (playCardAnimFinished)="playCardAnimFinished()"
-    ></bridge-belote-board>
+    ></card-game-board>
     
     <div id="card-actions" class="card-actions">
         <app-board-buttons *ngIf="started != true"

@@ -1,4 +1,4 @@
-<?php namespace App\Component\Rules\CardGame\GameMechanics;
+<?php namespace App\Component\Rules\CardGame\BridgeBeloteGameMechanics;
 
 use BitMask\EnumBitMask;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -7,10 +7,10 @@ use Doctrine\Common\Collections\Collection;
 use App\Component\GameLogger;
 use App\Component\Type\BidType;
 use App\Component\Type\CardSuit;
-use App\Component\Type\CardType;
+use App\Component\Type\BridgeBeloteCardType as CardType;
 use App\Component\Type\AnnounceType;
 use App\Component\Rules\CardGame\Helper;
-use App\Component\Rules\CardGame\Card;
+use App\Component\Rules\CardGame\BridgeBeloteCard as Card;
 use App\Component\Rules\CardGame\Announce;
 use App\Component\Rules\CardGame\PlayerPositionExtensions;
 use App\Component\Rules\CardGame\BidTypeExtensions;

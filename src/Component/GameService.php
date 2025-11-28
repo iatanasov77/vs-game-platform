@@ -177,6 +177,7 @@ final class GameService
                     $this->SendConnectionLost( $manager, PlayerColor::White->value );
                     break;
                 case GameVariant::BRIDGE_BELOTE_CODE:
+                case GameVariant::CONTRACT_BRIDGE_CODE:
                     $manager->Game->CurrentPlayer = PlayerPosition::South;
                     $manager->ConnectAndListen( $webSocket, $gamePlayer, $playAi );
                     $this->SendConnectionLost( $manager, PlayerPosition::East->value );
@@ -205,6 +206,7 @@ final class GameService
                     $this->SendConnectionLost( $manager, PlayerColor::White->value );
                     break;
                 case GameVariant::BRIDGE_BELOTE_CODE:
+                case GameVariant::CONTRACT_BRIDGE_CODE:
                     $position = $manager->Clients->get( PlayerPosition::South->value ) == null ? PlayerPosition::South : PlayerPosition::East;
                     //$colorName = $color === PlayerColor::Black ? 'Black' : 'White';
                     //$this->logger->log( "{$colorName} player disconnected.", 'GameService' );
@@ -357,6 +359,7 @@ final class GameService
                         }
                         break;
                     case GameVariant::BRIDGE_BELOTE_CODE:
+                    case GameVariant::CONTRACT_BRIDGE_CODE:
                         $position = $cookie->position;
                         if ( $gameManager && self::MyPosition( $gameManager, $dbUser, $position ) ) {
                             $gameManager->RestoreCardGame( $position, $webSocket );
@@ -386,6 +389,7 @@ final class GameService
                     }
                     break;
                 case GameVariant::BRIDGE_BELOTE_CODE:
+                case GameVariant::CONTRACT_BRIDGE_CODE:
                     return false;
                     break;
             }

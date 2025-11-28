@@ -17,11 +17,8 @@ use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use App\Component\Manager\CardGameManager;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 
-use App\Component\Rules\CardGame\GameMechanics\RoundResult;
-
-use App\Component\Rules\CardGame\Game;
 use App\Component\Rules\CardGame\Player;
-use App\Component\Rules\CardGame\Card;
+use App\Component\Rules\CardGame\BridgeBeloteCard as Card;
 use App\Component\Rules\CardGame\Bid;
 use App\Component\Rules\CardGame\Announce;
 use App\Component\Rules\CardGame\PlayCardAction;
@@ -393,7 +390,7 @@ class BridgeBeloteGameManager extends CardGameManager
             
             $action->MyCards = $playerCards->map(
                 function( $entry ) {
-                    return Mapper::CardToDto( $entry, $this->Game->CurrentPlayer );
+                    return Mapper::CardToDto( $entry, $this->Game->GameCode, $this->Game->CurrentPlayer );
                 }
             );
             
@@ -444,14 +441,14 @@ class BridgeBeloteGameManager extends CardGameManager
             );
             
             $action = new OpponentPlayCardActionDto();
-            $action->Card = Mapper::CardToDto( $playCardAction->Card, $playCardAction->Player );
+            $action->Card = Mapper::CardToDto( $playCardAction->Card, $this->Game->GameCode, $playCardAction->Player );
             $action->Belote = $playCardAction->Belote;
             $action->Player = $playCardAction->Player;
             $action->TrickNumber = $playCardAction->TrickNumber;
             
             $action->validCards = $this->Game->ValidCards->map(
                 function( $entry ) use ( $nextPlayer ) {
-                    return Mapper::CardToDto( $entry, $nextPlayer ); // PlayerPosition::South
+                    return Mapper::CardToDto( $entry, $this->Game->GameCode, $nextPlayer ); // PlayerPosition::South
                 }
             )->getValues(); // ->toArray();
             $action->nextPlayer = $nextPlayer;

@@ -5,10 +5,26 @@
     -->
     </div>
     
-    <div class="col-10">
-    <!--  
-        <game-board></game-board>
-    -->
-        <h1 style="position: absolute; top: 300px;">NOT IMPLEMENTED !!!</h1>
+    <div class="col-8">
+        <card-game-container
+            [lobbyButtonsVisible]="lobbyButtonsVisible"
+            [isLoggedIn]="isLoggedIn"
+            [hasPlayer]="hasPlayer"
+            (lobbyButtonsVisibleChanged)="lobbyButtonsVisibleChanged($event)"
+            (isStarted)="gameIsStarted($event)"
+            (isPlayAi)="gameIsPlayAi($event)"
+        ></card-game-container>
+        
+        <app-error-handler
+            [errors]="errors$ | async"
+            (save)="saveErrorReport($event)"
+        ></app-error-handler>
+    </div>
+    
+    <div class="col-2">
+        <game-players></game-players>
+        <div class="mt-4">
+            <game-rooms></game-rooms>
+        </div>
     </div>
 </div>

@@ -4,10 +4,10 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 
 use App\Component\Type\PlayerPosition;
-use App\Component\Type\CardType;
+use App\Component\Type\BridgeBeloteCardType as CardType;
 use App\Component\Rules\CardGame\Context\PlayerPlayCardContext;
 use App\Component\Rules\CardGame\PlayCardAction;
-use App\Component\Rules\CardGame\Card;
+use App\Component\Rules\CardGame\BridgeBeloteCard as Card;
 use App\Component\Rules\CardGame\CardExtensions;
 use App\Component\Rules\CardGame\PlayerPositionExtensions;
 

@@ -160,6 +160,8 @@ export class MessagesComponent implements OnInit, OnChanges
                 // My Workaround
                 switch ( this.gameCode ) {
                     case GameVariant.BRIDGE_BELOTE_CODE:
+                    case GameVariant.CONTRACT_BRIDGE_CODE:
+                    case GameVariant.SVARA_CODE:
                         if ( $( 'canvas.card-table' ).hasClass( 'flipped' ) || $( 'canvas.card-table' ).hasClass( 'rotated' ) ) {
                             this.state = 'shown-flipped';
                         } else {

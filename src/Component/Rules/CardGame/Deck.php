@@ -2,6 +2,7 @@
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use App\Component\GameVariant;
 
 class Deck
 {
@@ -11,10 +12,17 @@ class Deck
     /** @var int */
     private $currentCardIndex;
     
-    public function __construct()
+    public function __construct( string $gameCode )
     {
-        Card::instance();
-        $this->listOfCards = Card::$AllCards;
+        switch ( $gameCode ) {
+            case GameVariant::CONTRACT_BRIDGE_CODE:
+                ContractBridgeCard::instance();
+                $this->listOfCards = ContractBridgeCard::$AllCards;
+                break;
+            default:
+                BridgeBeloteCard::instance();
+                $this->listOfCards = BridgeBeloteCard::$AllCards;
+        }
     }
     
     public function Shuffle(): void

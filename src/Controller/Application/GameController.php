@@ -34,18 +34,23 @@ class GameController extends AbstractController
     /** @var TranslatorInterface */
     protected $translator;
     
+    /** @var string */
+    protected $environement;
+    
     public function __construct(
         ApplicationContextInterface $applicationContext,
         Environment $templatingEngine,
         EntityRepository $gamesRepository,
         HttpClientInterface $httpClient,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        string $environement
     ) {
         $this->applicationContext   = $applicationContext;
         $this->templatingEngine     = $templatingEngine;
         $this->gamesRepository      = $gamesRepository;
         $this->httpClient           = $httpClient;
         $this->translator           = $translator;
+        $this->environement         = $environement;
     }
     
     protected function getTemplate( string $gameSlug, string $template ): string
@@ -84,6 +89,10 @@ class GameController extends AbstractController
     
     protected function showGameStatus( Request $request, Game $game ): void
     {
+        if ( $this->environement == 'dev' ) {
+            return;
+        }
+        
         if ( $request->hasSession() ) {
             switch ( $game->getStatus() ) {
                 case GamePlatform::GAME_STATUS_IN_DEVELOPEMENT:

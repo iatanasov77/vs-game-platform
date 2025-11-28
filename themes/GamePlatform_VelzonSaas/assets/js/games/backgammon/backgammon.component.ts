@@ -36,6 +36,9 @@ export class BackgammonComponent extends GameBaseComponent implements OnInit
     errors$: Observable<ErrorState>;
     
     lobbyButtonsVisible = true;
+    isStarted           = false;
+    isPlayAi            = false;
+    
     playAi              = false;
     forGold             = false;
   
@@ -59,6 +62,16 @@ export class BackgammonComponent extends GameBaseComponent implements OnInit
     lobbyButtonsVisibleChanged( value: boolean )
     {
         this.lobbyButtonsVisible = value;
+    }
+    
+    gameIsStarted( value: boolean )
+    {
+        this.isStarted = value;
+    }
+    
+    gameIsPlayAi( value: boolean )
+    {
+        this.isPlayAi = value;
     }
     
     saveErrorReport( errorDto: ErrorReportDto ): void

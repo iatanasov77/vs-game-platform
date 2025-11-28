@@ -16,4 +16,7 @@ final class GameVariant
     
     // Contarct Bridge
     const CONTRACT_BRIDGE_CODE  = 'contract-bridge';
+    
+    // Svara
+    const SVARA_CODE            = 'svara';
 }

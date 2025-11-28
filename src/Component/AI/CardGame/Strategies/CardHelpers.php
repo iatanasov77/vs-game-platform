@@ -1,8 +1,8 @@
 <?php namespace App\Component\AI\CardGame\Strategies;
 
 use Doctrine\Common\Collections\Collection;
-use App\Component\Type\CardType;
-use App\Component\Rules\CardGame\Card;
+use App\Component\Type\BridgeBeloteCardType as CardType;
+use App\Component\Rules\CardGame\BridgeBeloteCard as Card;
 
 class CardHelpers
 {

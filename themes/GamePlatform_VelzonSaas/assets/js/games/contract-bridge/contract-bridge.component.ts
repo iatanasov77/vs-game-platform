@@ -1,4 +1,16 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+
+import { AuthService } from '../application/services/auth.service'
+import { SoundService } from '../application/services/sound.service'
+import { GameService } from '../application/services/game.service'
+import { GameBaseComponent } from '../application/components/game-base/game-base.component';
+
+import { AppStateService } from '../application/state/app-state.service';
+import { ErrorState } from '../application/state/ErrorState';
+import { ErrorReportService } from '../application/services/error-report.service';
+import ErrorReportDto from '_@/GamePlatform/Model/Core/errorReportDto';
 
 import cssGameString from './contract-bridge.component.scss'
 import templateString from './contract-bridge.component.html'
@@ -13,17 +25,46 @@ declare var $: any;
         cssGameString || 'Template Not Loaded !!!',
     ]
 })
-export class ContractBridgeComponent implements OnInit, OnDestroy
+export class ContractBridgeComponent extends GameBaseComponent implements OnInit
 {
-    constructor() { }
+    title   = 'Conract Bridge';
+    errors$: Observable<ErrorState>;
     
-    ngOnInit(): void
-    {
+    lobbyButtonsVisible = true;
+    isStarted           = false;
+    isPlayAi            = false;
+    
+    constructor(
+        @Inject( AuthService ) authService: AuthService,
+        @Inject( SoundService ) soundService: SoundService,
+        @Inject( GameService ) gameService: GameService,
+        @Inject( Store ) store: Store,
         
+        @Inject( ErrorReportService ) private errorReportService: ErrorReportService,
+        @Inject( AppStateService ) private appState: AppStateService
+    ) {
+        super( authService, soundService, gameService, store );
+        
+        this.errors$    = this.appState.errors.observe();
     }
     
-    ngOnDestroy()
+    lobbyButtonsVisibleChanged( value: boolean )
     {
-
+        this.lobbyButtonsVisible = value;
+    }
+    
+    gameIsStarted( value: boolean )
+    {
+        this.isStarted = value;
+    }
+    
+    gameIsPlayAi( value: boolean )
+    {
+        this.isPlayAi = value;
+    }
+    
+    saveErrorReport( errorDto: ErrorReportDto ): void
+    {
+        this.errorReportService.saveErrorReport( errorDto );
     }
 }

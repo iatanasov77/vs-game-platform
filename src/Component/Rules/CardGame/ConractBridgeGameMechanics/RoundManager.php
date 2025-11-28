@@ -1,4 +1,4 @@
-<?php namespace App\Component\Rules\CardGame\GameMechanics;
+<?php namespace App\Component\Rules\CardGame\ConractBridgeGameMechanics;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use BitMask\EnumBitMask;
@@ -47,11 +47,13 @@ class RoundManager
         $this->logger           = $logger;
         $this->eventDispatcher  = $eventDispatcher;
         
+        /*
         $this->contractManager = new ContractManager( $this->game, $this->logger );
         $this->tricksManager = new TricksManager( $this->game, $this->logger );
         $this->scoreManager = new ScoreManager( $this->game, $this->logger );
-
-        $this->game->Deck = new Deck();
+        */
+        
+        $this->game->Deck = new Deck( $this->game->GameCode );
         $this->game->playerCards = new ArrayCollection();
         foreach ( $this->game->Players as $key => $player ) {
             $this->game->playerCards->set( $key, new ArrayCollection() );
@@ -69,9 +71,9 @@ class RoundManager
             $this->game->playerCards[PlayerPosition::West->value]->clear();
             
             // Deal 5 cards to each player
-            $this->DealCards( 5 );
+            $this->DealCards( 13 );
             
-            $this->contractManager->StartNewRound();
+            //$this->contractManager->StartNewRound();
         }
         
         if ( $this->game->PlayState == GameState::bidding ) {
@@ -95,7 +97,6 @@ class RoundManager
                 $this->logger->log( 'Consecutive Passes Exceeded !!!', 'RoundManager' );
                 
                 $this->game->PlayState = GameState::firstRound;
-                $this->DealCards( 3 );
             }
         }
         

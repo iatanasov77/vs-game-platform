@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\Collection;
 
 use App\Component\Rules\GameInterface;
 use App\Component\GameLogger;
+use App\Component\GameVariant;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\BidType;
@@ -14,8 +15,10 @@ use App\Component\Rules\CardGame\Context\PlayerGetBidContext;
 use App\Component\Rules\CardGame\Context\PlayerGetAnnouncesContext;
 use App\Component\Rules\CardGame\Context\PlayerPlayCardContext;
 
-use App\Component\Rules\CardGame\GameMechanics\RoundManager;
-use App\Component\Rules\CardGame\GameMechanics\RoundResult;
+use App\Component\Rules\CardGame\BridgeBeloteGameMechanics\RoundManager as BridgeBeloteRoundManager;
+use App\Component\Rules\CardGame\BridgeBeloteGameMechanics\RoundResult;
+
+use App\Component\Rules\CardGame\ConractBridgeGameMechanics\RoundManager as ConractBridgeRoundManager;
 
 use App\Component\Dto\Actions\PlayCardActionDto;
 
@@ -102,8 +105,11 @@ abstract class Game implements GameInterface
     /** @var EventDispatcherInterface */
     protected $eventDispatcher;
     
-    /** @var RoundManager */
-    protected $roundManager;
+    /** @var BridgeBeloteRoundManager */
+    protected $bridgeBeloteRoundManager;
+    
+    /** @var ConractBridgeRoundManager */
+    protected $contractBridgeRoundManager;
     
     public function __construct( GameLogger $logger, EventDispatcherInterface $eventDispatcher )
     {
@@ -112,19 +118,11 @@ abstract class Game implements GameInterface
     }
     
     abstract public function NextPlayer(): PlayerPosition;
+    abstract public function PlayGame( PlayerPosition $firstToPlay = PlayerPosition::South ): void;
     
     public function SetStartPosition(): void
     {
         $this->PlayGame();
-    }
-    
-    public function PlayGame( PlayerPosition $firstToPlay = PlayerPosition::South ): void
-    {
-        $this->roundManager = new RoundManager( $this, $this->logger, $this->eventDispatcher );
-        
-        $this->firstInRound = $firstToPlay;
-        $this->roundNumber = 1;
-        $this->trickNumber = 1;
     }
     
     public function SwitchPlayer(): void
@@ -152,22 +150,46 @@ abstract class Game implements GameInterface
     
     public function PlayRound(): ?PlayerPosition
     {
-        return $this->roundManager->PlayRound();
+        switch ( $this->GameCode ) {
+            case GameVariant::CONTRACT_BRIDGE_CODE:
+                return $this->contractBridgeRoundManager->PlayRound();
+                break;
+            default:
+                return $this->bridgeBeloteRoundManager->PlayRound();
+        }
     }
     
     public function SetContract( Bid $bid, PlayerPosition $nextPlayer ): void
     {
-        $this->roundManager->SetContract( $bid, $nextPlayer );
+        switch ( $this->GameCode ) {
+            case GameVariant::CONTRACT_BRIDGE_CODE:
+                $this->contractBridgeRoundManager->SetContract( $bid, $nextPlayer );
+                break;
+            default:
+                $this->bridgeBeloteRoundManager->SetContract( $bid, $nextPlayer );
+        }
     }
     
     public function GetValidCards( Collection $playerCards, Bid $currentContract, Collection $trickActions ): Collection
     {
-        return $this->roundManager->GetValidCards( $playerCards, $currentContract, $trickActions );
+        switch ( $this->GameCode ) {
+            case GameVariant::CONTRACT_BRIDGE_CODE:
+                return $this->contractBridgeRoundManager->GetValidCards( $playerCards, $currentContract, $trickActions );
+                break;
+            default:
+                return $this->bridgeBeloteRoundManager->GetValidCards( $playerCards, $currentContract, $trickActions );
+        }
     }
     
     public function GetAvailableAnnounces( Collection $playerCards ): Collection
     {
-        return $this->roundManager->GetAvailableAnnounces( $playerCards );
+        switch ( $this->GameCode ) {
+            case GameVariant::CONTRACT_BRIDGE_CODE:
+                return $this->contractBridgeRoundManager->GetAvailableAnnounces( $playerCards );
+                break;
+            default:
+                return $this->bridgeBeloteRoundManager->GetAvailableAnnounces( $playerCards );
+        }
     }
     
     public function GetBid( PlayerGetBidContext $context ): BidType
@@ -191,17 +213,35 @@ abstract class Game implements GameInterface
     
     public function GetTrickActionNumber(): int
     {
-        return $this->roundManager->GetTrickActionNumber();
+        switch ( $this->GameCode ) {
+            case GameVariant::CONTRACT_BRIDGE_CODE:
+                return $this->contractBridgeRoundManager->GetTrickActionNumber();
+                break;
+            default:
+                return $this->bridgeBeloteRoundManager->GetTrickActionNumber();
+        }
     }
     
     public function GetTrickActions(): Collection
     {
-        return $this->roundManager->GetTrickActions();
+        switch ( $this->GameCode ) {
+            case GameVariant::CONTRACT_BRIDGE_CODE:
+                return $this->contractBridgeRoundManager->GetTrickActions();
+                break;
+            default:
+                return $this->bridgeBeloteRoundManager->GetTrickActions();
+        }
     }
     
     public function AddTrickAction( PlayCardAction $action ): void
     {
-        $this->roundManager->AddTrickAction( $action );
+        switch ( $this->GameCode ) {
+            case GameVariant::CONTRACT_BRIDGE_CODE:
+                $this->contractBridgeRoundManager->AddTrickAction( $action );
+                break;
+            default:
+                $this->bridgeBeloteRoundManager->AddTrickAction( $action );
+        }
     }
     
     public function EndOfTrick( Collection $trickActions ): void

@@ -3,6 +3,7 @@
 use Doctrine\Common\Collections\ArrayCollection;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 
+use App\Component\GameVariant;
 use App\Component\Rules\BoardGame\Game as BoardGame;
 use App\Component\Rules\BoardGame\BackgammonGame;
 use App\Component\Rules\BoardGame\ChessGame;
@@ -21,7 +22,7 @@ use App\Component\Rules\CardGame\Card;
 use App\Component\Rules\CardGame\Bid;
 use App\Component\Rules\CardGame\Announce;
 use App\Component\Rules\CardGame\CardExtensions;
-use App\Component\Rules\CardGame\GameMechanics\RoundResult;
+use App\Component\Rules\CardGame\BridgeBeloteGameMechanics\RoundResult;
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\BidType;
 
@@ -191,7 +192,7 @@ final class Mapper
         
         $validCards = $game->ValidCards->map(
             function( $entry ) use ( $game ) {
-                return self::CardToDto( $entry, $game->CurrentPlayer );
+                return self::CardToDto( $entry, $game->GameCode, $game->CurrentPlayer );
             }
         )->toArray();
         $gameDto->validCards = \array_values( $validCards );
@@ -238,14 +239,24 @@ final class Mapper
         return $playersDto;
     }
     
-    public static function CardToDto( Card $card, PlayerPosition $position = PlayerPosition::Neither ): CardDto
+    public static function CardToDto( Card $card, string $gameCode, PlayerPosition $position = PlayerPosition::Neither ): CardDto
     {
         $cardDto = new CardDto();
         $cardDto->Suit = $card->Suit;
         $cardDto->Type = $card->Type;
         
         $cardDto->position = $position;
-        $cardDto->cardIndex = \strtolower( CardExtensions::TypeToString( $card->Type ) . CardExtensions::SuitToString( $card->Suit ) );
+        
+        switch ( $gameCode ) {
+            case GameVariant::BRIDGE_BELOTE_CODE:
+                $cardDto->cardIndex = \strtolower( CardExtensions::TypeToString( $card->Type ) . CardExtensions::SuitToString( $card->Suit ) );
+                break;
+            case GameVariant::CONTRACT_BRIDGE_CODE:
+                $cardDto->cardIndex = \substr( CardExtensions::SuitToString( $card->Suit ), 0, 1 ) . ( $card->Type->value + 2 );
+                break;
+            default:
+                $cardDto->cardIndex = '';
+        }
         
         return $cardDto;
     }

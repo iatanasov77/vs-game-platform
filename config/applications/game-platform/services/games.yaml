@@ -169,6 +169,7 @@ services:
             - '@vsapp.repository.games'
             - '@http_client'
             - '@translator'
+            - '%env(APP_ENV)%'
     
     App\Controller\Games\BridgeBeloteController:
         tags: ['controller.service_arguments']
@@ -179,6 +180,7 @@ services:
             - '@vsapp.repository.games'
             - '@http_client'
             - '@translator'
+            - '%env(APP_ENV)%'
             
     App\Controller\Games\ContractBridgeController:
         tags: ['controller.service_arguments']
@@ -189,6 +191,7 @@ services:
             - '@vsapp.repository.games'
             - '@http_client'
             - '@translator'
+            - '%env(APP_ENV)%'
             
     App\Controller\Games\ChessController:
         tags: ['controller.service_arguments']
@@ -199,6 +202,7 @@ services:
             - '@vsapp.repository.games'
             - '@http_client'
             - '@translator'
+            - '%env(APP_ENV)%'
             
     App\Controller\Games\BackgammonController:
         tags: ['controller.service_arguments']
@@ -209,3 +213,4 @@ services:
             - '@vsapp.repository.games'
             - '@http_client'
             - '@translator'
+            - '%env(APP_ENV)%'

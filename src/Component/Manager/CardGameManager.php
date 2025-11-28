@@ -9,8 +9,7 @@ use Ratchet\RFC6455\Messaging\Frame;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Rules\CardGame\Game;
 use App\Component\Rules\CardGame\Deck;
-use App\Component\Rules\CardGame\PlayCardAction;
-use App\Component\Rules\CardGame\GameMechanics\RoundResult;
+use App\Component\Rules\CardGame\BridgeBeloteGameMechanics\RoundResult;
 
 // Types
 use App\Component\Type\CardGameTeam;
@@ -63,14 +62,14 @@ abstract class CardGameManager extends AbstractGameManager
             
             $biddingStartedAction->deck = \array_values( $this->Game->Deck->Cards()->map(
                 function( $entry ) {
-                    return Mapper::CardToDto( $entry );
+                    return Mapper::CardToDto( $entry, $this->Game->GameCode );
                 }
             )->toArray() );
             
             foreach ( $this->Game->Players as $key => $player ) {
                 $biddingStartedAction->playerCards[$key] = $this->Game->playerCards[$key]->map(
                     function( $entry ) use ( $player ) {
-                        return Mapper::CardToDto( $entry, $player->PlayerPosition );
+                        return Mapper::CardToDto( $entry, $this->Game->GameCode, $player->PlayerPosition );
                     }
                 )->toArray();
             }
@@ -115,13 +114,13 @@ abstract class CardGameManager extends AbstractGameManager
         // Debug Tricks
         $action->SouthNorthTricks = $this->Game->SouthNorthTricks->map(
             function( $entry ) {
-                return Mapper::CardToDto( $entry );
+                return Mapper::CardToDto( $entry, $this->Game->GameCode );
             }
         )->toArray();
         
         $action->EastWestTricks = $this->Game->EastWestTricks->map(
             function( $entry ) {
-                return Mapper::CardToDto( $entry );
+                return Mapper::CardToDto( $entry, $this->Game->GameCode );
             }
         )->toArray();
         
@@ -141,7 +140,7 @@ abstract class CardGameManager extends AbstractGameManager
     {
         $this->Game->roundNumber++;
         $this->Game->PlayState = GameState::firstBid;
-        $this->Game->Deck = new Deck();
+        $this->Game->Deck = new Deck( $this->GameCode );
         
         $this->Game->CurrentPlayer = $this->Game->firstInRound;
         $this->Game->SouthNorthTricks = new ArrayCollection();
@@ -152,7 +151,7 @@ abstract class CardGameManager extends AbstractGameManager
     
     public function StartNewGame(): void
     {
-        $this->Game->Deck = new Deck();
+        $this->Game->Deck = new Deck( $this->GameCode );
         $this->Game->Pile = new ArrayCollection();
         $this->Game->SouthNorthTricks = new ArrayCollection();
         $this->Game->EastWestTricks = new ArrayCollection();
@@ -205,14 +204,14 @@ abstract class CardGameManager extends AbstractGameManager
         
         $playingStartedAction->deck = \array_values( $this->Game->Deck->Cards()->map(
             function( $entry ) {
-                return Mapper::CardToDto( $entry );
+                return Mapper::CardToDto( $entry, $this->Game->GameCode );
             }
         )->toArray() );
         
         foreach ( $this->Game->Players as $key => $player ) {
             $playingStartedAction->playerCards[$key] = $this->Game->playerCards[$key]->map(
                 function( $entry ) use ( $player ) {
-                    return Mapper::CardToDto( $entry, $player->PlayerPosition );
+                    return Mapper::CardToDto( $entry, $this->Game->GameCode, $player->PlayerPosition );
                 }
             )->toArray();
             
@@ -240,7 +239,7 @@ abstract class CardGameManager extends AbstractGameManager
         $playingStartedAction->contract = Mapper::BidToDto( $this->Game->CurrentContract );
         $playingStartedAction->validCards = $this->Game->ValidCards->map(
             function( $entry ) {
-                return Mapper::CardToDto( $entry, $this->Game->CurrentPlayer );
+                return Mapper::CardToDto( $entry, $this->Game->GameCode, $this->Game->CurrentPlayer );
             }
         )->toArray();
         $playingStartedAction->timer = Game::ClientCountDown;

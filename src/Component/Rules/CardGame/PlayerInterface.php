@@ -6,7 +6,7 @@ use App\Component\Rules\CardGame\Context\PlayerGetBidContext;
 use App\Component\Rules\CardGame\Context\PlayerGetAnnouncesContext;
 use App\Component\Rules\CardGame\Context\PlayerPlayCardContext;
 use App\Component\Dto\Actions\PlayCardActionDto;
-use App\Component\Rules\CardGame\GameMechanics\RoundResult;
+use App\Component\Rules\CardGame\BridgeBeloteGameMechanics\RoundResult;
 
 interface PlayerInterface
 {

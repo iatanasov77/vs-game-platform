@@ -38,7 +38,7 @@ import { StatusMessage } from '../../../utils/status-message';
 import { AuthService } from '../../../services/auth.service';
 import { StatusMessageService } from '../../../services/status-message.service';
 import { SoundService } from '../../../services/sound.service';
-import { BridgeBeloteService } from '../../../services/websocket/bridge-belote.service';
+import { CardGameService } from '../../../services/websocket/card-game.service';
 import { GamePlayService } from '../../../services/game-play.service';
 
 import GameCookieDto from '_@/GamePlatform/Model/Core/gameCookieDto';
@@ -65,8 +65,8 @@ import { UserLoginDialogComponent } from '../../game-dialogs/user-login-dialog/u
 
 import { Helper } from '../../../utils/helper';
 
-import templateString from './bridge-belote-container.component.html'
-import styleString from './bridge-belote-container.component.scss'
+import templateString from './card-game-container.component.html'
+import styleString from './card-game-container.component.scss'
 
 declare var $: any;
 declare global {
@@ -76,20 +76,23 @@ declare global {
 }
 
 @Component({
-    selector: 'bridge-belote-container',
+    selector: 'card-game-container',
     
     template: templateString || 'Template Not Loaded !!!',
     styles: [
         styleString || 'CSS Not Loaded !!!'
     ]
 })
-export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges
+export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges
 {
     @Input() lobbyButtonsVisible: boolean   = false;
     @Input() isLoggedIn: boolean        = false;
     @Input() hasPlayer: boolean         = false;
     
     @Output() lobbyButtonsVisibleChanged    = new EventEmitter<boolean>();
+    @Output() isStarted                     = new EventEmitter<boolean>();
+    @Output() isPlayAi                      = new EventEmitter<boolean>();
+    
     @ViewChild( 'messages' ) messages: ElementRef | undefined;
     
     gameDto$: Observable<CardGameDto>;
@@ -152,7 +155,7 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
         @Inject( SoundService ) private sound: SoundService,
         @Inject( StatusMessageService ) private statusMessageService: StatusMessageService,
         @Inject( AuthService ) private authService: AuthService,
-        @Inject( BridgeBeloteService ) private wsService: BridgeBeloteService,
+        @Inject( CardGameService ) private wsService: CardGameService,
         @Inject( CookieService ) private cookieService: CookieService,
         @Inject( GamePlayService ) private gamePlayService: GamePlayService,
         @Inject( Store ) private store: Store,
@@ -366,6 +369,8 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
         this.gamePlayService.exitCardGame();
         this.playAiQuestion = false;
         this.lobbyButtonsVisibleChanged.emit( true );
+        this.isStarted.emit( false );
+        this.isPlayAi.emit( false );
     }
     
     inviteFriend(): void
@@ -427,6 +432,7 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
             await Helper.delay( 500 );
         }
         
+        this.isPlayAi.emit( true );
         this.wsService.connect( '', true, this.forGoldFlag );
     }
     
@@ -458,6 +464,7 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
                 
                 this.playAiQuestion = false;
                 this.lobbyButtonsVisibleChanged.emit( false );
+                this.isStarted.emit( true );
             }
         }
         
@@ -563,6 +570,7 @@ export class BridgeBeloteContainerComponent implements OnInit, AfterViewInit, On
         this.wsService.connect( gameId, this.playAiFlag, this.forGoldFlag );
         
         this.lobbyButtonsVisibleChanged.emit( false );
+        this.isPlayAi.emit( this.playAiFlag );
         window.dispatchEvent( new Event( 'resize' ) );
         
         this.statusMessageService.setWaitingForConnect();

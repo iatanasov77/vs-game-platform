@@ -2,7 +2,7 @@
 
 use BitMask\EnumBitMask;
 use App\Component\Type\CardSuit;
-use App\Component\Type\CardType;
+use App\Component\Type\BridgeBeloteCardType as CardType;
 use App\Component\Type\BidType;
 
 class CardExtensions

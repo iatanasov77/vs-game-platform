@@ -8,7 +8,7 @@ use App\Component\Type\BridgeBeloteCardType as CardType;
 use App\Component\Type\BidType;
 use App\Component\Rules\CardGame\Context\PlayerPlayCardContext;
 use App\Component\Rules\CardGame\PlayCardAction;
-use App\Component\Rules\CardGame\Card;
+use App\Component\Rules\CardGame\BridgeBeloteCard as Card;
 use App\Component\Rules\CardGame\BidTypeExtensions;
 use App\Component\Rules\CardGame\PlayerPositionExtensions;
 

@@ -53,7 +53,7 @@ class RoundManager
         $this->scoreManager = new ScoreManager( $this->game, $this->logger );
         */
         
-        $this->game->Deck = new Deck();
+        $this->game->Deck = new Deck( $this->game->GameCode );
         $this->game->playerCards = new ArrayCollection();
         foreach ( $this->game->Players as $key => $player ) {
             $this->game->playerCards->set( $key, new ArrayCollection() );

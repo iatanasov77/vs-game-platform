@@ -19,14 +19,19 @@ enum ContractBridgeCardType: int
     public function toString(): string
     {
         return match( $this ) {
-            BridgeBeloteCardType::Seven => '7',
-            BridgeBeloteCardType::Eight => '8',
-            BridgeBeloteCardType::Nine => '9',
-            BridgeBeloteCardType::Ten => '10',
-            BridgeBeloteCardType::Jack => 'J',
-            BridgeBeloteCardType::Queen => 'Q',
-            BridgeBeloteCardType::King => 'K',
-            BridgeBeloteCardType::Ace => 'A',
+            ContractBridgeCardType::Two => '2',
+            ContractBridgeCardType::Three => '3',
+            ContractBridgeCardType::Four => '4',
+            ContractBridgeCardType::Five => '5',
+            ContractBridgeCardType::Six => '6',
+            ContractBridgeCardType::Seven => '7',
+            ContractBridgeCardType::Eight => '8',
+            ContractBridgeCardType::Nine => '9',
+            ContractBridgeCardType::Ten => '10',
+            ContractBridgeCardType::Jack => 'J',
+            ContractBridgeCardType::Queen => 'Q',
+            ContractBridgeCardType::King => 'K',
+            ContractBridgeCardType::Ace => 'A',
         };
     }
 }

@@ -239,7 +239,7 @@ final class Mapper
         return $playersDto;
     }
     
-    public static function CardToDto( Card $card, CardGame string $gameCode, PlayerPosition $position = PlayerPosition::Neither ): CardDto
+    public static function CardToDto( Card $card, string $gameCode, PlayerPosition $position = PlayerPosition::Neither ): CardDto
     {
         $cardDto = new CardDto();
         $cardDto->Suit = $card->Suit;

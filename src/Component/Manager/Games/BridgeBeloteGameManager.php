@@ -18,7 +18,7 @@ use App\Component\Manager\CardGameManager;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 
 use App\Component\Rules\CardGame\Player;
-use App\Component\Rules\CardGame\Card;
+use App\Component\Rules\CardGame\BridgeBeloteCard as Card;
 use App\Component\Rules\CardGame\Bid;
 use App\Component\Rules\CardGame\Announce;
 use App\Component\Rules\CardGame\PlayCardAction;

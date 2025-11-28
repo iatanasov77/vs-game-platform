@@ -140,7 +140,7 @@ abstract class CardGameManager extends AbstractGameManager
     {
         $this->Game->roundNumber++;
         $this->Game->PlayState = GameState::firstBid;
-        $this->Game->Deck = new Deck();
+        $this->Game->Deck = new Deck( $this->GameCode );
         
         $this->Game->CurrentPlayer = $this->Game->firstInRound;
         $this->Game->SouthNorthTricks = new ArrayCollection();
@@ -151,7 +151,7 @@ abstract class CardGameManager extends AbstractGameManager
     
     public function StartNewGame(): void
     {
-        $this->Game->Deck = new Deck();
+        $this->Game->Deck = new Deck( $this->GameCode );
         $this->Game->Pile = new ArrayCollection();
         $this->Game->SouthNorthTricks = new ArrayCollection();
         $this->Game->EastWestTricks = new ArrayCollection();

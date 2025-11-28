@@ -281,7 +281,7 @@ final class GameFactory
         $game->GoldMultiplier = 1;
         $game->IsGoldGame = $forGold;
         
-        $game->Deck = new Deck();
+        $game->Deck = new Deck( GameVariant::BRIDGE_BELOTE_CODE );
         $game->Pile = new ArrayCollection();
         $game->SouthNorthTricks = new ArrayCollection();
         $game->EastWestTricks = new ArrayCollection();
@@ -323,7 +323,7 @@ final class GameFactory
         $game->GoldMultiplier = 1;
         $game->IsGoldGame = $forGold;
         
-        $game->Deck = new Deck();
+        $game->Deck = new Deck( GameVariant::CONTRACT_BRIDGE_CODE );
         $game->Pile = new ArrayCollection();
         $game->SouthNorthTricks = new ArrayCollection();
         $game->EastWestTricks = new ArrayCollection();

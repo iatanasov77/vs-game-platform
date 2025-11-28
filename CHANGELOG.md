@@ -1,3 +1,16 @@
+1.0.1	|	Release date: **28.11.2025**
+============================================
+* New Features and Improvements:
+  - Update PHP Version in Jenkins File.
+  - Dont show game status in dev environement.
+  - Add Chess Game Login Dialog.
+  - Show Game Chat Only if Game is Started and Not Played with AI.
+  - Prepare Contract Bridge and Svara Games to Create Boards.
+  - Refactoring CardGame Rules to Have Different rules for BrifgeBelote and ContractBridge.
+  - Refacoring Card Game Rules to Support Contract Bridge Deck and Cards.
+  - Dealing and Show Dealed Cards in Contract Bridge Game.
+
+
 1.0.0	|	Release date: **26.11.2025**
 ============================================
 * New Features:

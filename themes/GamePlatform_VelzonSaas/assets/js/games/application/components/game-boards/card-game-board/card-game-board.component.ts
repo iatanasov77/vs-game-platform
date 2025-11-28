@@ -433,6 +433,10 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         }
         
         this.borderWidth = this.width * 0.01;
+        if ( this.game && this.game.gameCode === GameVariant.CONTRACT_BRIDGE_CODE ) {
+            this.cardOffset -= 4 * this.borderWidth;
+        }
+        
         this.initPlayerAreas();
     }
     
@@ -658,18 +662,21 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
                 angle = 0;
             }
             
-            var cardImagesPath;
+            var cardImagesPath, cardBack;
             switch ( this.game.gameCode ) {
                 case GameVariant.BRIDGE_BELOTE_CODE:
                     cardImagesPath = '/build/gameplatform-velzonsaas-theme/images/CardGame/Cards/BridgeBelote';
+                    cardBack = `${cardImagesPath}/back.png`;
                     break;
                 default:
                     cardImagesPath = '/build/gameplatform-velzonsaas-theme/images/CardGame/Cards/ContractBridge';
+                    cardBack = `${cardImagesPath}/blue_back.png`;
             }
             
             Card.draw(
                 this.cx,
                 cardImagesPath,
+                cardBack,
                 playerCards[c],
                 { x: cardX, y: cardY },
                 this.cardWidth,

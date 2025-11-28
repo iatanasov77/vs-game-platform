@@ -9,6 +9,7 @@ export class Card
     static draw(
         cx: CanvasRenderingContext2D | null,
         cardImagesPath: string,
+        cardBack: string,
         card: CardDto,
         point: Point,
         width: number,
@@ -31,7 +32,7 @@ export class Card
             
             image.src = imgSrc;
         } else {
-            image.src = `${cardImagesPath}/back.png`;
+            image.src = cardBack;
         }
         
         cx.save();

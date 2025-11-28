@@ -7,11 +7,14 @@ export class GameVariant
     static readonly BACKGAMMON_GULBARA: string  = 'gulbara';
     
     // Chess
-    static readonly CHESS_CODE            = 'chess';
+    static readonly CHESS_CODE              = 'chess';
     
     // Bridge Belote
-    static readonly BRIDGE_BELOTE_CODE    = 'bridge-belote';
+    static readonly BRIDGE_BELOTE_CODE      = 'bridge-belote';
     
     // Contarct Bridge
-    static readonly CONTRACT_BRIDGE_CODE  = 'contract-bridge';
+    static readonly CONTRACT_BRIDGE_CODE    = 'contract-bridge';
+    
+    // Svara
+    static readonly SVARA_CODE              = 'svara';
 }

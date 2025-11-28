@@ -31,7 +31,7 @@ class ContractBridgeCard extends Card
     
     public static function GetCard( CardSuit $suit, CardType $type ): Card
     {
-        return self::$AllCards->get( ( $suit->value * 8 ) + $type->value );
+        return self::$AllCards->get( ( $suit->value * 13 ) + $type->value );
     }
     
     public function Type(): CardType
@@ -41,7 +41,7 @@ class ContractBridgeCard extends Card
     
     private function __construct( CardSuit $suit, CardType $type )
     {
-        $this->hashCode = ( $suit->value * 8 ) + $type->value;
+        $this->hashCode = ( $suit->value * 13 ) + $type->value;
         $this->Suit = $suit;
         $this->Type = $type;
     }

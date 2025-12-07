@@ -1,3 +1,9 @@
+1.0.2	|	Release date: **07.12.2025**
+============================================
+* Bug-Fixes:
+  - Fix Game Controllers.
+
+
 1.0.1	|	Release date: **28.11.2025**
 ============================================
 * New Features and Improvements:

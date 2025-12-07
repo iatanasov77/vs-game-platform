@@ -734,6 +734,10 @@ class ChessRules
                 }
             }
         }
+        /*  
+        $pawnMoves  = \print_r( $moves->toArray(), true );
+        $this->logger->log( "Pawn Moves: {$pawnMoves}", 'EnginMoves' );
+        */
     }
     
     // calculate the possible moves for the knight piece and insert them into passed array

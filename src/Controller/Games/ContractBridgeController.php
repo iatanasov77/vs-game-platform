@@ -3,6 +3,7 @@
 use App\Controller\Application\GameController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Component\GamePlatform;
 
 class ContractBridgeController extends GameController
 {

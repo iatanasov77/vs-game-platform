@@ -6,6 +6,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 use BitMask\EnumBitMask;
 use App\Component\Type\BidType;
+use App\Component\GamePlatform;
 
 class BridgeBeloteController extends GameController
 {

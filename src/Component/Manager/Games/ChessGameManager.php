@@ -282,17 +282,17 @@ final class ChessGameManager extends BoardGameManager
     {
         $winner = $this->GetWinner();
         $this->Game->SwitchPlayer();
-        if ( $this->AisTurn() ) {
-            $this->logger->log( "NewTurn for AI", 'SwitchPlayer' );
-            
-            $move = $this->Engine->GetBestMove();
-            //$this->logger->log( 'Engine Best Move: ' . print_r( $move, true ), 'EnginMoves' );
-            
-            if ( $winner && ! $move ) {
-                $this->EndGame( $winner );
+        if ( $winner ) {
+            $this->EndGame( $winner );
+        } else {
+            if ( $this->AisTurn() ) {
+                $this->logger->log( "NewTurn for AI", 'SwitchPlayer' );
+                
+                $move = $this->Engine->GetBestMove();
+                //$this->logger->log( 'Engine Best Move: ' . print_r( $move, true ), 'EnginMoves' );
+                
+                $this->EnginMoves( $socket, $move );
             }
-            
-            $this->EnginMoves( $socket, $move );
         }
     }
     

@@ -169,7 +169,7 @@ export class ChessService extends AbstractGameService
                 
                 const endedAction = JSON.parse( message.data ) as BoardGameEndedActionDto;
                 //console.log( 'game ended', endedAction.game.winner );
-                //console.log( 'WebSocket Action Game Ended', endedAction.game );
+                //console.log( 'WebSocket Action Game Ended', endedAction );
                 this.appState.boardGame.setValue({
                     ...endedAction.game,
                     playState: GameState.ended

@@ -311,7 +311,11 @@ final class ChessGameManager extends BoardGameManager
     {
         $winner = null;
         if ( $this->Game->UnderCheck ) {
-            $winner = $this->Game->CauseCheckPlayer;
+            $UnderCheckPlayer = $this->Game->CauseCheckPlayer == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
+            if ( $this->Game->Rules->IsCheckMate( $UnderCheckPlayer ) ) {
+                $winner = $this->Game->CauseCheckPlayer;
+            }
+            
         }
         
         return $winner;

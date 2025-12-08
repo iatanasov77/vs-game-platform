@@ -401,6 +401,9 @@ class ChessRules
             $this->actualGameSquares();
         }
         
+        /** WORKAROUND */
+        return $this->game->UnderCheck;
+        
         $OwnerKingCell=null;
         $OwnerCells = $this->game->GetSideCell( $PlayerSide, $this->gameSquares );
         
@@ -613,6 +616,7 @@ class ChessRules
             $TotalMoves += $moves->count();
         }
         
+        $this->logger->log( "CountOfPossibleMoves: {$TotalMoves}", 'CountOfPossibleMoves' );
         return $TotalMoves;
     }
     

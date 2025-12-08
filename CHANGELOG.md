@@ -1,3 +1,12 @@
+1.0.3	|	Release date: **08.12.2025**
+============================================
+* Bug-Fixes and Improvements:
+  - Enable Chess Pieces only for My Player.
+  - Chess Game Ended on CheckMate.
+  - Litle Fix in Chess Rules.
+  - Fix Playing With Real Player.
+
+
 1.0.2	|	Release date: **07.12.2025**
 ============================================
 * Bug-Fixes:

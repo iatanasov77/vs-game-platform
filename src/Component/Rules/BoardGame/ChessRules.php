@@ -565,7 +565,7 @@ class ChessRules
     // Do the EnPassant Move
     private function DoEnPassantMove( ChessMove $move ): void
     {
-        if ( $move->From->Piece->Side.isWhite() ) {	// white piece is moving
+        if ( $move->From->Piece->Side->isWhite() ) {	// white piece is moving
             $EnPassantCell = $this->BottomCell( $move->To );	// Get the cell under target position
         } else {
             $EnPassantCell = $this->TopCell( $move->To );	// Get the cell under target position

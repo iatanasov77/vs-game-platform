@@ -315,18 +315,13 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
                 const myColor = this.appStateService.myColor.getValue();
                 if ( myColor === PlayerColor.black ) {
                     this.board.reverse();
+                    this.blackDisabled = false;
+                } else {
+                    this.whiteDisabled = false;
                 }
             }
             
             if ( dto.isGoldGame ) this.sound.playCoin();
-        }
-        
-        if ( dto ) {
-            if ( dto.currentPlayer === PlayerColor.black ) {
-                this.blackDisabled = false;
-            } else {
-                this.whiteDisabled = false;
-            }
         }
         
         this.setUndoVisible();

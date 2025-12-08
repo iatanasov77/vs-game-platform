@@ -184,6 +184,9 @@ final class ChessGameManager extends BoardGameManager
         //?WebsocketClientInterface $otherSocket
         array $otherSockets
     ): void {
+        $countOtherSockets = \count( $otherSockets );
+        $this->logger->log( "DoAction Other Sockets Count: {$countOtherSockets}", 'GameManager' );
+        
         $this->logger->log( "Doing action: {$actionName->value}", 'GameManager' );
         //$this->logger->debug( $this->Game->Points, 'BeforeDoAction.txt' );
         
@@ -205,9 +208,17 @@ final class ChessGameManager extends BoardGameManager
             
         } else if ( $actionName == ActionNames::chessOpponentMove ) {
             $action = $this->serializer->deserialize( $actionText, ChessOpponentMoveActionDto::class, JsonEncoder::FORMAT );
+            
+            // Current Player is Switched on chessMoveMade Action, Sent Before This Action
+            $otherPlayer = $action->myColor == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
+            $otherSocket = $this->Clients->get( $otherPlayer->value );
+            $this->Send( $otherSocket, $action );
+            
+            /*  
             foreach ( $otherSockets as $otherSocket ) {
                 $this->Send( $otherSocket, $action );
             }
+            */
         } else if ( $actionName == ActionNames::undoMove ) {
             $action = $this->serializer->deserialize( $actionText, UndoActionDto::class, JsonEncoder::FORMAT );
             foreach ( $otherSockets as $otherSocket ) {

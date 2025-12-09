@@ -1,5 +1,11 @@
 monolog:
-    channels: [event,doctrine,console,websocket_game,websocket_chat]
+    channels:
+        - event
+        - doctrine
+        - console
+        - websocket_game
+        - websocket_chat
+    
     handlers:
         file_log:
             type: stream

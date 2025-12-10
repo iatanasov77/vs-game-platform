@@ -155,15 +155,16 @@ class ChessEngine extends Engine
             }
         }
         
+        /*
         $debugTotalMoves = \print_r( $TotalMoves->toArray(), true );
         $this->logger->log( "Total Moves: {$debugTotalMoves}", 'EnginMoves' );
+        */
         
         if ( $BestMove ) {
             $TotalMoves->removeElement( $BestMove );
             $BestMove->TotalMoves = new ArrayCollection( $TotalMoves->getValues() );
             
-            //$BestMove->Piece = $BestMove->From->Piece;
-            $this->logger->log( 'Best Move Piece: ' . \print_r( $BestMove, true ), 'EnginMoves' );
+            //$this->logger->log( 'Best Move Piece: ' . \print_r( $BestMove, true ), 'EnginMoves' );
         }
         
         if ( ! $BestMove ) {

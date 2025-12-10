@@ -228,7 +228,7 @@ export class ChessService extends AbstractGameService
             }
             case ActionNames.chessOpponentMove: {
                 const action = JSON.parse( message.data ) as ChessOpponentMoveActionDto;
-                console.log( 'WebSocket Action Opponent Move ', action );
+                //console.log( 'WebSocket Action Opponent Move ', action );
                 
                 if ( action.move ) {
                     this.doMove( action.move );
@@ -381,7 +381,7 @@ export class ChessService extends AbstractGameService
         };
         this.sendMessage( JSON.stringify( invalidMoveAction ) );
         
-        console.log( 'Chess Invalid Move', invalidMoveAction.move );
+        //console.log( 'Chess Invalid Move', invalidMoveAction.move );
     }
     
     shiftMoveAnimationsQueue(): void

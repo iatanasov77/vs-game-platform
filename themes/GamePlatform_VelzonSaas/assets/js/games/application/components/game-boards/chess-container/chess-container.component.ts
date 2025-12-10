@@ -459,6 +459,8 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
             piece: pieceType,
             
             nextMoves: [],
+            totalMoves: [],
+            
             animate: false,
             hint: false
         };
@@ -567,6 +569,18 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
         //alert( `OponentMove Coords: ${moveCoords}` );
         
         this.board.move( moveCoords );
+        
+        const MoveHistory = this.board.getMoveHistory();
+        const LastMove = MoveHistory.slice(-1)[0];
+        //console.log( 'Move History', MoveHistory );
+        //console.log( 'Last Move', Last Move );
+        
+        if ( LastMove.move !== moveCoords ) {
+            //alert( 'Invalid Oponent Move !!!' );
+            this.wsService.sendInvalidMove( dto );
+            return;
+        }
+        
         this.wsService.switchPlayer();
     }
     

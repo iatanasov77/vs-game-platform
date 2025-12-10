@@ -21,16 +21,27 @@ class ChessMoveDtoDenormalizer implements DenormalizerInterface, DenormalizerAwa
     
     public function denormalize( mixed $data, string $type, ?string $format = null, array $context = [] ): mixed
     {
-        $dto        = new ChessMoveDto();
+        $dto                = new ChessMoveDto();
         
-        $dto->from      = $data['from'];
-        $dto->to        = $data['to'];
-        $dto->causeCheck = $data['causeCheck'];
-        $dto->animate   = $data['animate'];
-        $dto->hint      = isset( $data['hint'] ) ? $data['hint'] : false;
-        $dto->color     = PlayerColor::from( $data['color'] );
-        $dto->type      = ChessMoveType::from( $data['type'] );
-        $dto->nextMoves = new ArrayCollection( $data['nextMoves'] );
+        $dto->from          = $data['from'];
+        $dto->to            = $data['to'];
+        $dto->causeCheck    = $data['causeCheck'];
+        $dto->animate       = $data['animate'];
+        $dto->hint          = isset( $data['hint'] ) ? $data['hint'] : false;
+        $dto->color         = PlayerColor::from( $data['color'] );
+        $dto->type          = ChessMoveType::from( $data['type'] );
+        
+        $nextMoves          = \array_map(
+            fn( $move ) => $this->denormalizer->denormalize( $move, ChessMoveDto::class ),
+            $data['nextMoves']
+        );
+        $dto->nextMoves     = $nextMoves;
+        
+        $totalMoves         = \array_map(
+            fn( $move ) => $this->denormalizer->denormalize( $move, ChessMoveDto::class ),
+            $data['totalMoves']
+        );
+        $dto->totalMoves    = $totalMoves;
         
         /*
         $dto->piece             = ChessPieceType::from( $data['type'] );

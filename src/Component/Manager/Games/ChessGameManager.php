@@ -38,6 +38,7 @@ use App\Component\Dto\Actions\HintMovesActionDto;
 use App\Component\Dto\Actions\ChessMoveMadeActionDto;
 use App\Component\Dto\Actions\UndoActionDto;
 use App\Component\Dto\Actions\ChessOpponentMoveActionDto;
+use App\Component\Dto\Actions\ChessInvalidMoveMadeActionDto;
 use App\Component\Dto\Actions\DoublingActionDto;
 
 final class ChessGameManager extends BoardGameManager
@@ -219,6 +220,16 @@ final class ChessGameManager extends BoardGameManager
                 $this->Send( $otherSocket, $action );
             }
             */
+        } else if ( $actionName == ActionNames::chessInvalidMoveMade ) {
+            $action = $this->serializer->deserialize( $actionText, ChessInvalidMoveMadeActionDto::class, JsonEncoder::FORMAT );
+            $this->logger->log( "'chessInvalidMoveMade' action recieved from GameManager. CurrentPlayer: {$this->Game->CurrentPlayer->value}", 'GameManager' );
+            
+            $this->Game->SwitchPlayer();
+            $move   = Mapper::ChessMoveToChessMove( $action->move, $this->Game );
+            
+            $this->Game->UndoMove( $move, $move->CapturedPiece );
+            $this->EnginMoves( $socket, $move->TotalMoves->first() );
+            
         } else if ( $actionName == ActionNames::undoMove ) {
             $action = $this->serializer->deserialize( $actionText, UndoActionDto::class, JsonEncoder::FORMAT );
             foreach ( $otherSockets as $otherSocket ) {

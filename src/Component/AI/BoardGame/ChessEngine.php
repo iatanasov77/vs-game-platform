@@ -126,6 +126,7 @@ class ChessEngine extends Engine
                 // Now to get the effect of this move; execute this move and analyze the board
                 $this->EngineGame->Rules->ExecuteMove( $move );
                 
+                $move->Color = $this->EngineGame->CurrentPlayer;
                 $move->Score = - $this->AlphaBeta( $EnemySide, $depth - 1, -$beta, -$alpha );
                 $this->TotalMovesAnalyzed++;	// Increment move counter
                 
@@ -133,7 +134,7 @@ class ChessEngine extends Engine
                 
                 // If the score of the move we just tried is better than the score of the best move we had
                 // so far, at this depth, then make this the best move.
-                if ( $move->Score > $alpha ) {
+                if ( $move->Score > $alpha ) { //  && ! $this->EngineGame->Rules->MoveIsCheckMate( $move )
                     $BestMove = $move;
                     $alpha = $move->Score;
                 }
@@ -153,11 +154,16 @@ class ChessEngine extends Engine
                 break; // Force break the loop
             }
         }
-            
+        
+        $debugTotalMoves = \print_r( $TotalMoves->toArray(), true );
+        $this->logger->log( "Total Moves: {$debugTotalMoves}", 'EnginMoves' );
+        
         if ( $BestMove ) {
-            $BestMove->Color = $this->EngineGame->CurrentPlayer;
+            $TotalMoves->removeElement( $BestMove );
+            $BestMove->TotalMoves = new ArrayCollection( $TotalMoves->getValues() );
+            
             //$BestMove->Piece = $BestMove->From->Piece;
-            //$this->logger->log( 'Best Move Piece: ' . print_r( $this->EngineGame->Squares["{$BestMove->From}"], true ), 'EnginMoves' );
+            $this->logger->log( 'Best Move Piece: ' . \print_r( $BestMove, true ), 'EnginMoves' );
         }
         
         if ( ! $BestMove ) {
@@ -166,9 +172,6 @@ class ChessEngine extends Engine
             
             $debugLegalMoves = \print_r( $legalMovesForQueen->toArray(), true );
             //$this->logger->log( "Legal Moves: {$debugLegalMoves}", 'EnginMoves' );
-            
-            $debugTotalMoves = \print_r( $TotalMoves->toArray(), true );
-            //$this->logger->log( "Total Moves: {$debugTotalMoves}", 'EnginMoves' );
         }
         
         //m_Rules.ChessGame.NotifyComputerThinking(depth, MoveCounter, TotalMoves.Count, $this->TotalMovesAnalyzed, BestMove );

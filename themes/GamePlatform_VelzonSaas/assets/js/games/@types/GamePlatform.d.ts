@@ -629,6 +629,8 @@ declare module '_@/GamePlatform/Model/BoardGame/chessMoveDto' {
         enpassantPiece?: ChessPieceType;
         
         nextMoves: ChessMoveDto[];
+        totalMoves: ChessMoveDto[];
+        
         animate: boolean;
         hint: boolean;
     }

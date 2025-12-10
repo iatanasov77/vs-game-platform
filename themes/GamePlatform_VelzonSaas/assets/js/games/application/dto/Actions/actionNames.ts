@@ -32,6 +32,7 @@
     chessGameStarted,
     chessMoveMade,
     chessOpponentMove,
+    chessInvalidMoveMade,
     
     serverWasTerminated
 }

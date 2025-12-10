@@ -17,6 +17,8 @@ interface ChessMoveDto
     enpassantPiece?: ChessPieceType;
     
     nextMoves: ChessMoveDto[];
+    totalMoves: ChessMoveDto[];
+    
     animate: boolean;
     hint: boolean;
 }

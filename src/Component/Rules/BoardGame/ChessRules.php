@@ -30,6 +30,27 @@ class ChessRules
         return $this->GetLegalMoves( $this->gameSquares[$cellKey] );
     }
     
+    // Return true if the given move is cause checkmate
+    public function MoveIsCheckMate( ChessMove $move ): bool
+    {
+        $CauseCheck = false;
+        $PlayerSide = $move->From->Piece->Side->type;
+        
+        // To check if a move cause check, we actually need to execute and check the result of that move
+        $this->ExecuteMove( $move );
+        
+        $moves = $this->GetPossibleMoves( $this->gameSquares["{$move->To}"] );	// Get the moves for the enemy piece
+        
+        // King is directly under attack
+        if ( $moves->contains( $move->To ) ) {
+            $CauseCheck = true;
+        }
+        
+        $this->UndoMove( $move );	// undo the move
+        
+        return $CauseCheck;
+    }
+    
     // Return true if the given side is checkmate
     public function IsCheckMate( PlayerColor $PlayerSide ): bool
     {
@@ -68,10 +89,12 @@ class ChessRules
             case ChessPieceType::Pawn:	// Pawn object
                 $this->GetPawnMoves( $source, $LegalMoves );
                 
+                /*  
                 if ( ! $LegalMoves->isEmpty() ) {
                     $debugLegalMoves = \print_r( $LegalMoves->toArray(), true );
                     $this->logger->log( "Pawn Valid Moves: {$debugLegalMoves}", 'EnginMoves' );
                 }
+                */
                 
                 break;
                 
@@ -451,7 +474,6 @@ class ChessRules
                 return true;
             }
         }
-        
         
         return false;
     }

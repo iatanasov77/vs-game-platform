@@ -10,7 +10,7 @@ class CardDto
     public CardSuit $Suit;
     
     /** @var BridgeBeloteCardType | ContractBridgeCardType */
-    public $Type;
+    public BridgeBeloteCardType $Type;
     
     public PlayerPosition $position;
     public string $cardIndex;

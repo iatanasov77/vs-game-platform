@@ -42,7 +42,7 @@ export class BridgeBeloteContractComponent implements OnChanges
         this.announceSymbols = [];
         this.myPosition = this.appStateService.myPosition.getValue();
     }
-        
+    
     ngOnChanges( changes: SimpleChanges )
     {
         //console.log( 'BridgeBeloteAnnounceComponent Changes', changes );
@@ -72,15 +72,6 @@ export class BridgeBeloteContractComponent implements OnChanges
                     break;
             }
         }
-    }
-    
-    getClass( bid: BidType ): string
-    {
-        if ( ! ( bid in this.validBids ) ) {
-            return 'announce-disabled';
-        }
-        
-        return '';
     }
     
     getAnnounceSymbols(): void

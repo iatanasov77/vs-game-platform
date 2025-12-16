@@ -1,5 +1,9 @@
 @import "~@angular/material/prebuilt-themes/deeppurple-amber.css";
 
+.tooltip.show {
+    margin-bottom: 15px !important;
+}
+
 .announce-button {
     margin-left: 10px;
     color: black;
@@ -10,10 +14,6 @@
 
 .announce-button img {
     vertical-align: unset;
-}
-
-.announce-disabled {
-    display: none;
 }
 
 span.player-position::first-letter {

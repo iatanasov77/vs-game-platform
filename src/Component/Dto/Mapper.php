@@ -341,7 +341,13 @@ final class Mapper
             function( $entry ) {
                 return self::ChessMoveToDto( $entry );
             }
-        ); // ->toArray();
+        )->toArray();
+        
+        $moveDto->totalMoves = $move->TotalMoves->map(
+            function( $entry ) {
+                return self::ChessMoveToDto( $entry );
+            }
+        )->toArray();
         
         return $moveDto;
     }
@@ -356,6 +362,11 @@ final class Mapper
         $move->To = $game->Squares[$dto->to];
         
         $move->CauseCheck = $dto->causeCheck;
+        
+        $move->TotalMoves = new ArrayCollection();
+        foreach ( $dto->totalMoves as $moveDto ) {
+            $move->TotalMoves[] = self::ChessMoveToChessMove( $moveDto, $game );
+        }
 
         /*
         $move->Piece = $dto->piece ? new ChessPiece( $dto->piece, new ChessSide( $dto->color ) ) : null;

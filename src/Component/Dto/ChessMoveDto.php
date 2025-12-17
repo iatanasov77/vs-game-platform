@@ -26,7 +26,12 @@ class ChessMoveDto
     /** @var ChessPieceType | null */
     public $enpassantPiece;
     
-    public Collection $nextMoves; // ChessMoveDto[]
+    /** @var ChessMoveDto[] */
+    public array $nextMoves;
+    
+    /** @var ChessMoveDto[] */
+    public array $totalMoves;
+    
     public bool $animate    = false;
     public bool $hint       = false;
 }

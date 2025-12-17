@@ -30,6 +30,27 @@ class ChessRules
         return $this->GetLegalMoves( $this->gameSquares[$cellKey] );
     }
     
+    // Return true if the given move is cause checkmate
+    public function MoveIsCheckMate( ChessMove $move ): bool
+    {
+        $CauseCheck = false;
+        $PlayerSide = $move->From->Piece->Side->type;
+        
+        // To check if a move cause check, we actually need to execute and check the result of that move
+        $this->ExecuteMove( $move );
+        
+        $moves = $this->GetPossibleMoves( $this->gameSquares["{$move->To}"] );	// Get the moves for the enemy piece
+        
+        // King is directly under attack
+        if ( $moves->contains( $move->To ) ) {
+            $CauseCheck = true;
+        }
+        
+        $this->UndoMove( $move );	// undo the move
+        
+        return $CauseCheck;
+    }
+    
     // Return true if the given side is checkmate
     public function IsCheckMate( PlayerColor $PlayerSide ): bool
     {
@@ -67,6 +88,14 @@ class ChessRules
         {
             case ChessPieceType::Pawn:	// Pawn object
                 $this->GetPawnMoves( $source, $LegalMoves );
+                
+                /*  
+                if ( ! $LegalMoves->isEmpty() ) {
+                    $debugLegalMoves = \print_r( $LegalMoves->toArray(), true );
+                    $this->logger->log( "Pawn Valid Moves: {$debugLegalMoves}", 'EnginMoves' );
+                }
+                */
+                
                 break;
                 
             case ChessPieceType::Knight:	// Knight object
@@ -84,16 +113,24 @@ class ChessRules
             case ChessPieceType::Queen:	// Queen piece
                 $this->GetQueenMoves( $source, $LegalMoves );
                 
-//                 $debugLegalMoves = \print_r( $LegalMoves->toArray(), true );
-//                 $this->logger->log( "Queen Valid Moves: {$debugLegalMoves}", 'EnginMoves' );
+                /*  
+                if ( ! $LegalMoves->isEmpty() ) {
+                    $debugLegalMoves = \print_r( $LegalMoves->toArray(), true );
+                    $this->logger->log( "Queen Valid Moves: {$debugLegalMoves}", 'EnginMoves' );
+                }
+                */
                 
                 break;
                 
             case ChessPieceType::King:	// king piece
                 $this->GetKingMoves( $source, $LegalMoves );
                 
-//                 $debugLegalMoves = \print_r( $LegalMoves->toArray(), true );
-//                 $this->logger->log( "King Valid Moves: {$debugLegalMoves}", 'EnginMoves' );
+                /*  
+                if ( ! $LegalMoves->isEmpty() ) {
+                    $debugLegalMoves = \print_r( $LegalMoves->toArray(), true );
+                    $this->logger->log( "King Valid Moves: {$debugLegalMoves}", 'EnginMoves' );
+                }
+                */
                 
                 break;
         }
@@ -122,6 +159,9 @@ class ChessRules
             $move->CapturedPiece = $target->Piece ?: null;
             
             if ( $this->CauseCheck( $move ) ) {
+                if ( $source->Piece->Type == ChessPieceType::King ) {
+                    $this->logger->log( "The Move Cause Check: {$target->File}{$target->Rank}", 'CountOfPossibleMoves' );
+                }
                 $ToRemove[] = $target;
             }
         }
@@ -133,6 +173,7 @@ class ChessRules
                 // if the move place or leave the user under check
                 
                 if ( \abs( \ord( $target->File ) - \ord( $source->File ) ) > 1 ) {
+                    $this->logger->log( "The Move Is tower/caslting !!!", 'CountOfPossibleMoves' );
                     $ToRemove[] = $target;
                 }
             }
@@ -401,7 +442,10 @@ class ChessRules
             $this->actualGameSquares();
         }
         
-        $OwnerKingCell=null;
+        /** WORKAROUND */
+        return $this->game->UnderCheck;
+        
+        $OwnerKingCell = null;
         $OwnerCells = $this->game->GetSideCell( $PlayerSide, $this->gameSquares );
         
         // loop all the owner squars and get his king cell
@@ -412,11 +456,14 @@ class ChessRules
             }
         }
         
-        /* This Create Infinite recursion? at ArrayCollection.php
-         * =======================================================
+        /**
+         * This Create Infinite recursion? at ArrayCollection.php
+         * and zend.max_allowed_stack_size cannot be increased
+         */
         // Loop all the enemy squars and get their possible moves
         $EnemyCells = $this->game->GetSideCell( ( new ChessSide( $PlayerSide ) )->Enemy(), $this->gameSquares );
-        //$this->logger->log( "Game Squares: " . \print_r( $this->gameSquares, true ), 'EnginMoves' );
+        //$this->logger->log( "Owner King Cell: {$OwnerKingCell->File}{$OwnerKingCell->Rank}", 'EnginMoves' );
+        //$this->logger->log( "Enemy Squares: " . \print_r( $EnemyCells->toArray(), true ), 'EnginMoves' );
         foreach ( $EnemyCells as $CellName ) {
             //$this->logger->log( "Player Side: {$PlayerSide->value}", 'EnginMoves' );
             //$this->logger->log( "Cell Name: {$CellName}", 'EnginMoves' );
@@ -427,7 +474,6 @@ class ChessRules
                 return true;
             }
         }
-        */
         
         return false;
     }
@@ -569,11 +615,11 @@ class ChessRules
             $EnPassantCell = $this->BottomCell( $move->To );	// Get the cell under target position
         } else {
             $EnPassantCell = $this->TopCell( $move->To );	// Get the cell under target position
-            
-            $move->EnPassantPiece = $EnPassantCell->Piece;				// Save a reference to the en passant cell
-            $EnPassantCell->Piece = null;	// Empty the en-passant cell
-            $this->DoNormalMove( $move );	// Move the pawn to it's target position
         }
+        
+        $move->EnPassantPiece = $EnPassantCell->Piece;				// Save a reference to the en passant cell
+        $EnPassantCell->Piece = null;	// Empty the en-passant cell
+        $this->DoNormalMove( $move );	// Move the pawn to it's target position
     }
     
     private function UndoNormalMove( ChessMove $move ): void
@@ -613,6 +659,7 @@ class ChessRules
             $TotalMoves += $moves->count();
         }
         
+        $this->logger->log( "Count Of Possible Moves: {$TotalMoves}", 'CountOfPossibleMoves' );
         return $TotalMoves;
     }
     

@@ -24,6 +24,7 @@ import ChessGameStartedActionDto from '../../dto/Actions/chessGameStartedActionD
 import BoardGameEndedActionDto from '../../dto/Actions/boardGameEndedActionDto';
 import ChessMoveMadeActionDto from '../../dto/Actions/chessMoveMadeActionDto';
 import ChessOpponentMoveActionDto from '../../dto/Actions/chessOpponentMoveActionDto';
+import ChessInvalidMoveMadeActionDto from '../../dto/Actions/chessInvalidMoveMadeActionDto';
 import UndoActionDto from '../../dto/Actions/undoActionDto';
 import ConnectionInfoActionDto from '../../dto/Actions/connectionInfoActionDto';
 import BoardGameRestoreActionDto from '../../dto/Actions/boardGameRestoreActionDto';
@@ -227,7 +228,7 @@ export class ChessService extends AbstractGameService
             }
             case ActionNames.chessOpponentMove: {
                 const action = JSON.parse( message.data ) as ChessOpponentMoveActionDto;
-                console.log( 'WebSocket Action Opponent Move ', action );
+                //console.log( 'WebSocket Action Opponent Move ', action );
                 
                 if ( action.move ) {
                     this.doMove( action.move );
@@ -312,7 +313,7 @@ export class ChessService extends AbstractGameService
     
     doMove( move: ChessMoveDto ): void
     {
-        //console.log( 'Chess Moee', move );
+        //console.log( 'Chess Move', move );
         this.chesUserMoves.push( { ...move, nextMoves: [] } ); // server does not need to know nextMoves.
         const myColor = this.appState.myColor.getValue();
         const oponent = myColor === PlayerColor.black ? PlayerColor.white : PlayerColor.black
@@ -370,6 +371,17 @@ export class ChessService extends AbstractGameService
             myColor: this.appState.myColor.getValue()
         };
         this.sendMessage( JSON.stringify( opponentMovePieceAction ) );
+    }
+    
+    sendInvalidMove( move: ChessMoveDto ): void
+    {
+        const invalidMoveAction: ChessInvalidMoveMadeActionDto = {
+            actionName: ActionNames.chessInvalidMoveMade,
+            move: { ...move, nextMoves: [], animate: true }
+        };
+        this.sendMessage( JSON.stringify( invalidMoveAction ) );
+        
+        //console.log( 'Chess Invalid Move', invalidMoveAction.move );
     }
     
     shiftMoveAnimationsQueue(): void

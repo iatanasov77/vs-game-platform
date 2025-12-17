@@ -41,10 +41,18 @@ class ChessMove
     /** @var Collection | ChessMove[] */
     public $NextMoves;
     
+    /**
+     * Workaround for AI Engine When Get Invalid Best Move
+     * 
+     * @var Collection | ChessMove[]
+     */
+    public $TotalMoves;
+    
     public function __construct()
     {
         $this->CauseCheck   = false;
         $this->NextMoves    = new ArrayCollection();
+        $this->TotalMoves   = new ArrayCollection();
     }
     
     // Return true if the move was promo move

@@ -329,8 +329,8 @@ declare module '_@/GamePlatform/Model/CardGame/cardSuit' {
     export = CardSuit;
 }
 
-declare module '_@/GamePlatform/Model/CardGame/cardType' {
-    enum CardType
+declare module '_@/GamePlatform/Model/CardGame/bridgeBeloteCardType' {
+    enum BridgeBeloteCardType
     {
         Seven,
         Eight,
@@ -342,7 +342,28 @@ declare module '_@/GamePlatform/Model/CardGame/cardType' {
         Ace,
     }
     
-    export = CardType;
+    export = BridgeBeloteCardType;
+}
+
+declare module '_@/GamePlatform/Model/CardGame/contractBridgeCardType' {
+    enum ContractBridgeCardType
+    {
+        Two,
+        Three,
+        Four,
+        Five,
+        Six,
+        Seven,
+        Eight,
+        Nine,
+        Ten,
+        Jack,
+        Queen,
+        King,
+        Ace,
+    }
+    
+    export = ContractBridgeCardType;
 }
 
 declare module '_@/GamePlatform/Model/CardGame/cardGameTeam' {
@@ -370,13 +391,15 @@ declare module '_@/GamePlatform/Model/CardGame/playerDto' {
 
 declare module '_@/GamePlatform/Model/CardGame/cardDto' {
     import CardSuit from '_@/GamePlatform/Model/CardGame/cardSuit';
-    import CardType from '_@/GamePlatform/Model/CardGame/cardType';
+    import BridgeBeloteCardType from '_@/GamePlatform/Model/CardGame/bridgeBeloteCardType';
+    import ContractBridgeCardType from '_@/GamePlatform/Model/CardGame/contractBridgeCardType';
+    
     import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
     
     interface CardDto
     {
         Suit: CardSuit;
-        Type: CardType;
+        Type: BridgeBeloteCardType | ContractBridgeCardType;
         
         position: PlayerPosition;
         cardIndex: string;

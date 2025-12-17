@@ -1,4 +1,4 @@
-enum CardType
+enum BridgeBeloteCardType
 {
     Seven,
     Eight,
@@ -10,4 +10,4 @@ enum CardType
     Ace,
 }
 
-export default CardType;
+export default BridgeBeloteCardType;

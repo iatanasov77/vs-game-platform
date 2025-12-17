@@ -1,43 +1,12 @@
 import CardSuit from '_@/GamePlatform/Model/CardGame/cardSuit';
-import CardType from '_@/GamePlatform/Model/CardGame/cardType';
+import BridgeBeloteCardType from '_@/GamePlatform/Model/CardGame/bridgeBeloteCardType';
+import ContractBridgeCardType from '_@/GamePlatform/Model/CardGame/contractBridgeCardType';
 
 export class Helper
 {
     public static delay( ms: number )
     {
         return new Promise( ( resolve ) => setTimeout( resolve, ms ) );
-    }
-    
-    public static cardType( type: CardType ): string
-    {
-        switch( type ) {
-            case CardType.Seven:
-                return 'Seven';
-                break;
-            case CardType.Eight:
-                return 'Eight';
-                break;
-            case CardType.Nine:
-                return 'Nine';
-                break;
-            case CardType.Ten:
-                return 'Ten';
-                break;
-            case CardType.Jack:
-                return 'Jack';
-                break;
-            case CardType.Queen:
-                return 'Queen';
-                break;
-            case CardType.King:
-                return 'King';
-                break;
-            case CardType.Ace:
-                return 'Ace';
-                break;
-            default:
-                throw new Error( `Invalid Card Type ${type}` );
-        }
     }
     
     public static cardSuit( suit: CardSuit ): string
@@ -57,6 +26,85 @@ export class Helper
                 break;
             default:
                 throw new Error( `Invalid Card Suit ${suit}` );
+        }
+    }
+    
+    public static bridgeBeloteCardType( type: BridgeBeloteCardType ): string
+    {
+        switch( type ) {
+            case BridgeBeloteCardType.Seven:
+                return 'Seven';
+                break;
+            case BridgeBeloteCardType.Eight:
+                return 'Eight';
+                break;
+            case BridgeBeloteCardType.Nine:
+                return 'Nine';
+                break;
+            case BridgeBeloteCardType.Ten:
+                return 'Ten';
+                break;
+            case BridgeBeloteCardType.Jack:
+                return 'Jack';
+                break;
+            case BridgeBeloteCardType.Queen:
+                return 'Queen';
+                break;
+            case BridgeBeloteCardType.King:
+                return 'King';
+                break;
+            case BridgeBeloteCardType.Ace:
+                return 'Ace';
+                break;
+            default:
+                throw new Error( `Invalid Card Type ${type}` );
+        }
+    }
+    
+    public static contractBridgeCardType( type: ContractBridgeCardType ): string
+    {
+        switch( type ) {
+            case ContractBridgeCardType.Two:
+                return 'Two';
+                break;
+            case ContractBridgeCardType.Three:
+                return 'Three';
+                break;
+            case ContractBridgeCardType.Four:
+                return 'Four';
+                break;
+            case ContractBridgeCardType.Five:
+                return 'Five';
+                break;
+            case ContractBridgeCardType.Six:
+                return 'Six';
+                break;
+            case ContractBridgeCardType.Seven:
+                return 'Seven';
+                break;
+            case ContractBridgeCardType.Eight:
+                return 'Eight';
+                break;
+            case ContractBridgeCardType.Nine:
+                return 'Nine';
+                break;
+            case ContractBridgeCardType.Ten:
+                return 'Ten';
+                break;
+            case ContractBridgeCardType.Jack:
+                return 'Jack';
+                break;
+            case ContractBridgeCardType.Queen:
+                return 'Queen';
+                break;
+            case ContractBridgeCardType.King:
+                return 'King';
+                break;
+            case ContractBridgeCardType.Ace:
+                return 'Ace';
+                break;
+            default:
+                throw new Error( `Invalid Card Type ${type}` );
         }
     }
 }

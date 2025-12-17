@@ -1,3 +1,15 @@
+1.1.0	|	Release date: **17.12.2025**
+============================================
+* Bug-Fixes and Improvements:
+  - Check for Possible Moves in Chess Game Under Check Mate.
+  - Improve Configuration of Monolog Bundle.
+  - Fix Chess Engine Make Move When Generated BestMove is Invalid.
+  - Remove Some Uneeded Logs.
+  - Improve BridgeBelote Contract Component.
+  - Some Fix on PlayCard in BridgeBelote Game.
+  - Fix CardDto.
+
+
 1.0.3	|	Release date: **08.12.2025**
 ============================================
 * Bug-Fixes and Improvements:

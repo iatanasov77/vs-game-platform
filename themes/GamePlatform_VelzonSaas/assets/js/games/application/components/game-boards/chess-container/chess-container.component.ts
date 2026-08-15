@@ -28,7 +28,7 @@ import { GameState as MyGameState } from '../../../+store/game.reducers';
 // NgxChessBoard API Reference: https://www.npmjs.com/package/ngx-chess-board
 import { NgxChessBoardView, NgxChessBoardService } from 'ngx-chess-board';
 
-import GameCookieDto from '_@/GamePlatform/Model/Core/gameCookieDto';
+import { GameCookieDto } from '@vankosoft/game-platform';
 import { CookieService } from 'ngx-cookie-service';
 import { Keys } from '../../../utils/keys';
 
@@ -50,13 +50,13 @@ import { SoundService } from '../../../services/sound.service';
 import { GamePlayService } from '../../../services/game-play.service';
 
 // BoardGame Interfaces
-import UserDto from '_@/GamePlatform/Model/Core/userDto';
-import GameState from '_@/GamePlatform/Model/Core/gameState';
-import BoardGameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
-import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
-import ChessMoveType from '_@/GamePlatform/Model/BoardGame/chessMoveType';
-import ChessPieceType from '_@/GamePlatform/Model/BoardGame/chessPieceType';
-import ChessMoveDto from '_@/GamePlatform/Model/BoardGame/chessMoveDto';
+import { UserDto } from '@vankosoft/game-platform';
+import { GameState } from '@vankosoft/game-platform';
+import { BoardGameDto } from '@vankosoft/game-platform';
+import { PlayerColor } from '@vankosoft/game-platform';
+import { ChessMoveType } from '@vankosoft/game-platform';
+import { ChessPieceType } from '@vankosoft/game-platform';
+import { ChessMoveDto } from '@vankosoft/game-platform';
 
 import { Helper } from '../../../utils/helper';
 import { IThemes, DarkTheme } from './themes';

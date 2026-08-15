@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
 import { map, merge } from 'rxjs';
 
-import IGameRoom from '_@/GamePlatform/Model/GameRoomInterface';
+import { IGameRoom } from '@vankosoft/game-platform';
 import { IMercureAction } from '../../../interfaces/mercure-action';
 
 import {

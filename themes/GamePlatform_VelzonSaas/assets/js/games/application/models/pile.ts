@@ -1,5 +1,5 @@
 import { IThemes } from './themes';
-import CardDto from '_@/GamePlatform/Model/CardGame/cardDto';
+import { CardDto } from '@vankosoft/game-platform';
 
 export class Pile
 {

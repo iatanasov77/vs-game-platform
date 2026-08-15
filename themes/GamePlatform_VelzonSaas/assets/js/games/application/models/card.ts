@@ -1,8 +1,8 @@
 import { Point } from './point';
 import { IThemes } from './themes';
 
-import CardDto from '_@/GamePlatform/Model/CardGame/cardDto';
-import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
+import { CardDto } from '@vankosoft/game-platform';
+import { PlayerPosition } from '@vankosoft/game-platform';
 
 export class Card
 {

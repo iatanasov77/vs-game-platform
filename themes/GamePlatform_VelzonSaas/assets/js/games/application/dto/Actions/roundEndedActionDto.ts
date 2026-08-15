@@ -1,8 +1,8 @@
 import ActionDto from './actionDto';
 
-import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
-import BridgeBeloteScoreDto from '_@/GamePlatform/Model/CardGame/bridgeBeloteScoreDto';
-import CardDto from '_@/GamePlatform/Model/CardGame/cardDto';
+import { CardGameDto } from '@vankosoft/game-platform';
+import { BridgeBeloteScoreDto } from '@vankosoft/game-platform';
+import { CardDto } from '@vankosoft/game-platform';
 
 interface RoundEndedActionDto extends ActionDto {
     game: CardGameDto;

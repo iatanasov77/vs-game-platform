@@ -1,6 +1,6 @@
 import ActionDto from './actionDto';
 
-import BidDto from '_@/GamePlatform/Model/CardGame/bidDto';
+import { BidDto } from '@vankosoft/game-platform';
 
 interface BidMadeActionDto extends ActionDto {
     bid: BidDto;

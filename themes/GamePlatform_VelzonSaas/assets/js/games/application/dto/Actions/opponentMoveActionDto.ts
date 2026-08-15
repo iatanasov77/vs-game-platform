@@ -1,6 +1,6 @@
 ﻿import ActionDto from './actionDto';
 
-import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
+import { MoveDto } from '@vankosoft/game-platform';
 
 interface OpponentMoveActionDto extends ActionDto {
     move: MoveDto;

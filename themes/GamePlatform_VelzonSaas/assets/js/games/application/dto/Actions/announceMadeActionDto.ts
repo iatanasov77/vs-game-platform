@@ -1,6 +1,6 @@
 import ActionDto from './actionDto';
 
-import AnnounceDto from '_@/GamePlatform/Model/CardGame/announceDto';
+import { AnnounceDto } from '@vankosoft/game-platform';
 
 interface AnnounceMadeActionDto extends ActionDto {
     announce: AnnounceDto;

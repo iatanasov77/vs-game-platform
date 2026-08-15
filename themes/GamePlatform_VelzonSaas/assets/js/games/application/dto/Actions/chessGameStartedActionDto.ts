@@ -1,7 +1,7 @@
 import ActionDto from './actionDto';
 
-import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
-import BoardGameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
+import { PlayerColor } from '@vankosoft/game-platform';
+import { BoardGameDto } from '@vankosoft/game-platform';
 
 interface ChessGameStartedActionDto extends ActionDto {
     playerToMove: PlayerColor;

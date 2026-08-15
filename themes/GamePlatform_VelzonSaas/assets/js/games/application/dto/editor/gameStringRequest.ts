@@ -1,7 +1,7 @@
 ﻿/* Auto Generated */
 
-import DiceDto from '_@/GamePlatform/Model/BoardGame/diceDto';
-import GameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
+import { DiceDto } from '@vankosoft/game-platform';
+import { GameDto } from '@vankosoft/game-platform';
 
 export interface GameStringRequest
 {

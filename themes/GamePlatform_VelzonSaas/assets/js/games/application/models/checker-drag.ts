@@ -1,5 +1,5 @@
 import { CheckerArea } from './';
-import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
+import { PlayerColor } from '@vankosoft/game-platform';
 
 export class CheckerDrag
 {

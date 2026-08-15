@@ -5,15 +5,15 @@ import { AbstractGameService } from './abstract-game.service';
 import { loadGameRooms } from '../../+store/game.actions';
 
 // Core Interfaces
-import GameCookieDto from '_@/GamePlatform/Model/Core/gameCookieDto';
-import GameState from '_@/GamePlatform/Model/Core/gameState';
+import { GameCookieDto } from '@vankosoft/game-platform';
+import { GameState } from '@vankosoft/game-platform';
 
 // BoardGame Interfaces
-import CheckerDto from '_@/GamePlatform/Model/BoardGame/checkerDto';
-import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
-import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
-import DiceDto from '_@/GamePlatform/Model/BoardGame/diceDto';
-import BoardGameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
+import { CheckerDto } from '@vankosoft/game-platform';
+import { PlayerColor } from '@vankosoft/game-platform';
+import { MoveDto } from '@vankosoft/game-platform';
+import { DiceDto } from '@vankosoft/game-platform';
+import { BoardGameDto } from '@vankosoft/game-platform';
 
 // Action Interfaces
 import ActionDto from '../../dto/Actions/actionDto';

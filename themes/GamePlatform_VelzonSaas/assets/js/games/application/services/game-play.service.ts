@@ -9,9 +9,9 @@ import { AuthService } from './auth.service';
 import { AppConstants } from "../constants";
 import { Keys } from '../utils/keys';
 
-import GameCookieDto from '_@/GamePlatform/Model/Core/gameCookieDto';
-import IGamePlay from '_@/GamePlatform/Model/GamePlayInterface';
-import IGame from '_@/GamePlatform/Model/GameInterface';
+import { GameCookieDto } from '@vankosoft/game-platform';
+import { IGamePlay } from '@vankosoft/game-platform';
+import { IGame } from '@vankosoft/game-platform';
 import { InviteResponseDto } from '../dto/rest/inviteResponseDto';
 
 import { QueryParamsService } from '../state/query-params.service';

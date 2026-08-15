@@ -1,7 +1,7 @@
 import ActionDto from './actionDto';
 
-import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
-import CardDto from '_@/GamePlatform/Model/CardGame/cardDto';
+import { PlayerPosition } from '@vankosoft/game-platform';
+import { CardDto } from '@vankosoft/game-platform';
 
 interface PlayCardActionDto extends ActionDto {
     Card: CardDto;

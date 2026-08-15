@@ -1,6 +1,6 @@
-import CardSuit from '_@/GamePlatform/Model/CardGame/cardSuit';
-import BridgeBeloteCardType from '_@/GamePlatform/Model/CardGame/bridgeBeloteCardType';
-import ContractBridgeCardType from '_@/GamePlatform/Model/CardGame/contractBridgeCardType';
+import { CardSuit } from '@vankosoft/game-platform';
+import { BridgeBeloteCardType } from '@vankosoft/game-platform';
+import { ContractBridgeCardType } from '@vankosoft/game-platform';
 
 export class Helper
 {

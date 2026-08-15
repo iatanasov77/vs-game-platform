@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
-import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
-import DiceDto from '_@/GamePlatform/Model/BoardGame/diceDto';
+import { PlayerColor } from '@vankosoft/game-platform';
+import { DiceDto } from '@vankosoft/game-platform';
 
 import templateString from './dices.component.html';
 import styleString from './dices.component.scss';

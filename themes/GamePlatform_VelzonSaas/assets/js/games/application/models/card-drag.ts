@@ -1,5 +1,5 @@
 import { CardArea } from './';
-import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
+import { PlayerPosition } from '@vankosoft/game-platform';
 
 /**
  * May be will be used if I Create Solitaires ( Пасианси )

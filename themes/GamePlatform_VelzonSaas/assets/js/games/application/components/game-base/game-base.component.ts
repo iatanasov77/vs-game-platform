@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import Swal from 'sweetalert2'
 
-import IPlayer from '_@/GamePlatform/Model/PlayerInterface';
+import { IPlayer } from '@vankosoft/game-platform';
 import { loginBySignature } from '../../+store/login.actions';
 import { selectAuth } from '../../+store/login.selectors';
 import { AuthState } from '../../+store/login.reducers';

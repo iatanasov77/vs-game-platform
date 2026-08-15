@@ -1,9 +1,9 @@
 import ActionDto from './actionDto';
 
-import BidDto from '_@/GamePlatform/Model/CardGame/bidDto';
-import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
-import GameState from '_@/GamePlatform/Model/Core/gameState';
-import CardDto from '_@/GamePlatform/Model/CardGame/cardDto';
+import { BidDto } from '@vankosoft/game-platform';
+import { PlayerPosition } from '@vankosoft/game-platform';
+import { GameState } from '@vankosoft/game-platform';
+import { CardDto } from '@vankosoft/game-platform';
 
 interface OpponentBidsActionDto extends ActionDto {
     bid: BidDto;

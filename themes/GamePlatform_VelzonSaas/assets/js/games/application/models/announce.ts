@@ -1,5 +1,5 @@
-import CardGameAnnounceSymbolModel from '_@/GamePlatform/Model/CardGameAnnounceSymbolModel';
-import BidType from '_@/GamePlatform/Model/CardGame/bidType';
+import { CardGameAnnounceSymbolModel } from '@vankosoft/game-platform';
+import { BidType } from '@vankosoft/game-platform';
 
 class AnnounceClover implements CardGameAnnounceSymbolModel
 {

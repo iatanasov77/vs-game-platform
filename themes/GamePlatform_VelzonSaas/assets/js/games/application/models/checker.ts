@@ -1,7 +1,7 @@
 import { Point } from './point';
 import { IThemes } from './themes';
 
-import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
+import { PlayerColor } from '@vankosoft/game-platform';
 
 export class Checker
 {

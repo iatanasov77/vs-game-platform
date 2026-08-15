@@ -18,12 +18,12 @@ import { Subscription } from 'rxjs';
 import { AppStateService } from '../../../state/app-state.service';
 
 // Core Interfaces
-import GameState from '_@/GamePlatform/Model/Core/gameState';
+import { GameState } from '@vankosoft/game-platform';
 
 // BoardGame Interfaces
-import BoardGameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
-import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
-import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
+import { BoardGameDto } from '@vankosoft/game-platform';
+import { PlayerColor } from '@vankosoft/game-platform';
+import { MoveDto } from '@vankosoft/game-platform';
 
 import {
     Checker,

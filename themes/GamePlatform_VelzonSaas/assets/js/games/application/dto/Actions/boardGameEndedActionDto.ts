@@ -1,7 +1,7 @@
 ﻿import ActionDto from './actionDto';
 
-import BoardGameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
-import NewScoreDto from '_@/GamePlatform/Model/Core/newScoreDto';
+import { BoardGameDto } from '@vankosoft/game-platform';
+import { NewScoreDto } from '@vankosoft/game-platform';
 
 interface BoardGameEndedActionDto extends ActionDto {
     game: BoardGameDto;

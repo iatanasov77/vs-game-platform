@@ -1,4 +1,4 @@
-import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
+import { PlayerPosition } from '@vankosoft/game-platform';
 
 export class CardGamePlayerArea
 {

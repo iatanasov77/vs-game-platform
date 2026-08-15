@@ -1,6 +1,6 @@
 import ActionDto from './actionDto';
 
-import ChessMoveDto from '_@/GamePlatform/Model/BoardGame/chessMoveDto';
+import { ChessMoveDto } from '@vankosoft/game-platform';
 
 interface ChessMoveMadeActionDto extends ActionDto {
     move?: ChessMoveDto;

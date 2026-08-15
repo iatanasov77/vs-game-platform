@@ -12,18 +12,18 @@ import { GameService } from '../game.service';
 // NGRX Store
 import { Store } from '@ngrx/store';
 import { selectGameRoom } from '../../+store/game.actions';
-import IGameRoom from '_@/GamePlatform/Model/GameRoomInterface';
+import { IGameRoom } from '@vankosoft/game-platform';
 
 // Core Interfaces
-import GameState from '_@/GamePlatform/Model/Core/gameState';
-import GameDto from '_@/GamePlatform/Model/Core/gameDto';
-import GameCookieDto from '_@/GamePlatform/Model/Core/gameCookieDto';
+import { GameState } from '@vankosoft/game-platform';
+import { GameDto } from '@vankosoft/game-platform';
+import { GameCookieDto } from '@vankosoft/game-platform';
 
 // Board Interfaces
-import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
-import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
-import ChessMoveDto from '_@/GamePlatform/Model/BoardGame/chessMoveDto';
-import DiceDto from '_@/GamePlatform/Model/BoardGame/diceDto';
+import { PlayerColor } from '@vankosoft/game-platform';
+import { MoveDto } from '@vankosoft/game-platform';
+import { ChessMoveDto } from '@vankosoft/game-platform';
+import { DiceDto } from '@vankosoft/game-platform';
 
 // Action Interfaces
 import ActionDto from '../../dto/Actions/actionDto';

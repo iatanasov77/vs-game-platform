@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import {Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import PlayerDto from '_@/GamePlatform/Model/BoardGame/playerDto';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { PlayerDto } from '@vankosoft/game-platform';
 
 import cssString from './board-player.component.scss';
 import templateString from './board-player.component.html';

@@ -4,7 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http'
 const { context } = require( '../context' );
 
 import { AuthService } from './auth.service';
-import ErrorReportDto from '_@/GamePlatform/Model/Core/errorReportDto';
+import { ErrorReportDto } from '@vankosoft/game-platform';
 
 @Injectable({
     providedIn: 'root'

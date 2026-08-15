@@ -1,7 +1,7 @@
 import ActionDto from './actionDto';
 
-import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
-import NewScoreDto from '_@/GamePlatform/Model/Core/newScoreDto';
+import { CardGameDto } from '@vankosoft/game-platform';
+import { NewScoreDto } from '@vankosoft/game-platform';
 
 interface CardGameEndedActionDto extends ActionDto {
     game: CardGameDto;

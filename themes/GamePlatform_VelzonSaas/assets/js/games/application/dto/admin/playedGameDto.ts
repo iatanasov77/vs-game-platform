@@ -1,6 +1,6 @@
 ﻿/* Auto Generated */
 
-import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
+import { PlayerColor } from '@vankosoft/game-platform';
 
 export interface PlayedGameDto {
     utcStarted: Date;

@@ -5,15 +5,15 @@ import { AbstractGameService } from './abstract-game.service';
 import { loadGameRooms } from '../../+store/game.actions';
 
 // Core Interfaces
-import GameState from '_@/GamePlatform/Model/Core/gameState';
-import GameCookieDto from '_@/GamePlatform/Model/Core/gameCookieDto';
+import { GameState } from '@vankosoft/game-platform';
+import { GameCookieDto } from '@vankosoft/game-platform';
 
 // CardGame Interfaces
-import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
-import BidType from '_@/GamePlatform/Model/CardGame/bidType';
-import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
-import BidDto from '_@/GamePlatform/Model/CardGame/bidDto';
-import CardDto from '_@/GamePlatform/Model/CardGame/cardDto';
+import { PlayerPosition } from '@vankosoft/game-platform';
+import { BidType } from '@vankosoft/game-platform';
+import { CardGameDto } from '@vankosoft/game-platform';
+import { BidDto } from '@vankosoft/game-platform';
+import { CardDto } from '@vankosoft/game-platform';
 
 // Action Interfaces
 import ActionDto from '../../dto/Actions/actionDto';

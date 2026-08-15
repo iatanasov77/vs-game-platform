@@ -1,11 +1,9 @@
 import ActionDto from './actionDto';
 
-import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
-import BridgeBeloteScoreDto from '_@/GamePlatform/Model/CardGame/bridgeBeloteScoreDto';
+import { CardGameDto } from '@vankosoft/game-platform';
 
 interface TrickEndedActionDto extends ActionDto {
     game: CardGameDto;
 }
 
 export default TrickEndedActionDto;
-

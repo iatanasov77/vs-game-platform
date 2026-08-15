@@ -5,11 +5,11 @@ import { Injectable, Inject } from '@angular/core';
 import { map, take } from 'rxjs/operators';
 
 // Board Interfaces
-import BoardGameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
-import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
-import CheckerDto from '_@/GamePlatform/Model/BoardGame/checkerDto';
-import DiceDto from '_@/GamePlatform/Model/BoardGame/diceDto';
-import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
+import { BoardGameDto } from '@vankosoft/game-platform';
+import { PlayerColor } from '@vankosoft/game-platform';
+import { CheckerDto } from '@vankosoft/game-platform';
+import { DiceDto } from '@vankosoft/game-platform';
+import { MoveDto } from '@vankosoft/game-platform';
 
 import { GameStringRequest } from '../dto/editor/gameStringRequest';
 import { GameStringResponseDto } from '../dto/editor/gameStringResponseDto';

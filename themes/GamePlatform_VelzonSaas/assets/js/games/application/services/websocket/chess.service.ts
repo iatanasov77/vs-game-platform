@@ -6,13 +6,13 @@ import {NgxChessBoardService} from 'ngx-chess-board';
 import { loadGameRooms } from '../../+store/game.actions';
 
 // Core Interfaces
-import GameCookieDto from '_@/GamePlatform/Model/Core/gameCookieDto';
-import GameState from '_@/GamePlatform/Model/Core/gameState';
+import { GameCookieDto } from '@vankosoft/game-platform';
+import { GameState } from '@vankosoft/game-platform';
 
 // BoardGame Interfaces
-import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
-import ChessMoveDto from '_@/GamePlatform/Model/BoardGame/chessMoveDto';
-import BoardGameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
+import { PlayerColor } from '@vankosoft/game-platform';
+import { ChessMoveDto } from '@vankosoft/game-platform';
+import { BoardGameDto } from '@vankosoft/game-platform';
 
 // Action Interfaces
 import ActionDto from '../../dto/Actions/actionDto';

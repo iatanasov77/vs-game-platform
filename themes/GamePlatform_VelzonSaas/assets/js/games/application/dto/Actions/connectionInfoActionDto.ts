@@ -1,5 +1,5 @@
 ﻿import ActionDto from './actionDto';
-import ConnectionDto from '_@/GamePlatform/Model/Core/connectionDto';
+import { ConnectionDto } from '@vankosoft/game-platform';
 
 interface ConnectionInfoActionDto extends ActionDto {
     connection: ConnectionDto;

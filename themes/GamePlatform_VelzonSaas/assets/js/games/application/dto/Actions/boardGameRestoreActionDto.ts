@@ -1,8 +1,8 @@
 ﻿import ActionDto from './actionDto';
 
-import BoardGameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
-import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
-import DiceDto from '_@/GamePlatform/Model/BoardGame/diceDto';
+import { BoardGameDto } from '@vankosoft/game-platform';
+import { PlayerColor } from '@vankosoft/game-platform';
+import { DiceDto } from '@vankosoft/game-platform';
 
 interface BoardGameRestoreActionDto extends ActionDto {
     game: BoardGameDto;

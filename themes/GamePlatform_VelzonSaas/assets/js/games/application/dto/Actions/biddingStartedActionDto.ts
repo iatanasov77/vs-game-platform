@@ -1,8 +1,8 @@
 import ActionDto from './actionDto';
 
-import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
-import CardDto from '_@/GamePlatform/Model/CardGame/cardDto';
-import BidDto from '_@/GamePlatform/Model/CardGame/bidDto';
+import { PlayerPosition } from '@vankosoft/game-platform';
+import { CardDto } from '@vankosoft/game-platform';
+import { BidDto } from '@vankosoft/game-platform';
 
 interface BiddingStartedActionDto extends ActionDto {
     deck: CardDto[];

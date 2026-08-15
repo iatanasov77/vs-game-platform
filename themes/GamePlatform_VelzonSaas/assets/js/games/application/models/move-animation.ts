@@ -2,7 +2,7 @@ import { Point } from './';
 import { Checker } from './checker';
 import { IThemes } from './themes';
 
-import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
+import { MoveDto } from '@vankosoft/game-platform';
 
 export class MoveAnimation
 {

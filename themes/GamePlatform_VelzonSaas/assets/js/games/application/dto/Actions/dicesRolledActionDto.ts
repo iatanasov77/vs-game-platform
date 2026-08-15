@@ -1,8 +1,8 @@
 ﻿import ActionDto from './actionDto';
 
-import DiceDto from '_@/GamePlatform/Model/BoardGame/diceDto';
-import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
-import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
+import { DiceDto } from '@vankosoft/game-platform';
+import { PlayerColor } from '@vankosoft/game-platform';
+import { MoveDto } from '@vankosoft/game-platform';
 
 interface DicesRolledActionDto extends ActionDto {
     dices: DiceDto[];

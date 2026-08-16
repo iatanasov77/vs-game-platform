@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { StatusMessage } from '../utils/status-message';
+import { StatusMessage } from '@vankosoft/game-platform';
 
 // Core Interfaces
 import { GameState } from '@vankosoft/game-platform';
@@ -17,7 +17,7 @@ import { PlayerPosition } from '@vankosoft/game-platform';
 
 import { SoundService } from './sound.service'
 import { AppStateService } from '../state/app-state.service';
-import { GameVariant } from '../game.variant'
+import { GameVariant } from '@vankosoft/game-platform'
 
 @Injectable({
     providedIn: 'root'

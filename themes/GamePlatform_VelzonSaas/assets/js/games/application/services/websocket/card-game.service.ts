@@ -16,25 +16,25 @@ import { BidDto } from '@vankosoft/game-platform';
 import { CardDto } from '@vankosoft/game-platform';
 
 // Action Interfaces
-import ActionDto from '../../dto/Actions/actionDto';
-import ActionNames from '../../dto/Actions/actionNames';
-import ConnectionInfoActionDto from '../../dto/Actions/connectionInfoActionDto';
-import CardGameCreatedActionDto from '../../dto/Actions/cardGameCreatedActionDto';
-import CardGameEndedActionDto from '../../dto/Actions/cardGameEndedActionDto';
-import CardGameRestoreActionDto from '../../dto/Actions/cardGameRestoreActionDto';
-import BiddingStartedActionDto from '../../dto/Actions/biddingStartedActionDto';
-import BidMadeActionDto from '../../dto/Actions/bidMadeActionDto';
-import OpponentBidsActionDto from '../../dto/Actions/opponentBidsActionDto';
-import PlayingStartedActionDto from '../../dto/Actions/playingStartedActionDto';
-import PlayCardActionDto from '../../dto/Actions/playCardActionDto';
-import OpponentPlayCardActionDto from '../../dto/Actions/opponentPlayCardActionDto';
-import TrickEndedActionDto from '../../dto/Actions/trickEndedActionDto';
-import RoundEndedActionDto from '../../dto/Actions/roundEndedActionDto';
-import StartNewRoundActionDto from '../../dto/Actions/startNewRoundActionDto';
-import AnnounceMadeActionDto from '../../dto/Actions/announceMadeActionDto';
-import StartNewGameActionDto from '../../dto/Actions/startNewGameActionDto';
+import { ActionDto } from '@vankosoft/game-platform';
+import { ActionNames } from '@vankosoft/game-platform';
+import { ConnectionInfoActionDto } from '@vankosoft/game-platform';
+import { CardGameCreatedActionDto } from '@vankosoft/game-platform';
+import { CardGameEndedActionDto } from '@vankosoft/game-platform';
+import { CardGameRestoreActionDto } from '@vankosoft/game-platform';
+import { BiddingStartedActionDto } from '@vankosoft/game-platform';
+import { BidMadeActionDto } from '@vankosoft/game-platform';
+import { OpponentBidsActionDto } from '@vankosoft/game-platform';
+import { PlayingStartedActionDto } from '@vankosoft/game-platform';
+import { PlayCardActionDto } from '@vankosoft/game-platform';
+import { OpponentPlayCardActionDto } from '@vankosoft/game-platform';
+import { TrickEndedActionDto } from '@vankosoft/game-platform';
+import { RoundEndedActionDto } from '@vankosoft/game-platform';
+import { StartNewRoundActionDto } from '@vankosoft/game-platform';
+import { AnnounceMadeActionDto } from '@vankosoft/game-platform';
+import { StartNewGameActionDto } from '@vankosoft/game-platform';
 
-import { Keys } from '../../utils/keys';
+import { Keys } from '@vankosoft/game-platform';
 
 @Injectable({
     providedIn: 'root'

@@ -16,24 +16,24 @@ import { DiceDto } from '@vankosoft/game-platform';
 import { BoardGameDto } from '@vankosoft/game-platform';
 
 // Action Interfaces
-import ActionDto from '../../dto/Actions/actionDto';
-import ActionNames from '../../dto/Actions/actionNames';
-import DoublingActionDto from '../../dto/Actions/doublingActionDto';
-import HintMovesActionDto from '../../dto/Actions/hintMovesActionDto';
-import DicesRolledActionDto from '../../dto/Actions/dicesRolledActionDto';
-import BoardGameCreatedActionDto from '../../dto/Actions/boardGameCreatedActionDto';
-import BoardGameEndedActionDto from '../../dto/Actions/boardGameEndedActionDto';
-import MovesMadeActionDto from '../../dto/Actions/movesMadeActionDto';
-import OpponentMoveActionDto from '../../dto/Actions/opponentMoveActionDto';
-import UndoActionDto from '../../dto/Actions/undoActionDto';
-import ConnectionInfoActionDto from '../../dto/Actions/connectionInfoActionDto';
-import BoardGameRestoreActionDto from '../../dto/Actions/boardGameRestoreActionDto';
+import { ActionDto } from '@vankosoft/game-platform';
+import { ActionNames } from '@vankosoft/game-platform';
+import { DoublingActionDto } from '@vankosoft/game-platform';
+import { HintMovesActionDto } from '@vankosoft/game-platform';
+import { DicesRolledActionDto } from '@vankosoft/game-platform';
+import { BoardGameCreatedActionDto } from '@vankosoft/game-platform';
+import { BoardGameEndedActionDto } from '@vankosoft/game-platform';
+import { MovesMadeActionDto } from '@vankosoft/game-platform';
+import { OpponentMoveActionDto } from '@vankosoft/game-platform';
+import { UndoActionDto } from '@vankosoft/game-platform';
+import { ConnectionInfoActionDto } from '@vankosoft/game-platform';
+import { BoardGameRestoreActionDto } from '@vankosoft/game-platform';
 
 // Unused Actions but part of the TypeScript compilation
-import RolledActionDto from '../../dto/Actions/rolledActionDto';
+import { RolledActionDto } from '@vankosoft/game-platform';
 
-import { Keys } from '../../utils/keys';
-import { GameVariant } from "../../game.variant";
+import { Keys } from '@vankosoft/game-platform';
+import { GameVariant } from "@vankosoft/game-platform";
 
 @Injectable({
     providedIn: 'root'

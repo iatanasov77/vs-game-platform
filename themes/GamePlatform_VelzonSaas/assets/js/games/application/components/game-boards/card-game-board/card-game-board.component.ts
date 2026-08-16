@@ -32,8 +32,7 @@ import { BidType } from '@vankosoft/game-platform';
 import { AnnounceDto } from '@vankosoft/game-platform';
 import { AnnounceType } from '@vankosoft/game-platform';
 
-import { CardGamePlayerArea } from '../../../models/card-game-player-area';
-import { Card, CardArea, CardDrag, Point, MoveAnimation, Pile } from '../../../models/';
+import { CardGamePlayerArea, Card, CardArea, CardDrag, Point, MoveAnimation, Pile } from '@vankosoft/game-platform';
 import {
     BlueTheme,
     DarkTheme,
@@ -42,9 +41,9 @@ import {
     LightTheme,
     PinkTheme,
     CardGameTheme
-} from '../../../models/themes';
+} from '@vankosoft/game-platform';
 
-import { GameVariant } from '../../../game.variant';
+import { GameVariant } from '@vankosoft/game-platform';
 
 import templateString from './card-game-board.component.html'
 import styleString from './card-game-board.component.scss'

@@ -31,7 +31,7 @@ import {
     CheckerDrag,
     Point,
     MoveAnimation
-} from '../../../models/';
+} from '@vankosoft/game-platform';
 
 import {
     BlueTheme,
@@ -40,9 +40,9 @@ import {
     IThemes,
     LightTheme,
     PinkTheme
-} from '../../../models/themes';
+} from '@vankosoft/game-platform';
 
-import { GameVariant } from "../../../game.variant";
+import { GameVariant } from "@vankosoft/game-platform";
 
 import cssGameString from './backgammon-board.component.scss';
 import templateString from './backgammon-board.component.html';

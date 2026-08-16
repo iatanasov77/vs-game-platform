@@ -10,7 +10,7 @@ import {
 } from "./login.actions";
 
 import { AuthService } from "../services/auth.service";
-import { IAuth } from '../interfaces/auth';
+import { IAuth } from '@vankosoft/game-platform';
 
 /**
  * Effects are an RxJS powered side effect model for Store. Effects use streams to provide new sources of actions to reduce state based on external interactions such 

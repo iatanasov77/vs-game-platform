@@ -7,16 +7,16 @@ const { context } = require( '../context' );
 import { BehaviorSubject, Observable, tap, map, take, finalize } from 'rxjs';
 import { AppConstants } from "../constants";
 
-import { IAuth } from '../interfaces/auth';
-import { ISignedUrlResponse } from '../interfaces/signed-url-response';
-import { IToggleSoundMuteResponse } from '../interfaces/toggle-sound-mute-response';
+import { IAuth } from '@vankosoft/game-platform';
+import { ISignedUrlResponse } from '@vankosoft/game-platform';
+import { IToggleSoundMuteResponse } from '@vankosoft/game-platform';
 
 import { LocalStorageService } from './local-storage.service';
 import { SoundService } from './sound.service';
 import { StatusMessageService } from './status-message.service';
 import { AppStateService } from '../state/app-state.service';
 import { Busy } from '../state/busy';
-import { Keys } from '../utils/keys';
+import { Keys } from '@vankosoft/game-platform';
 import { UserDto } from '@vankosoft/game-platform';
 
 /**

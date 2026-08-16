@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
 import { loginBySignatureSuccess } from '../application/+store/login.actions';
 
-import { IAuth } from '../application/interfaces/auth';
+import { IAuth } from '@vankosoft/game-platform';
 import { Busy } from '../application/state/busy';
 
 import { AuthService } from '../application/services/auth.service'

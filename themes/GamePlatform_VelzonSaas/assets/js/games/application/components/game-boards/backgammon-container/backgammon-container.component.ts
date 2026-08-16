@@ -24,7 +24,7 @@ import {
     loadGameRooms
 } from '../../../+store/game.actions';
 import { GameState as MyGameState } from '../../../+store/game.reducers';
-import { GameVariant } from "../../../game.variant";
+import { GameVariant } from "@vankosoft/game-platform";
 
 // Dialogs
 import { RequirementsDialogComponent } from '../../game-dialogs/requirements-dialog/requirements-dialog.component';
@@ -35,9 +35,11 @@ import { CreateInviteGameDialogComponent } from '../../game-dialogs/create-invit
 import { UserLoginDialogComponent } from '../../game-dialogs/user-login-dialog/user-login-dialog.component';
 
 // App State
+import { Keys } from '@vankosoft/game-platform';
+import { Helper } from '@vankosoft/game-platform';
+import { StatusMessage } from '@vankosoft/game-platform';
 import { AppStateService } from '../../../state/app-state.service';
 import { QueryParamsService } from '../../../state/query-params.service';
-import { StatusMessage } from '../../../utils/status-message';
 import { Busy } from '../../../state/busy';
 
 // Services
@@ -51,7 +53,6 @@ import { GamePlayService } from '../../../services/game-play.service';
 
 import { GameCookieDto } from '@vankosoft/game-platform';
 import { CookieService } from 'ngx-cookie-service';
-import { Keys } from '../../../utils/keys';
 
 // BoardGame Interfaces
 import { UserDto } from '@vankosoft/game-platform';
@@ -60,8 +61,6 @@ import { BoardGameDto } from '@vankosoft/game-platform';
 import { PlayerColor } from '@vankosoft/game-platform';
 import { MoveDto } from '@vankosoft/game-platform';
 import { DiceDto } from '@vankosoft/game-platform';
-
-import { Helper } from '../../../utils/helper';
 
 import cssGameString from './backgammon-container.component.scss';
 import templateString from './backgammon-container.component.html';

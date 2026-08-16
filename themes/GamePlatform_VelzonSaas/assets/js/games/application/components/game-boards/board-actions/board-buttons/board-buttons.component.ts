@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit, OnChanges, SimpleChanges, EventEmitter, Input, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { Keys } from '../../../../utils/keys';
+import { Keys } from '@vankosoft/game-platform';
 
 import cssString from './board-buttons.component.scss';
 import templateString from './board-buttons.component.html';

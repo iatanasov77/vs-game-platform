@@ -1,8 +1,8 @@
 import { Injectable, Inject, OnDestroy } from '@angular/core';
 
-import ChatMessageDto from '../../dto/chat/chatMessageDto';
-import ChatUsersDto from '../../dto/chat/joinedChatDto';
-import LeftChatDto from '../../dto/chat/leftChatDto';
+import { ChatMessageDto } from '@vankosoft/game-platform';
+import { ChatUsersDto } from '@vankosoft/game-platform';
+import { LeftChatDto } from '@vankosoft/game-platform';
 import { AppStateService } from '../../state/app-state.service';
 
 declare global {

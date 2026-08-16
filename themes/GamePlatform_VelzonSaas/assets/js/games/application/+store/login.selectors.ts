@@ -1,6 +1,6 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store'
 import { AuthState } from './login.reducers';
-import { IAuth } from '../interfaces/auth';
+import { IAuth } from '@vankosoft/game-platform';
 
 export const selectAuthState = createFeatureSelector<AuthState>( 'loginReducer' );
 

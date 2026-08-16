@@ -30,9 +30,11 @@ import {
 import { GameState as MyGameState } from '../../../+store/game.reducers';
 
 // App State
+import { Keys } from '@vankosoft/game-platform';
+import { Helper } from '@vankosoft/game-platform';
+import { StatusMessage } from '@vankosoft/game-platform';
 import { AppStateService } from '../../../state/app-state.service';
 import { QueryParamsService } from '../../../state/query-params.service';
-import { StatusMessage } from '../../../utils/status-message';
 
 // Services
 import { AuthService } from '../../../services/auth.service';
@@ -43,7 +45,6 @@ import { GamePlayService } from '../../../services/game-play.service';
 
 import { GameCookieDto } from '@vankosoft/game-platform';
 import { CookieService } from 'ngx-cookie-service';
-import { Keys } from '../../../utils/keys';
 
 // CardGame Interfaces
 import { PlayerPosition } from '@vankosoft/game-platform';
@@ -62,8 +63,6 @@ import { SelectGameRoomDialogComponent } from '../../game-dialogs/select-game-ro
 import { CreateGameRoomDialogComponent } from '../../game-dialogs/create-game-room-dialog/create-game-room-dialog.component';
 import { CreateInviteGameDialogComponent } from '../../game-dialogs/create-invite-game-dialog/create-invite-game-dialog.component';
 import { UserLoginDialogComponent } from '../../game-dialogs/user-login-dialog/user-login-dialog.component';
-
-import { Helper } from '../../../utils/helper';
 
 import templateString from './card-game-container.component.html'
 import styleString from './card-game-container.component.scss'

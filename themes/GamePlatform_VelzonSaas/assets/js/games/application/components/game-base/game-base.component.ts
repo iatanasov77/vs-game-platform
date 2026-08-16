@@ -4,12 +4,12 @@ import { Store } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import Swal from 'sweetalert2'
 
+import { IAuth } from '@vankosoft/game-platform';
 import { IPlayer } from '@vankosoft/game-platform';
 import { loginBySignature } from '../../+store/login.actions';
 import { selectAuth } from '../../+store/login.selectors';
 import { AuthState } from '../../+store/login.reducers';
 import { AuthService } from '../../services/auth.service'
-import { IAuth } from '../../interfaces/auth';
 import { SoundService } from '../../services/sound.service'
 import { GameService } from '../../services/game.service'
 

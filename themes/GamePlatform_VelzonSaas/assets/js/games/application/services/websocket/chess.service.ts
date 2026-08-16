@@ -15,21 +15,21 @@ import { ChessMoveDto } from '@vankosoft/game-platform';
 import { BoardGameDto } from '@vankosoft/game-platform';
 
 // Action Interfaces
-import ActionDto from '../../dto/Actions/actionDto';
-import ActionNames from '../../dto/Actions/actionNames';
-import DoublingActionDto from '../../dto/Actions/doublingActionDto';
-import HintMovesActionDto from '../../dto/Actions/hintMovesActionDto';
-import BoardGameCreatedActionDto from '../../dto/Actions/boardGameCreatedActionDto';
-import ChessGameStartedActionDto from '../../dto/Actions/chessGameStartedActionDto';
-import BoardGameEndedActionDto from '../../dto/Actions/boardGameEndedActionDto';
-import ChessMoveMadeActionDto from '../../dto/Actions/chessMoveMadeActionDto';
-import ChessOpponentMoveActionDto from '../../dto/Actions/chessOpponentMoveActionDto';
-import ChessInvalidMoveMadeActionDto from '../../dto/Actions/chessInvalidMoveMadeActionDto';
-import UndoActionDto from '../../dto/Actions/undoActionDto';
-import ConnectionInfoActionDto from '../../dto/Actions/connectionInfoActionDto';
-import BoardGameRestoreActionDto from '../../dto/Actions/boardGameRestoreActionDto';
+import { ActionDto } from '@vankosoft/game-platform';
+import { ActionNames } from '@vankosoft/game-platform';
+import { DoublingActionDto } from '@vankosoft/game-platform';
+import { HintMovesActionDto } from '@vankosoft/game-platform';
+import { BoardGameCreatedActionDto } from '@vankosoft/game-platform';
+import { ChessGameStartedActionDto } from '@vankosoft/game-platform';
+import { BoardGameEndedActionDto } from '@vankosoft/game-platform';
+import { ChessMoveMadeActionDto } from '@vankosoft/game-platform';
+import { ChessOpponentMoveActionDto } from '@vankosoft/game-platform';
+import { ChessInvalidMoveMadeActionDto } from '@vankosoft/game-platform';
+import { UndoActionDto } from '@vankosoft/game-platform';
+import { ConnectionInfoActionDto } from '@vankosoft/game-platform';
+import { BoardGameRestoreActionDto } from '@vankosoft/game-platform';
 
-import { Keys } from '../../utils/keys';
+import { Keys } from '@vankosoft/game-platform';
 
 @Injectable({
     providedIn: 'root'

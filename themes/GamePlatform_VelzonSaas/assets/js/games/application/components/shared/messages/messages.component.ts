@@ -12,9 +12,9 @@ import {
     animate,
     transition
 } from '@angular/animations';
-import { StatusMessage, MessageLevel } from '../../../utils/status-message';
+import { StatusMessage, MessageLevel } from '@vankosoft/game-platform';
 
-import { GameVariant } from "../../../game.variant";
+import { GameVariant } from "@vankosoft/game-platform";
 
 import cssString from './messages.component.scss';
 import templateString from './messages.component.html';

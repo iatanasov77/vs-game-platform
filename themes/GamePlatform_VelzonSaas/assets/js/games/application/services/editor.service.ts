@@ -11,8 +11,8 @@ import { CheckerDto } from '@vankosoft/game-platform';
 import { DiceDto } from '@vankosoft/game-platform';
 import { MoveDto } from '@vankosoft/game-platform';
 
-import { GameStringRequest } from '../dto/editor/gameStringRequest';
-import { GameStringResponseDto } from '../dto/editor/gameStringResponseDto';
+import { GameStringRequest } from '@vankosoft/game-platform';
+import { GameStringResponseDto } from '@vankosoft/game-platform';
 
 import { AppStateService } from '../state/app-state.service';
 

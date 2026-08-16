@@ -7,7 +7,7 @@ import { Actions, ofType } from '@ngrx/effects';
 import { map, merge } from 'rxjs';
 
 import { IGameRoom } from '@vankosoft/game-platform';
-import { IMercureAction } from '../../../interfaces/mercure-action';
+import { IMercureAction } from '@vankosoft/game-platform';
 
 import {
     loadGameRooms,

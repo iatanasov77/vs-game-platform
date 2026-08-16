@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 
+import { StatusMessage } from '@vankosoft/game-platform';
+
 // DTO
-import { StatusMessage } from '../dto/local/status-message';
-import { FeedbackDto } from '../dto/feedback/feedbackDto';
-import { PlayedGameListDto } from '../dto/admin/playedGameListDto';
-import MessageDto from '../dto/message/messageDto';
-import ChatMessageDto from '../dto/chat/chatMessageDto';
+import { FeedbackDto } from '@vankosoft/game-platform';
+import { PlayedGameListDto } from '@vankosoft/game-platform';
+import { MessageDto } from '@vankosoft/game-platform';
+import { ChatMessageDto } from '@vankosoft/game-platform';
 
 // Core Interfaces
 import { ConnectionDto } from '@vankosoft/game-platform';

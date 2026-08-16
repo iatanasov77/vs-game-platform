@@ -30,7 +30,6 @@ import { NgxChessBoardView, NgxChessBoardService } from 'ngx-chess-board';
 
 import { GameCookieDto } from '@vankosoft/game-platform';
 import { CookieService } from 'ngx-cookie-service';
-import { Keys } from '../../../utils/keys';
 
 // Dialogs
 import { RequirementsDialogComponent } from '../../game-dialogs/requirements-dialog/requirements-dialog.component';
@@ -38,9 +37,11 @@ import { CreateInviteGameDialogComponent } from '../../game-dialogs/create-invit
 import { UserLoginDialogComponent } from '../../game-dialogs/user-login-dialog/user-login-dialog.component';
 
 // App State
+import { Keys } from '@vankosoft/game-platform';
+import { Helper } from '@vankosoft/game-platform';
+import { StatusMessage } from '@vankosoft/game-platform';
 import { AppStateService } from '../../../state/app-state.service';
 import { QueryParamsService } from '../../../state/query-params.service';
-import { StatusMessage } from '../../../utils/status-message';
 
 // Services
 import { AuthService } from '../../../services/auth.service';
@@ -58,7 +59,6 @@ import { ChessMoveType } from '@vankosoft/game-platform';
 import { ChessPieceType } from '@vankosoft/game-platform';
 import { ChessMoveDto } from '@vankosoft/game-platform';
 
-import { Helper } from '../../../utils/helper';
 import { IThemes, DarkTheme } from './themes';
 
 import cssGameString from './chess-container.component.scss';

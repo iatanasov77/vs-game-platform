@@ -132,6 +132,13 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         'bridge-belote.announce-type.four-jacks'
     ];
     
+    // translated phrases
+    you = '';
+    top = '';
+    right = '';
+    bottom = '';
+    left = '';
+    
     constructor(
         @Inject( TranslateService ) private translateService: TranslateService,
         @Inject( AppStateService ) private appState: AppStateService,
@@ -196,14 +203,13 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
     
     translate(): void
     {
-        /*
         this.you = this.translateService.instant( 'gameboard.you' );
-        this.white = this.translateService.instant( 'gameboard.white' );
-        this.black = this.translateService.instant( 'gameboard.black' );
+        this.top = this.translateService.instant( 'gameboard.white' );
+        this.right = this.translateService.instant( 'gameboard.black' );
+        this.bottom = this.translateService.instant( 'gameboard.black' );
         this.left = this.translateService.instant( 'gameboard.left' );
         
         this.requestDraw();
-        */
     }
     
     canPlayCard(): boolean
@@ -814,6 +820,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         
         const yOffset = pa.height - this.cardHeight;
         const cardY = pa.y + yOffset;
+        console.log( 'Card Areas', this.cardAreas );
         for ( let c = 0; c < playerCards.length; c++ ) {
             let cardX = pa.x + pa.width / 2 - ( cardsWidth / 2 ) + ( c * this.cardOffset );
             let areaWidth = c == ( playerCards.length - 1 ) ? this.cardWidth : this.cardOffset;

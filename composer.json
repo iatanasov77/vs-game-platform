@@ -30,7 +30,7 @@
         "symfony/http-client": "6.4.*",
         
         "vankosoft/application": "1.13.*",
-        "vankosoft/application-themes": "^1.6",
+        "vankosoft/application-themes": "1.7.*",
         "vankosoft/catalog-bundle": "^2.5",
         "vankosoft/api-bundle": "^3.0",
         
@@ -71,6 +71,11 @@
             "oomphinc/composer-installers-extender": true,
             "symfony/runtime": true,
             "php-http/discovery": true
+        },
+        "policy": {
+            "advisories": {
+                "block": false
+            }
         }
     },
     "autoload": {

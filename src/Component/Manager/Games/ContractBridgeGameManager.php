@@ -47,6 +47,12 @@ use App\Component\Dto\Actions\PlayCardActionDto;
 use App\Component\Dto\Actions\OpponentPlayCardActionDto;
 use App\Component\Dto\Actions\AnnounceMadeActionDto;
 
+/**
+ * ContractBridgeGame Engine in Phython: https://github.com/lorserker/ben
+ * ContractBridgeGame in C#: https://github.com/PatrykkMar/Bridget
+ * 
+ * Use Conract Bridge Library: https://github.com/garak/bridge
+ */
 class ContractBridgeGameManager extends CardGameManager
 {
     public function ConnectAndListen( WebsocketClientInterface $webSocket, GamePlayer $dbUser, bool $playAi ): void

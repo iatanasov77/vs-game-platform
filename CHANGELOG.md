@@ -1,3 +1,12 @@
+1.1.1	|	Release date: **16.08.2026**
+============================================
+* New Features:
+  - Create Different Frontend Types for BridgebeloteCardType and ContractBridgeCardType.
+  - Use GamePlatform NPM Package.
+  - Refactoring of Game Buttons Styles.
+  - Move A Lot of Components into GamePlatform Frontend Package.
+
+
 1.1.0	|	Release date: **17.12.2025**
 ============================================
 * Bug-Fixes and Improvements:

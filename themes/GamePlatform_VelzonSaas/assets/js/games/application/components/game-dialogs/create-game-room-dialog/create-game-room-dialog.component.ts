@@ -3,8 +3,8 @@ import { NgForm } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { Store } from '@ngrx/store';
 import { selectGameRoom } from '../../../+store/game.actions';
-import IGameRoom from '_@/GamePlatform/Model/GameRoomInterface';
-import IPlayer from '_@/GamePlatform/Model/PlayerInterface';
+import { IGameRoom } from '@vankosoft/game-platform';
+import { IPlayer } from '@vankosoft/game-platform';
 
 import templateString from './create-game-room-dialog.component.html';
 

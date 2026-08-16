@@ -2,10 +2,10 @@ import { Component, OnDestroy, Inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { AppStateService } from '../../../state/app-state.service';
-import BridgeBeloteScoreDto from '_@/GamePlatform/Model/CardGame/bridgeBeloteScoreDto';
-import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
-import BidType from '_@/GamePlatform/Model/CardGame/bidType';
-import GameState from '_@/GamePlatform/Model/Core/gameState';
+import { BridgeBeloteScoreDto } from '@vankosoft/game-platform';
+import { CardGameDto } from '@vankosoft/game-platform';
+import { BidType } from '@vankosoft/game-platform';
+import { GameState } from '@vankosoft/game-platform';
 
 import templateString from './bridge-belote-statistics.component.html'
 import cssString from './bridge-belote-statistics.component.scss'

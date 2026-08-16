@@ -16,7 +16,7 @@ Encore
     .addAliases({
         '@': path.resolve( __dirname, '../../vendor/vankosoft/application/src/Vankosoft/ApplicationBundle/Resources/themes/default/assets' ),
         //'@@': path.resolve( __dirname, '../../vendor/vankosoft/payment-bundle/lib/Resources/assets' ),
-        '_@': path.resolve( __dirname, '../../assets/library' ),
+        //'_@': path.resolve( __dirname, '../../assets/library' ),
     })
     
     .enableSassLoader(function(sassOptions) {}, {

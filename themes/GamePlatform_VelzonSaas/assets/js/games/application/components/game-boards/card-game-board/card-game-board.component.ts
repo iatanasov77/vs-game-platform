@@ -20,20 +20,19 @@ import { Subscription } from 'rxjs';
 import { AppStateService } from '../../../state/app-state.service';
 
 // Core Interfaces
-import GameState from '_@/GamePlatform/Model/Core/gameState';
+import { GameState } from '@vankosoft/game-platform';
 
 // CardGame Interfaces
-import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
-import CardGamePlayerDto from '_@/GamePlatform/Model/CardGame/playerDto';
-import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
-import CardDto from '_@/GamePlatform/Model/CardGame/cardDto';
-import BidDto from '_@/GamePlatform/Model/CardGame/bidDto';
-import BidType from '_@/GamePlatform/Model/CardGame/bidType';
-import AnnounceDto from '_@/GamePlatform/Model/CardGame/announceDto';
-import AnnounceType from '_@/GamePlatform/Model/CardGame/announceType';
+import { CardGameDto } from '@vankosoft/game-platform';
+import { CardGamePlayerDto } from '@vankosoft/game-platform';
+import { PlayerPosition } from '@vankosoft/game-platform';
+import { CardDto } from '@vankosoft/game-platform';
+import { BidDto } from '@vankosoft/game-platform';
+import { BidType } from '@vankosoft/game-platform';
+import { AnnounceDto } from '@vankosoft/game-platform';
+import { AnnounceType } from '@vankosoft/game-platform';
 
-import { CardGamePlayerArea } from '../../../models/card-game-player-area';
-import { Card, CardArea, CardDrag, Point, MoveAnimation, Pile } from '../../../models/';
+import { CardGamePlayerArea, Card, CardArea, CardDrag, Point, MoveAnimation, Pile } from '@vankosoft/game-platform';
 import {
     BlueTheme,
     DarkTheme,
@@ -42,9 +41,9 @@ import {
     LightTheme,
     PinkTheme,
     CardGameTheme
-} from '../../../models/themes';
+} from '@vankosoft/game-platform';
 
-import { GameVariant } from '../../../game.variant';
+import { GameVariant } from '@vankosoft/game-platform';
 
 import templateString from './card-game-board.component.html'
 import styleString from './card-game-board.component.scss'
@@ -462,7 +461,10 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         this.drawBoard( cx );
         
         // console.log( this.game );
-        if ( this.game && this.game.playState !== GameState.ended && ! this.lobbyButtonsVisible ) {
+        if ( this.game &&
+            this.game.playState !== GameState.ended &&
+            ! this.lobbyButtonsVisible
+        ) {
             this.drawDeck( cx );
             this.drawPlayers( cx );
             this.drawPlayerBids( cx );

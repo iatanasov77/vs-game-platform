@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
 import { loginBySignatureSuccess } from '../application/+store/login.actions';
 
-import { IAuth } from '../application/interfaces/auth';
+import { IAuth } from '@vankosoft/game-platform';
 import { Busy } from '../application/state/busy';
 
 import { AuthService } from '../application/services/auth.service'
@@ -16,7 +16,8 @@ import { GameBaseComponent } from '../application/components/game-base/game-base
 import { AppStateService } from '../application/state/app-state.service';
 import { ErrorState } from '../application/state/ErrorState';
 import { ErrorReportService } from '../application/services/error-report.service';
-import ErrorReportDto from '_@/GamePlatform/Model/Core/errorReportDto';
+
+import { ErrorReportDto } from '@vankosoft/game-platform';
 
 import cssGameString from './backgammon.component.scss'
 import templateString from './backgammon.component.html'

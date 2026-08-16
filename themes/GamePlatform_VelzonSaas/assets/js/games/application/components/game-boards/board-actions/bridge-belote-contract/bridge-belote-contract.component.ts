@@ -1,12 +1,12 @@
 import { Component, Inject, Input, OnChanges, SimpleChanges, EventEmitter, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { GetAnnounceSymbol } from '../../../../models/announce';
-import CardGameAnnounceSymbolModel from '_@/GamePlatform/Model/CardGameAnnounceSymbolModel';
+import { GetAnnounceSymbol } from '@vankosoft/game-platform';
+import { CardGameAnnounceSymbolModel } from '@vankosoft/game-platform';
 
-import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
-import BidType from '_@/GamePlatform/Model/CardGame/bidType';
-import BidDto from '_@/GamePlatform/Model/CardGame/bidDto';
+import { PlayerPosition } from '@vankosoft/game-platform';
+import { BidType } from '@vankosoft/game-platform';
+import { BidDto } from '@vankosoft/game-platform';
 
 import { AppStateService } from '../../../../state/app-state.service';
 

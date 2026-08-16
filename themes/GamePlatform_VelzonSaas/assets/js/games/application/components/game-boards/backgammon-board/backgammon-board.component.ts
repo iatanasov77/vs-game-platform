@@ -18,12 +18,12 @@ import { Subscription } from 'rxjs';
 import { AppStateService } from '../../../state/app-state.service';
 
 // Core Interfaces
-import GameState from '_@/GamePlatform/Model/Core/gameState';
+import { GameState } from '@vankosoft/game-platform';
 
 // BoardGame Interfaces
-import BoardGameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
-import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
-import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
+import { BoardGameDto } from '@vankosoft/game-platform';
+import { PlayerColor } from '@vankosoft/game-platform';
+import { MoveDto } from '@vankosoft/game-platform';
 
 import {
     Checker,
@@ -31,7 +31,7 @@ import {
     CheckerDrag,
     Point,
     MoveAnimation
-} from '../../../models/';
+} from '@vankosoft/game-platform';
 
 import {
     BlueTheme,
@@ -40,9 +40,9 @@ import {
     IThemes,
     LightTheme,
     PinkTheme
-} from '../../../models/themes';
+} from '@vankosoft/game-platform';
 
-import { GameVariant } from "../../../game.variant";
+import { GameVariant } from "@vankosoft/game-platform";
 
 import cssGameString from './backgammon-board.component.scss';
 import templateString from './backgammon-board.component.html';

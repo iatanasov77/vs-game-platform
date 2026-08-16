@@ -1,6 +1,6 @@
 import { Component, Inject, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { GameVariant } from "../../../../game.variant";
+import { GameVariant } from "@vankosoft/game-platform";
 
 import templateString from './backgammon-variants.component.html'
 import cssString from './backgammon-variants.component.scss'

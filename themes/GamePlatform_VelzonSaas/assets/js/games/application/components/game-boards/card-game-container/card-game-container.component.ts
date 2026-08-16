@@ -30,9 +30,11 @@ import {
 import { GameState as MyGameState } from '../../../+store/game.reducers';
 
 // App State
+import { Keys } from '@vankosoft/game-platform';
+import { Helper } from '@vankosoft/game-platform';
+import { StatusMessage } from '@vankosoft/game-platform';
 import { AppStateService } from '../../../state/app-state.service';
 import { QueryParamsService } from '../../../state/query-params.service';
-import { StatusMessage } from '../../../utils/status-message';
 
 // Services
 import { AuthService } from '../../../services/auth.service';
@@ -41,19 +43,18 @@ import { SoundService } from '../../../services/sound.service';
 import { CardGameService } from '../../../services/websocket/card-game.service';
 import { GamePlayService } from '../../../services/game-play.service';
 
-import GameCookieDto from '_@/GamePlatform/Model/Core/gameCookieDto';
+import { GameCookieDto } from '@vankosoft/game-platform';
 import { CookieService } from 'ngx-cookie-service';
-import { Keys } from '../../../utils/keys';
 
 // CardGame Interfaces
-import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
-import BidType from '_@/GamePlatform/Model/CardGame/bidType';
-import UserDto from '_@/GamePlatform/Model/Core/userDto';
-import GameState from '_@/GamePlatform/Model/Core/gameState';
-import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
-import CardDto from '_@/GamePlatform/Model/CardGame/cardDto';
-import BidDto from '_@/GamePlatform/Model/CardGame/bidDto';
-import AnnounceDto from '_@/GamePlatform/Model/CardGame/announceDto';
+import { PlayerPosition } from '@vankosoft/game-platform';
+import { BidType } from '@vankosoft/game-platform';
+import { UserDto } from '@vankosoft/game-platform';
+import { GameState } from '@vankosoft/game-platform';
+import { CardGameDto } from '@vankosoft/game-platform';
+import { CardDto } from '@vankosoft/game-platform';
+import { BidDto } from '@vankosoft/game-platform';
+import { AnnounceDto } from '@vankosoft/game-platform';
 
 // Dialogs
 import { DebugGameSoundsComponent } from '../../game-dialogs/debug-game-sounds/debug-game-sounds.component';
@@ -62,8 +63,6 @@ import { SelectGameRoomDialogComponent } from '../../game-dialogs/select-game-ro
 import { CreateGameRoomDialogComponent } from '../../game-dialogs/create-game-room-dialog/create-game-room-dialog.component';
 import { CreateInviteGameDialogComponent } from '../../game-dialogs/create-invite-game-dialog/create-invite-game-dialog.component';
 import { UserLoginDialogComponent } from '../../game-dialogs/user-login-dialog/user-login-dialog.component';
-
-import { Helper } from '../../../utils/helper';
 
 import templateString from './card-game-container.component.html'
 import styleString from './card-game-container.component.scss'

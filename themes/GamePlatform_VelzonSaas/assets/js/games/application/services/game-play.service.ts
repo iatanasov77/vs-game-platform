@@ -7,12 +7,12 @@ const { context } = require( '../context' );
 import { Observable, map, of } from 'rxjs';
 import { AuthService } from './auth.service';
 import { AppConstants } from "../constants";
-import { Keys } from '../utils/keys';
+import { Keys } from '@vankosoft/game-platform';
 
-import GameCookieDto from '_@/GamePlatform/Model/Core/gameCookieDto';
-import IGamePlay from '_@/GamePlatform/Model/GamePlayInterface';
-import IGame from '_@/GamePlatform/Model/GameInterface';
-import { InviteResponseDto } from '../dto/rest/inviteResponseDto';
+import { GameCookieDto } from '@vankosoft/game-platform';
+import { IGamePlay } from '@vankosoft/game-platform';
+import { IGame } from '@vankosoft/game-platform';
+import { InviteResponseDto } from '@vankosoft/game-platform';
 
 import { QueryParamsService } from '../state/query-params.service';
 

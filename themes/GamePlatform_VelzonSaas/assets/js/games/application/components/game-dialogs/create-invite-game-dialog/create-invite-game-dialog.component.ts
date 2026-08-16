@@ -11,10 +11,10 @@ import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 
-import { GameVariant } from "../../../game.variant";
-import { Keys } from '../../../utils/keys';
+import { GameVariant } from "@vankosoft/game-platform";
+import { Keys } from '@vankosoft/game-platform';
 import { GamePlayService } from '../../../services/game-play.service';
-import { InviteResponseDto } from '../../../dto/rest/inviteResponseDto';
+import { InviteResponseDto } from '@vankosoft/game-platform';
 
 import cssString from './create-invite-game-dialog.component.scss';
 import templateString from './create-invite-game-dialog.component.html';

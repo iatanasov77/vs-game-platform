@@ -1,5 +1,5 @@
 import { createAction, props } from "@ngrx/store";
-import { IAuth } from '../interfaces/auth';
+import { IAuth } from '@vankosoft/game-platform';
 
 const actionTypes = {
     loginBySignature:           'LOGIN_BY_SIGNATURE',

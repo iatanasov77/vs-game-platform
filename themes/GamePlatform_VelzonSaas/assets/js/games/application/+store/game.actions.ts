@@ -1,10 +1,10 @@
 import { createAction, props } from "@ngrx/store";
 
-import IGamePlay from '_@/GamePlatform/Model/GamePlayInterface';
+import { IGamePlay } from '@vankosoft/game-platform';
 
-import IGame from '_@/GamePlatform/Model/GameInterface';
-import IPlayer from '_@/GamePlatform/Model/PlayerInterface';
-import IGameRoom from '_@/GamePlatform/Model/GameRoomInterface';
+import { IGame } from '@vankosoft/game-platform';
+import { IPlayer } from '@vankosoft/game-platform';
+import { IGameRoom } from '@vankosoft/game-platform';
 
 const actionTypes = {
     loadGame:                   'LOAD_GAME',

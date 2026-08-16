@@ -12,35 +12,35 @@ import { GameService } from '../game.service';
 // NGRX Store
 import { Store } from '@ngrx/store';
 import { selectGameRoom } from '../../+store/game.actions';
-import IGameRoom from '_@/GamePlatform/Model/GameRoomInterface';
+import { IGameRoom } from '@vankosoft/game-platform';
 
 // Core Interfaces
-import GameState from '_@/GamePlatform/Model/Core/gameState';
-import GameDto from '_@/GamePlatform/Model/Core/gameDto';
-import GameCookieDto from '_@/GamePlatform/Model/Core/gameCookieDto';
+import { GameState } from '@vankosoft/game-platform';
+import { GameDto } from '@vankosoft/game-platform';
+import { GameCookieDto } from '@vankosoft/game-platform';
 
 // Board Interfaces
-import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
-import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
-import ChessMoveDto from '_@/GamePlatform/Model/BoardGame/chessMoveDto';
-import DiceDto from '_@/GamePlatform/Model/BoardGame/diceDto';
+import { PlayerColor } from '@vankosoft/game-platform';
+import { MoveDto } from '@vankosoft/game-platform';
+import { ChessMoveDto } from '@vankosoft/game-platform';
+import { DiceDto } from '@vankosoft/game-platform';
 
 // Action Interfaces
-import ActionDto from '../../dto/Actions/actionDto';
-import ActionNames from '../../dto/Actions/actionNames';
-import MovesMadeActionDto from '../../dto/Actions/movesMadeActionDto';
-import OpponentMoveActionDto from '../../dto/Actions/opponentMoveActionDto';
-import UndoActionDto from '../../dto/Actions/undoActionDto';
-import StartGamePlayActionDto from '../../dto/Actions/startGamePlayActionDto';
-
-// Game Variants
-import { GameVariant } from "../../game.variant";
+import { ActionDto } from '@vankosoft/game-platform';
+import { ActionNames } from '@vankosoft/game-platform';
+import { MovesMadeActionDto } from '@vankosoft/game-platform';
+import { OpponentMoveActionDto } from '@vankosoft/game-platform';
+import { UndoActionDto } from '@vankosoft/game-platform';
+import { StartGamePlayActionDto } from '@vankosoft/game-platform';
 
 // Unused Actions but part of the TypeScript compilation
-import ServerWasTerminatedActionDto from '../../dto/Actions/serverWasTerminatedActionDto';
+import { ServerWasTerminatedActionDto } from '@vankosoft/game-platform';
 
-import { Keys } from '../../utils/keys';
-import { MessageLevel, StatusMessage } from '../../utils/status-message';
+// Game Variants
+import { GameVariant } from "@vankosoft/game-platform";
+
+import { Keys } from '@vankosoft/game-platform';
+import { MessageLevel, StatusMessage } from '@vankosoft/game-platform';
 
 declare global {
     interface Window {

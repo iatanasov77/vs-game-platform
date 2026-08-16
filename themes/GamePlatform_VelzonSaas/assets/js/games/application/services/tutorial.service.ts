@@ -1,9 +1,9 @@
 import { Injectable, Inject } from '@angular/core';
 //import { Router } from '@angular/router';
 
-import GameState from '_@/GamePlatform/Model/Core/gameState';
-import BoardGameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
-import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
+import { GameState } from '@vankosoft/game-platform';
+import { BoardGameDto } from '@vankosoft/game-platform';
+import { PlayerColor } from '@vankosoft/game-platform';
 
 import { AppStateService } from '../state/app-state.service';
 

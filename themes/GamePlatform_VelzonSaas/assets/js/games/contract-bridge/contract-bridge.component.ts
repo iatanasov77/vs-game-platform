@@ -10,7 +10,7 @@ import { GameBaseComponent } from '../application/components/game-base/game-base
 import { AppStateService } from '../application/state/app-state.service';
 import { ErrorState } from '../application/state/ErrorState';
 import { ErrorReportService } from '../application/services/error-report.service';
-import ErrorReportDto from '_@/GamePlatform/Model/Core/errorReportDto';
+import { ErrorReportDto } from '@vankosoft/game-platform';
 
 import cssGameString from './contract-bridge.component.scss'
 import templateString from './contract-bridge.component.html'

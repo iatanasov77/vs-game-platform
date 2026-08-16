@@ -1,33 +1,34 @@
 import { Injectable } from '@angular/core';
 
+import { StatusMessage } from '@vankosoft/game-platform';
+
 // DTO
-import { StatusMessage } from '../dto/local/status-message';
-import { FeedbackDto } from '../dto/feedback/feedbackDto';
-import { PlayedGameListDto } from '../dto/admin/playedGameListDto';
-import MessageDto from '../dto/message/messageDto';
-import ChatMessageDto from '../dto/chat/chatMessageDto';
+import { FeedbackDto } from '@vankosoft/game-platform';
+import { PlayedGameListDto } from '@vankosoft/game-platform';
+import { MessageDto } from '@vankosoft/game-platform';
+import { ChatMessageDto } from '@vankosoft/game-platform';
 
 // Core Interfaces
-import ConnectionDto from '_@/GamePlatform/Model/Core/connectionDto';
-import UserDto from '_@/GamePlatform/Model/Core/userDto';
-import GameState from '_@/GamePlatform/Model/Core/gameState';
-import GameDto from '_@/GamePlatform/Model/Core/gameDto';
+import { ConnectionDto } from '@vankosoft/game-platform';
+import { UserDto } from '@vankosoft/game-platform';
+import { GameState } from '@vankosoft/game-platform';
+import { GameDto } from '@vankosoft/game-platform';
 
 // BoardGame Interfaces
-import BoardGameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
-import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
-import MoveDto from '_@/GamePlatform/Model/BoardGame/moveDto';
-import Toplist from '_@/GamePlatform/Model/BoardGame/toplist';
-import DiceDto from '_@/GamePlatform/Model/BoardGame/diceDto';
-import ChessMoveDto from '_@/GamePlatform/Model/BoardGame/chessMoveDto';
+import { BoardGameDto } from '@vankosoft/game-platform';
+import { PlayerColor } from '@vankosoft/game-platform';
+import { MoveDto } from '@vankosoft/game-platform';
+import { Toplist } from '@vankosoft/game-platform';
+import { DiceDto } from '@vankosoft/game-platform';
+import { ChessMoveDto } from '@vankosoft/game-platform';
 
 // CardGame Interfaces
-import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
-import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
-import CardDto from '_@/GamePlatform/Model/CardGame/cardDto';
-import BidDto from '_@/GamePlatform/Model/CardGame/bidDto';
-import AnnounceDto from '_@/GamePlatform/Model/CardGame/announceDto';
-import BridgeBeloteScoreDto from '_@/GamePlatform/Model/CardGame/bridgeBeloteScoreDto';
+import { CardGameDto } from '@vankosoft/game-platform';
+import { PlayerPosition } from '@vankosoft/game-platform';
+import { CardDto } from '@vankosoft/game-platform';
+import { BidDto } from '@vankosoft/game-platform';
+import { AnnounceDto } from '@vankosoft/game-platform';
+import { BridgeBeloteScoreDto } from '@vankosoft/game-platform';
 
 // State
 import { StateObject } from './state-object';

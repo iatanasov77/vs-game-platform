@@ -1,23 +1,23 @@
 import { Injectable, Inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { StatusMessage } from '../utils/status-message';
+import { StatusMessage } from '@vankosoft/game-platform';
 
 // Core Interfaces
-import GameState from '_@/GamePlatform/Model/Core/gameState';
-import GameDto from '_@/GamePlatform/Model/Core/gameDto';
-import NewScoreDto from '_@/GamePlatform/Model/Core/newScoreDto';
+import { GameState } from '@vankosoft/game-platform';
+import { GameDto } from '@vankosoft/game-platform';
+import { NewScoreDto } from '@vankosoft/game-platform';
 
 // BoardGame Interfaces
-import BoardGameDto from '_@/GamePlatform/Model/BoardGame/gameDto';
-import PlayerColor from '_@/GamePlatform/Model/BoardGame/playerColor';
+import { BoardGameDto } from '@vankosoft/game-platform';
+import { PlayerColor } from '@vankosoft/game-platform';
 
 // CardGame Interfaces
-import CardGameDto from '_@/GamePlatform/Model/CardGame/gameDto';
-import PlayerPosition from '_@/GamePlatform/Model/CardGame/playerPosition';
+import { CardGameDto } from '@vankosoft/game-platform';
+import { PlayerPosition } from '@vankosoft/game-platform';
 
 import { SoundService } from './sound.service'
 import { AppStateService } from '../state/app-state.service';
-import { GameVariant } from '../game.variant'
+import { GameVariant } from '@vankosoft/game-platform'
 
 @Injectable({
     providedIn: 'root'

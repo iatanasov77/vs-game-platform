@@ -32,7 +32,16 @@ import { BidType } from '@vankosoft/game-platform';
 import { AnnounceDto } from '@vankosoft/game-platform';
 import { AnnounceType } from '@vankosoft/game-platform';
 
-import { CardGamePlayerArea, Card, CardArea, CardDrag, Point, MoveAnimation, Pile } from '@vankosoft/game-platform';
+import {
+    CardGamePlayerArea,
+    Card,
+    CardArea,
+    CardDrag,
+    Point,
+    MoveAnimation,
+    Pile
+} from '@vankosoft/game-platform';
+
 import {
     BlueTheme,
     DarkTheme,
@@ -142,11 +151,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
     constructor(
         @Inject( TranslateService ) private translateService: TranslateService,
         @Inject( AppStateService ) private appState: AppStateService,
-    ) {
-        for ( let r = 0; r < 8; r++ ) {
-            this.cardAreas.push( new CardArea( 0, 0, 0, 0, '' ) );
-        }
-    }
+    ) {}
     
     ngOnChanges( changes: SimpleChanges ): void
     {
@@ -158,6 +163,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         }
         
         if ( changes['playerCards'] ) {
+            this.initPlayerCards();
             this.initCardAreas();
         }
         
@@ -728,6 +734,32 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         );
     }
     
+    initPlayerCards(): void
+    {
+        if ( ! this.game ) {
+            return;
+        }
+        
+        var cardsLength;
+        switch( this.game.gameCode ) {
+            case GameVariant.BRIDGE_BELOTE_CODE:
+                cardsLength = 8;
+                break;
+            case GameVariant.CONTRACT_BRIDGE_CODE:
+                cardsLength = 13;
+                break;
+            case GameVariant.SVARA_CODE:
+                cardsLength = 3;
+                break;
+            default:
+                throw new Error( 'Invalid Card Game !!!' );
+        }
+        
+        for ( let r = 0; r < cardsLength; r++ ) {
+            this.cardAreas.push( new CardArea( 0, 0, 0, 0, '' ) );
+        }
+    }
+    
     initPlayerAreas(): void
     {
         if ( ! this.game ) {
@@ -810,7 +842,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             return;
         }
         
-        const playerCards = this.playerCards[PlayerPosition.south]
+        const playerCards = this.playerCards[PlayerPosition.south];
         const cardsWidth = this.cardWidth + ( ( playerCards.length - 1 ) * this.cardOffset );
         
         const pa = this.playerAreas.find( ( x ) => x.playerPosition === PlayerPosition.south );
@@ -820,7 +852,10 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         
         const yOffset = pa.height - this.cardHeight;
         const cardY = pa.y + yOffset;
-        console.log( 'Card Areas', this.cardAreas );
+        
+        //console.log( 'Card Areas', this.cardAreas );
+        //alert( playerCards.length );
+        
         for ( let c = 0; c < playerCards.length; c++ ) {
             let cardX = pa.x + pa.width / 2 - ( cardsWidth / 2 ) + ( c * this.cardOffset );
             let areaWidth = c == ( playerCards.length - 1 ) ? this.cardWidth : this.cardOffset;

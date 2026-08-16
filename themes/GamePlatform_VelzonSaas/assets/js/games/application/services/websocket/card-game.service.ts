@@ -150,6 +150,7 @@ export class CardGameService extends AbstractGameService
             case ActionNames.biddingStarted: {
                 const biddingStartedAction = JSON.parse( message.data ) as BiddingStartedActionDto;
                 //console.log( 'Bidding Started Action' + new Date().toLocaleTimeString(), biddingStartedAction );
+                //alert( 'Bidding Started !!!' );
                 
                 this.appState.playerCards.setValue( biddingStartedAction.playerCards );
                 const cGame = {

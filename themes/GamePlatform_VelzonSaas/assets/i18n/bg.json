@@ -298,5 +298,18 @@
     "card-game": {
         "kontra": "Double",
         "rekontra": "ReDouble"
+    },
+    "contract-bridge-auction": {
+        "auction": "Auction",
+        
+        "west": "West",
+        "north": "North",
+        "east": "East",
+        "south": "South",
+        
+        "counter": "Counter",
+        "recounter": "Recounter",
+        "pass": "Pass",
+        "bid": "Bid"
     }
 }

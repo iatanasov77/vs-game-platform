@@ -1,5 +1,5 @@
 <div class="modal-header">
-    <h3 class="modal-title">Auction</h3>
+    <h3 class="modal-title">{{ 'contract-bridge-auction.auction' | translate }}</h3>
     <button type="button" class="btn-close" aria-label="Close" (click)="dismissModal()"></button>
 </div>
 
@@ -47,10 +47,10 @@
         <table class="bridge-table mt-4">
             <thead>
                 <tr>
-                    <th>West</th>
-                    <th>North</th>
-                    <th>East</th>
-                    <th>South</th>
+                    <th>{{ 'contract-bridge-auction.west' | translate }}</th>
+                    <th>{{ 'contract-bridge-auction.north' | translate }}</th>
+                    <th>{{ 'contract-bridge-auction.east' | translate }}</th>
+                    <th>{{ 'contract-bridge-auction.south' | translate }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -84,27 +84,27 @@
                     *ngIf="lastBid"
                     (click)="makeBid()"
                 >
-                    Counter
+                    {{ 'contract-bridge-auction.counter' | translate }}
                 </button>
                 
                 <button type="button" class="btn btn-outline-dark"
                     *ngIf="lastBid && lastBid.KontraPlayer"
                     (click)="makeBid()"
                 >
-                    Recounter
+                    {{ 'contract-bridge-auction.recounter' | translate }}
                 </button>
                 
                 <button type="button" class="btn btn-outline-dark"
                     (click)="makeBid()"
                 >
-                    Pass
+                    {{ 'contract-bridge-auction.pass' | translate }}
                 </button>
                 
                 <button type="button" class="btn btn-outline-dark"
                     (click)="makeBid()"
                     [disabled]="!bidValue || !bidTrump"
                 >
-                    Bid
+                    {{ 'contract-bridge-auction.bid' | translate }}
                 </button>
             </span>
         </div>

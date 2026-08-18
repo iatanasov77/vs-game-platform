@@ -1,5 +1,4 @@
 <div class="bridge-belote-container" id="GameBoardContainer">
-    
     <div class="messages" #messages>
         <app-messages
             [initial]="width"
@@ -35,13 +34,17 @@
             [newVisible]="newVisible"
             [exitVisible]="exitVisible"
             [newRoundVisible]="newRoundVisible"
+            [playWithComputerVisible]="playWithComputerVisible"
             
+            [debugButtonsVisible]="debugButtonsVisible"
             [debugGameSoundsVisible]="debugGameSoundsVisible"
             
             (onLogin)="login()"
             (onNew)="newGame()"
             (onNewRound)="newRound()"
             (onExit)="exitGame()"
+            
+            (onOpenContractBridgeAuctionDialog)="openContractBridgeAuctionDialog()"
             (onOpenDebugGameSoundsDialog)="openDebugGameSoundsDialog()"
             
             (onPlayWithComputer)="playAi()"
@@ -61,5 +64,4 @@
             (onPlayerMakeBid)="doBid( $event )"
         ></bridge-belote-contract>
     </div>
-    
 </div>

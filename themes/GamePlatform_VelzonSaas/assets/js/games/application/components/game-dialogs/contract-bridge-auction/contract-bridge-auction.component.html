@@ -1,0 +1,85 @@
+<div class="modal-header">
+    <h3 class="modal-title">Auction</h3>
+    <button type="button" class="btn-close" aria-label="Close" (click)="dismissModal()"></button>
+</div>
+
+<div class="modal-body">
+    
+    <!-- Example Screenshot: https://github.com/PatrykkMar/Bridget/blob/main/Screenshots/1.png -->
+    <div class="text-center mb-2">
+        <div>It's youe turn. Highest bid is 3D</div>
+        <div>E countered</div>
+    </div>
+    
+    <div class="bridge-auction-container">
+        
+        <!-- Game HTML Entities: https://www.w3schools.com/charsets/ref_utf_cards.asp -->
+        <div class="text-center">
+            <button type="button" class="btn btn-outline-primary btn-icon waves-effect waves-light">1</button>
+            <button type="button" class="btn btn-outline-primary btn-icon waves-effect waves-light">2</button>
+            <button type="button" class="btn btn-outline-primary btn-icon waves-effect waves-light">3</button>
+            <button type="button" class="btn btn-outline-primary btn-icon waves-effect waves-light">4</button>
+            <button type="button" class="btn btn-outline-primary btn-icon waves-effect waves-light">5</button>
+            <button type="button" class="btn btn-outline-primary btn-icon waves-effect waves-light">6</button>
+            <button type="button" class="btn btn-outline-primary btn-icon waves-effect waves-light">7</button>
+        </div>
+        
+        <div class="text-center">
+            <button type="button" class="btn btn-outline-dark btn-icon waves-effect waves-light">&#9827;</button>
+            <button type="button" class="btn btn-outline-primary btn-icon waves-effect waves-light">&#9830;</button>
+            <button type="button" class="btn btn-outline-primary btn-icon waves-effect waves-light">&#9829;</button>
+            <button type="button" class="btn btn-outline-primary btn-icon waves-effect waves-light">&#9824;</button>
+        </div>
+    
+        <table class="bridge-table mt-4">
+            <thead>
+                <tr>
+                    <th>West</th>
+                    <th>North</th>
+                    <th>East</th>
+                    <th>South</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="pass">Pass</span></td>
+                    <td>1 <span class="bid-suit">♥</span></td>
+                    <td><span class="pass">Pass</span></td>
+                    <td>2 <span class="bid-suit">♥</span></td>
+                </tr>
+                <tr>
+                    <td><span class="pass">Pass</span></td>
+                    <td><span class="pass">Pass</span></td>
+                    <td><span class="pass">Pass</span></td>
+                    <td></td>
+                </tr>
+                <tr><td></td><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td><td></td></tr>
+            </tbody>
+        </table>
+        
+    </div>
+</div>
+
+<!-- https://github.com/PatrykkMar/Bridget/blob/main/Screenshots/1.png -->
+<div class="modal-footer">
+    <div class="row">
+        <div class="col-5">&nbsp;</div>
+        <div class="col-7">
+            <span class="float-end">
+                <button type="button" class="btn btn-outline-dark" (click)="makeBid()">
+                    Counter
+                </button>
+                <button type="button" class="btn btn-outline-dark" (click)="makeBid()">
+                    Recounter
+                </button>
+                <button type="button" class="btn btn-outline-dark" (click)="makeBid()">
+                    Pass
+                </button>
+                <button type="button" class="btn btn-outline-dark" (click)="makeBid()">
+                    Bid
+                </button>
+            </span>
+        </div>
+    </div>
+</div>

@@ -12,6 +12,7 @@ import { CreateGameRoomDialogComponent } from './create-game-room-dialog/create-
 import { PlayAiQuestionComponent } from './play-ai-question/play-ai-question.component';
 import { CreateInviteGameDialogComponent } from './create-invite-game-dialog/create-invite-game-dialog.component';
 import { UserLoginDialogComponent } from './user-login-dialog/user-login-dialog.component';
+import { ContractBridgeAuctionComponent } from './contract-bridge-auction/contract-bridge-auction.component';
 import { DebugGameSoundsComponent } from './debug-game-sounds/debug-game-sounds.component';
 
 @NgModule({
@@ -22,6 +23,7 @@ import { DebugGameSoundsComponent } from './debug-game-sounds/debug-game-sounds.
         PlayAiQuestionComponent,
         CreateInviteGameDialogComponent,
         UserLoginDialogComponent,
+        ContractBridgeAuctionComponent,
         DebugGameSoundsComponent
     ],
     imports: [
@@ -40,6 +42,7 @@ import { DebugGameSoundsComponent } from './debug-game-sounds/debug-game-sounds.
         PlayAiQuestionComponent,
         CreateInviteGameDialogComponent,
         UserLoginDialogComponent,
+        ContractBridgeAuctionComponent,
         DebugGameSoundsComponent
     ]
 })

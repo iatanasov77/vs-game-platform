@@ -63,6 +63,7 @@ import { SelectGameRoomDialogComponent } from '../../game-dialogs/select-game-ro
 import { CreateGameRoomDialogComponent } from '../../game-dialogs/create-game-room-dialog/create-game-room-dialog.component';
 import { CreateInviteGameDialogComponent } from '../../game-dialogs/create-invite-game-dialog/create-invite-game-dialog.component';
 import { UserLoginDialogComponent } from '../../game-dialogs/user-login-dialog/user-login-dialog.component';
+import { ContractBridgeAuctionComponent } from '../../game-dialogs/contract-bridge-auction/contract-bridge-auction.component';
 
 import templateString from './card-game-container.component.html'
 import styleString from './card-game-container.component.scss'
@@ -122,12 +123,18 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     lokalStake = 0;
     playAiQuestion = false;
     
-    gameDto: CardGameDto | undefined;
+    bridgeBeloteAuction = false;
+    contractBridgeAuction = false;
+    
+    playWithComputerVisible = true;
     newVisible = false;
     exitVisible = true;
     gameBiddingVisible = false;
     gameContractVisible = false;
     newRoundVisible = false;
+    debugButtonsVisible = false;
+    
+    gameDto: CardGameDto | undefined;
     playerCardsDto: Array<CardDto[]> | undefined;
     playerBidsDto: BidDto[] | undefined = [];
     playerAnnouncesDto: Array<AnnounceDto[]> | undefined = [];
@@ -286,6 +293,16 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         }
     }
     
+    openContractBridgeAuctionDialog(): void
+    {
+        const modalRef = this.ngbModal.open( ContractBridgeAuctionComponent );
+        
+        modalRef.componentInstance.closeModal.subscribe( () => {
+            // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
+            modalRef.dismiss();
+        });
+    }
+    
     openDebugGameSoundsDialog(): void
     {
         const modalRef = this.ngbModal.open( DebugGameSoundsComponent );
@@ -427,8 +444,11 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         this.playAiQuestion = false;
         this.wsService.exitGame();
         
-        while ( this.appStateService.myConnection.getValue().connected ) {
-            await Helper.delay( 500 );
+        var myConnection = this.appStateService.myConnection.getValue();
+        if (  myConnection ) {
+            while (  myConnection.connected ) {
+                await Helper.delay( 500 );
+            }
         }
         
         this.isPlayAi.emit( true );
@@ -458,12 +478,20 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     {
         if ( ! this.started && dto ) {
             if ( dto.playState === GameState.bidding ) {
-                this.started = true;
-                this.gameBiddingVisible = true;
+                if ( dto.validBids.length ) {
+                    this.started = true;
+                    this.gameBiddingVisible = true;
                 
-                this.playAiQuestion = false;
-                this.lobbyButtonsVisibleChanged.emit( false );
-                this.isStarted.emit( true );
+                    this.playAiQuestion = false;
+                    this.lobbyButtonsVisibleChanged.emit( false );
+                    this.isStarted.emit( true );
+                } else {
+                    this.started = false;
+                    this.playWithComputerVisible = false;
+                    
+                    this.debugButtonsVisible = true;
+                    this.exitVisible = true;
+                }
             }
         }
         
@@ -472,6 +500,8 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         }
         
         if ( dto && dto.playState === GameState.playing ) {
+            //alert( 'Game Playing Started !!!' );
+            
             this.contract = dto.contract;
             this.playerBidsDto = [];
             this.gameBiddingVisible = false;

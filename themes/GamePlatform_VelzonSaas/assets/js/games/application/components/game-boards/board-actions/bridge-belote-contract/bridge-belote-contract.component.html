@@ -1,7 +1,5 @@
 <div>
-    
     <div *ngIf="gameBiddingVisible && currentPlayer == myPosition">
-        
         <ng-container *ngFor="let icon of announceSymbols">
             <a href="javascript:void(0);" style="text-decoration: none;"
                 id="{{ icon.key }}"
@@ -31,5 +29,4 @@
             <span class="contract-button">( {{ 'card-game.rekontra' | translate }} )</span>
         </ng-container>
     </div>
-    
 </div>

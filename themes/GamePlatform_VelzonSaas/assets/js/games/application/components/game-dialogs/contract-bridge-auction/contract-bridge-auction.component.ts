@@ -5,8 +5,12 @@ import {
     EventEmitter,
     Output
 } from '@angular/core';
-import { ButtonComponent } from '../../shared/button/button.component';
+
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { TranslateService } from '@ngx-translate/core';
+
+import { BidDto } from '@vankosoft/game-platform';
+import { ButtonComponent } from '../../shared/button/button.component';
 
 import cssString from './contract-bridge-auction.component.scss';
 import templateString from './contract-bridge-auction.component.html';
@@ -24,6 +28,10 @@ export class ContractBridgeAuctionComponent
 {
     @Output() closeModal: EventEmitter<any> = new EventEmitter();
     
+    lastBid: BidDto | null = null;
+    bidValue: number | null = null;
+    bidTrump: string | null = null;
+    
     constructor(
         @Inject( TranslateService ) private translateService: TranslateService
     ) {}
@@ -31,6 +39,18 @@ export class ContractBridgeAuctionComponent
     dismissModal(): void
     {
         this.closeModal.emit();
+    }
+    
+    setBidValue( value: number ): void
+    {
+        // alert( value );
+        this.bidValue = value;
+    }
+    
+    setBidTrump( trump: string ): void
+    {
+        // alert( trump );
+        this.bidTrump = trump;
     }
     
     makeBid(): void

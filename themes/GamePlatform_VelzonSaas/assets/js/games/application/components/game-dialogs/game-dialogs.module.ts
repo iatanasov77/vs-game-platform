@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 import { SharedModule } from '../shared/shared.module';
 import { RequirementsDialogComponent } from './requirements-dialog/requirements-dialog.component';
@@ -33,6 +34,7 @@ import { DebugGameSoundsComponent } from './debug-game-sounds/debug-game-sounds.
         TranslateModule.forChild(),
         FormsModule,
         ReactiveFormsModule,
+        MatButtonToggleModule,
         SharedModule
     ],
     exports: [

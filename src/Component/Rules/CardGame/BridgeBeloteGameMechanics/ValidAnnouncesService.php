@@ -5,7 +5,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 use App\Component\GameLogger;
-use App\Component\Type\BidType;
+use App\Component\Type\BidTrump;
 use App\Component\Type\CardSuit;
 use App\Component\Type\BridgeBeloteCardType as CardType;
 use App\Component\Type\AnnounceType;
@@ -13,7 +13,7 @@ use App\Component\Rules\CardGame\Helper;
 use App\Component\Rules\CardGame\BridgeBeloteCard as Card;
 use App\Component\Rules\CardGame\Announce;
 use App\Component\Rules\CardGame\PlayerPositionExtensions;
-use App\Component\Rules\CardGame\BidTypeExtensions;
+use App\Component\Rules\CardGame\BidTrumpExtensions;
 
 class ValidAnnouncesService
 {
@@ -33,19 +33,19 @@ class ValidAnnouncesService
             return false;
         }
         
-        if ( $contract->has( BidType::NoTrumps ) ) {
+        if ( $contract->has( BidTrump::NoTrumps ) ) {
             return false;
         }
         
-        if ( $contract->has( BidType::AllTrumps ) ) {
+        if ( $contract->has( BidTrump::AllTrumps ) ) {
             if ( $currentTrickActions->count() > 0 && $currentTrickActions[0]->Card->Suit != $playedCard->Suit ) {
                 // Belote is only allowed when playing card from the same suit as the first card played
                 return false;
             }
         } else {
-            $suit = BidType::fromBitMaskValue( $contract->get() );
+            $suit = BidTrump::fromBitMaskValue( $contract->get() );
             // Clubs, Diamonds, Hearts or Spades
-            if ( $playedCard->Suit != BidTypeExtensions::ToCardSuit( $suit ) ) {
+            if ( $playedCard->Suit != BidTrumpExtensions::ToCardSuit( $suit ) ) {
                 // Belote is only allowed when playing card from the trump suit
                 return false;
             }

@@ -2,7 +2,7 @@
 
 use BitMask\EnumBitMask;
 use App\Component\Type\PlayerPosition;
-use App\Component\Type\BidType;
+use App\Component\Type\BidTrump;
 
 class Bid
 {
@@ -10,16 +10,16 @@ class Bid
     public ?PlayerPosition $KontraPlayer = NULL;
     public ?PlayerPosition $ReKontraPlayer = NULL;
     
-    public EnumBitMask $Type;
+    public EnumBitMask $Trump;
     
-    public function __construct( PlayerPosition $player, BidType $type )
+    public function __construct( PlayerPosition $player, BidTrump $type )
     {
         $this->Player = $player;
-        $this->Type = EnumBitMask::create( BidType::class, $type );
+        $this->Trump = EnumBitMask::create( BidTrump::class, $type );
     }
     
     public function __toString(): string
     {
-        return "{$this->Type->get()} ({$this->Player->value})";
+        return "{$this->Trump->get()} ({$this->Player->value})";
     }
 }

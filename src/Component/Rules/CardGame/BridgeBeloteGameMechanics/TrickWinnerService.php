@@ -2,9 +2,9 @@
 
 use Doctrine\Common\Collections\Collection;
 use App\Component\Type\PlayerPosition;
-use App\Component\Type\BidType;
+use App\Component\Type\BidTrump;
 use App\Component\Rules\CardGame\Bid;
-use App\Component\Rules\CardGame\BidTypeExtensions;
+use App\Component\Rules\CardGame\BidTrumpExtensions;
 
 class TrickWinnerService
 {
@@ -12,7 +12,7 @@ class TrickWinnerService
     {
         $firstCard = $trickActions[0]->Card;
         $bestAction = $trickActions[0];
-        if ( $contract->Type->has( BidType::AllTrumps ) ) {
+        if ( $contract->Trump->has( BidTrump::AllTrumps ) ) {
             for ( $i = 1; $i < $trickActions->count(); $i++ ) {
                 if (
                     $trickActions[$i]->Card->Suit == $firstCard->Suit
@@ -21,7 +21,7 @@ class TrickWinnerService
                     $bestAction = $trickActions[$i];
                 }
             }
-        } else if ( $contract->Type->has( BidType::NoTrumps ) ) {
+        } else if ( $contract->Trump->has( BidTrump::NoTrumps ) ) {
             for ( $i = 1; $i < $trickActions->count(); $i++ ) {
                 if (
                     $trickActions[$i]->Card->Suit == $firstCard->Suit
@@ -31,8 +31,8 @@ class TrickWinnerService
                 }
             }
         } else {
-            $suit = BidType::fromBitMaskValue( $contract->Type->get() );
-            $trumpSuit = BidTypeExtensions::ToCardSuit( $suit );
+            $suit = BidTrump::fromBitMaskValue( $contract->Trump->get() );
+            $trumpSuit = BidTrumpExtensions::ToCardSuit( $suit );
             //// TODO: Remove this check and merge conditions
             
             $trumpSuitActions  = $trickActions->filter(

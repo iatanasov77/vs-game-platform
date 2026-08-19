@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use App\Component\GameLogger;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerPosition;
-use App\Component\Type\BidType;
+use App\Component\Type\BidTrump;
 
 use App\Component\Rules\CardGame\Game;
 use App\Component\Rules\CardGame\Card;
@@ -59,7 +59,7 @@ class ScoreManager
         }
         
         foreach( $southNorthTricks as $card ) {
-            $result->SouthNorthTotalInRoundPoints += CardExtensions::GetValue( $card, $contract->Type );
+            $result->SouthNorthTotalInRoundPoints += CardExtensions::GetValue( $card, $contract->Trump );
         }
         
         if ( $lastTrickWinner == PlayerPosition::South || $lastTrickWinner == PlayerPosition::North ) {
@@ -80,7 +80,7 @@ class ScoreManager
         }
         
         foreach( $eastWestTricks as $card ) {
-            $result->EastWestTotalInRoundPoints += CardExtensions::GetValue( $card, $contract->Type );
+            $result->EastWestTotalInRoundPoints += CardExtensions::GetValue( $card, $contract->Trump );
         }
         
         
@@ -90,25 +90,25 @@ class ScoreManager
         }
         
         // Double no trump points
-        if ( $contract->Type->has( BidType::NoTrumps ) ) {
+        if ( $contract->Trump->has( BidTrump::NoTrumps ) ) {
             $result->SouthNorthTotalInRoundPoints *= 2;
             $result->EastWestTotalInRoundPoints *= 2;
         }
         
         // 9 points for no tricks
-        if ( $southNorthTricks->count() == 0 && ! $contract->Type->has( BidType::Pass ) ) {
+        if ( $southNorthTricks->count() == 0 && ! $contract->Trump->has( BidTrump::Pass ) ) {
             $result->EastWestTotalInRoundPoints += 90;
             $result->NoTricksForOneOfTheTeams = true;
         }
         
-        if ( $eastWestTricks->count() == 0 && ! $contract->Type->has( BidType::Pass ) ) {
+        if ( $eastWestTricks->count() == 0 && ! $contract->Trump->has( BidTrump::Pass ) ) {
             $result->SouthNorthTotalInRoundPoints += 90;
             $result->NoTricksForOneOfTheTeams = true;
         }
         
         // Check if game is inside or hanging
-        if ( $contract->Type->has( BidType::Double ) || $contract->Type->has( BidType::ReDouble ) ) {
-            $coefficient = $contract->Type->has( BidType::ReDouble ) ? 4 : 2;
+        if ( $contract->Trump->has( BidTrump::Double ) || $contract->Trump->has( BidTrump::ReDouble ) ) {
+            $coefficient = $contract->Trump->has( BidTrump::ReDouble ) ? 4 : 2;
             if ( $result->NoTricksForOneOfTheTeams ) {
                 // When no tricks - double and re-double doesn't take place
                 $coefficient = 1;
@@ -133,11 +133,11 @@ class ScoreManager
             && $result->SouthNorthTotalInRoundPoints == $result->EastWestTotalInRoundPoints
         ) {
             // The other team gets its half of the points
-            $result->EastWestPoints += self::RoundPointsByBidType( $contract->Type, $result->EastWestTotalInRoundPoints, true );
+            $result->EastWestPoints += self::RoundPointsByBidTrump( $contract->Trump, $result->EastWestTotalInRoundPoints, true );
             
             // "Hanging" points are added to current hanging points
-            $result->HangingPoints = $hangingPoints + self::RoundPointsByBidType(
-                $contract->Type,
+            $result->HangingPoints = $hangingPoints + self::RoundPointsByBidTrump(
+                $contract->Trump,
                 $result->SouthNorthTotalInRoundPoints,
                 false
             );
@@ -152,24 +152,24 @@ class ScoreManager
             && $result->SouthNorthTotalInRoundPoints == $result->EastWestTotalInRoundPoints
         ) {
             // The other team gets its half of the points
-            $result->SouthNorthPoints += self::RoundPointsByBidType( $contract->Type, $result->SouthNorthTotalInRoundPoints, true );
+            $result->SouthNorthPoints += self::RoundPointsByBidTrump( $contract->Trump, $result->SouthNorthTotalInRoundPoints, true );
             
             // "Hanging" points are added to current hanging points
-            $result->HangingPoints = $hangingPoints + self::RoundPointsByBidType(
-                $contract->Type,
+            $result->HangingPoints = $hangingPoints + self::RoundPointsByBidTrump(
+                $contract->Trump,
                 $result->EastWestTotalInRoundPoints,
                 false
             );
         } else {
             // Normal game
-            $result->SouthNorthPoints = self::RoundPointsByBidType(
-                $contract->Type,
+            $result->SouthNorthPoints = self::RoundPointsByBidTrump(
+                $contract->Trump,
                 $result->SouthNorthTotalInRoundPoints,
                 $result->SouthNorthTotalInRoundPoints > $result->EastWestTotalInRoundPoints
             );
             
-            $result->EastWestPoints = self::RoundPointsByBidType(
-                $contract->Type,
+            $result->EastWestPoints = self::RoundPointsByBidTrump(
+                $contract->Trump,
                 $result->EastWestTotalInRoundPoints,
                 $result->EastWestTotalInRoundPoints > $result->SouthNorthTotalInRoundPoints
             );
@@ -187,10 +187,10 @@ class ScoreManager
         return $result;
     }
     
-    private static function RoundPointsByBidType( EnumBitMask $bidType, int $points, bool $winner ): int
+    private static function RoundPointsByBidTrump( EnumBitMask $bidType, int $points, bool $winner ): int
     {
         // All trumps
-        if ( $bidType->has( BidType::AllTrumps ) ) {
+        if ( $bidType->has( BidTrump::AllTrumps ) ) {
             if ( $points % 10 > 4 ) {
                 return \intval( ( $points / 10 ) + 1 );
             }
@@ -207,7 +207,7 @@ class ScoreManager
         }
         
         // No trumps
-        if ( $bidType->has( BidType::NoTrumps ) ) {
+        if ( $bidType->has( BidTrump::NoTrumps ) ) {
             return \intval( $points / 10 );
         }
         

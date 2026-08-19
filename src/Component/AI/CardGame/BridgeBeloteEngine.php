@@ -3,7 +3,7 @@
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-use App\Component\Type\BidType;
+use App\Component\Type\BidTrump;
 use App\Component\Type\AnnounceType;
 use App\Component\Type\BridgeBeloteCardType as CardType;
 use App\Component\Type\CardSuit;
@@ -65,7 +65,7 @@ class BridgeBeloteEngine extends Engine
         $this->trumpTheirsContractStrategy = new TrumpTheirsContractStrategy();
     }
     
-    public function DoBid(): BidType
+    public function DoBid(): BidTrump
     {
         $context = new PlayerGetBidContext();
         $context->MyPosition = $this->EngineGame->CurrentPlayer;
@@ -80,7 +80,7 @@ class BridgeBeloteEngine extends Engine
     {
         $availableCards = $this->validCardsService->GetValidCards(
             $this->EngineGame->playerCards[$this->EngineGame->CurrentPlayer->value],
-            $this->EngineGame->CurrentContract->Type,
+            $this->EngineGame->CurrentContract->Trump,
             $this->EngineGame->GetTrickActions()
         );
         
@@ -101,7 +101,7 @@ class BridgeBeloteEngine extends Engine
         if ( $action->Belote ) {
             if ( $this->EngineGame->IsBeloteAllowed(
                 $this->EngineGame->playerCards[$this->EngineGame->CurrentPlayer->value],
-                $this->EngineGame->CurrentContract->Type,
+                $this->EngineGame->CurrentContract->Trump,
                 $this->EngineGame->GetTrickActions(),
                 $action->Card
             )
@@ -125,7 +125,7 @@ class BridgeBeloteEngine extends Engine
         
     }
     
-    private function GetBid( PlayerGetBidContext $context ): BidType
+    private function GetBid( PlayerGetBidContext $context ): BidTrump
     {
         $availableAnnounces = $this->validAnnouncesService->GetAvailableAnnounces( $context->MyCards );
         //$this->logger->log( 'Available Announces for Player ' . $context->MyPosition->value . ': ' . \print_r( $availableAnnounces->toArray(), true ), 'BridgeBeloteEngine' );
@@ -144,45 +144,45 @@ class BridgeBeloteEngine extends Engine
         
         $bids = new ArrayCollection();
         
-        if ( $context->AvailableBids->containsKey( BidType::Clubs->value() ) ) {
+        if ( $context->AvailableBids->containsKey( BidTrump::Clubs->value() ) ) {
             $bids->set(
-                BidType::Clubs->value(),
+                BidTrump::Clubs->value(),
                 self::CalculateTrumpBidPoints( $context->MyCards, CardSuit::Club, $announcePoints )
             );
         }
         
-        if ( $context->AvailableBids->containsKey( BidType::Diamonds->value() ) ) {
+        if ( $context->AvailableBids->containsKey( BidTrump::Diamonds->value() ) ) {
             $bids->set(
-                BidType::Diamonds->value(),
+                BidTrump::Diamonds->value(),
                 self::CalculateTrumpBidPoints( $context->MyCards, CardSuit::Diamond, $announcePoints )
             );
         }
         
-        if ( $context->AvailableBids->containsKey( BidType::Hearts->value() ) ) {
+        if ( $context->AvailableBids->containsKey( BidTrump::Hearts->value() ) ) {
             $bids->set(
-                BidType::Hearts->value(),
+                BidTrump::Hearts->value(),
                 self::CalculateTrumpBidPoints( $context->MyCards, CardSuit::Heart, $announcePoints )
             );
         }
         
-        if ( $context->AvailableBids->containsKey( BidType::Spades->value() ) ) {
+        if ( $context->AvailableBids->containsKey( BidTrump::Spades->value() ) ) {
             $bids->set(
-                BidType::Spades->value(),
+                BidTrump::Spades->value(),
                 self::CalculateTrumpBidPoints( $context->MyCards, CardSuit::Spade, $announcePoints )
             );
         }
         
-        if ( $context->AvailableBids->containsKey( BidType::AllTrumps->value() ) ) {
+        if ( $context->AvailableBids->containsKey( BidTrump::AllTrumps->value() ) ) {
             $teammate = PlayerPositionExtensions::GetTeammate( $context->MyPosition );
             $bids->set(
-                BidType::AllTrumps->value(),
+                BidTrump::AllTrumps->value(),
                 self::CalculateAllTrumpsBidPoints( $context->MyCards, $context->Bids, $teammate, $announcePoints )
             );
         }
         
-        if ( $context->AvailableBids->containsKey( BidType::NoTrumps->value() ) ) {
+        if ( $context->AvailableBids->containsKey( BidTrump::NoTrumps->value() ) ) {
             $bids->set(
-                BidType::NoTrumps->value(),
+                BidTrump::NoTrumps->value(),
                 self::CalculateNoTrumpsBidPoints( $context->MyCards )
             );
         }
@@ -200,7 +200,7 @@ class BridgeBeloteEngine extends Engine
             return $b <=> $a;
         });
         $bids = new ArrayCollection( \iterator_to_array( $bidsIterator ) );
-        $bid = $bids->first() ? BidType::fromValue( $bids->key() ) : BidType::Pass;
+        $bid = $bids->first() ? BidTrump::fromValue( $bids->key() ) : BidTrump::Pass;
         
         //$this->logger->log( 'Available Bids for Player ' . $context->MyPosition->value . ': ' . \print_r( $context->AvailableBids->toArray(), true ), 'BridgeBeloteEngine' );
         $this->logger->log( 'Selected Bid for Player ' . $context->MyPosition->value . ': ' . \print_r( $bid, true ), 'BridgeBeloteEngine' );
@@ -217,11 +217,11 @@ class BridgeBeloteEngine extends Engine
             }
         }
         
-        if ( $context->CurrentContract->Type->has( BidType::AllTrumps ) ) {
+        if ( $context->CurrentContract->Trump->has( BidTrump::AllTrumps ) ) {
             $strategy = PlayerPositionExtensions::IsInSameTeamWith( $context->CurrentContract->Player, $context->MyPosition )
                             ? $this->allTrumpsOursContractStrategy
                             : $this->allTrumpsTheirsContractStrategy;
-        } else if ( $context->CurrentContract->Type->has( BidType::NoTrumps ) ) {
+        } else if ( $context->CurrentContract->Trump->has( BidTrump::NoTrumps ) ) {
             $strategy = PlayerPositionExtensions::IsInSameTeamWith( $context->CurrentContract->Player, $context->MyPosition )
                             ? $this->noTrumpsOursContractStrategy
                             : $this->noTrumpsTheirsContractStrategy;
@@ -282,10 +282,10 @@ class BridgeBeloteEngine extends Engine
         $teammateHasSuitAnnounce = $previousBids->filter(
             function( $entry ) use ( $teammate ) {
                 return $entry->Player == $teammate && (
-                    $entry->Type == BidType::Clubs
-                    || $entry->Type == BidType::Diamonds
-                    || $entry->Type == BidType::Hearts
-                    || $entry->Type == BidType::Spades
+                    $entry->Trump == BidTrump::Clubs
+                    || $entry->Trump == BidTrump::Diamonds
+                    || $entry->Trump == BidTrump::Hearts
+                    || $entry->Trump == BidTrump::Spades
                 );
             }
         )->count();

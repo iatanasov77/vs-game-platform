@@ -28,7 +28,7 @@ import { CardGamePlayerDto } from '@vankosoft/game-platform';
 import { PlayerPosition } from '@vankosoft/game-platform';
 import { CardDto } from '@vankosoft/game-platform';
 import { BidDto } from '@vankosoft/game-platform';
-import { BidType } from '@vankosoft/game-platform';
+import { BidTrump } from '@vankosoft/game-platform';
 import { AnnounceDto } from '@vankosoft/game-platform';
 import { AnnounceType } from '@vankosoft/game-platform';
 
@@ -115,7 +115,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
     playerAreaPadding: number = 10;
     playerAreaHeightAddition: number = 40;
     
-    bidTypes = [
+    bidTrumps = [
         'bridge-belote.bid-type.pass',
         'bridge-belote.bid-type.clubs',
         'bridge-belote.bid-type.diamonds',
@@ -609,7 +609,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         for ( let pa = 0; pa < this.playerAreas.length; pa++ ) {
             if ( this.playerBids.hasOwnProperty( pa ) ) {
                 //console.log( 'Player Bid', this.playerBids[pa] );
-                //alert( 'Bid Player: ' + pa + ' Bid Type: ' + this.playerBids[pa].Type );
+                //alert( 'Bid Player: ' + pa + ' Bid Type: ' + this.playerBids[pa].Trump );
                 this.drawPlayerBid( this.playerAreas[pa], this.playerBids[pa] );
             }
         }
@@ -953,7 +953,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         
         this.cx.textAlign = "center";
         this.cx.font = "bold 10pt Courier";
-        this.cx.fillText( this.translateService.instant( this.bidTypes[bid.Type] ), 0, 0 );
+        this.cx.fillText( this.translateService.instant( this.bidTrumps[bid.Trump] ), 0, 0 );
         
         this.cx.restore();
     }

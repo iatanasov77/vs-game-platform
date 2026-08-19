@@ -5,7 +5,7 @@ import { GetAnnounceSymbol } from '@vankosoft/game-platform';
 import { CardGameAnnounceSymbolModel } from '@vankosoft/game-platform';
 
 import { PlayerPosition } from '@vankosoft/game-platform';
-import { BidType } from '@vankosoft/game-platform';
+import { BidTrump } from '@vankosoft/game-platform';
 import { BidDto } from '@vankosoft/game-platform';
 
 import { AppStateService } from '../../../../state/app-state.service';
@@ -79,7 +79,7 @@ export class BridgeBeloteContractComponent implements OnChanges
         this.announceSymbols = [];
         var symbol;
         for ( var i = 0; i < this.validBids.length; i++ ) {
-            symbol = GetAnnounceSymbol( this.validBids[i].Type );
+            symbol = GetAnnounceSymbol( this.validBids[i].Trump );
             if ( symbol ) {
                 this.announceSymbols.push( symbol );
             }
@@ -129,23 +129,23 @@ export class BridgeBeloteContractComponent implements OnChanges
         }
         
         //console.log( 'Current Contract', this.contract );
-        switch ( this.contract.Type ) {
-            case BidType.Clubs:
+        switch ( this.contract.Trump ) {
+            case BidTrump.Clubs:
                 return '( <i class="fi fi-sr-club"></i> )';
                 break;
-            case BidType.Diamonds:
+            case BidTrump.Diamonds:
                 return '( <i class="fi fi-sr-card-diamond"></i> )';
                 break;
-            case BidType.Hearts:
+            case BidTrump.Hearts:
                 return '( <i class="fi fi-sr-heart"></i> )';
                 break;
-            case BidType.Spades:
+            case BidTrump.Spades:
                 return '( <i class="fi fi-sr-spade"></i> )';
                 break;
-            case BidType.NoTrumps:
+            case BidTrump.NoTrumps:
                 return '( a )';
                 break;
-            case BidType.AllTrumps:
+            case BidTrump.AllTrumps:
                 return '( j )';
                 break;
             default:
@@ -153,11 +153,11 @@ export class BridgeBeloteContractComponent implements OnChanges
         }
     }
     
-    makeBid( bidType: BidType )
+    makeBid( bidTrump: BidTrump )
     {
         let bid: BidDto = {
             Player: this.myPosition,
-            Type: bidType,
+            Trump: bidTrump,
             NextBids: []
         };
         

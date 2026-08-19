@@ -1,6 +1,6 @@
 <?php namespace App\Component\Type;
 
-interface BidTypeInterface
+interface BidTrumpInterface
 {
     public function color(): string;
     public function value(): int;

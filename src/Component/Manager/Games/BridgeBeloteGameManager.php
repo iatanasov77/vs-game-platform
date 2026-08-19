@@ -31,7 +31,7 @@ use App\Entity\TempPlayer;
 
 // Types
 use App\Component\Type\PlayerPosition;
-use App\Component\Type\BidType;
+use App\Component\Type\BidTrump;
 use App\Component\Type\AnnounceType;
 use App\Component\Type\GameState;
 use App\Component\Type\CardGameTeam;
@@ -315,7 +315,7 @@ class BridgeBeloteGameManager extends CardGameManager
     
     protected function DoBid( BidMadeActionDto $action ): void
     {
-        $bid = new Bid( $action->bid->Player, BidType::fromValue( $action->bid->Type ) );
+        $bid = new Bid( $action->bid->Player, BidTrump::fromValue( $action->bid->Trump ) );
         $bid->KontraPlayer = $action->bid->KontraPlayer;
         $bid->ReKontraPlayer = $action->bid->ReKontraPlayer;
         
@@ -332,7 +332,7 @@ class BridgeBeloteGameManager extends CardGameManager
         if ( $trickAction->Belote ) {
             $belote = $this->Game->IsBeloteAllowed(
                 $this->Game->playerCards[$this->Game->CurrentPlayer->value],
-                $this->Game->CurrentContract->Type,
+                $this->Game->CurrentContract->Trump,
                 $this->Game->GetTrickActions(),
                 $trickAction->Card
             );
@@ -407,7 +407,7 @@ class BridgeBeloteGameManager extends CardGameManager
         if ( $playCardAction->Belote ) {
             $belote = $this->Game->IsBeloteAllowed(
                 $this->Game->playerCards[$this->Game->CurrentPlayer->value],
-                $this->Game->CurrentContract->Type,
+                $this->Game->CurrentContract->Trump,
                 $this->Game->GetTrickActions(),
                 $playCardAction->Card
             );

@@ -9,7 +9,7 @@ use App\Component\GameLogger;
 use App\Component\GameVariant;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerPosition;
-use App\Component\Type\BidType;
+use App\Component\Type\BidTrump;
 
 use App\Component\Rules\CardGame\Context\PlayerGetBidContext;
 use App\Component\Rules\CardGame\Context\PlayerGetAnnouncesContext;
@@ -192,9 +192,9 @@ abstract class Game implements GameInterface
         }
     }
     
-    public function GetBid( PlayerGetBidContext $context ): BidType
+    public function GetBid( PlayerGetBidContext $context ): BidTrump
     {
-        return BidType::Pass;
+        return BidTrump::Pass;
     }
     
     public function GetAnnounces( PlayerGetAnnouncesContext $context ): Collection

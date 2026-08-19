@@ -6,7 +6,7 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use App\Component\Dto\BidDto;
 use App\Component\Type\PlayerPosition;
-use App\Component\Type\BidType;
+use App\Component\Type\BidTrump;
 
 /**
  * REFERENCES
@@ -23,7 +23,7 @@ class BidDtoDenormalizer implements DenormalizerInterface, DenormalizerAwareInte
         $dto            = new BidDto();
         
         $dto->Player    = PlayerPosition::from( $data['Player'] );
-        $dto->Type      = $data['Type']; // BidType::fromValue( $data['Type'] )
+        $dto->Trump      = $data['Trump']; // BidTrump::fromValue( $data['Type'] )
         $dto->NextBids  = new ArrayCollection( $data['NextBids'] );
         
         return $dto;

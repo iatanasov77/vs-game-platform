@@ -3,11 +3,11 @@
 use Doctrine\Common\Collections\Collection;
 use BitMask\EnumBitMask;
 
-use App\Component\Type\BidType;
+use App\Component\Type\BidTrump;
 use App\Component\Type\CardSuit;
 use App\Component\Rules\CardGame\Card;
 use App\Component\Rules\CardGame\Helper;
-use App\Component\Rules\CardGame\BidTypeExtensions;
+use App\Component\Rules\CardGame\BidTrumpExtensions;
 use App\Component\Manager\AbstractGameManager;
 
 class ValidCardsService
@@ -24,18 +24,18 @@ class ValidCardsService
         $firstCardSuit = $currentTrickActions[0]->Card->Suit;
         
         // Playing AllTrumps
-        if ( $contract->has( BidType::AllTrumps ) ) {
+        if ( $contract->has( BidTrump::AllTrumps ) ) {
             return $this->GetValidCardsForAllTrumps( $playerCards, $currentTrickActions, $firstCardSuit );
         }
         
         // Playing NoTrumps
-        if ( $contract->has( BidType::NoTrumps ) ) {
+        if ( $contract->has( BidTrump::NoTrumps ) ) {
             return $this->GetValidCardsForNoTrumps( $playerCards, $firstCardSuit );
         }
         
         // Playing Clubs, Diamonds, Hearts or Spades
-        $suit = BidType::fromBitMaskValue( $contract->get() );
-        $trumpSuit = BidTypeExtensions::ToCardSuit( $suit );
+        $suit = BidTrump::fromBitMaskValue( $contract->get() );
+        $trumpSuit = BidTrumpExtensions::ToCardSuit( $suit );
         if ( $firstCardSuit == $trumpSuit ) {
             // Trump card played first
             return $this->GetValidCardsForAllTrumps( $playerCards, $currentTrickActions, $firstCardSuit );

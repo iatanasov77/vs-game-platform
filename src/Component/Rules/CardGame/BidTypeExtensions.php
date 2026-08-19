@@ -1,27 +1,27 @@
 <?php namespace App\Component\Rules\CardGame;
 
-use App\Component\Type\BidType;
+use App\Component\Type\BidTrump;
 use App\Component\Type\CardSuit;
 
-class BidTypeExtensions
+class BidTrumpExtensions
 {
-    public static function ToCardSuit( BidType $bidType ): CardSuit
+    public static function ToCardSuit( BidTrump $bidType ): CardSuit
     {
         switch ( $bidType ) {
-            case BidType::Clubs:
+            case BidTrump::Clubs:
                 return CardSuit::Club;
                 break;
-            case BidType::Diamonds:
+            case BidTrump::Diamonds:
                 return CardSuit::Diamond;
                 break;
-            case BidType::Hearts:
+            case BidTrump::Hearts:
                 return CardSuit::Heart;
                 break;
-            case BidType::Spades:
+            case BidTrump::Spades:
                 return CardSuit::Spade;
                 break;
             default:
-                throw new \RuntimeException( 'BidTypeExtensions Error' );
+                throw new \RuntimeException( 'BidTrumpExtensions Error' );
         }
     }
 }

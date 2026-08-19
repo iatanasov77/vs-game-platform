@@ -48,7 +48,7 @@ import { CookieService } from 'ngx-cookie-service';
 
 // CardGame Interfaces
 import { PlayerPosition } from '@vankosoft/game-platform';
-import { BidType } from '@vankosoft/game-platform';
+import { BidTrump } from '@vankosoft/game-platform';
 import { UserDto } from '@vankosoft/game-platform';
 import { GameState } from '@vankosoft/game-platform';
 import { CardGameDto } from '@vankosoft/game-platform';

@@ -10,7 +10,7 @@ import { GameCookieDto } from '@vankosoft/game-platform';
 
 // CardGame Interfaces
 import { PlayerPosition } from '@vankosoft/game-platform';
-import { BidType } from '@vankosoft/game-platform';
+import { BidTrump } from '@vankosoft/game-platform';
 import { CardGameDto } from '@vankosoft/game-platform';
 import { BidDto } from '@vankosoft/game-platform';
 import { CardDto } from '@vankosoft/game-platform';

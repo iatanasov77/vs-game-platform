@@ -9,7 +9,7 @@ use App\Component\Rules\CardGame\Game;
 
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerPosition;
-use App\Component\Type\BidType;
+use App\Component\Type\BidTrump;
 use App\Component\Rules\CardGame\Context\PlayerGetAnnouncesContext;
 use App\Component\Rules\CardGame\Context\PlayerPlayCardContext;
 use App\Component\Rules\CardGame\Player;
@@ -56,7 +56,7 @@ class TricksManager
     {
         return $this->validCardsService->GetValidCards(
             $playerCards,
-            $currentContract->Type,
+            $currentContract->Trump,
             $trickActions
         );
     }

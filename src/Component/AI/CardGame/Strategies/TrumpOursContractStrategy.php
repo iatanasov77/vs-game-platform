@@ -5,19 +5,19 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\BridgeBeloteCardType as CardType;
-use App\Component\Type\BidType;
+use App\Component\Type\BidTrump;
 use App\Component\Rules\CardGame\Context\PlayerPlayCardContext;
 use App\Component\Rules\CardGame\PlayCardAction;
 use App\Component\Rules\CardGame\BridgeBeloteCard as Card;
-use App\Component\Rules\CardGame\BidTypeExtensions;
+use App\Component\Rules\CardGame\BidTrumpExtensions;
 use App\Component\Rules\CardGame\PlayerPositionExtensions;
 
 class TrumpOursContractStrategy implements IPlayStrategy
 {
     public function PlayFirst( PlayerPlayCardContext $context, Collection $playedCards ): PlayCardAction
     {
-        $suit = BidType::fromBitMaskValue( $context->CurrentContract->Type->get() );
-        $trumpSuit = BidTypeExtensions::ToCardSuit( $suit );
+        $suit = BidTrump::fromBitMaskValue( $context->CurrentContract->Trump->get() );
+        $trumpSuit = BidTrumpExtensions::ToCardSuit( $suit );
         $playedCardsFromTrump = $playedCards->filter(
             function( $entry ) use ( $trumpSuit ) {
                 return $entry->Suit == $trumpSuit;
@@ -121,8 +121,8 @@ class TrumpOursContractStrategy implements IPlayStrategy
     
     public function PlaySecond( PlayerPlayCardContext $context, Collection $playedCards ): PlayCardAction
     {
-        $suit = BidType::fromBitMaskValue( $context->CurrentContract->Type->get() );
-        $trumpSuit = BidTypeExtensions::ToCardSuit( $suit );
+        $suit = BidTrump::fromBitMaskValue( $context->CurrentContract->Trump->get() );
+        $trumpSuit = BidTrumpExtensions::ToCardSuit( $suit );
         $cardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
         $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {
             return $b->NoTrumpOrder <=> $a->NoTrumpOrder;
@@ -134,8 +134,8 @@ class TrumpOursContractStrategy implements IPlayStrategy
     
     public function PlayThird( PlayerPlayCardContext $context, Collection $playedCards, PlayerPosition $trickWinner ): PlayCardAction
     {
-        $suit = BidType::fromBitMaskValue( $context->CurrentContract->Type->get() );
-        $trumpSuit = BidTypeExtensions::ToCardSuit( $suit );
+        $suit = BidTrump::fromBitMaskValue( $context->CurrentContract->Trump->get() );
+        $trumpSuit = BidTrumpExtensions::ToCardSuit( $suit );
         $cardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
         $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {
             return $b->NoTrumpOrder <=> $a->NoTrumpOrder;
@@ -147,8 +147,8 @@ class TrumpOursContractStrategy implements IPlayStrategy
     
     public function PlayFourth( PlayerPlayCardContext $context, Collection $playedCards, PlayerPosition $trickWinner ): PlayCardAction
     {
-        $suit = BidType::fromBitMaskValue( $context->CurrentContract->Type->get() );
-        $trumpSuit = BidTypeExtensions::ToCardSuit( $suit );
+        $suit = BidTrump::fromBitMaskValue( $context->CurrentContract->Trump->get() );
+        $trumpSuit = BidTrumpExtensions::ToCardSuit( $suit );
         $cardsToPlay = $context->AvailableCardsToPlay->filter(
             function( $entry ) use ( $trumpSuit ) {
                 return $entry->Suit != $trumpSuit && $entry->Type != CardType::Ace;

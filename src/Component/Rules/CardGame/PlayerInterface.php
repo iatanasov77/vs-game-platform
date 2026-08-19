@@ -1,7 +1,7 @@
 <?php namespace App\Component\Rules\CardGame;
 
 use Doctrine\Common\Collections\Collection;
-use App\Component\Type\BidType;
+use App\Component\Type\BidTrump;
 use App\Component\Rules\CardGame\Context\PlayerGetBidContext;
 use App\Component\Rules\CardGame\Context\PlayerGetAnnouncesContext;
 use App\Component\Rules\CardGame\Context\PlayerPlayCardContext;
@@ -10,7 +10,7 @@ use App\Component\Rules\CardGame\BridgeBeloteGameMechanics\RoundResult;
 
 interface PlayerInterface
 {
-    public function GetBid( PlayerGetBidContext $context ): BidType;
+    public function GetBid( PlayerGetBidContext $context ): BidTrump;
     
     public function GetAnnounces( PlayerGetAnnouncesContext $context ): Collection;
     

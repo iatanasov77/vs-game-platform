@@ -12,38 +12,43 @@
     </div>
     
     <div class="bridge-auction-container">
-        
         <div class="text-center">
             <mat-button-toggle-group
-                group name="bidValue"
-                aria-label="Bid Value"
+                *ngIf="bidTrump"
+                #group="matButtonToggleGroup"
                 [hideSingleSelectionIndicator]="true"
+                [(value)]="bidValue"
+                (change)="onChangeBidValue()"
+                (click)="setBidValue( group )"
             >
-                <mat-button-toggle value="1" (change)="setBidValue( $event.value )">1</mat-button-toggle>
-                <mat-button-toggle value="2" (change)="setBidValue( $event.value )">2</mat-button-toggle>
-                <mat-button-toggle value="3" (change)="setBidValue( $event.value )">3</mat-button-toggle>
-                <mat-button-toggle value="4" (change)="setBidValue( $event.value )">4</mat-button-toggle>
-                <mat-button-toggle value="5" (change)="setBidValue( $event.value )">5</mat-button-toggle>
-                <mat-button-toggle value="6" (change)="setBidValue( $event.value )">6</mat-button-toggle>
-                <mat-button-toggle value="7" (change)="setBidValue( $event.value )">7</mat-button-toggle>
+                <mat-button-toggle value="1">1</mat-button-toggle>
+                <mat-button-toggle value="2">2</mat-button-toggle>
+                <mat-button-toggle value="3">3</mat-button-toggle>
+                <mat-button-toggle value="4">4</mat-button-toggle>
+                <mat-button-toggle value="5">5</mat-button-toggle>
+                <mat-button-toggle value="6">6</mat-button-toggle>
+                <mat-button-toggle value="7">7</mat-button-toggle>
             </mat-button-toggle-group>
         </div>
         
         <!-- Game HTML Entities: https://www.w3schools.com/charsets/ref_utf_cards.asp -->
         <div class="text-center">
             <mat-button-toggle-group
-                group name="bidTrump"
-                aria-label="Bid Trump"
+                #group="matButtonToggleGroup"
                 [hideSingleSelectionIndicator]="true"
+                [(value)]="bidTrump"
+                (change)="onChangeBidTrump()"
+                (click)="setBidTrump( group )"
             >
-                <mat-button-toggle value="c" (change)="setBidTrump( $event.value )">&#9827;</mat-button-toggle>
-                <mat-button-toggle value="d" (change)="setBidTrump( $event.value )">&#9830;</mat-button-toggle>
-                <mat-button-toggle value="h" (change)="setBidTrump( $event.value )">&#9829;</mat-button-toggle>
-                <mat-button-toggle value="s" (change)="setBidTrump( $event.value )">&#9824;</mat-button-toggle>
-                <mat-button-toggle value="ba" (change)="setBidTrump( $event.value )">BA</mat-button-toggle>
+                <mat-button-toggle value="c">&#9827;</mat-button-toggle>
+                <mat-button-toggle value="d">&#9830;</mat-button-toggle>
+                <mat-button-toggle value="h">&#9829;</mat-button-toggle>
+                <mat-button-toggle value="s">&#9824;</mat-button-toggle>
+                <mat-button-toggle value="ba">BA</mat-button-toggle>
             </mat-button-toggle-group>
         </div>
         
+        <!--  
         <table class="bridge-table mt-4">
             <thead>
                 <tr>
@@ -70,7 +75,7 @@
                 <tr><td></td><td></td><td></td><td></td></tr>
             </tbody>
         </table>
-        
+        -->
     </div>
 </div>
 
@@ -94,17 +99,8 @@
                     {{ 'contract-bridge-auction.recounter' | translate }}
                 </button>
                 
-                <button type="button" class="btn btn-outline-dark"
-                    (click)="makeBid()"
-                >
-                    {{ 'contract-bridge-auction.pass' | translate }}
-                </button>
-                
-                <button type="button" class="btn btn-outline-dark"
-                    (click)="makeBid()"
-                    [disabled]="!bidValue || !bidTrump"
-                >
-                    {{ 'contract-bridge-auction.bid' | translate }}
+                <button type="button" class="btn btn-outline-dark" (click)="makeBid()" >
+                    {{ bidTrump ? ( 'contract-bridge-auction.bid' | translate ) : ( 'contract-bridge-auction.pass' | translate ) }}
                 </button>
             </span>
         </div>

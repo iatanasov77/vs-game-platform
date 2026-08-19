@@ -40,11 +40,12 @@
                 (change)="onChangeBidTrump()"
                 (click)="setBidTrump( group )"
             >
-                <mat-button-toggle value="c">&#9827;</mat-button-toggle>
-                <mat-button-toggle value="d">&#9830;</mat-button-toggle>
-                <mat-button-toggle value="h">&#9829;</mat-button-toggle>
-                <mat-button-toggle value="s">&#9824;</mat-button-toggle>
-                <mat-button-toggle value="ba">BA</mat-button-toggle>
+                <mat-button-toggle
+                    *ngFor="let icon of announceSymbols"
+                    value="{{ icon.id }}"
+                >
+                    <span [innerHTML]="icon.htmlEntity"></span>
+                </mat-button-toggle>
             </mat-button-toggle-group>
         </div>
         

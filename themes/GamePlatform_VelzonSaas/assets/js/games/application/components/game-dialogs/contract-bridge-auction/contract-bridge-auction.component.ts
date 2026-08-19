@@ -9,6 +9,9 @@ import {
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { TranslateService } from '@ngx-translate/core';
 
+import { GetTrumps, GetAnnounceSymbol } from '@vankosoft/game-platform';
+import { CardGameAnnounceSymbolModel } from '@vankosoft/game-platform';
+
 import { BidTrump } from '@vankosoft/game-platform';
 import { ContractBridgeBidDto } from '@vankosoft/game-platform';
 import { PlayerPosition } from '@vankosoft/game-platform';
@@ -34,6 +37,9 @@ export class ContractBridgeAuctionComponent
 {
     @Output() closeModal: EventEmitter<any> = new EventEmitter();
     
+    announceSymbols: Array<CardGameAnnounceSymbolModel> = [];
+    validBids: ContractBridgeBidDto[] = [];
+    
     myPosition: PlayerPosition;
     lastBid: ContractBridgeBidDto | null = null;
     
@@ -49,11 +55,27 @@ export class ContractBridgeAuctionComponent
         @Inject( CardGameService ) private wsService: CardGameService,
     ) {
         this.myPosition = this.appStateService.myPosition.getValue();
+        this.getAnnounceSymbols();
     }
     
     dismissModal(): void
     {
         this.closeModal.emit();
+    }
+    
+    getAnnounceSymbols(): void
+    {
+        this.announceSymbols = GetTrumps();
+        return;
+        
+        this.announceSymbols = [];
+        var symbol;
+        for ( var i = 0; i < this.validBids.length; i++ ) {
+            symbol = GetAnnounceSymbol( this.validBids[i].Trump );
+            if ( symbol ) {
+                this.announceSymbols.push( symbol );
+            }
+        }
     }
     
     onChangeBidValue(): void

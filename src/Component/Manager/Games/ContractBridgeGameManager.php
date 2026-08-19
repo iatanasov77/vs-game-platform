@@ -321,6 +321,8 @@ class ContractBridgeGameManager extends CardGameManager
     
     protected function DoBid( BidMadeActionDto $action ): void
     {
+        $this->logger->log( 'Contract Bridge DoBid !!!', 'GameManager' );
+        
         $bid = new Bid( $action->bid->Player, BidTrump::fromValue( $action->bid->Trump ) );
         $bid->KontraPlayer = $action->bid->KontraPlayer;
         $bid->ReKontraPlayer = $action->bid->ReKontraPlayer;
@@ -416,7 +418,7 @@ class ContractBridgeGameManager extends CardGameManager
                 $this->Game->CurrentContract->Trump,
                 $this->Game->GetTrickActions(),
                 $playCardAction->Card
-                );
+            );
             
             if ( $belote ) {
                 $announce = new Announce( AnnounceType::Belot, $playCardAction->Card );
@@ -444,7 +446,7 @@ class ContractBridgeGameManager extends CardGameManager
                 $this->Game->playerCards[$nextPlayer->value],
                 $this->Game->CurrentContract,
                 $this->Game->GetTrickActions()
-                );
+            );
             
             $action = new OpponentPlayCardActionDto();
             $action->Card = Mapper::CardToDto( $playCardAction->Card, $this->Game->GameCode, $playCardAction->Player );

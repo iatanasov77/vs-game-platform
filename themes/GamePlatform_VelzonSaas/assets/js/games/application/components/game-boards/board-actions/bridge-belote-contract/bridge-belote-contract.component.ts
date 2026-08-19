@@ -32,14 +32,13 @@ export class BridgeBeloteContractComponent implements OnChanges
     
     @Output() onPlayerMakeBid = new EventEmitter<BidDto>();
     
-    announceSymbols: Array<CardGameAnnounceSymbolModel>;
+    announceSymbols: Array<CardGameAnnounceSymbolModel> = [];
     myPosition: PlayerPosition;
     
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,
         @Inject( AppStateService ) private appStateService: AppStateService,
     ) {
-        this.announceSymbols = [];
         this.myPosition = this.appStateService.myPosition.getValue();
     }
     

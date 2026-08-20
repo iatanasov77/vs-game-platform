@@ -76,7 +76,7 @@ class RoundManager
             // Deal 5 cards to each player
             $this->DealCards( 13 );
             
-            $this->garakGame = GarakGameFactory::CreateGame( $this->game );
+            $this->garakGame = GarakGameFactory::CreateGame( $this->game, $this->logger );
             //$this->contractManager->StartNewRound();
         }
         

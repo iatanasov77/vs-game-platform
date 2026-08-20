@@ -5,6 +5,7 @@ use Garak\Bridge\Hand;
 use Garak\Bridge\Side;
 use Garak\Bridge\Table;
 
+use App\Component\GameLogger;
 use App\Component\Type\PlayerPosition;
 use App\Component\Rules\CardGame\ContractBridgeGame;
 use App\Component\Type\ContractBridgeCardType;
@@ -12,8 +13,13 @@ use App\Component\Type\CardSuit;
 
 final class GarakGameFactory
 {
-    public static function CreateGame( ContractBridgeGame $vsGame ): GarakGame
+    public static function CreateGame( ContractBridgeGame $vsGame, GameLogger $logger ): GarakGame
     {
+        /*  
+        $debugCards = self::PlayerCardsString( $vsGame->playerCards[PlayerPosition::South->value] );
+        $logger->log( "Garak Cards String: {$debugCards}", 'GameManager' );
+        */
+        
         $north = Hand::createFromString( self::PlayerCardsString( $vsGame->playerCards[PlayerPosition::North->value] ) );
         $east  = Hand::createFromString( self::PlayerCardsString( $vsGame->playerCards[PlayerPosition::East->value] ) );
         $south = Hand::createFromString( self::PlayerCardsString( $vsGame->playerCards[PlayerPosition::South->value] ) );
@@ -35,7 +41,7 @@ final class GarakGameFactory
         $cards = [];
         foreach ( $playerCards as $card ) {
             switch( $card->Type ) {
-                case ContractBridgeCardType::Ace:
+                case ContractBridgeCardType::Ten:
                     $cardType = 'T';
                     break;
                 default:

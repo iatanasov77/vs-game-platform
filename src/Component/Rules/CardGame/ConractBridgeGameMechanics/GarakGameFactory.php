@@ -28,10 +28,10 @@ final class GarakGameFactory
         $table = new Table( $north, $east, $south, $west, false );
         $game  = new GarakGame( $table, self::GarakSide( $vsGame->firstInRound ) );
         
-        $game->join( new GarakPlayer( $vsGame->Players[PlayerPosition::North->value]->Name ), Side::North );
-        $game->join( new GarakPlayer( $vsGame->Players[PlayerPosition::East->value]->Name ), Side::East );
-        $game->join( new GarakPlayer( $vsGame->Players[PlayerPosition::South->value]->Name ), Side::South );
-        $game->join( new GarakPlayer( $vsGame->Players[PlayerPosition::West->value]->Name ), Side::West );
+        $game->join( new GarakPlayer( $vsGame->Players[PlayerPosition::North->value]->Name, $vsGame->Players[PlayerPosition::North->value]->Id ), Side::North );
+        $game->join( new GarakPlayer( $vsGame->Players[PlayerPosition::East->value]->Name, $vsGame->Players[PlayerPosition::North->value]->Id ), Side::East );
+        $game->join( new GarakPlayer( $vsGame->Players[PlayerPosition::South->value]->Name, $vsGame->Players[PlayerPosition::North->value]->Id ), Side::South );
+        $game->join( new GarakPlayer( $vsGame->Players[PlayerPosition::West->value]->Name, $vsGame->Players[PlayerPosition::North->value]->Id ), Side::West );
         
         return $game;
     }

@@ -4,12 +4,20 @@
 </div>
 
 <div class="modal-body">
-    
     <!-- Example Screenshot: https://github.com/PatrykkMar/Bridget/blob/main/Screenshots/1.png -->
+    
+    <!--  DEBUGGING
+    <div class="mt-2 mb-2">
+        <h5 class="mb-2">Valid Bids</h5>
+        <pre>{{ validBids | json }}</pre>
+    </div>
+    
+    
     <div class="text-center mb-2">
         <div>It's youe turn. Highest bid is 3D</div>
         <div>E countered</div>
     </div>
+    -->
     
     <div class="bridge-auction-container">
         <div class="text-center">
@@ -21,13 +29,13 @@
                 (change)="onChangeBidValue()"
                 (click)="setBidValue( group )"
             >
-                <mat-button-toggle value="1">1</mat-button-toggle>
-                <mat-button-toggle value="2">2</mat-button-toggle>
-                <mat-button-toggle value="3">3</mat-button-toggle>
-                <mat-button-toggle value="4">4</mat-button-toggle>
-                <mat-button-toggle value="5">5</mat-button-toggle>
-                <mat-button-toggle value="6">6</mat-button-toggle>
-                <mat-button-toggle value="7">7</mat-button-toggle>
+                <mat-button-toggle value="1" [disabled]="bidValueIsDisabled( 1 )">1</mat-button-toggle>
+                <mat-button-toggle value="2" [disabled]="bidValueIsDisabled( 2 )">2</mat-button-toggle>
+                <mat-button-toggle value="3" [disabled]="bidValueIsDisabled( 3 )">3</mat-button-toggle>
+                <mat-button-toggle value="4" [disabled]="bidValueIsDisabled( 4 )">4</mat-button-toggle>
+                <mat-button-toggle value="5" [disabled]="bidValueIsDisabled( 5 )">5</mat-button-toggle>
+                <mat-button-toggle value="6" [disabled]="bidValueIsDisabled( 6 )">6</mat-button-toggle>
+                <mat-button-toggle value="7" [disabled]="bidValueIsDisabled( 7 )">7</mat-button-toggle>
             </mat-button-toggle-group>
         </div>
         
@@ -43,6 +51,7 @@
                 <mat-button-toggle
                     *ngFor="let icon of announceSymbols"
                     value="{{ icon.id }}"
+                    [disabled]="bidTrumpIsDisabled( icon.id )"
                 >
                     <span [innerHTML]="icon.htmlEntity"></span>
                 </mat-button-toggle>

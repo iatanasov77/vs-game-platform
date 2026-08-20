@@ -51,8 +51,8 @@ class RoundManager
         $this->eventDispatcher  = $eventDispatcher;
         
         $this->contractManager = new ContractManager( $this->game, $this->logger );
-        /*  
         $this->tricksManager = new TricksManager( $this->game, $this->logger );
+        /*  
         $this->scoreManager = new ScoreManager( $this->game, $this->logger );
         */
         
@@ -122,16 +122,6 @@ class RoundManager
     public function GetValidCards( Collection $playerCards, Bid $currentContract, Collection $trickActions ): Collection
     {
         return $this->tricksManager->GetValidCards( $playerCards, $currentContract, $trickActions );
-    }
-    
-    public function GetAvailableAnnounces( Collection $playerCards ): Collection
-    {
-        return $this->tricksManager->GetAvailableAnnounces( $playerCards );
-    }
-    
-    public function IsBeloteAllowed( Collection $playerCards, EnumBitMask $contract, Collection $currentTrickActions, Card $playedCard ): bool
-    {
-        return $this->tricksManager->IsBeloteAllowed( $playerCards, $contract, $currentTrickActions, $playedCard );
     }
     
     public function GetTrickActionNumber(): int

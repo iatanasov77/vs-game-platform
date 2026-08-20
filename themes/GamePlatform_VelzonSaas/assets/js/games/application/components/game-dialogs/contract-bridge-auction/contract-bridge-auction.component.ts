@@ -38,13 +38,15 @@ export class ContractBridgeAuctionComponent
     @Output() closeModal: EventEmitter<any> = new EventEmitter();
     
     announceSymbols: Array<CardGameAnnounceSymbolModel> = [];
+    
     validBids: ContractBridgeBidDto[] = [];
+    contract: ContractBridgeBidDto | null = null;
     
     myPosition: PlayerPosition;
     lastBid: ContractBridgeBidDto | null = null;
     
     bidValueChanged: boolean = false;
-    bidValue: number | null = null;
+    bidValue: number = 1;
     
     bidTrumpChanged: boolean = false;
     bidTrump: BidTrump | null = null;
@@ -56,6 +58,8 @@ export class ContractBridgeAuctionComponent
     ) {
         this.myPosition = this.appStateService.myPosition.getValue();
         this.getAnnounceSymbols();
+        
+        this.validBids = this.appStateService.cardGame.getValue().validBids;
     }
     
     dismissModal(): void
@@ -78,6 +82,16 @@ export class ContractBridgeAuctionComponent
         }
     }
     
+    bidValueIsDisabled( value: number ): boolean
+    {
+        return false;
+    }
+    
+    bidTrumpIsDisabled( trump: BidTrump ): boolean
+    {
+        return ! this.validBids.some( b => b.Trump === trump );
+    }
+    
     onChangeBidValue(): void
     {
         this.bidValueChanged = true;
@@ -86,8 +100,8 @@ export class ContractBridgeAuctionComponent
     setBidValue( group: any ): void
     {
         if ( ! this.bidValueChanged ) {
-            group.value = null;
-            this.bidValue = null;
+            group.value = 1;
+            this.bidValue = 1;
             this.bidTrump = null;
         }
         this.bidValueChanged = false;
@@ -104,14 +118,10 @@ export class ContractBridgeAuctionComponent
         if ( ! this.bidTrumpChanged ) {
             group.value = null;
             this.bidTrump = null;
-            this.bidValue = null;
+            this.bidValue = 1;
         }
         this.bidTrumpChanged = false;
         // alert( this.bidTrump );
-        
-        if ( this.bidTrump && ! this.bidValue ) {
-            this.bidValue = 1;
-        }
     }
     
     makeBid(): void

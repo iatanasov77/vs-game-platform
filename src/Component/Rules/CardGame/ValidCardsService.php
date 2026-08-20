@@ -1,4 +1,4 @@
-<?php namespace App\Component\Rules\CardGame\BridgeBeloteGameMechanics;
+<?php namespace App\Component\Rules\CardGame;
 
 use Doctrine\Common\Collections\Collection;
 use BitMask\EnumBitMask;

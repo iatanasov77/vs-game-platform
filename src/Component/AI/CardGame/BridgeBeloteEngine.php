@@ -132,8 +132,7 @@ class BridgeBeloteEngine extends Engine
         
         $announcePoints = \array_reduce(
             $availableAnnounces->toArray(),
-            function( $carry, $item )
-            {
+            function( $carry, $item ) {
                 return $carry + $item->Value();
             }
         );

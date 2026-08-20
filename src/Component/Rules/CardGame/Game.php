@@ -185,7 +185,8 @@ abstract class Game implements GameInterface
     {
         switch ( $this->GameCode ) {
             case GameVariant::CONTRACT_BRIDGE_CODE:
-                return $this->contractBridgeRoundManager->GetAvailableAnnounces( $playerCards );
+                //return $this->contractBridgeRoundManager->GetAvailableAnnounces( $playerCards );
+                return new ArrayCollection();
                 break;
             default:
                 return $this->bridgeBeloteRoundManager->GetAvailableAnnounces( $playerCards );

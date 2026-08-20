@@ -5,16 +5,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 use App\Component\GameLogger;
-use App\Component\Type\GameState;
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\BidTrump;
 
 use App\Component\Rules\CardGame\Game;
-use App\Component\Rules\CardGame\Card;
-use App\Component\Rules\CardGame\Deck;
 use App\Component\Rules\CardGame\Bid;
-use App\Component\Rules\CardGame\PlayerPositionExtensions;
 use App\Component\Rules\CardGame\CardExtensions;
+use App\Component\Rules\CardGame\ValidAnnouncesService;
 
 class ScoreManager
 {

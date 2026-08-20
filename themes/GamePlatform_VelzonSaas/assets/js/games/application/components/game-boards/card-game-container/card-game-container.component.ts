@@ -597,8 +597,10 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
                 this.started = false;
                 this.playWithComputerVisible = false;
                 this.exitVisible = true;
-                
                 //this.debugButtonsVisible = true;
+                
+                alert( 'Play State: ' + dto.playState );
+                //alert( 'Game Contract: ' + dto.contract );
                 this.openContractBridgeAuctionDialog();
                 
                 break;

@@ -26,6 +26,9 @@ class RoundManager
     /** @var Game */
     private Game $game;
     
+    /** @var GarakGame */
+    private GarakGame $garakGame;
+    
     /** @var GameLogger */
     private  $logger;
     
@@ -47,8 +50,8 @@ class RoundManager
         $this->logger           = $logger;
         $this->eventDispatcher  = $eventDispatcher;
         
-        /*  
         $this->contractManager = new ContractManager( $this->game, $this->logger );
+        /*  
         $this->tricksManager = new TricksManager( $this->game, $this->logger );
         $this->scoreManager = new ScoreManager( $this->game, $this->logger );
         */
@@ -73,6 +76,7 @@ class RoundManager
             // Deal 5 cards to each player
             $this->DealCards( 13 );
             
+            $this->garakGame = GarakGameFactory::CreateGame( $this->game );
             //$this->contractManager->StartNewRound();
         }
         

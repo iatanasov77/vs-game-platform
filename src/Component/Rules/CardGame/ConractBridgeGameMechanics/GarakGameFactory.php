@@ -1,0 +1,85 @@
+<?php namespace App\Component\Rules\CardGame\ConractBridgeGameMechanics;
+
+use Doctrine\Common\Collections\Collection;
+use Garak\Bridge\Hand;
+use Garak\Bridge\Side;
+use Garak\Bridge\Table;
+
+use App\Component\Type\PlayerPosition;
+use App\Component\Rules\CardGame\ContractBridgeGame;
+use App\Component\Type\ContractBridgeCardType;
+use App\Component\Type\CardSuit;
+
+final class GarakGameFactory
+{
+    public static function CreateGame( ContractBridgeGame $vsGame ): GarakGame
+    {
+        $north = Hand::createFromString( self::PlayerCardsString( $vsGame->playerCards[PlayerPosition::North->value] ) );
+        $east  = Hand::createFromString( self::PlayerCardsString( $vsGame->playerCards[PlayerPosition::East->value] ) );
+        $south = Hand::createFromString( self::PlayerCardsString( $vsGame->playerCards[PlayerPosition::South->value] ) );
+        $west  = Hand::createFromString( self::PlayerCardsString( $vsGame->playerCards[PlayerPosition::West->value] ) );
+        
+        $table = new Table( $north, $east, $south, $west, false );
+        $game  = new GarakGame( $table, self::GarakSide( $vsGame->firstInRound ) );
+        
+        $game->join( new GarakPlayer( $vsGame->Players[PlayerPosition::North->value]->Name ), Side::North );
+        $game->join( new GarakPlayer( $vsGame->Players[PlayerPosition::East->value]->Name ), Side::East );
+        $game->join( new GarakPlayer( $vsGame->Players[PlayerPosition::South->value]->Name ), Side::South );
+        $game->join( new GarakPlayer( $vsGame->Players[PlayerPosition::West->value]->Name ), Side::West );
+        
+        return $game;
+    }
+    
+    private static function PlayerCardsString( Collection $playerCards ): string
+    {
+        $cards = [];
+        foreach ( $playerCards as $card ) {
+            switch( $card->Type ) {
+                case ContractBridgeCardType::Ace:
+                    $cardType = 'T';
+                    break;
+                default:
+                    $cardType = $card->Type->toString();
+            }
+            
+            switch( $card->Suit ) {
+                case CardSuit::Club:
+                    $cardSuit = 'c';
+                    break;
+                case CardSuit::Diamond:
+                    $cardSuit = 'd';
+                    break;
+                case CardSuit::Heart:
+                    $cardSuit = 'h';
+                    break;
+                case CardSuit::Spade:
+                    $cardSuit = 's';
+                    break;
+            }
+            
+            $cards[] = \sprintf( '%s%s', $cardType, $cardSuit );
+        }
+        
+        return \implode( ',', $cards );
+    }
+    
+    private static function GarakSide( PlayerPosition $position ): Side
+    {
+        switch ( $position ) {
+            case PlayerPosition::North:
+                return Side::North;
+                break;
+            case PlayerPosition::East:
+                return Side::East;
+                break;
+            case PlayerPosition::South:
+                return Side::South;
+                break;
+            case PlayerPosition::West:
+                return Side::West;
+                break;
+            default:
+                throw \Exception( 'Invalid Player Position !!!' );
+        }
+    }
+}

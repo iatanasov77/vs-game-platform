@@ -127,7 +127,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     bridgeBeloteAuction = false;
     contractBridgeAuction = false;
     
-    playWithComputerVisible = true;
+    playWithComputerVisible = false;
     newVisible = false;
     exitVisible = true;
     gameBiddingVisible = false;
@@ -623,6 +623,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         window.dispatchEvent( new Event( 'resize' ) );
         
         this.statusMessageService.setWaitingForConnect();
+        this.playWithComputerVisible = true;
         this.exitVisible = true;
     }
     

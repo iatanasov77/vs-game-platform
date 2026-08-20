@@ -543,7 +543,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         }
         
         const image = new Image( this.cardWidth, this.cardHeight );
-        image.src = "/build/gameplatform-velzonsaas-theme/images/CardGame/Cards/BridgeBelote/back.png";
+        image.src = "/build/gameplatform-velzonsaas-theme/images/Cards/BridgeBelote/back.png";
         
         var cardX = this.width / 2 - image.width / 2;
         var cardY = this.height / 2 - image.height / 2;
@@ -679,11 +679,11 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             var cardImagesPath, cardBack;
             switch ( this.game.gameCode ) {
                 case GameVariant.BRIDGE_BELOTE_CODE:
-                    cardImagesPath = '/build/gameplatform-velzonsaas-theme/images/CardGame/Cards/BridgeBelote';
+                    cardImagesPath = '/build/gameplatform-velzonsaas-theme/images/Cards/BridgeBelote';
                     cardBack = `${cardImagesPath}/back.png`;
                     break;
                 default:
-                    cardImagesPath = '/build/gameplatform-velzonsaas-theme/images/CardGame/Cards/ContractBridge';
+                    cardImagesPath = '/build/gameplatform-velzonsaas-theme/images/Cards/ContractBridge';
                     cardBack = `${cardImagesPath}/blue_back.png`;
             }
             
@@ -723,8 +723,10 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             return;
         }
         
+        let cardImagesPath = '/build/gameplatform-velzonsaas-theme/images/Cards/BridgeBelote';
         Pile.drawAsPile(
             this.cx,
+            cardImagesPath,
             this.pile,
             this.width,
             this.height,
@@ -1067,8 +1069,10 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             this.playerCards[PlayerPosition.west][0]
         ];
         
+        let cardImagesPath = '/build/gameplatform-velzonsaas-theme/images/Cards/BridgeBelote';
         Pile.drawAsPile(
             this.cx,
+            cardImagesPath,
             pile,
             this.width,
             this.height,

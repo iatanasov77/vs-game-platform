@@ -477,10 +477,13 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     
     gameChanged( dto: CardGameDto ): void
     {
-        if ( ! this.started && dto ) {
-            if ( dto.playState === GameState.bidding ) {
-                this.showBidding( dto );
-            }
+        if (
+            ! this.started &&
+            dto &&
+            dto.playState === GameState.bidding &&
+            dto.currentPlayer == this.appStateService.myPosition.getValue()
+        ) {
+            this.showBidding( dto );
         }
         
         if ( dto && dto.validBids && dto.validBids.length ) {
@@ -597,10 +600,9 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
                 this.started = false;
                 this.playWithComputerVisible = false;
                 this.exitVisible = true;
-                //this.debugButtonsVisible = true;
                 
+                //this.debugButtonsVisible = true;
                 alert( 'Play State: ' + dto.playState );
-                //alert( 'Game Contract: ' + dto.contract );
                 this.openContractBridgeAuctionDialog();
                 
                 break;

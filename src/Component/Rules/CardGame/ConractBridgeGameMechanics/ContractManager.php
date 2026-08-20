@@ -90,10 +90,6 @@ class ContractManager
             $availableBids->set( BidTrump::NoTrumps->value(), new Bid( $currentPlayer, BidTrump::NoTrumps ) );
         }
         
-        if ( $cleanContract->get() < BidTrump::AllTrumps->bitMaskValue() ) {
-            $availableBids->set( BidTrump::AllTrumps->value(), new Bid( $currentPlayer, BidTrump::AllTrumps ) );
-        }
-        
         if (
             $currentContract &&
             ! PlayerPositionExtensions::IsInSameTeamWith( $currentPlayer, $currentContract->Player ) &&

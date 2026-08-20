@@ -47,6 +47,7 @@ import { GameCookieDto } from '@vankosoft/game-platform';
 import { CookieService } from 'ngx-cookie-service';
 
 // CardGame Interfaces
+import { GameVariant } from '@vankosoft/game-platform';
 import { PlayerPosition } from '@vankosoft/game-platform';
 import { BidTrump } from '@vankosoft/game-platform';
 import { UserDto } from '@vankosoft/game-platform';
@@ -478,20 +479,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     {
         if ( ! this.started && dto ) {
             if ( dto.playState === GameState.bidding ) {
-                if ( dto.validBids.length ) {
-                    this.started = true;
-                    this.gameBiddingVisible = true;
-                
-                    this.playAiQuestion = false;
-                    this.lobbyButtonsVisibleChanged.emit( false );
-                    this.isStarted.emit( true );
-                } else {
-                    this.started = false;
-                    this.playWithComputerVisible = false;
-                    
-                    this.debugButtonsVisible = true;
-                    this.exitVisible = true;
-                }
+                this.showBidding( dto );
             }
         }
         
@@ -587,6 +575,36 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         setTimeout( () => {
             this.onResize();
         }, 1);
+    }
+    
+    showBidding( dto: CardGameDto ): void
+    {
+        // alert( 'Game Code: ' + dto.gameCode );
+        // alert( 'Valid Bids Length: ' + dto.validBids.length );
+        if ( ! dto.validBids.length ) {
+            return;
+        }
+        
+        switch( dto.gameCode ) {
+            case GameVariant.BRIDGE_BELOTE_CODE:
+                this.started = true;
+                this.gameBiddingVisible = true;
+            
+                this.playAiQuestion = false;
+                this.lobbyButtonsVisibleChanged.emit( false );
+                this.isStarted.emit( true );
+                
+                break;
+            case GameVariant.CONTRACT_BRIDGE_CODE:
+                this.started = false;
+                this.playWithComputerVisible = false;
+                this.exitVisible = true;
+                
+                //this.debugButtonsVisible = true;
+                this.openContractBridgeAuctionDialog();
+                
+                break;
+        }
     }
     
     playGame( gameId: string ): void

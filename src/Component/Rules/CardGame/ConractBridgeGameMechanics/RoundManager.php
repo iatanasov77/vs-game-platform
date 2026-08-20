@@ -77,7 +77,7 @@ class RoundManager
             $this->DealCards( 13 );
             
             $this->garakGame = GarakGameFactory::CreateGame( $this->game, $this->logger );
-            //$this->contractManager->StartNewRound();
+            $this->contractManager->StartNewRound();
         }
         
         if ( $this->game->PlayState == GameState::bidding ) {

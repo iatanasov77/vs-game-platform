@@ -579,8 +579,6 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     
     showBidding( dto: CardGameDto ): void
     {
-        // alert( 'Game Code: ' + dto.gameCode );
-        // alert( 'Valid Bids Length: ' + dto.validBids.length );
         if ( ! dto.validBids.length ) {
             return;
         }

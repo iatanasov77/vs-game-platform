@@ -231,6 +231,7 @@ abstract class CardGameManager extends AbstractGameManager
 //             $this->Resign( $winner );
         } else if ( $actionName == ActionNames::exitGame ) {
             $this->logger->log( 'exitGame action recieved from GameManager.', 'GameManager' );
+            $this->Game->CurrentContract = null;
             $this->CloseConnections( $socket );
         }
     }

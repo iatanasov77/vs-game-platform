@@ -389,6 +389,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         
         this.gamePlayService.exitCardGame();
         this.playAiQuestion = false;
+        this.gameBiddingVisible = false;
         this.gameContractVisible = false;
         
         this.lobbyButtonsVisibleChanged.emit( true );

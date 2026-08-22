@@ -1,3 +1,18 @@
+1.1.2	|	Release date: **22.08.2026**
+============================================
+* New Features:
+  - Some Fixes on Update Composer Requirements.
+  - Add an Abstract Library for building and managing Contract Bridge Games.
+  - Improve CardGameBoard about games diferrent of Brifge Belote.
+  - Create Contract Bridge Auction Dialog.
+  - Some Changes on BidDto Interface.
+  - Improve Contract Bridge Auction Dialog.
+  - Create GarakGame for Contract Bridge Card Game.
+  - On Card Game Bidding Open Contract Bridge Auction Dialog Authomaticaly.
+  - Some Refactoring.
+  - More Refactoring.
+
+
 1.1.1	|	Release date: **16.08.2026**
 ============================================
 * New Features:

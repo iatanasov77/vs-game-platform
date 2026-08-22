@@ -79,7 +79,7 @@ class RoundManager
                 $this->logger->log( '4 Consecutive Passes !!!', 'RoundManager' );
                 
                 $this->game->PlayState = GameState::roundEnded;
-                /*  
+                /*  Implemented In Game Manager Event is Not Needed
                 $this->eventDispatcher->dispatch( new CardGameRoundEndedEvent( $this->game ), CardGameRoundEndedEvent::NAME );
                 */
             }

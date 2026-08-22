@@ -157,7 +157,7 @@ class ContractBridgeGameManager extends CardGameManager
         
         // Check/Set Trick Winner
         if ( ! $this->ContinuePlay() ) {
-            return;
+            //return;
         }
         
         // Engine Bidding or Playing
@@ -212,6 +212,14 @@ class ContractBridgeGameManager extends CardGameManager
                 })();
                 Async\await( $promise );
             }
+        }
+        
+        if ( $this->Game->PlayState == GameState::firstRound ) {
+            $this->StartGamePlay();
+        }
+        
+        if ( $this->Game->PlayState == GameState::roundEnded ) {
+            $this->EndRound();
         }
         
         return true;

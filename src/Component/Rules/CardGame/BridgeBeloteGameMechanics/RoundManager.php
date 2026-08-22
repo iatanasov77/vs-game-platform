@@ -76,10 +76,12 @@ class RoundManager
         
         if ( $this->game->PlayState == GameState::bidding ) {
             if ( $this->game->ConsecutivePasses == 4 ) {
-                $this->logger->log( 'Consecutive Passes Exceeded !!!', 'RoundManager' );
+                $this->logger->log( '4 Consecutive Passes !!!', 'RoundManager' );
                 
                 $this->game->PlayState = GameState::roundEnded;
+                /*  
                 $this->eventDispatcher->dispatch( new CardGameRoundEndedEvent( $this->game ), CardGameRoundEndedEvent::NAME );
+                */
             }
             
             //$this->logger->log( 'CurrentContract: ' . \print_r( $this->game->CurrentContract, true ), 'RoundManager' );
@@ -92,7 +94,7 @@ class RoundManager
             }
             
             if ( $this->game->CurrentPlayer == $lastBidPlayer && $this->game->ConsecutivePasses == 3 ) {
-                $this->logger->log( 'Consecutive Passes Exceeded !!!', 'RoundManager' );
+                $this->logger->log( '3 Consecutive Passes !!!', 'RoundManager' );
                 
                 $this->game->PlayState = GameState::firstRound;
                 $this->DealCards( 3 );

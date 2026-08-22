@@ -277,6 +277,8 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     
     ngOnChanges( changes: SimpleChanges ): void
     {
+        // alert( 'CardGameContainerComponent Changes !!!' );
+        
         for ( const propName in changes ) {
             const changedProp = changes[propName];
             
@@ -331,6 +333,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     
     doBid( bid: BidDto ): void
     {
+        //alert( 'Make a BID !!!' );
         this.wsService.doBid( bid );
         this.wsService.sendBid( bid );
     }
@@ -445,11 +448,8 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         this.playAiQuestion = false;
         this.wsService.exitGame();
         
-        var myConnection = this.appStateService.myConnection.getValue();
-        if (  myConnection ) {
-            while (  myConnection.connected ) {
-                await Helper.delay( 500 );
-            }
+        while ( this.appStateService.myConnection.getValue().connected ) {
+            await Helper.delay( 500 );
         }
         
         this.isPlayAi.emit( true );
@@ -586,9 +586,11 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
             return;
         }
         
+        //this.started = true; // Needed to Show Contract
+        
         switch( dto.gameCode ) {
             case GameVariant.BRIDGE_BELOTE_CODE:
-                this.started = true;
+                this.playWithComputerVisible = false;
                 this.gameBiddingVisible = true;
             
                 this.playAiQuestion = false;
@@ -597,9 +599,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
                 
                 break;
             case GameVariant.CONTRACT_BRIDGE_CODE:
-                this.started = false;
                 this.playWithComputerVisible = false;
-                this.exitVisible = true;
                 
                 //this.debugButtonsVisible = true;
                 alert( 'Play State: ' + dto.playState );

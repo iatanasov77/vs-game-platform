@@ -5,9 +5,9 @@ use App\Component\Type\CardSuit;
 
 class BidTrumpExtensions
 {
-    public static function ToCardSuit( BidTrump $bidType ): CardSuit
+    public static function ToCardSuit( BidTrump $bidTrump ): CardSuit
     {
-        switch ( $bidType ) {
+        switch ( $bidTrump ) {
             case BidTrump::Clubs:
                 return CardSuit::Club;
                 break;

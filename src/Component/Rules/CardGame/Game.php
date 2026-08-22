@@ -192,7 +192,7 @@ abstract class Game implements GameInterface
                 return $this->bridgeBeloteRoundManager->GetAvailableAnnounces( $playerCards );
         }
     }
-    
+     
     public function GetBid( PlayerGetBidContext $context ): BidTrump
     {
         return BidTrump::Pass;

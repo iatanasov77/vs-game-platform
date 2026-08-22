@@ -10,6 +10,8 @@ class BidDto
     public ?PlayerPosition $KontraPlayer = NULL;
     public ?PlayerPosition $ReKontraPlayer = NULL;
     
+    public int $Value;
     public int $Trump; // BidTrump
+    
     public Collection $NextBids; // BidDto[]
 }

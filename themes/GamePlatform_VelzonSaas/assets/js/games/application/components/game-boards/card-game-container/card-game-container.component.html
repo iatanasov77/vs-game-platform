@@ -27,7 +27,7 @@
     ></card-game-board>
     
     <div id="card-actions" class="card-actions">
-        <app-board-buttons *ngIf="started != true"
+        <app-board-buttons
             [isLoggedIn]="isLoggedIn"
             [lobbyButtonsVisible]="lobbyButtonsVisible"
             
@@ -55,7 +55,7 @@
             (onCancelInvite)="cancelInvite()"
         ></app-board-buttons>
         
-        <bridge-belote-contract *ngIf="started == true"
+        <bridge-belote-contract
             [gameContractVisible]="gameContractVisible"
             [gameBiddingVisible] = "gameBiddingVisible"
             [validBids] = "validBids"

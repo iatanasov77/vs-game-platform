@@ -1,5 +1,5 @@
 <div>
-    <div *ngIf="gameBiddingVisible && currentPlayer == myPosition">
+    <div *ngIf="gameBiddingVisible">
         <ng-container *ngFor="let icon of announceSymbols">
             <a href="javascript:void(0);" style="text-decoration: none;"
                 id="{{ icon.key }}"

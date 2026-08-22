@@ -155,6 +155,8 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
     
     ngOnChanges( changes: SimpleChanges ): void
     {
+        //alert( JSON.stringify( changes ) );
+        
         if (
             changes['width'] ||
             changes['height']
@@ -472,7 +474,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         const cx = this.cx;
         this.drawBoard( cx );
         
-        // console.log( this.game );
+        // console.log( 'Draw CardGame Board', this.game );
         if ( this.game &&
             this.game.playState !== GameState.ended &&
             ! this.lobbyButtonsVisible

@@ -10,6 +10,7 @@ class Bid
     public ?PlayerPosition $KontraPlayer = NULL;
     public ?PlayerPosition $ReKontraPlayer = NULL;
     
+    public int $Value = 0;
     public EnumBitMask $Trump;
     
     public function __construct( PlayerPosition $player, BidTrump $type )

@@ -269,6 +269,7 @@ final class Mapper
         $bidDto->KontraPlayer = $bid->KontraPlayer;
         $bidDto->ReKontraPlayer = $bid->ReKontraPlayer;
         
+        $bidDto->Value = $bid->Value;
         $bidDto->Trump = BidTrump::fromBitMaskValue( $bid->Trump->get() )->value();
         
         return $bidDto;

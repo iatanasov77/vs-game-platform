@@ -273,7 +273,7 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
          */
         this.actions$.pipe( ofType( selectGameRoomSuccess ) ).subscribe( () => {
             this.newVisible = false;
-            this.exitVisible = false;
+            this.exitVisible = true;
             
             let gameCookie  = this.cookieService.get( Keys.gameIdKey );
             //alert( gameCookie );
@@ -431,9 +431,11 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
         this.diceColor = dto?.currentPlayer;
         this.fireResize();
         this.newVisible = dto?.playState === GameState.ended;
+        /*  
         this.exitVisible =
             dto?.playState !== GameState.playing &&
             dto?.playState !== GameState.requestedDoubling;
+        */
         this.nextDoublingFactor = dto?.goldMultiplier * 2;
         
         this.animateStake( dto );
@@ -501,7 +503,7 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
         this.fireResize();
         
         const game = this.appStateService.boardGame.getValue();
-        this.exitVisible = game?.playState !== GameState.playing && game?.playState !== GameState.requestedDoubling;
+        //this.exitVisible = game?.playState !== GameState.playing && game?.playState !== GameState.requestedDoubling;
     }
     
     moveAnimFinished(): void

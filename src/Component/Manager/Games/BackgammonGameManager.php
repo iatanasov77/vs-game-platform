@@ -15,7 +15,6 @@ use App\Component\Manager\BoardGameManager;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Rules\BoardGame\Game;
 use App\Component\AI\EngineFactory as AiEngineFactory;
-use App\Component\Websocket\WebSocketState;
 use App\Entity\GamePlayer;
 
 // Types
@@ -27,7 +26,6 @@ use App\Component\Dto\Mapper;
 use App\Component\Dto\Actions\ActionNames;
 use App\Component\Dto\Actions\ActionDto;
 use App\Component\Dto\Actions\ConnectionInfoActionDto;
-use App\Component\Dto\Actions\GameRestoreActionDto;
 use App\Component\Dto\Actions\GameCreatedActionDto;
 use App\Component\Dto\Actions\GameEndedActionDto;
 use App\Component\Dto\Actions\DicesRolledActionDto;
@@ -88,38 +86,6 @@ final class BackgammonGameManager extends BoardGameManager
             $this->StartGame();
             
             //$this->dispatchGameEnded();
-        }
-    }
-    
-    public function Restore( int $playerPositionId, WebsocketClientInterface $socket ): void
-    {
-        $color = PlayerColor::from( $playerPositionId );
-        
-        $gameDto = Mapper::BoardGameToDto( $this->Game );
-        $restoreAction = new GameRestoreActionDto();
-        $restoreAction->game = $gameDto;
-        $restoreAction->color = $color;
-        $restoreAction->dices = $this->Game->Roll->map(
-            function( $entry ) {
-                return Mapper::DiceToDto( $entry );
-            }
-        )->toArray();
-        
-        if ( $color == PlayerColor::Black ) {
-            $this->Clients->set( PlayerColor::Black->value, $socket );
-            $otherSocket = $this->Clients->get( PlayerColor::White->value );
-        } else {
-            $this->Clients->set( PlayerColor::White->value, $socket );
-            $otherSocket = $this->Clients->get( PlayerColor::Black->value );
-        }
-        
-        $this->Send( $socket, $restoreAction );
-        //Also send the state to the other client in case it has made moves.
-        if ( $otherSocket != null && $otherSocket->State == WebSocketState::Open ) {
-            $restoreAction->color = $color == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
-            $this->Send( $otherSocket, $restoreAction );
-        } else {
-            $this->logger->log( "Failed to send restore to other client", 'GameManager' );
         }
     }
     

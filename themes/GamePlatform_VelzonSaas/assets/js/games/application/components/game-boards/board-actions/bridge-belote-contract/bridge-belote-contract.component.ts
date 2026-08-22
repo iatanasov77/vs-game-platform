@@ -45,14 +45,24 @@ export class BridgeBeloteContractComponent implements OnChanges
     ngOnChanges( changes: SimpleChanges )
     {
         //console.log( 'BridgeBeloteAnnounceComponent Changes', changes );
+        //alert( 'BridgeBeloteContractComponent Changes !!!' );
+        
         for ( const propName in changes ) {
             const changedProp = changes[propName];
             
             switch ( propName ) {
                 case 'gameContractVisible':
+                    //alert( 'Game ContractVisible: ' + changedProp.currentValue );
                     this.gameContractVisible = changedProp.currentValue;
                     break;
                 case 'gameBiddingVisible':
+                    /*  
+                    alert(`
+                        Game BiddingVisible: ${changedProp.currentValue}\n
+                        Current Player: ${this.currentPlayer}\n
+                        My Position: ${this.myPosition}
+                    `);
+                    */
                     this.gameBiddingVisible = changedProp.currentValue;
                     break;
                 case 'validBids':
@@ -62,6 +72,7 @@ export class BridgeBeloteContractComponent implements OnChanges
                     //alert( 'Valid Bids: ' + this.validBids.length );
                     break;
                 case 'contract':
+                    //alert( 'Game Contract: ' + changedProp.currentValue );
                     this.contract = changedProp.currentValue;
                     //alert( 'Valid Bids: ' + this.validBids.length );
                     //console.log( 'Cuurent Contract', this.contract );
@@ -154,6 +165,11 @@ export class BridgeBeloteContractComponent implements OnChanges
     
     makeBid( bidTrump: BidTrump )
     {
+        if ( this.myPosition < PlayerPosition.south && this.myPosition > PlayerPosition.west ) {
+            alert( 'Wrong Player Position !!!' );
+            return;
+        }
+        
         let bid: BidDto = {
             Player: this.myPosition,
             Trump: bidTrump,

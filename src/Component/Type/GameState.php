@@ -17,7 +17,7 @@ enum GameState: int
     // Card Games States
     case firstBid               = 6;
     case bidding                = 7;
-    case firstRound             = 8;
+    case firstRound             = 8; // I dont know this state is needed
     case roundEnded             = 9;
 }
     

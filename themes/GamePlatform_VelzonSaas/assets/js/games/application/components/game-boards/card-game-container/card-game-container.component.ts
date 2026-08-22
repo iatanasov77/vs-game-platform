@@ -375,6 +375,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     
     newRound(): void
     {
+        this.newRoundVisible = false;
         this.gameContractVisible = false;
         this.gameBiddingVisible = true;
         this.wsService.startNewRound();
@@ -388,6 +389,8 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         
         this.gamePlayService.exitCardGame();
         this.playAiQuestion = false;
+        this.gameContractVisible = false;
+        
         this.lobbyButtonsVisibleChanged.emit( true );
         this.isStarted.emit( false );
         this.isPlayAi.emit( false );
@@ -602,7 +605,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
                 this.playWithComputerVisible = false;
                 
                 //this.debugButtonsVisible = true;
-                alert( 'Play State: ' + dto.playState );
+                // alert( 'Play State: ' + dto.playState );
                 this.openContractBridgeAuctionDialog();
                 
                 break;

@@ -320,8 +320,8 @@ export class CardGameService extends AbstractGameService
                 break;
             }
             case ActionNames.gameRestore: {
-                alert( `WebSocket Action Game Restore: ${message.data}` );
-                //console.log( 'WebSocket Action Game Restore', action.actionName );
+                // alert( `WebSocket Action Game Restore: ${message.data}` );
+                // console.log( 'WebSocket Action Game Restore', action.actionName );
                 
                 const dto = JSON.parse( message.data ) as CardGameRestoreActionDto;
                 //console.log( 'WebSocket Action Game Restore', dto );
@@ -367,7 +367,7 @@ export class CardGameService extends AbstractGameService
     
     sendBid( bid: BidDto ): void
     {
-        //console.log( 'Player Send Bid', bid );
+        // console.log( 'Player Send Bid', bid );
         const game = this.appState.cardGame.getValue();
         alert( game.currentPlayer );
         

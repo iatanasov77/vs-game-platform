@@ -10,7 +10,7 @@ import { GameCookieDto } from '@vankosoft/game-platform';
 
 // CardGame Interfaces
 import { PlayerPosition } from '@vankosoft/game-platform';
-import { BidType } from '@vankosoft/game-platform';
+import { BidTrump } from '@vankosoft/game-platform';
 import { CardGameDto } from '@vankosoft/game-platform';
 import { BidDto } from '@vankosoft/game-platform';
 import { CardDto } from '@vankosoft/game-platform';
@@ -121,7 +121,8 @@ export class CardGameService extends AbstractGameService
         //console.log( 'Game in State', game );
         switch ( action.actionName ) {
             case ActionNames.gameCreated: {
-                //console.log( 'WebSocket Action Game Created', action.actionName );
+                // alert( `WebSocket Action Game Created: ${message.data}` );
+                // console.log( 'WebSocket Action Game Created', action.actionName );
                 
                 const dto = JSON.parse( message.data ) as CardGameCreatedActionDto;
                 //console.log( 'WebSocket Action Game Created', dto.game );
@@ -150,6 +151,7 @@ export class CardGameService extends AbstractGameService
             case ActionNames.biddingStarted: {
                 const biddingStartedAction = JSON.parse( message.data ) as BiddingStartedActionDto;
                 //console.log( 'Bidding Started Action' + new Date().toLocaleTimeString(), biddingStartedAction );
+                //alert( 'Bidding Started !!!' );
                 
                 this.appState.playerCards.setValue( biddingStartedAction.playerCards );
                 const cGame = {
@@ -169,14 +171,14 @@ export class CardGameService extends AbstractGameService
                 break;
             }
             case ActionNames.bidMade: {
-                //console.log( 'WebSocket Action Bid Made', action.actionName );
+                console.log( 'WebSocket Action Bid Made', action );
                 
                 // This action is only sent to server.
                 break;
             }
             case ActionNames.opponentBids: {
                 const action = JSON.parse( message.data ) as OpponentBidsActionDto;
-                //console.log( 'WebSocket Action Opponent Bids', action );
+                console.log( 'WebSocket Action Opponent Bids', action );
                 
                 this.doBid( action.bid );
                 
@@ -193,7 +195,7 @@ export class CardGameService extends AbstractGameService
             }
             case ActionNames.playingStarted: {
                 const playingStartedAction = JSON.parse( message.data ) as PlayingStartedActionDto;
-                console.log( 'Playing Started Action' + new Date().toLocaleTimeString(), playingStartedAction );
+                console.log( 'Playing Started Action', playingStartedAction );
                 
                 this.appState.playerCards.setValue( playingStartedAction.playerCards );
                 this.appState.playerAnnounces.setValue( playingStartedAction.playerAnnounces );
@@ -318,6 +320,7 @@ export class CardGameService extends AbstractGameService
                 break;
             }
             case ActionNames.gameRestore: {
+                alert( `WebSocket Action Game Restore: ${message.data}` );
                 //console.log( 'WebSocket Action Game Restore', action.actionName );
                 
                 const dto = JSON.parse( message.data ) as CardGameRestoreActionDto;
@@ -366,6 +369,7 @@ export class CardGameService extends AbstractGameService
     {
         //console.log( 'Player Send Bid', bid );
         const game = this.appState.cardGame.getValue();
+        alert( game.currentPlayer );
         
         const myBidAction: BidMadeActionDto = {
             actionName: ActionNames.bidMade,

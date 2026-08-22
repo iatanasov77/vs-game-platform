@@ -1,5 +1,4 @@
 <div class="bridge-belote-container" id="GameBoardContainer">
-    
     <div class="messages" #messages>
         <app-messages
             [initial]="width"
@@ -28,20 +27,24 @@
     ></card-game-board>
     
     <div id="card-actions" class="card-actions">
-        <app-board-buttons *ngIf="started != true"
+        <app-board-buttons
             [isLoggedIn]="isLoggedIn"
             [lobbyButtonsVisible]="lobbyButtonsVisible"
             
             [newVisible]="newVisible"
             [exitVisible]="exitVisible"
             [newRoundVisible]="newRoundVisible"
+            [playWithComputerVisible]="playWithComputerVisible"
             
+            [debugButtonsVisible]="debugButtonsVisible"
             [debugGameSoundsVisible]="debugGameSoundsVisible"
             
             (onLogin)="login()"
             (onNew)="newGame()"
             (onNewRound)="newRound()"
             (onExit)="exitGame()"
+            
+            (onOpenContractBridgeAuctionDialog)="openContractBridgeAuctionDialog()"
             (onOpenDebugGameSoundsDialog)="openDebugGameSoundsDialog()"
             
             (onPlayWithComputer)="playAi()"
@@ -52,7 +55,7 @@
             (onCancelInvite)="cancelInvite()"
         ></app-board-buttons>
         
-        <bridge-belote-contract *ngIf="started == true"
+        <bridge-belote-contract
             [gameContractVisible]="gameContractVisible"
             [gameBiddingVisible] = "gameBiddingVisible"
             [validBids] = "validBids"
@@ -61,5 +64,4 @@
             (onPlayerMakeBid)="doBid( $event )"
         ></bridge-belote-contract>
     </div>
-    
 </div>

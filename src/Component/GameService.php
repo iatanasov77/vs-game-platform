@@ -310,9 +310,6 @@ final class GameService
     private function TryReConnect( WebsocketClientInterface $webSocket, ?string $gameCookie, ?GamePlayer $dbUser, string $gameCode ): ?string
     {
         $this->logger->log( 'Try Reconnect with cookie: '. $gameCookie, 'GameService' );
-        if ( $gameCode == 'bridge-belote' ) {
-            return null;
-        }
         
         // Find existing game to reconnect to.
         if ( $gameCookie ) {
@@ -322,7 +319,7 @@ final class GameService
                 $this->logger->log( 'Try Reconnect: Cookie Parsed', 'GameService' );
                 
                 //$json = $this->serializer->serialize( $this->AllGames, JsonEncoder::FORMAT );
-                //$this->logger->log( "ReConnect GmeManagers: {$json}", 'GameService' );
+                //$this->logger->log( "ReConnect GameManagers: {$json}", 'GameService' );
                 
                 $gameManager = $this->AllGames->filter(
                     function( $entry ) use ( $cookie ) {
@@ -331,7 +328,7 @@ final class GameService
                 )->first();
                 
                 $json = $this->serializer->serialize( $gameManager, JsonEncoder::FORMAT );
-                $this->logger->log( "Found ReConnect GmeManager: {$json}", 'GameService' );
+                $this->logger->log( "Found ReConnect GameManager: {$json}", 'GameService' );
                 
                 switch ( $cookie->game ) {
                     case GameVariant::BACKGAMMON_CODE:
@@ -362,7 +359,13 @@ final class GameService
                     case GameVariant::CONTRACT_BRIDGE_CODE:
                         $position = $cookie->position;
                         if ( $gameManager && self::MyPosition( $gameManager, $dbUser, $position ) ) {
-                            $gameManager->RestoreCardGame( $position, $webSocket );
+                            
+                            $this->logger->log( "Restoring game {$cookie->id} for {$position->value}", 'GameService' );
+                            
+                            // entering socket loop
+                            $gameManager->Restore( $position->value, $webSocket );
+                            
+                            return $cookie->id;
                         }
                         break;
                 }
@@ -471,6 +474,7 @@ final class GameService
     {
         //prevents someone with same game id, get someone elses side in the game.
         $player = $manager->Game->BlackPlayer;
+        
         if ( $color == PlayerColor::White ) {
             $player = $manager->Game->WhitePlayer;
         }
@@ -481,7 +485,8 @@ final class GameService
     private static function MyPosition( GameManagerInterface $manager, GamePlayer $dbUser, PlayerPosition $position ): bool
     {
         //prevents someone with same game id, get someone elses side in the game.
-        $player = $manager->Game->NorthPlayer;
+        $player = $manager->Game->SouthPlayer;
+        
         if ( $position == PlayerPosition::East ) {
             $player = $manager->Game->WhitePlayer;
         }

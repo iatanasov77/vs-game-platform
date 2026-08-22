@@ -47,8 +47,9 @@ import { GameCookieDto } from '@vankosoft/game-platform';
 import { CookieService } from 'ngx-cookie-service';
 
 // CardGame Interfaces
+import { GameVariant } from '@vankosoft/game-platform';
 import { PlayerPosition } from '@vankosoft/game-platform';
-import { BidType } from '@vankosoft/game-platform';
+import { BidTrump } from '@vankosoft/game-platform';
 import { UserDto } from '@vankosoft/game-platform';
 import { GameState } from '@vankosoft/game-platform';
 import { CardGameDto } from '@vankosoft/game-platform';
@@ -63,6 +64,7 @@ import { SelectGameRoomDialogComponent } from '../../game-dialogs/select-game-ro
 import { CreateGameRoomDialogComponent } from '../../game-dialogs/create-game-room-dialog/create-game-room-dialog.component';
 import { CreateInviteGameDialogComponent } from '../../game-dialogs/create-invite-game-dialog/create-invite-game-dialog.component';
 import { UserLoginDialogComponent } from '../../game-dialogs/user-login-dialog/user-login-dialog.component';
+import { ContractBridgeAuctionComponent } from '../../game-dialogs/contract-bridge-auction/contract-bridge-auction.component';
 
 import templateString from './card-game-container.component.html'
 import styleString from './card-game-container.component.scss'
@@ -122,12 +124,18 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     lokalStake = 0;
     playAiQuestion = false;
     
-    gameDto: CardGameDto | undefined;
+    bridgeBeloteAuction = false;
+    contractBridgeAuction = false;
+    
+    playWithComputerVisible = false;
     newVisible = false;
     exitVisible = true;
     gameBiddingVisible = false;
     gameContractVisible = false;
     newRoundVisible = false;
+    debugButtonsVisible = false;
+    
+    gameDto: CardGameDto | undefined;
     playerCardsDto: Array<CardDto[]> | undefined;
     playerBidsDto: BidDto[] | undefined = [];
     playerAnnouncesDto: Array<AnnounceDto[]> | undefined = [];
@@ -269,6 +277,8 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     
     ngOnChanges( changes: SimpleChanges ): void
     {
+        // alert( 'CardGameContainerComponent Changes !!!' );
+        
         for ( const propName in changes ) {
             const changedProp = changes[propName];
             
@@ -284,6 +294,16 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
                     break;
             }
         }
+    }
+    
+    openContractBridgeAuctionDialog(): void
+    {
+        const modalRef = this.ngbModal.open( ContractBridgeAuctionComponent );
+        
+        modalRef.componentInstance.closeModal.subscribe( () => {
+            // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
+            modalRef.dismiss();
+        });
     }
     
     openDebugGameSoundsDialog(): void
@@ -313,6 +333,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     
     doBid( bid: BidDto ): void
     {
+        //alert( 'Make a BID !!!' );
         this.wsService.doBid( bid );
         this.wsService.sendBid( bid );
     }
@@ -456,15 +477,13 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     
     gameChanged( dto: CardGameDto ): void
     {
-        if ( ! this.started && dto ) {
-            if ( dto.playState === GameState.bidding ) {
-                this.started = true;
-                this.gameBiddingVisible = true;
-                
-                this.playAiQuestion = false;
-                this.lobbyButtonsVisibleChanged.emit( false );
-                this.isStarted.emit( true );
-            }
+        if (
+            ! this.started &&
+            dto &&
+            dto.playState === GameState.bidding &&
+            dto.currentPlayer == this.appStateService.myPosition.getValue()
+        ) {
+            this.showBidding( dto );
         }
         
         if ( dto && dto.validBids && dto.validBids.length ) {
@@ -472,6 +491,8 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         }
         
         if ( dto && dto.playState === GameState.playing ) {
+            //alert( 'Game Playing Started !!!' );
+            
             this.contract = dto.contract;
             this.playerBidsDto = [];
             this.gameBiddingVisible = false;
@@ -559,6 +580,35 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         }, 1);
     }
     
+    showBidding( dto: CardGameDto ): void
+    {
+        if ( ! dto.validBids.length ) {
+            return;
+        }
+        
+        //this.started = true; // Needed to Show Contract
+        
+        switch( dto.gameCode ) {
+            case GameVariant.BRIDGE_BELOTE_CODE:
+                this.playWithComputerVisible = false;
+                this.gameBiddingVisible = true;
+            
+                this.playAiQuestion = false;
+                this.lobbyButtonsVisibleChanged.emit( false );
+                this.isStarted.emit( true );
+                
+                break;
+            case GameVariant.CONTRACT_BRIDGE_CODE:
+                this.playWithComputerVisible = false;
+                
+                //this.debugButtonsVisible = true;
+                alert( 'Play State: ' + dto.playState );
+                this.openContractBridgeAuctionDialog();
+                
+                break;
+        }
+    }
+    
     playGame( gameId: string ): void
     {
         if ( ! gameId.length ) {
@@ -573,6 +623,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         window.dispatchEvent( new Event( 'resize' ) );
         
         this.statusMessageService.setWaitingForConnect();
+        this.playWithComputerVisible = true;
         this.exitVisible = true;
     }
     

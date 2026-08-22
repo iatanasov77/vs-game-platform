@@ -3,7 +3,7 @@
 use BitMask\EnumBitMask;
 use App\Component\Type\CardSuit;
 use App\Component\Type\BridgeBeloteCardType as CardType;
-use App\Component\Type\BidType;
+use App\Component\Type\BidTrump;
 
 class CardExtensions
 {
@@ -114,18 +114,18 @@ class CardExtensions
         }
     }
     
-    public static function ToBidType( CardSuit $cardSuit ): BidType
+    public static function ToBidTrump( CardSuit $cardSuit ): BidTrump
     {
         if ( $cardSuit == CardSuit::Club ) {
-            $bidType = BidType::Clubs;
+            $bidType = BidTrump::Clubs;
         } elseif ( $cardSuit == CardSuit::Diamond ) {
-            $bidType = BidType::Diamonds;
+            $bidType = BidTrump::Diamonds;
         } elseif ( $cardSuit == CardSuit::Heart ) {
-            $bidType = BidType::Hearts;
+            $bidType = BidTrump::Hearts;
         } elseif ( $cardSuit == CardSuit::Spade ) {
-            $bidType = BidType::Spades;
+            $bidType = BidTrump::Spades;
         } else {
-            $bidType = BidType::Pass;
+            $bidType = BidTrump::Pass;
         }
         
         return $bidType;
@@ -133,20 +133,20 @@ class CardExtensions
     
     public static function GetValue( Card $card, EnumBitMask $contract ): int
     {
-        if ( $contract->has( BidType::AllTrumps ) ) {
+        if ( $contract->has( BidTrump::AllTrumps ) ) {
             return self::$TrumpValues[$card->Type->value];
         }
         
-        if ( $contract->has( BidType::NoTrumps ) ) {
+        if ( $contract->has( BidTrump::NoTrumps ) ) {
             return self::$NoTrumpValues[$card->Type->value];
         }
         
-        if ( $contract->get() == BidType::Pass->bitMaskValue() ) {
+        if ( $contract->get() == BidTrump::Pass->bitMaskValue() ) {
             return 0;
         }
         
-        $suit = BidType::fromBitMaskValue( $contract->get() );
-        if ( BidTypeExtensions::ToCardSuit( $suit ) == $card->Suit ) {
+        $suit = BidTrump::fromBitMaskValue( $contract->get() );
+        if ( BidTrumpExtensions::ToCardSuit( $suit ) == $card->Suit ) {
             return self::$TrumpValues[$card->Type->value];
         }
         

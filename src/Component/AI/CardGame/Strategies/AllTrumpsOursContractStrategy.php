@@ -32,7 +32,7 @@ class AllTrumpsOursContractStrategy implements IPlayStrategy
             $cardSuit = Card::$AllSuits[$i];
             $hasTeammateBid = ! $context->Bids->filter(
                 function( $entry ) use ( $teammate, $cardSuit ) {
-                    return $entry && $entry->Player == $teammate && $entry->Type == CardExtensions::ToBidType( $cardSuit );
+                    return $entry && $entry->Player == $teammate && $entry->Trump == CardExtensions::ToBidTrump( $cardSuit );
                 }
             )->isEmpty();
             $hasTeammateBidCard = ! $context->AvailableCardsToPlay->filter(

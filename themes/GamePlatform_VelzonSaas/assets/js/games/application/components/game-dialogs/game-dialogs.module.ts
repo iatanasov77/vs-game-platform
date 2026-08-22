@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 import { SharedModule } from '../shared/shared.module';
 import { RequirementsDialogComponent } from './requirements-dialog/requirements-dialog.component';
@@ -12,6 +13,7 @@ import { CreateGameRoomDialogComponent } from './create-game-room-dialog/create-
 import { PlayAiQuestionComponent } from './play-ai-question/play-ai-question.component';
 import { CreateInviteGameDialogComponent } from './create-invite-game-dialog/create-invite-game-dialog.component';
 import { UserLoginDialogComponent } from './user-login-dialog/user-login-dialog.component';
+import { ContractBridgeAuctionComponent } from './contract-bridge-auction/contract-bridge-auction.component';
 import { DebugGameSoundsComponent } from './debug-game-sounds/debug-game-sounds.component';
 
 @NgModule({
@@ -22,6 +24,7 @@ import { DebugGameSoundsComponent } from './debug-game-sounds/debug-game-sounds.
         PlayAiQuestionComponent,
         CreateInviteGameDialogComponent,
         UserLoginDialogComponent,
+        ContractBridgeAuctionComponent,
         DebugGameSoundsComponent
     ],
     imports: [
@@ -31,6 +34,7 @@ import { DebugGameSoundsComponent } from './debug-game-sounds/debug-game-sounds.
         TranslateModule.forChild(),
         FormsModule,
         ReactiveFormsModule,
+        MatButtonToggleModule,
         SharedModule
     ],
     exports: [
@@ -40,6 +44,7 @@ import { DebugGameSoundsComponent } from './debug-game-sounds/debug-game-sounds.
         PlayAiQuestionComponent,
         CreateInviteGameDialogComponent,
         UserLoginDialogComponent,
+        ContractBridgeAuctionComponent,
         DebugGameSoundsComponent
     ]
 })

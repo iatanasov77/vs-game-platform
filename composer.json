@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "php": "^8.1",
+        "php": "^8.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
         
@@ -30,7 +30,7 @@
         "symfony/http-client": "6.4.*",
         
         "vankosoft/application": "1.13.*",
-        "vankosoft/application-themes": "^1.6",
+        "vankosoft/application-themes": "1.7.*",
         "vankosoft/catalog-bundle": "^2.5",
         "vankosoft/api-bundle": "^3.0",
         
@@ -42,6 +42,7 @@
         "amphp/amp": "^3.1",
         
         "yaroslavche/bitmask": "^3.1",
+        "garak/bridge": "^0.7",
         
         "knpuniversity/oauth2-client-bundle": "^2.18",
         "league/oauth2-facebook": "^2.2",
@@ -71,6 +72,11 @@
             "oomphinc/composer-installers-extender": true,
             "symfony/runtime": true,
             "php-http/discovery": true
+        },
+        "policy": {
+            "advisories": {
+                "block": false
+            }
         }
     },
     "autoload": {

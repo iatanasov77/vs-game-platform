@@ -26,6 +26,9 @@ class RoundManager
     /** @var Game */
     private Game $game;
     
+    /** @var GarakGame */
+    private GarakGame $garakGame;
+    
     /** @var GameLogger */
     private  $logger;
     
@@ -47,9 +50,9 @@ class RoundManager
         $this->logger           = $logger;
         $this->eventDispatcher  = $eventDispatcher;
         
-        /*
         $this->contractManager = new ContractManager( $this->game, $this->logger );
         $this->tricksManager = new TricksManager( $this->game, $this->logger );
+        /*  
         $this->scoreManager = new ScoreManager( $this->game, $this->logger );
         */
         
@@ -73,15 +76,18 @@ class RoundManager
             // Deal 5 cards to each player
             $this->DealCards( 13 );
             
-            //$this->contractManager->StartNewRound();
+            $this->garakGame = GarakGameFactory::CreateGame( $this->game, $this->logger );
+            $this->contractManager->StartNewRound();
         }
         
         if ( $this->game->PlayState == GameState::bidding ) {
             if ( $this->game->ConsecutivePasses == 4 ) {
-                $this->logger->log( 'Consecutive Passes Exceeded !!!', 'RoundManager' );
+                $this->logger->log( '4 Consecutive Passes !!!', 'RoundManager' );
                 
                 $this->game->PlayState = GameState::roundEnded;
+                /*  Implemented In Game Manager Event is Not Needed
                 $this->eventDispatcher->dispatch( new CardGameRoundEndedEvent( $this->game ), CardGameRoundEndedEvent::NAME );
+                */
             }
             
             //$this->logger->log( 'CurrentContract: ' . \print_r( $this->game->CurrentContract, true ), 'RoundManager' );
@@ -118,16 +124,6 @@ class RoundManager
     public function GetValidCards( Collection $playerCards, Bid $currentContract, Collection $trickActions ): Collection
     {
         return $this->tricksManager->GetValidCards( $playerCards, $currentContract, $trickActions );
-    }
-    
-    public function GetAvailableAnnounces( Collection $playerCards ): Collection
-    {
-        return $this->tricksManager->GetAvailableAnnounces( $playerCards );
-    }
-    
-    public function IsBeloteAllowed( Collection $playerCards, EnumBitMask $contract, Collection $currentTrickActions, Card $playedCard ): bool
-    {
-        return $this->tricksManager->IsBeloteAllowed( $playerCards, $contract, $currentTrickActions, $playedCard );
     }
     
     public function GetTrickActionNumber(): int

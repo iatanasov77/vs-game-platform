@@ -9,7 +9,7 @@ use App\Component\GameLogger;
 use App\Component\GameVariant;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerPosition;
-use App\Component\Type\BidType;
+use App\Component\Type\BidTrump;
 
 use App\Component\Rules\CardGame\Context\PlayerGetBidContext;
 use App\Component\Rules\CardGame\Context\PlayerGetAnnouncesContext;
@@ -185,16 +185,17 @@ abstract class Game implements GameInterface
     {
         switch ( $this->GameCode ) {
             case GameVariant::CONTRACT_BRIDGE_CODE:
-                return $this->contractBridgeRoundManager->GetAvailableAnnounces( $playerCards );
+                //return $this->contractBridgeRoundManager->GetAvailableAnnounces( $playerCards );
+                return new ArrayCollection();
                 break;
             default:
                 return $this->bridgeBeloteRoundManager->GetAvailableAnnounces( $playerCards );
         }
     }
-    
-    public function GetBid( PlayerGetBidContext $context ): BidType
+     
+    public function GetBid( PlayerGetBidContext $context ): BidTrump
     {
-        return BidType::Pass;
+        return BidTrump::Pass;
     }
     
     public function GetAnnounces( PlayerGetAnnouncesContext $context ): Collection

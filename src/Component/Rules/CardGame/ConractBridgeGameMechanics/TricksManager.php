@@ -1,4 +1,4 @@
-<?php namespace App\Component\Rules\CardGame\BridgeBeloteGameMechanics;
+<?php namespace App\Component\Rules\CardGame\ConractBridgeGameMechanics;
 
 use BitMask\EnumBitMask;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -9,12 +9,10 @@ use App\Component\Rules\CardGame\Game;
 
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerPosition;
-use App\Component\Rules\CardGame\Card;
 use App\Component\Rules\CardGame\Bid;
 use App\Component\Rules\CardGame\PlayCardAction;
 use App\Component\Rules\CardGame\TrickWinnerService;
 use App\Component\Rules\CardGame\ValidCardsService;
-use App\Component\Rules\CardGame\ValidAnnouncesService;
 
 class TricksManager
 {
@@ -30,9 +28,6 @@ class TricksManager
     /** @var ValidCardsService */
     private $validCardsService;
     
-    /** @var ValidAnnouncesService */
-    private $validAnnouncesService;
-    
     /** @var Collection | PlayCardAction[] */
     private $TrickActions;
     
@@ -46,7 +41,6 @@ class TricksManager
         
         $this->trickWinnerService = new TrickWinnerService();
         $this->validCardsService = new ValidCardsService();
-        $this->validAnnouncesService = new ValidAnnouncesService( $this->logger );
         
         $this->TrickActions = new ArrayCollection();
     }
@@ -58,16 +52,6 @@ class TricksManager
             $currentContract->Trump,
             $trickActions
         );
-    }
-    
-    public function GetAvailableAnnounces( Collection $playerCards ): Collection
-    {
-        return $this->validAnnouncesService->GetAvailableAnnounces( $playerCards );
-    }
-    
-    public function IsBeloteAllowed( Collection $playerCards, EnumBitMask $contract, Collection $currentTrickActions, Card $playedCard ): bool
-    {
-        return $this->validAnnouncesService->IsBeloteAllowed( $playerCards, $contract, $currentTrickActions, $playedCard );
     }
     
     public function GetTrickNumber(): int

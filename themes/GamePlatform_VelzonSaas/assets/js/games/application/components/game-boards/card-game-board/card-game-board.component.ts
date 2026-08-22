@@ -28,11 +28,20 @@ import { CardGamePlayerDto } from '@vankosoft/game-platform';
 import { PlayerPosition } from '@vankosoft/game-platform';
 import { CardDto } from '@vankosoft/game-platform';
 import { BidDto } from '@vankosoft/game-platform';
-import { BidType } from '@vankosoft/game-platform';
+import { BidTrump } from '@vankosoft/game-platform';
 import { AnnounceDto } from '@vankosoft/game-platform';
 import { AnnounceType } from '@vankosoft/game-platform';
 
-import { CardGamePlayerArea, Card, CardArea, CardDrag, Point, MoveAnimation, Pile } from '@vankosoft/game-platform';
+import {
+    CardGamePlayerArea,
+    Card,
+    CardArea,
+    CardDrag,
+    Point,
+    MoveAnimation,
+    Pile
+} from '@vankosoft/game-platform';
+
 import {
     BlueTheme,
     DarkTheme,
@@ -106,7 +115,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
     playerAreaPadding: number = 10;
     playerAreaHeightAddition: number = 40;
     
-    bidTypes = [
+    bidTrumps = [
         'bridge-belote.bid-type.pass',
         'bridge-belote.bid-type.clubs',
         'bridge-belote.bid-type.diamonds',
@@ -132,17 +141,22 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         'bridge-belote.announce-type.four-jacks'
     ];
     
+    // translated phrases
+    you = '';
+    top = '';
+    right = '';
+    bottom = '';
+    left = '';
+    
     constructor(
         @Inject( TranslateService ) private translateService: TranslateService,
         @Inject( AppStateService ) private appState: AppStateService,
-    ) {
-        for ( let r = 0; r < 8; r++ ) {
-            this.cardAreas.push( new CardArea( 0, 0, 0, 0, '' ) );
-        }
-    }
+    ) {}
     
     ngOnChanges( changes: SimpleChanges ): void
     {
+        //alert( JSON.stringify( changes ) );
+        
         if (
             changes['width'] ||
             changes['height']
@@ -151,6 +165,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         }
         
         if ( changes['playerCards'] ) {
+            this.initPlayerCards();
             this.initCardAreas();
         }
         
@@ -196,14 +211,13 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
     
     translate(): void
     {
-        /*
         this.you = this.translateService.instant( 'gameboard.you' );
-        this.white = this.translateService.instant( 'gameboard.white' );
-        this.black = this.translateService.instant( 'gameboard.black' );
+        this.top = this.translateService.instant( 'gameboard.white' );
+        this.right = this.translateService.instant( 'gameboard.black' );
+        this.bottom = this.translateService.instant( 'gameboard.black' );
         this.left = this.translateService.instant( 'gameboard.left' );
         
         this.requestDraw();
-        */
     }
     
     canPlayCard(): boolean
@@ -460,7 +474,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         const cx = this.cx;
         this.drawBoard( cx );
         
-        // console.log( this.game );
+        // console.log( 'Draw CardGame Board', this.game );
         if ( this.game &&
             this.game.playState !== GameState.ended &&
             ! this.lobbyButtonsVisible
@@ -531,7 +545,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         }
         
         const image = new Image( this.cardWidth, this.cardHeight );
-        image.src = "/build/gameplatform-velzonsaas-theme/images/CardGame/Cards/BridgeBelote/back.png";
+        image.src = "/build/gameplatform-velzonsaas-theme/images/Cards/BridgeBelote/back.png";
         
         var cardX = this.width / 2 - image.width / 2;
         var cardY = this.height / 2 - image.height / 2;
@@ -597,7 +611,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         for ( let pa = 0; pa < this.playerAreas.length; pa++ ) {
             if ( this.playerBids.hasOwnProperty( pa ) ) {
                 //console.log( 'Player Bid', this.playerBids[pa] );
-                //alert( 'Bid Player: ' + pa + ' Bid Type: ' + this.playerBids[pa].Type );
+                //alert( 'Bid Player: ' + pa + ' Bid Type: ' + this.playerBids[pa].Trump );
                 this.drawPlayerBid( this.playerAreas[pa], this.playerBids[pa] );
             }
         }
@@ -667,11 +681,11 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             var cardImagesPath, cardBack;
             switch ( this.game.gameCode ) {
                 case GameVariant.BRIDGE_BELOTE_CODE:
-                    cardImagesPath = '/build/gameplatform-velzonsaas-theme/images/CardGame/Cards/BridgeBelote';
+                    cardImagesPath = '/build/gameplatform-velzonsaas-theme/images/Cards/BridgeBelote';
                     cardBack = `${cardImagesPath}/back.png`;
                     break;
                 default:
-                    cardImagesPath = '/build/gameplatform-velzonsaas-theme/images/CardGame/Cards/ContractBridge';
+                    cardImagesPath = '/build/gameplatform-velzonsaas-theme/images/Cards/ContractBridge';
                     cardBack = `${cardImagesPath}/blue_back.png`;
             }
             
@@ -711,8 +725,10 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             return;
         }
         
+        let cardImagesPath = '/build/gameplatform-velzonsaas-theme/images/Cards/BridgeBelote';
         Pile.drawAsPile(
             this.cx,
+            cardImagesPath,
             this.pile,
             this.width,
             this.height,
@@ -720,6 +736,32 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             this.cardHeight,
             this.theme
         );
+    }
+    
+    initPlayerCards(): void
+    {
+        if ( ! this.game ) {
+            return;
+        }
+        
+        var cardsLength;
+        switch( this.game.gameCode ) {
+            case GameVariant.BRIDGE_BELOTE_CODE:
+                cardsLength = 8;
+                break;
+            case GameVariant.CONTRACT_BRIDGE_CODE:
+                cardsLength = 13;
+                break;
+            case GameVariant.SVARA_CODE:
+                cardsLength = 3;
+                break;
+            default:
+                throw new Error( 'Invalid Card Game !!!' );
+        }
+        
+        for ( let r = 0; r < cardsLength; r++ ) {
+            this.cardAreas.push( new CardArea( 0, 0, 0, 0, '' ) );
+        }
     }
     
     initPlayerAreas(): void
@@ -804,7 +846,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             return;
         }
         
-        const playerCards = this.playerCards[PlayerPosition.south]
+        const playerCards = this.playerCards[PlayerPosition.south];
         const cardsWidth = this.cardWidth + ( ( playerCards.length - 1 ) * this.cardOffset );
         
         const pa = this.playerAreas.find( ( x ) => x.playerPosition === PlayerPosition.south );
@@ -814,6 +856,10 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         
         const yOffset = pa.height - this.cardHeight;
         const cardY = pa.y + yOffset;
+        
+        //console.log( 'Card Areas', this.cardAreas );
+        //alert( playerCards.length );
+        
         for ( let c = 0; c < playerCards.length; c++ ) {
             let cardX = pa.x + pa.width / 2 - ( cardsWidth / 2 ) + ( c * this.cardOffset );
             let areaWidth = c == ( playerCards.length - 1 ) ? this.cardWidth : this.cardOffset;
@@ -911,7 +957,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         
         this.cx.textAlign = "center";
         this.cx.font = "bold 10pt Courier";
-        this.cx.fillText( this.translateService.instant( this.bidTypes[bid.Type] ), 0, 0 );
+        this.cx.fillText( this.translateService.instant( this.bidTrumps[bid.Trump] ), 0, 0 );
         
         this.cx.restore();
     }
@@ -1025,8 +1071,10 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             this.playerCards[PlayerPosition.west][0]
         ];
         
+        let cardImagesPath = '/build/gameplatform-velzonsaas-theme/images/Cards/BridgeBelote';
         Pile.drawAsPile(
             this.cx,
+            cardImagesPath,
             pile,
             this.width,
             this.height,

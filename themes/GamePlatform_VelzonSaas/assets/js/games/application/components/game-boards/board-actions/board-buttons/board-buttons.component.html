@@ -24,7 +24,7 @@
         <!--
          -- Card Games Buttons
         -->
-        <button *ngIf="( gameCode == 'bridge-belote' || gameCode == 'contract-bridge' ) && ! newRoundVisible && ! newVisible" (click)="playWithComputer()" class="default-button">
+        <button *ngIf="playWithComputerVisible" (click)="playWithComputer()" class="default-button">
             {{ 'game_board.play_with_computer' | translate }}
         </button>
         
@@ -75,6 +75,12 @@
             {{ 'game_board.undo' | translate }}
         </button>
         
+    </ng-container>
+    
+    <ng-container *ngIf="debugButtonsVisible">
+        <button (click)="debugContractBridgeAuction()" class="default-button ms-4">
+            Debug Contract Bridge Auction
+        </button>
     </ng-container>
     
     <ng-container *ngIf="debugGameSoundsVisible">

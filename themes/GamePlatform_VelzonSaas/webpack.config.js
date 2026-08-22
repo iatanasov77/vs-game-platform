@@ -16,7 +16,6 @@ Encore
     .addAliases({
         '@': path.resolve( __dirname, '../../vendor/vankosoft/application/src/Vankosoft/ApplicationBundle/Resources/themes/default/assets' ),
         //'@@': path.resolve( __dirname, '../../vendor/vankosoft/payment-bundle/lib/Resources/assets' ),
-        //'_@': path.resolve( __dirname, '../../assets/library' ),
     })
     
     .enableSassLoader(function(sassOptions) {}, {
@@ -56,6 +55,7 @@ Encore
 
     // Application Assets
     .copyFiles([
+        {from: './node_modules/@vankosoft/game-platform/dist/assets/images', to: 'images/[path][name].[ext]'},
         {from: './themes/GamePlatform_VelzonSaas/assets/images', to: 'images/[path][name].[ext]'},
         {from: './themes/GamePlatform_VelzonSaas/assets/sound', to: 'sound/[path][name].[ext]'},
         {from: './themes/GamePlatform_VelzonSaas/assets/i18n', to: 'i18n/[path][name].[ext]'},

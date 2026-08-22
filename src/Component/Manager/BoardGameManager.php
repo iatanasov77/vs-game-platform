@@ -3,12 +3,15 @@
 use Ratchet\RFC6455\Messaging\Frame;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Rules\BoardGame\Score;
+use App\Component\Websocket\WebSocketState;
 
 // Types
 use App\Component\Type\PlayerColor;
 use App\Component\Type\GameState;
 
 // DTO Actions
+use App\Component\Dto\Mapper;
+use App\Component\Dto\Actions\GameRestoreActionDto;
 use App\Component\Dto\toplist\NewScoreDto;
 use App\Component\Utils\Guid;
 
@@ -18,6 +21,40 @@ use App\Component\Rules\BoardGame\Player;
 
 abstract class BoardGameManager extends AbstractGameManager
 {
+    public function Restore( int $playerPositionId, WebsocketClientInterface $socket ): void
+    {
+        $color = PlayerColor::from( $playerPositionId );
+        
+        $gameDto = Mapper::BoardGameToDto( $this->Game );
+        $restoreAction = new GameRestoreActionDto();
+        $restoreAction->game = $gameDto;
+        $restoreAction->color = $color;
+        
+        // @TODO May be i can check if the game have Dices.
+        $restoreAction->dices = $this->Game->Roll->map(
+            function( $entry ) {
+                return Mapper::DiceToDto( $entry );
+            }
+        )->toArray();
+        
+        if ( $color == PlayerColor::Black ) {
+            $this->Clients->set( PlayerColor::Black->value, $socket );
+            $otherSocket = $this->Clients->get( PlayerColor::White->value );
+        } else {
+            $this->Clients->set( PlayerColor::White->value, $socket );
+            $otherSocket = $this->Clients->get( PlayerColor::Black->value );
+        }
+        
+        $this->Send( $socket, $restoreAction );
+        //Also send the state to the other client in case it has made moves.
+        if ( $otherSocket != null && $otherSocket->State == WebSocketState::Open ) {
+            $restoreAction->color = $color == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
+            $this->Send( $otherSocket, $restoreAction );
+        } else {
+            $this->logger->log( "Failed to send restore to other client", 'GameManager' );
+        }
+    }
+    
     protected function CreateDbGame(): void
     {
         $blackPlayer = $this->CreateTempPlayer( $this->Game->BlackPlayer->Id, PlayerColor::Black->value );

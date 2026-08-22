@@ -98,33 +98,6 @@ final class ChessGameManager extends BoardGameManager
         }
     }
     
-    public function Restore( int $playerPositionId, WebsocketClientInterface $socket ): void
-    {
-        $color = PlayerColor::from( $playerPositionId );
-        
-        $gameDto = Mapper::BoardGameToDto( $this->Game );
-        $restoreAction = new GameRestoreActionDto();
-        $restoreAction->game = $gameDto;
-        $restoreAction->color = $color;
-            
-        if ( $color == PlayerColor::Black ) {
-            $this->Clients->set( PlayerColor::Black->value, $socket );
-            $otherSocket = $this->Clients->get( PlayerColor::White->value );
-        } else {
-            $this->Clients->set( PlayerColor::White->value, $socket );
-            $otherSocket = $this->Clients->get( PlayerColor::Black->value );
-        }
-        
-        $this->Send( $socket, $restoreAction );
-        //Also send the state to the other client in case it has made moves.
-        if ( $otherSocket != null && $otherSocket->State == WebSocketState::Open ) {
-            $restoreAction->color = $color == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
-            $this->Send( $otherSocket, $restoreAction );
-        } else {
-            $this->logger->log( "Failed to send restore to other client", 'GameManager' );
-        }
-    }
-    
     public function StartGame(): void
     {
         $this->Game->ThinkStart = new \DateTime( 'now' );

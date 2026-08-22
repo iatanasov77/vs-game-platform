@@ -26,6 +26,9 @@ export class BoardButtonsComponent implements OnInit, OnChanges
     @Input() sendVisible = false;
     @Input() undoVisible = false;
     @Input() newRoundVisible = false;
+    
+    @Input() playWithComputerVisible = false;
+    @Input() debugButtonsVisible = false;
     @Input() debugGameSoundsVisible = false;
     
     @Output() onLogin = new EventEmitter<void>();
@@ -33,7 +36,9 @@ export class BoardButtonsComponent implements OnInit, OnChanges
     @Output() onNew = new EventEmitter<void>();
     @Output() onNewRound = new EventEmitter<void>();
     @Output() onExit = new EventEmitter<void>();
-    @Output() onOpenDebugGameSoundsDialog = new EventEmitter<void>();
+    
+    @Output() onOpenContractBridgeAuctionDialog = new EventEmitter<void>();
+    @Output() onOpenDebugGameSoundsDialog       = new EventEmitter<void>();
     
     @Output() onPlayWithComputer = new EventEmitter<string>();
     @Output() onPlayGame = new EventEmitter<string>();
@@ -99,6 +104,11 @@ export class BoardButtonsComponent implements OnInit, OnChanges
                     break;
             }
         }
+    }
+    
+    debugContractBridgeAuction(): void
+    {
+        this.onOpenContractBridgeAuctionDialog.emit();
     }
     
     debugGameSounds(): void

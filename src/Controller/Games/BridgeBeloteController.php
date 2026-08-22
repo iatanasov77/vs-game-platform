@@ -5,7 +5,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 use BitMask\EnumBitMask;
-use App\Component\Type\BidType;
+use App\Component\Type\BidTrump;
 use App\Component\GamePlatform;
 
 class BridgeBeloteController extends GameController
@@ -48,7 +48,7 @@ class BridgeBeloteController extends GameController
     
     public function debugEnumBitmask( Request $request ): Response
     {
-        $enumBitmask = EnumBitMask::create( BidType::class, BidType::NoTrumps );
+        $enumBitmask = EnumBitMask::create( BidTrump::class, BidTrump::NoTrumps );
         var_dump( $enumBitmask->get() ); die;
     }
 }

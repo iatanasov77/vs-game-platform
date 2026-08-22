@@ -1,4 +1,4 @@
-<?php namespace App\Component\Rules\CardGame\BridgeBeloteGameMechanics;
+<?php namespace App\Component\Rules\CardGame\ConractBridgeGameMechanics;
 
 use BitMask\EnumBitMask;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -90,10 +90,6 @@ class ContractManager
             $availableBids->set( BidTrump::NoTrumps->value(), new Bid( $currentPlayer, BidTrump::NoTrumps ) );
         }
         
-        if ( $cleanContract->get() < BidTrump::AllTrumps->bitMaskValue() ) {
-            $availableBids->set( BidTrump::AllTrumps->value(), new Bid( $currentPlayer, BidTrump::AllTrumps ) );
-        }
-        
         if (
             $currentContract &&
             ! PlayerPositionExtensions::IsInSameTeamWith( $currentPlayer, $currentContract->Player ) &&
@@ -102,7 +98,7 @@ class ContractManager
             if ( $currentContract->Trump->has( BidTrump::Double ) ) {
                 $availableBids->set( BidTrump::ReDouble->value(), new Bid( $currentPlayer, BidTrump::ReDouble ) );
             } else if ( $currentContract->Trump->has( BidTrump::ReDouble ) ) {
-            
+                
             } else {
                 $availableBids->set( BidTrump::Double->value(), new Bid( $currentPlayer, BidTrump::Double ) );
             }

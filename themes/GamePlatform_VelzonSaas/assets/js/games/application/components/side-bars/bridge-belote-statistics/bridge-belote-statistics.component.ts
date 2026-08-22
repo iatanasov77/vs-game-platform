@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { AppStateService } from '../../../state/app-state.service';
 import { BridgeBeloteScoreDto } from '@vankosoft/game-platform';
 import { CardGameDto } from '@vankosoft/game-platform';
-import { BidType } from '@vankosoft/game-platform';
+import { BidTrump } from '@vankosoft/game-platform';
 import { GameState } from '@vankosoft/game-platform';
 
 import templateString from './bridge-belote-statistics.component.html'
@@ -53,7 +53,7 @@ export class BridgeBeloteStatisticsComponent implements OnDestroy
     scoreChanged( dto: BridgeBeloteScoreDto ): void
     {
         //console.log( 'BridgeBeloteScoreDto', dto );
-        if ( dto.contract == BidType.Pass ) {
+        if ( dto.contract == BidTrump.Pass ) {
             return;
         }
         

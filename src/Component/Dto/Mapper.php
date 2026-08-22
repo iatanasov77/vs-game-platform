@@ -24,7 +24,7 @@ use App\Component\Rules\CardGame\Announce;
 use App\Component\Rules\CardGame\CardExtensions;
 use App\Component\Rules\CardGame\BridgeBeloteGameMechanics\RoundResult;
 use App\Component\Type\PlayerPosition;
-use App\Component\Type\BidType;
+use App\Component\Type\BidTrump;
 
 final class Mapper
 {
@@ -269,7 +269,8 @@ final class Mapper
         $bidDto->KontraPlayer = $bid->KontraPlayer;
         $bidDto->ReKontraPlayer = $bid->ReKontraPlayer;
         
-        $bidDto->Type = BidType::fromBitMaskValue( $bid->Type->get() )->value();
+        $bidDto->Value = $bid->Value;
+        $bidDto->Trump = BidTrump::fromBitMaskValue( $bid->Trump->get() )->value();
         
         return $bidDto;
     }

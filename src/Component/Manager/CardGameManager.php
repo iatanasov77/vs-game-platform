@@ -243,11 +243,6 @@ abstract class CardGameManager extends AbstractGameManager
             $this->logger->log( "NewTurn for AI", 'SwitchPlayer' );
             if ( $this->Game->PlayState == GameState::bidding ) {
                 $this->EnginBids( $socket );
-                
-                /*  
-                $this->logger->log( "Play Round !!! Bidding CurrentContract: {$this->Game->CurrentContract}", 'GameManager' );
-                $this->logger->log( "Play Round !!! Bidding ConsecutivePasses: {$this->Game->ConsecutivePasses}", 'GameManager' );
-                */
             } else {
                 $this->EnginPlayCard( $socket );
             }

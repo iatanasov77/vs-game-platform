@@ -161,6 +161,8 @@ abstract class Game implements GameInterface
     
     public function SetContract( Bid $bid, PlayerPosition $nextPlayer ): void
     {
+        $this->logger->log( "SetContract Bid Value: {$bid->Value}", 'RoundManager' );
+        
         switch ( $this->GameCode ) {
             case GameVariant::CONTRACT_BRIDGE_CODE:
                 $this->contractBridgeRoundManager->SetContract( $bid, $nextPlayer );

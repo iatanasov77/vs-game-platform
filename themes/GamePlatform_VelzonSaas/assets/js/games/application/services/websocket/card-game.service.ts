@@ -369,7 +369,6 @@ export class CardGameService extends AbstractGameService
     {
         // console.log( 'Player Send Bid', bid );
         const game = this.appState.cardGame.getValue();
-        // alert( game.currentPlayer );
         
         const myBidAction: BidMadeActionDto = {
             actionName: ActionNames.bidMade,

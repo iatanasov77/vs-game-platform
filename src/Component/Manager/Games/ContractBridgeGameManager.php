@@ -227,9 +227,11 @@ class ContractBridgeGameManager extends CardGameManager
     
     protected function DoBid( BidMadeActionDto $action ): void
     {
-        $this->logger->log( 'Contract Bridge DoBid !!!', 'GameManager' );
+        $bidValue = $action->bid->Value;
+        $this->logger->log( "Contract Bridge DoBid: {$bidValue}", 'GameManager' );
         
         $bid = new Bid( $action->bid->Player, BidTrump::fromValue( $action->bid->Trump ) );
+        $bid->Value = $bidValue;
         $bid->KontraPlayer = $action->bid->KontraPlayer;
         $bid->ReKontraPlayer = $action->bid->ReKontraPlayer;
         

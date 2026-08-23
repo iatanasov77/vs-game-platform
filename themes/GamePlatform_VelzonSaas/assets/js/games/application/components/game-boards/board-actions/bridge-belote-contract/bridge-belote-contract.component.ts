@@ -183,6 +183,7 @@ export class BridgeBeloteContractComponent implements OnChanges
         let bid: BidDto = {
             Player: this.myPosition,
             Trump: bidTrump,
+            LastBid: false,
             NextBids: []
         };
         

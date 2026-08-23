@@ -38,9 +38,7 @@ use App\Component\Type\CardGameTeam;
 // DTO Actions
 use App\Component\Dto\Mapper;
 use App\Component\Dto\Actions\BidMadeActionDto;
-use App\Component\Dto\Actions\OpponentBidsActionDto;
 use App\Component\Dto\Actions\PlayCardActionDto;
-use App\Component\Dto\Actions\OpponentPlayCardActionDto;
 use App\Component\Dto\Actions\AnnounceMadeActionDto;
 
 /**
@@ -275,103 +273,6 @@ class ContractBridgeGameManager extends CardGameManager
         $trickAction->TrickNumber = $this->Game->GetTrickActionNumber() + 1;
         
         $this->Game->AddTrickAction( $trickAction );
-    }
-    
-    protected function EnginBids( WebsocketClientInterface $client ): void
-    {
-        // Debug Player Cards
-        $playerCards = $this->Game->playerCards[$this->Game->CurrentPlayer->value];
-        
-        $bid = new Bid( $this->Game->CurrentPlayer, $this->Engine->DoBid() );
-        
-        $promise = Async\async( function () use ( $client, $bid, $playerCards ) {
-            $sleepMileseconds   = \rand( 700, 1200 );
-            Async\delay( $sleepMileseconds / 1000 );
-            
-            $nextPlayer = $this->Game->NextPlayer();
-            $this->Game->SetContract( $bid, $nextPlayer );
-            
-            $action = new OpponentBidsActionDto();
-            $action->bid = Mapper::BidToDto( $bid );
-            
-            $validBids = $this->Game->AvailableBids->map(
-                function( $entry ) {
-                    return Mapper::BidToDto( $entry );
-                }
-            )->toArray();
-            $action->validBids = \array_values( $validBids );
-            
-            $action->nextPlayer = $nextPlayer;
-            $action->playState = $this->Game->PlayState;
-            
-            $action->MyCards = $playerCards->map(
-                function( $entry ) {
-                    return Mapper::CardToDto( $entry, $this->Game->GameCode, $this->Game->CurrentPlayer );
-                }
-            );
-            
-            $this->Send( $client, $action );
-        })();
-        Async\await( $promise );
-    }
-    
-    protected function EnginPlayCard( WebsocketClientInterface $client ): void
-    {
-        $playCardAction = $this->Engine->PlayCard();
-        
-        // Belote
-        if ( $playCardAction->Belote ) {
-            $belote = $this->Game->IsBeloteAllowed(
-                $this->Game->playerCards[$this->Game->CurrentPlayer->value],
-                $this->Game->CurrentContract->Trump,
-                $this->Game->GetTrickActions(),
-                $playCardAction->Card
-            );
-            
-            if ( $belote ) {
-                $announce = new Announce( AnnounceType::Belot, $playCardAction->Card );
-                
-                $announce->Player = $this->Game->CurrentPlayer;
-                $this->Game->announces[] = $announce;
-                
-                $action = new AnnounceMadeActionDto();
-                $action->announce = Mapper::AnnounceToDto( $announce, $this->Game->CurrentPlayer );
-                
-                $this->Send( $this->Clients->get( PlayerPosition::South->value ), $action );
-                $this->Send( $this->Clients->get( PlayerPosition::East->value ), $action );
-                $this->Send( $this->Clients->get( PlayerPosition::North->value ), $action );
-                $this->Send( $this->Clients->get( PlayerPosition::West->value ), $action );
-            }
-        }
-        
-        $promise = Async\async( function () use ( $client, $playCardAction ) {
-            $sleepMileseconds   = \rand( 700, 1200 );
-            Async\delay( $sleepMileseconds / 1000 );
-            
-            $nextPlayer = $this->Game->NextPlayer();
-            $this->Game->AddTrickAction( $playCardAction );
-            $this->Game->ValidCards = $this->Game->GetValidCards(
-                $this->Game->playerCards[$nextPlayer->value],
-                $this->Game->CurrentContract,
-                $this->Game->GetTrickActions()
-            );
-            
-            $action = new OpponentPlayCardActionDto();
-            $action->Card = Mapper::CardToDto( $playCardAction->Card, $this->Game->GameCode, $playCardAction->Player );
-            $action->Belote = $playCardAction->Belote;
-            $action->Player = $playCardAction->Player;
-            $action->TrickNumber = $playCardAction->TrickNumber;
-            
-            $action->validCards = $this->Game->ValidCards->map(
-                function( $entry ) use ( $nextPlayer ) {
-                    return Mapper::CardToDto( $entry, $this->Game->GameCode, $nextPlayer ); // PlayerPosition::South
-                }
-                )->getValues(); // ->toArray();
-                $action->nextPlayer = $nextPlayer;
-                
-                $this->Send( $client, $action );
-        })();
-        Async\await( $promise );
     }
     
     protected function GetWinner(): ?CardGameTeam

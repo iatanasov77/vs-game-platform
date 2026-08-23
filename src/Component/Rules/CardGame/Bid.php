@@ -13,6 +13,8 @@ class Bid
     public int $Value = 0;
     public EnumBitMask $Trump;
     
+    public bool $LastBid = false;
+    
     public function __construct( PlayerPosition $player, BidTrump $type )
     {
         $this->Player = $player;

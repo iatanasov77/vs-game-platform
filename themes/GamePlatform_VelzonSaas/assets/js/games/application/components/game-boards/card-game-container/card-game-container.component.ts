@@ -593,8 +593,6 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
             return;
         }
         
-        //this.started = true; // Needed to Show Contract
-        
         switch( dto.gameCode ) {
             case GameVariant.BRIDGE_BELOTE_CODE:
                 this.playWithComputerVisible = false;
@@ -608,9 +606,9 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
             case GameVariant.CONTRACT_BRIDGE_CODE:
                 this.playWithComputerVisible = false;
                 
-                //this.debugButtonsVisible = true;
-                // alert( 'Play State: ' + dto.playState );
-                this.openContractBridgeAuctionDialog();
+                if ( ! dto.LastBid ) {
+                    this.openContractBridgeAuctionDialog();
+                }
                 
                 break;
         }

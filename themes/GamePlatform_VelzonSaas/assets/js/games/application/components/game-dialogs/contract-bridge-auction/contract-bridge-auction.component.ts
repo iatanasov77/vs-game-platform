@@ -133,6 +133,7 @@ export class ContractBridgeAuctionComponent
             Player: this.myPosition,
             Value: bidValue,
             Trump: bidTrump,
+            LastBid: false,
             NextBids: []
         };
         //alert( JSON.stringify( bid ) );

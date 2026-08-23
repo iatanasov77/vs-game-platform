@@ -179,6 +179,7 @@ export class CardGameService extends AbstractGameService
             case ActionNames.opponentBids: {
                 const action = JSON.parse( message.data ) as OpponentBidsActionDto;
                 console.log( 'WebSocket Action Opponent Bids', action );
+                //alert( `Show Bidding -> LastBid: ${action.bid.LastBid}` );
                 
                 this.doBid( action.bid );
                 
@@ -186,7 +187,8 @@ export class CardGameService extends AbstractGameService
                     ...game,
                     validBids: action.validBids,
                     currentPlayer: action.nextPlayer,
-                    playState: action.playState
+                    playState: action.playState,
+                    LastBid: action.bid.LastBid
                 };
                 this.appState.cardGame.setValue( cGame );
                 this.statusMessageService.setTextMessage( cGame );
@@ -196,6 +198,7 @@ export class CardGameService extends AbstractGameService
             case ActionNames.playingStarted: {
                 const playingStartedAction = JSON.parse( message.data ) as PlayingStartedActionDto;
                 console.log( 'Playing Started Action', playingStartedAction );
+                // alert( `Playing Started -> Contract Owner: ${playingStartedAction.contract.Player}` )
                 
                 this.appState.playerCards.setValue( playingStartedAction.playerCards );
                 this.appState.playerAnnounces.setValue( playingStartedAction.playerAnnounces );

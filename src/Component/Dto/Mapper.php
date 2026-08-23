@@ -272,6 +272,8 @@ final class Mapper
         $bidDto->Value = $bid->Value;
         $bidDto->Trump = BidTrump::fromBitMaskValue( $bid->Trump->get() )->value();
         
+        $bidDto->LastBid = $bid->LastBid;
+        
         return $bidDto;
     }
     

@@ -5,6 +5,7 @@ import { GetAnnounceSymbol } from '@vankosoft/game-platform';
 import { CardGameAnnounceSymbolModel } from '@vankosoft/game-platform';
 
 import { PlayerPosition } from '@vankosoft/game-platform';
+import { ContractBridgeBidDto } from '@vankosoft/game-platform';
 import { BidTrump } from '@vankosoft/game-platform';
 import { BidDto } from '@vankosoft/game-platform';
 
@@ -137,23 +138,32 @@ export class BridgeBeloteContractComponent implements OnChanges
         if ( ! this.contract ) {
             return '';
         }
+        // alert( JSON.stringify( this.contract ) );
+        
+        let value: any = '';
+        if ( 'Value' in this.contract ) { //  && this.contract.Value
+            //alert( 'Type of Contract Value: ' + typeof value );
+            if ( this.contract.Value != 0 ) {
+                value = this.contract.Value;
+            }
+        }
         
         //console.log( 'Current Contract', this.contract );
         switch ( this.contract.Trump ) {
             case BidTrump.Clubs:
-                return '( <i class="fi fi-sr-club"></i> )';
+                return `( ${value}<i class="fi fi-sr-club"></i> )`;
                 break;
             case BidTrump.Diamonds:
-                return '( <i class="fi fi-sr-card-diamond"></i> )';
+                return `( ${value}<i class="fi fi-sr-card-diamond"></i> )`;
                 break;
             case BidTrump.Hearts:
-                return '( <i class="fi fi-sr-heart"></i> )';
+                return `( ${value}<i class="fi fi-sr-heart"></i> )`;
                 break;
             case BidTrump.Spades:
-                return '( <i class="fi fi-sr-spade"></i> )';
+                return `( ${value}<i class="fi fi-sr-spade"></i> )`;
                 break;
             case BidTrump.NoTrumps:
-                return '( a )';
+                return `( ${value}a )`;
                 break;
             case BidTrump.AllTrumps:
                 return '( j )';

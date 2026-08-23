@@ -506,6 +506,9 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         if ( dto && dto.playState === GameState.roundEnded ) {
             this.started = false;
             this.newRoundVisible = true;
+            
+            this.gameContractVisible = false;
+            this.gameBiddingVisible = false;
         }
         
         if ( dto && dto.playState === GameState.ended ) {

@@ -197,8 +197,10 @@ export class CardGameService extends AbstractGameService
             }
             case ActionNames.playingStarted: {
                 const playingStartedAction = JSON.parse( message.data ) as PlayingStartedActionDto;
+                
                 console.log( 'Playing Started Action', playingStartedAction );
-                // alert( `Playing Started -> Contract Owner: ${playingStartedAction.contract.Player}` )
+                // alert( `Playing Started -> Contract Owner: ${playingStartedAction.contract.Player}` );
+                // alert( `Playing Started -> First To Play: ${playingStartedAction.firstToPlay}` );
                 
                 this.appState.playerCards.setValue( playingStartedAction.playerCards );
                 this.appState.playerAnnounces.setValue( playingStartedAction.playerAnnounces );
@@ -243,6 +245,7 @@ export class CardGameService extends AbstractGameService
             case ActionNames.opponentPlayCard: {
                 const action = JSON.parse( message.data ) as OpponentPlayCardActionDto;
                 //console.log( 'WebSocket Action Opponent Play Card', action );
+                alert( `Opponent Play Card: ${action.Card.Suit}${action.Card.Type}` );
                 
                 this.doPlayCard( action.Card );
                 

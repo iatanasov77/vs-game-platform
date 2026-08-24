@@ -16,17 +16,12 @@ use Amp\DeferredCancellation;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use App\Component\Manager\CardGameManager;
 use App\Component\Websocket\Client\WebsocketClientInterface;
-
-use App\Component\Rules\CardGame\Player;
 use App\Component\Rules\CardGame\Card;
 use App\Component\Rules\CardGame\Bid;
 use App\Component\Rules\CardGame\Announce;
 use App\Component\Rules\CardGame\PlayCardAction;
 use App\Component\AI\EngineFactory as AiEngineFactory;
-use App\Component\Utils\Guid;
-use App\Component\Utils\HumanName;
 use App\Entity\GamePlayer;
-use App\Entity\TempPlayer;
 
 // Types
 use App\Component\Type\PlayerPosition;
@@ -114,76 +109,6 @@ class ContractBridgeGameManager extends CardGameManager
             
             //$this->dispatchGameEnded();
         }
-    }
-    
-    protected function CreateDbGame(): void
-    {
-        $southPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::South->value]->Id, PlayerPosition::South->value );
-        $eastPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::East->value]->Id, PlayerPosition::East->value );
-        $northPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::North->value]->Id, PlayerPosition::North->value );
-        $westPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::West->value]->Id, PlayerPosition::West->value );
-        
-        // Create Game Session
-        $gameBase   = $this->gameRepository->findOneBy(['slug' => $this->GameCode]);
-        $game       = $this->gamePlayFactory->createNew();
-        $game->setGame( $gameBase );
-        $game->setGuid( $this->Game->Id );
-        
-        $southPlayer->setGame( $game );
-        $eastPlayer->setGame( $game );
-        $northPlayer->setGame( $game );
-        $westPlayer->setGame( $game );
-        
-        $game->addGamePlayer( $southPlayer );
-        $game->addGamePlayer( $eastPlayer );
-        $game->addGamePlayer( $northPlayer );
-        $game->addGamePlayer( $westPlayer );
-        
-        $em = $this->doctrine->getManager();
-        $em->persist( $game );
-        $em->flush();
-    }
-    
-    protected function IsAi( ?string $guid ): bool
-    {
-        return $guid == GamePlayer::AiUser;
-    }
-    
-    protected function NewTurn( WebsocketClientInterface $socket ): void
-    {
-        $this->Game->SwitchPlayer();
-        
-        // Check/Set Trick Winner
-        if ( ! $this->ContinuePlay() ) {
-            //return;
-        }
-        
-        // Engine Bidding or Playing
-        $this->PlayRound( $socket );
-    }
-    
-    protected function AisTurn(): bool
-    {
-        switch ( $this->Game->CurrentPlayer ) {
-            case PlayerPosition::South:
-                $plyr = $this->Game->Players[PlayerPosition::South->value];
-                break;
-            case PlayerPosition::North:
-                $plyr = $this->Game->Players[PlayerPosition::North->value];
-                break;
-            case PlayerPosition::West:
-                $plyr = $this->Game->Players[PlayerPosition::West->value];
-                break;
-                break;
-            case PlayerPosition::East:
-                $plyr = $this->Game->Players[PlayerPosition::East->value];
-                break;
-            default:
-                throw new \RuntimeException( 'Wrong Current Player !' );
-        }
-        
-        $this->logger->log( "AisTurn CurrentPlayer: " . \print_r( $plyr, true ) , 'SwitchPlayer' );
-        return $plyr->IsAi();
     }
     
     protected function ContinuePlay(): bool
@@ -310,46 +235,5 @@ class ContractBridgeGameManager extends CardGameManager
         }
         
         return $firstToPlay;
-    }
-    
-    private function CreateTempPlayer( int $playerId, int $playerPositionId ): TempPlayer
-    {
-        $player = $this->playersRepository->find( $playerId );
-        
-        if ( $this->Game->IsGoldGame && $player->getGold() < self::firstBet ) {
-            throw new \RuntimeException( "Black player dont have enough gold" ); // Should be guarder earlier
-        }
-        
-        if ( $this->Game->IsGoldGame && ! $this->IsAi( $player->getGuid() ) ) {
-            $player->setGold( self::firstBet );
-        }
-        
-        $tempPlayer = $this->tempPlayersFactory->createNew();
-        $tempPlayer->setGuid( Guid::NewGuid() );
-        $tempPlayer->setPlayer( $player );
-        $tempPlayer->setPosition( $playerPositionId );
-        $tempPlayer->setName( $player->getName() );
-        $player->addGamePlayer( $tempPlayer );
-        
-        return $tempPlayer;
-    }
-    
-    private function InitializePlayer( GamePlayer $dbUser, bool $aiUser, Player &$player ): void
-    {
-        if ( $aiUser ) {
-            $playerName = HumanName::generate();
-        } else {
-            $playerName = $dbUser != null ? $dbUser->getName() : "Guest";
-        }
-        
-        $player->Id = $dbUser != null ? $dbUser->getId() : 0;
-        $player->Guid = $dbUser != null ? $dbUser->getGuid() : Guid::Empty();
-        $player->Name = $playerName;
-        $player->Photo = $dbUser != null && $dbUser->getShowPhoto() ? $this->getPlayerPhotoUrl( $dbUser ) : "";
-        $player->Elo = $dbUser != null ? $dbUser->getElo() : 0;
-        
-        if ( $this->Game->IsGoldGame ) {
-            $player->Gold = $dbUser != null ? $dbUser->getGold() - self::firstBet : 0;
-        }
     }
 }

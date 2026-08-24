@@ -47,11 +47,14 @@ class TricksManager
     
     public function GetValidCards( Collection $playerCards, Bid $currentContract, Collection $trickActions ): Collection
     {
+        return $playerCards;
+        /*  
         return $this->validCardsService->GetValidCards(
             $playerCards,
             $currentContract->Trump,
             $trickActions
         );
+        */
     }
     
     public function GetTrickNumber(): int

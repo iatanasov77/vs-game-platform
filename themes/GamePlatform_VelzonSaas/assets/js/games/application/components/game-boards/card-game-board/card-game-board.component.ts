@@ -545,7 +545,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         }
         
         const image = new Image( this.cardWidth, this.cardHeight );
-        image.src = "/build/gameplatform-velzonsaas-theme/images/Cards/BridgeBelote/back.png";
+        image.src = this.cardBack();
         
         var cardX = this.width / 2 - image.width / 2;
         var cardY = this.height / 2 - image.height / 2;
@@ -678,16 +678,8 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
                 angle = 0;
             }
             
-            var cardImagesPath, cardBack;
-            switch ( this.game.gameCode ) {
-                case GameVariant.BRIDGE_BELOTE_CODE:
-                    cardImagesPath = '/build/gameplatform-velzonsaas-theme/images/Cards/BridgeBelote';
-                    cardBack = `${cardImagesPath}/back.png`;
-                    break;
-                default:
-                    cardImagesPath = '/build/gameplatform-velzonsaas-theme/images/Cards/ContractBridge';
-                    cardBack = `${cardImagesPath}/blue_back.png`;
-            }
+            var cardImagesPath = this.cardImagesPath();
+            var cardBack = this.cardBack();
             
             Card.draw(
                 this.cx,
@@ -725,7 +717,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             return;
         }
         
-        let cardImagesPath = '/build/gameplatform-velzonsaas-theme/images/Cards/BridgeBelote';
+        let cardImagesPath = this.cardImagesPath();
         Pile.drawAsPile(
             this.cx,
             cardImagesPath,
@@ -1071,7 +1063,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             this.playerCards[PlayerPosition.west][0]
         ];
         
-        let cardImagesPath = '/build/gameplatform-velzonsaas-theme/images/Cards/BridgeBelote';
+        let cardImagesPath = this.cardImagesPath();
         Pile.drawAsPile(
             this.cx,
             cardImagesPath,
@@ -1082,5 +1074,28 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             this.cardHeight,
             this.theme
         );
+    }
+    
+    cardImagesPath(): string
+    {
+        switch ( this?.game?.gameCode ) {
+            case GameVariant.BRIDGE_BELOTE_CODE:
+                return '/build/gameplatform-velzonsaas-theme/images/Cards/BridgeBelote';
+                break;
+            default:
+                return '/build/gameplatform-velzonsaas-theme/images/Cards/ContractBridge';
+        }
+    }
+    
+    cardBack(): string
+    {
+        let cardImagesPath = this.cardImagesPath();
+        switch ( this?.game?.gameCode ) {
+            case GameVariant.BRIDGE_BELOTE_CODE:
+                return `${cardImagesPath}/back.png`;
+                break;
+            default:
+                return `${cardImagesPath}/blue_back.png`;
+        }
     }
 }

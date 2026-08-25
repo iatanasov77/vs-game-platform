@@ -284,7 +284,7 @@ abstract class CardGameManager extends AbstractGameManager
         
         // Check/Set Trick Winner
         if ( ! $this->ContinuePlay() ) {
-            //return;
+            return;
         }
         
         // Engine Bidding or Playing

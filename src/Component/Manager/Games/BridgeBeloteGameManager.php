@@ -108,8 +108,6 @@ class BridgeBeloteGameManager extends CardGameManager
     
     protected function ContinuePlay(): bool
     {
-        $this->logger->log( "Continue Play !!!", 'GameManager' );
-        
         $tricksWinner   = $this->Game->PlayRound();
         if ( $tricksWinner ) {
             if ( $this->Game->trickNumber > 8 ) {

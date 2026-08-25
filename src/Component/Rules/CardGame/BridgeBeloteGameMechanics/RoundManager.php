@@ -93,6 +93,8 @@ class RoundManager
                 $lastBidPlayer = $this->game->CurrentContract->Player;
             }
             
+            
+            $this->logger->log( "Bridge Belote -> Current Player: {$this->game->CurrentPlayer->toString()} Last BidPlayer: {$lastBidPlayer->toString()} Consecutive Passes: {$this->game->ConsecutivePasses}", 'RoundManager' );
             if ( $this->game->CurrentPlayer == $lastBidPlayer && $this->game->ConsecutivePasses == 3 ) {
                 $this->logger->log( 'Bridge Belote -> 3 Consecutive Passes !!!', 'RoundManager' );
                 

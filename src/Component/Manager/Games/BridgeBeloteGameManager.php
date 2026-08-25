@@ -108,6 +108,8 @@ class BridgeBeloteGameManager extends CardGameManager
     
     protected function ContinuePlay(): bool
     {
+        $this->logger->log( "Continue Play !!!", 'GameManager' );
+        
         $tricksWinner   = $this->Game->PlayRound();
         if ( $tricksWinner ) {
             if ( $this->Game->trickNumber > 8 ) {
@@ -120,7 +122,7 @@ class BridgeBeloteGameManager extends CardGameManager
             //sleep( 10 );
             $this->SendTrickWinner( $tricksWinner );
             
-            $this->logger->log( "Continue Play !!!", 'GameManager' );
+            $this->logger->log( "Continue Play with Trick Winner !!!", 'GameManager' );
             if ( $this->Game->PlayState != GameState::roundEnded && $this->AisTurn() ) {
                 $socket = $this->Clients->first();
                 $this->EnginPlayCard( $socket );
@@ -145,6 +147,12 @@ class BridgeBeloteGameManager extends CardGameManager
     
     protected function DoBid( BidMadeActionDto $action ): void
     {
+        $this->logger->log( "Bridge Belote DoBid: {$action->bid->Value}-{$action->bid->Trump}", 'GameManager' );
+        
+        if ( $action->bid->Trump == BidTrump::Pass->value() ) {
+            //$this->Game->ConsecutivePasses++;
+        }
+        
         $bid = new Bid( $action->bid->Player, BidTrump::fromValue( $action->bid->Trump ) );
         $bid->KontraPlayer = $action->bid->KontraPlayer;
         $bid->ReKontraPlayer = $action->bid->ReKontraPlayer;

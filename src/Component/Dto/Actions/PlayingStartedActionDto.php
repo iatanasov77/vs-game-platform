@@ -18,6 +18,7 @@ class PlayingStartedActionDto extends ActionDto
     
     // Contact Should Be a ContactDto that to have all Bids with Kontra and ReKontra
     public BidDto $contract;
+    public ?PlayerPosition $dummy;
     
     public array $validCards;
     public int $timer;

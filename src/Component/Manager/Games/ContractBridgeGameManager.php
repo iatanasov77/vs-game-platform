@@ -153,6 +153,10 @@ class ContractBridgeGameManager extends CardGameManager
         $bidValue = $action->bid->Value;
         $this->logger->log( "Contract Bridge DoBid: {$bidValue}", 'GameManager' );
         
+        if ( $action->bid->Trump == BidTrump::Pass->value() ) {
+            //$this->Game->ConsecutivePasses++;
+        }
+        
         $bid = new Bid( $action->bid->Player, BidTrump::fromValue( $action->bid->Trump ) );
         $bid->Value = $bidValue;
         $bid->KontraPlayer = $action->bid->KontraPlayer;

@@ -126,6 +126,11 @@ export class ContractBridgeAuctionComponent
     
     makeBid(): void
     {
+        if ( this.myPosition === PlayerPosition.neither ) {
+            alert( 'Make a Bid from Wrong Player Position !!!' );
+            return;
+        }
+        
         let bidValue = this.bidValue ? this.bidValue : 0;
         let bidTrump = this.bidTrump ? this.bidTrump : BidTrump.Pass;
         

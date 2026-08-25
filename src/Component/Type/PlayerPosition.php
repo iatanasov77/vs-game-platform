@@ -20,6 +20,7 @@ enum PlayerPosition: int
             PlayerPosition::East => 'east',
             PlayerPosition::North => 'north',
             PlayerPosition::West => 'west',
+            PlayerPosition::Neither => 'neither',
         };
     }
 }

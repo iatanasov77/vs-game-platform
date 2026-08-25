@@ -545,7 +545,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         }
         
         const image = new Image( this.cardWidth, this.cardHeight );
-        image.src = this.cardBack();
+        image.src = this.cardBack( this.game.gameCode );
         
         var cardX = this.width / 2 - image.width / 2;
         var cardY = this.height / 2 - image.height / 2;
@@ -678,8 +678,8 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
                 angle = 0;
             }
             
-            var cardImagesPath = this.cardImagesPath();
-            var cardBack = this.cardBack();
+            var cardImagesPath = this.cardImagesPath( this.game.gameCode );
+            var cardBack = this.cardBack( this.game.gameCode );
             
             Card.draw(
                 this.cx,
@@ -717,7 +717,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             return;
         }
         
-        let cardImagesPath = this.cardImagesPath();
+        let cardImagesPath = this.cardImagesPath( this.game.gameCode );
         Pile.drawAsPile(
             this.cx,
             cardImagesPath,
@@ -1063,22 +1063,24 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             this.playerCards[PlayerPosition.west][0]
         ];
         
-        let cardImagesPath = this.cardImagesPath();
-        Pile.drawAsPile(
-            this.cx,
-            cardImagesPath,
-            pile,
-            this.width,
-            this.height,
-            this.cardWidth,
-            this.cardHeight,
-            this.theme
-        );
+        if ( this.game ) {
+            let cardImagesPath = this.cardImagesPath( this.game.gameCode );
+            Pile.drawAsPile(
+                this.cx,
+                cardImagesPath,
+                pile,
+                this.width,
+                this.height,
+                this.cardWidth,
+                this.cardHeight,
+                this.theme
+            );
+        }
     }
     
-    cardImagesPath(): string
+    cardImagesPath( gameCode: string ): string
     {
-        switch ( this?.game?.gameCode ) {
+        switch ( gameCode ) {
             case GameVariant.BRIDGE_BELOTE_CODE:
                 return '/build/gameplatform-velzonsaas-theme/images/Cards/BridgeBelote';
                 break;
@@ -1087,10 +1089,10 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         }
     }
     
-    cardBack(): string
+    cardBack( gameCode: string ): string
     {
-        let cardImagesPath = this.cardImagesPath();
-        switch ( this?.game?.gameCode ) {
+        let cardImagesPath = this.cardImagesPath( gameCode );
+        switch (gameCode ) {
             case GameVariant.BRIDGE_BELOTE_CODE:
                 return `${cardImagesPath}/back.png`;
                 break;

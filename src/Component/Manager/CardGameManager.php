@@ -7,10 +7,12 @@ use Doctrine\Common\Collections\Collection;
 use React\Async;
 use Ratchet\RFC6455\Messaging\Frame;
 
+use App\Component\GameVariant;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Rules\CardGame\Game;
 use App\Component\Rules\CardGame\Deck;
 use App\Component\Rules\CardGame\Bid;
+use App\Component\Rules\CardGame\PlayerPositionExtensions;
 use App\Component\Dto\BidDto;
 use App\Component\Rules\CardGame\Player;
 use App\Component\Utils\Guid;
@@ -204,6 +206,7 @@ abstract class CardGameManager extends AbstractGameManager
             foreach ( $otherSockets as $otherSocket ) {
                 $this->Send( $otherSocket, $action );
             }
+            $this->logger->log( "Doing action opponentBids !!!", 'GameManager' );
         } else if ( $actionName == ActionNames::playCard ) {
             $this->Game->ThinkStart = new \DateTime( 'now' );
             $action = $this->serializer->deserialize( $actionText, PlayCardActionDto::class, JsonEncoder::FORMAT );
@@ -421,6 +424,10 @@ abstract class CardGameManager extends AbstractGameManager
         )->toArray();
         $playingStartedAction->timer = Game::ClientCountDown;
         
+        if ( $this->Game->GameCode == GameVariant::CONTRACT_BRIDGE_CODE ) {
+            $playingStartedAction->dummy = PlayerPositionExtensions::GetTeammate( $this->Game->CurrentContract->Player );
+        }
+        
         $this->Send( $this->Clients->get( PlayerPosition::South->value ), $playingStartedAction );
         $this->Send( $this->Clients->get( PlayerPosition::East->value ), $playingStartedAction );
         $this->Send( $this->Clients->get( PlayerPosition::North->value ), $playingStartedAction );
@@ -436,12 +443,16 @@ abstract class CardGameManager extends AbstractGameManager
     
     protected function EnginBids( WebsocketClientInterface $client ): void
     {
+        $this->logger->log( "Manager -> EnginBids", 'GameManager' );
+        
         // Debug Player Cards
         $playerCards = $this->Game->playerCards[$this->Game->CurrentPlayer->value];
         
-        $bid    = new Bid( $this->Game->CurrentPlayer, $this->Engine->DoBid() );
-        $bidDto = $this->_createBidDto( $bid );
+        $engineBid  = $this->Engine->DoBid();
+        $bid        = new Bid( $this->Game->CurrentPlayer, $engineBid );
+        $this->logger->log( "EnginBids -> BidTrump: {$engineBid->value()}", 'GameManager' );
         
+        $bidDto = $this->_createBidDto( $bid );
         $promise = Async\async( function () use ( $client, $bid, $bidDto, $playerCards ) {
             $sleepMileseconds   = \rand( 700, 1200 );
             Async\delay( $sleepMileseconds / 1000 );
@@ -620,6 +631,8 @@ abstract class CardGameManager extends AbstractGameManager
     
     protected function _createBidDto( Bid $bid ): BidDto
     {
+        $this->logger->log( "EnginBids -> Create BidDto !!!", 'GameManager' );
+        
         $bidDto = Mapper::BidToDto( $bid );
         $ConsecutivePasses = $this->Game->ConsecutivePasses;
         

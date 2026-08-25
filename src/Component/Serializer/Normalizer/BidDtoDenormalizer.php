@@ -23,10 +23,11 @@ class BidDtoDenormalizer implements DenormalizerInterface, DenormalizerAwareInte
         $dto            = new BidDto();
         
         $dto->Player    = PlayerPosition::from( $data['Player'] );
-        $dto->Value      = $data['Value'];
         $dto->Trump      = $data['Trump']; // BidTrump::fromValue( $data['Type'] )
-        $dto->LastBid    = $data['LastBid'];
         $dto->NextBids  = new ArrayCollection( $data['NextBids'] );
+        
+        $dto->Value = isset( $data['Value'] ) ? $data['Value'] : 0;
+        $dto->LastBid = $data['LastBid'];
         
         return $dto;
     }

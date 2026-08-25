@@ -80,6 +80,10 @@ export class BridgeBeloteContractComponent implements OnChanges
                     break;
                 case 'currentPlayer':
                     this.currentPlayer = changedProp.currentValue;
+                    
+                    /** Needed Because in Constructor Get Wrong My Position */
+                    this.myPosition = this.appStateService.myPosition.getValue();
+                    
                     break;
             }
         }
@@ -173,10 +177,10 @@ export class BridgeBeloteContractComponent implements OnChanges
         }
     }
     
-    makeBid( bidTrump: BidTrump )
+    makeBid( bidTrump: BidTrump ): void
     {
-        if ( this.myPosition < PlayerPosition.south && this.myPosition > PlayerPosition.west ) {
-            alert( 'Wrong Player Position !!!' );
+        if ( this.myPosition === PlayerPosition.neither ) {
+            // alert( `Make a Bid from Wrong Player Position. Currunt Player: ${this.currentPlayer}` );
             return;
         }
         

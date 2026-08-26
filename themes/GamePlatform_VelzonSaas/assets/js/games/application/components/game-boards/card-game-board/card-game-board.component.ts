@@ -84,6 +84,8 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
     @Input() deck: CardDto[] = [];
     @Input() pile: CardDto[] = [];
     @Input() myPosition: PlayerPosition | null = PlayerPosition.south;
+    @Input() dummyPlayer: PlayerPosition | null = PlayerPosition.neither;
+    @Input() dummyOwner: PlayerPosition | null = PlayerPosition.neither;
     @Input() themeName: string | null = 'card-game';
     @Input() timeLeft: number | null = 0;
     @Input() lobbyButtonsVisible: boolean = false;
@@ -226,11 +228,15 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             return false;
         }
         
-        if ( this.myPosition != this.game.currentPlayer ) {
+        if ( this.game.playState === GameState.ended ) {
             return false;
         }
         
-        if ( this.game.playState === GameState.ended ) {
+        if ( this.myPosition == this.dummyOwner ) {
+            return true;
+        }
+        
+        if ( this.myPosition != this.game.currentPlayer ) {
             return false;
         }
         
@@ -313,13 +319,18 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         }
         //console.log( 'Valid Cards', this.game.validCards );
         
+        // THIS IS WRONG WAY. SHOULD GENERATE VALID CARDS FOR DUMMY PLAYER IN BACKEND
+        var isDummy = Boolean( this.dummyPlayer && this.game.currentPlayer == this.dummyPlayer );
+        //alert( isDummy );
+        
         // resetting all
         this.cardAreas.forEach( ( rect ) => {
             rect.hasValidCard = false;
-            rect.canBePlayed = false;
+            //rect.canBePlayed = false;
+            rect.canBePlayed = isDummy;
         });
         
-        this.cxCursor = 'default';
+        this.cxCursor = isDummy ? 'pointer' : 'default';
         for ( let i = 0; i < this.cardAreas.length; i++ ) {
             const rect = this.cardAreas[i];
             if ( ! rect.contains( clientX, clientY ) ) {
@@ -680,6 +691,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             
             var cardImagesPath = this.cardImagesPath( this.game.gameCode );
             var cardBack = this.cardBack( this.game.gameCode );
+            var isDummy = Boolean( this.dummyPlayer && playerPosition == this.dummyPlayer );
             
             Card.draw(
                 this.cx,
@@ -692,6 +704,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
                 angle,
                 this.theme,
                 playerPosition,
+                isDummy,
                 highLight,
                 window.gamePlatformSettings.debugCardGamePlayerCards
             );

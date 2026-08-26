@@ -28,6 +28,7 @@ import { OpponentBidsActionDto } from '@vankosoft/game-platform';
 import { PlayingStartedActionDto } from '@vankosoft/game-platform';
 import { PlayCardActionDto } from '@vankosoft/game-platform';
 import { OpponentPlayCardActionDto } from '@vankosoft/game-platform';
+import { DummyFaceupActionDto } from '@vankosoft/game-platform';
 import { TrickEndedActionDto } from '@vankosoft/game-platform';
 import { RoundEndedActionDto } from '@vankosoft/game-platform';
 import { StartNewRoundActionDto } from '@vankosoft/game-platform';
@@ -202,7 +203,6 @@ export class CardGameService extends AbstractGameService
                 
                 // alert( `Playing Started -> Contract Owner: ${playingStartedAction.contract.Player}` );
                 // alert( `Playing Started -> First To Play: ${playingStartedAction.firstToPlay}` );
-                // alert( `PlayingStartedAction Dummy: ${playingStartedAction.dummy}` );
                 
                 this.appState.playerCards.setValue( playingStartedAction.playerCards );
                 this.appState.playerAnnounces.setValue( playingStartedAction.playerAnnounces );
@@ -210,7 +210,6 @@ export class CardGameService extends AbstractGameService
                 const cGame = {
                     ...game,
                     contract: playingStartedAction.contract,
-                    Dummy: playingStartedAction.dummy,
                     validBids: [],
                     validCards: playingStartedAction.validCards,
                     currentPlayer: playingStartedAction.firstToPlay,
@@ -260,6 +259,16 @@ export class CardGameService extends AbstractGameService
                 this.appState.cardGame.setValue( cGame );
                 this.statusMessageService.setTextMessage( cGame );
                 //console.log( 'Current Game', cGame );
+                
+                break;
+            }
+            case ActionNames.dummyFaceup: {
+                const action = JSON.parse( message.data ) as DummyFaceupActionDto;
+                // console.log( 'Dummy Faceup Action', action );
+                // alert( `Dummy Faceup Action : ${message.data}` );
+                
+                this.appState.dummyPlayer.setValue( action.DummyPlayer );
+                this.appState.dummyOwner.setValue( action.Player );
                 
                 break;
             }
@@ -377,7 +386,7 @@ export class CardGameService extends AbstractGameService
     sendBid( bid: BidDto ): void
     {
         // console.log( 'Player Send Bid', bid );
-        alert( `Player Send Bid: ${JSON.stringify( bid )}` );
+        // alert( `Player Send Bid: ${JSON.stringify( bid )}` );
         
         const game = this.appState.cardGame.getValue();
         

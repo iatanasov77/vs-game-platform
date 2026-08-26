@@ -20,6 +20,7 @@ use App\Component\Rules\CardGame\Card;
 use App\Component\Rules\CardGame\Bid;
 use App\Component\Rules\CardGame\Announce;
 use App\Component\Rules\CardGame\PlayCardAction;
+use App\Component\Rules\CardGame\PlayerPositionExtensions;
 use App\Component\AI\EngineFactory as AiEngineFactory;
 use App\Entity\GamePlayer;
 
@@ -34,6 +35,7 @@ use App\Component\Type\CardGameTeam;
 use App\Component\Dto\Mapper;
 use App\Component\Dto\Actions\BidMadeActionDto;
 use App\Component\Dto\Actions\PlayCardActionDto;
+use App\Component\Dto\Actions\DummyFaceupActionDto;
 use App\Component\Dto\Actions\AnnounceMadeActionDto;
 
 /**
@@ -109,6 +111,27 @@ class ContractBridgeGameManager extends CardGameManager
             
             //$this->dispatchGameEnded();
         }
+    }
+    
+    protected function IsDummy(): bool
+    {
+        $DummyPlayer = PlayerPositionExtensions::GetTeammate( $this->Game->CurrentContract->Player );
+        
+        return $this->Game->CurrentPlayer == $DummyPlayer;
+    }
+    
+    protected function DummyFaceupAction(): void
+    {
+        $DummyPlayer = PlayerPositionExtensions::GetTeammate( $this->Game->CurrentContract->Player );
+        
+        $action = new DummyFaceupActionDto();
+        $action->DummyPlayer    = $DummyPlayer;
+        $action->Player         = $this->Game->CurrentContract->Player;
+        
+        $this->Send( $this->Clients->get( PlayerPosition::South->value ), $action );
+        $this->Send( $this->Clients->get( PlayerPosition::East->value ), $action );
+        $this->Send( $this->Clients->get( PlayerPosition::North->value ), $action );
+        $this->Send( $this->Clients->get( PlayerPosition::West->value ), $action );
     }
     
     protected function ContinuePlay(): bool

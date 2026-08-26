@@ -260,9 +260,17 @@ abstract class AbstractGameManager implements GameManagerInterface
         }
     }
     
-    abstract protected function CreateDbGame(): void;
+    protected function IsAi( ?string $guid ): bool
+    {
+        return $guid == GamePlayer::AiUser;
+    }
     
-    abstract protected function IsAi( ?string $guid ): bool;
+    protected function IsDummy(): bool
+    {
+        return false;
+    }
+    
+    abstract protected function CreateDbGame(): void;
     
     abstract protected function NewTurn( WebsocketClientInterface $socket ): void;
     

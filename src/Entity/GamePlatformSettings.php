@@ -39,6 +39,11 @@ class GamePlatformSettings implements ResourceInterface
     #[ORM\Column(name: "debug_card_game_player_cards", type: "boolean", options: ["default" => 0], nullable: true)]
     private $debugCardGamePlayerCards = false;
     
+    /** @var bool 
+    #[ORM\Column(name: "debug_dummy_player_cards", type: "boolean", options: ["default" => 0], nullable: true)]
+    private $debugDummyPlayerCards = false;
+    */
+    
     public function getId()
     {
         return $this->id;
@@ -112,6 +117,18 @@ class GamePlatformSettings implements ResourceInterface
     public function setDebugCardGamePlayerCards($debugCardGamePlayerCards)
     {
         $this->debugCardGamePlayerCards  = $debugCardGamePlayerCards;
+        
+        return $this;
+    }
+    
+    public function getDebugDummyPlayerCards()
+    {
+        return $this->debugDummyPlayerCards;
+    }
+    
+    public function setDebugDummyPlayerCards($debugDummyPlayerCards)
+    {
+        $this->debugDummyPlayerCards  = $debugDummyPlayerCards;
         
         return $this;
     }

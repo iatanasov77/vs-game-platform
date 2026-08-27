@@ -14,10 +14,6 @@ class BridgeBeloteCard extends Card
     
     public CardType $Type;
     
-    public int $TrumpOrder;
-    
-    public int $NoTrumpOrder;
-    
     private static $TrumpOrders = [ 1, 2, 7, 5, 8, 3, 4, 6 ];
     
     private static $NoTrumpOrders = [ 1, 2, 3, 7, 4, 5, 6, 8 ];
@@ -46,21 +42,12 @@ class BridgeBeloteCard extends Card
         return $this->Type;
     }
     
-    public function TrumpOrder(): int
-    {
-        return $this->TrumpOrder;
-    }
-    
-    public function NoTrumpOrder(): int
-    {
-        return $this->NoTrumpOrder;
-    }
-    
     private function __construct( CardSuit $suit, CardType $type )
     {
         $this->hashCode = ( $suit->value * 8 ) + $type->value;
         $this->Suit = $suit;
         $this->Type = $type;
+        
         $this->TrumpOrder = self::$TrumpOrders[$this->Type->value];
         $this->NoTrumpOrder = self::$NoTrumpOrders[$this->Type->value];
     }

@@ -5,7 +5,6 @@ use BitMask\EnumBitMask;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-use App\EventListener\Event\CardGameRoundEndedEvent;
 use App\Component\GameLogger;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerPosition;
@@ -86,9 +85,6 @@ class RoundManager
                 $this->logger->log( '4 Consecutive Passes !!!', 'RoundManager' );
                 
                 $this->game->PlayState = GameState::roundEnded;
-                /*  Implemented In Game Manager Event is Not Needed
-                $this->eventDispatcher->dispatch( new CardGameRoundEndedEvent( $this->game ), CardGameRoundEndedEvent::NAME );
-                */
             }
             
             //$this->logger->log( 'CurrentContract: ' . \print_r( $this->game->CurrentContract, true ), 'RoundManager' );
@@ -103,11 +99,6 @@ class RoundManager
             if ( $this->game->CurrentPlayer == $lastBidPlayer && $this->game->ConsecutivePasses == 3 ) {
                 $this->logger->log( "Contract Bridge -> 3 Consecutive Passes !!! {$this->game->CurrentContract->Player->value} -> {$this->game->CurrentContract->Value}", 'RoundManager' );
                 
-                /* DEBUG CURRENT CONTRACT 
-                $contractValue = $this->game->CurrentContract->Value;
-                $contractTrump = BidTrump::fromBitMaskValue( $this->game->CurrentContract->Trump->get() )->value;
-                $this->logger->log( "Contract: {$contractValue}{$contractTrump}", 'RoundManager' );
-                */
                 $this->game->PlayState = GameState::firstRound;
             }
         }
@@ -115,9 +106,10 @@ class RoundManager
         if ( $this->game->PlayState == GameState::playing ) {
             $this->logger->log( "Trick Number: {$this->game->trickNumber}", 'RoundManager' );
             if ( $this->tricksManager->GetTrickActionNumber() == 4 ) {
-                $this->logger->log( "4 tTrick Actions !!!", 'RoundManager' );
                 $this->game->trickNumber++;
-                return $this->tricksManager->GetTricksWinner();
+                $trickWinner = $this->tricksManager->GetTricksWinner();
+                
+                return $trickWinner;
             }
         }
         

@@ -75,7 +75,6 @@ class ContractBridgeEngine extends Engine
         $context->Bids = $this->EngineGame->Bids;
         $context->CurrentContract = $this->EngineGame->CurrentContract;
         $context->MyCards = $this->EngineGame->playerCards[$this->EngineGame->CurrentPlayer->value];
-        //$context->Announces = $this->EngineGame->GetAvailableAnnounces( $this->EngineGame->playerCards[$this->EngineGame->CurrentPlayer->value] );
         $context->CurrentTrickActions = $this->EngineGame->GetTrickActions();
         $context->RoundActions = $this->EngineGame->GetTrickActions();
         $context->AvailableCardsToPlay = $availableCards;
@@ -105,8 +104,10 @@ class ContractBridgeEngine extends Engine
     
     private function _PlayCard( PlayerPlayCardContext $context ): PlayCardAction
     {
+        $this->logger->log( "Trick Actions Count: {$context->CurrentTrickActions->count()}", 'GameManager' );
+        
         // DEBUG
-        return new PlayCardAction( $context->AvailableCardsToPlay->first(), false );
+        //return new PlayCardAction( $context->AvailableCardsToPlay->first(), false );
         
         $playedCards = new ArrayCollection();
         foreach ( $context->RoundActions as $action ) {
@@ -115,11 +116,7 @@ class ContractBridgeEngine extends Engine
             }
         }
         
-        if ( $context->CurrentContract->Trump->has( BidTrump::AllTrumps ) ) {
-            $strategy = PlayerPositionExtensions::IsInSameTeamWith( $context->CurrentContract->Player, $context->MyPosition )
-                            ? $this->allTrumpsOursContractStrategy
-                            : $this->allTrumpsTheirsContractStrategy;
-        } else if ( $context->CurrentContract->Trump->has( BidTrump::NoTrumps ) ) {
+        if ( $context->CurrentContract->Trump->has( BidTrump::NoTrumps ) ) {
             $strategy = PlayerPositionExtensions::IsInSameTeamWith( $context->CurrentContract->Player, $context->MyPosition )
                             ? $this->noTrumpsOursContractStrategy
                             : $this->noTrumpsTheirsContractStrategy;
@@ -151,25 +148,5 @@ class ContractBridgeEngine extends Engine
                     $this->trickWinnerService->GetWinner( $context->CurrentContract, $context->CurrentTrickActions )
                 );
         }
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        $suit = BidTrump::fromBitMaskValue( $context->CurrentContract->Trump->get() );
-        $trumpSuit = BidTrumpExtensions::ToCardSuit( $suit );
-        
-        $cardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
-        $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {
-            return $b->NoTrumpOrder <=> $a->NoTrumpOrder;
-        });
-        $availableCards = new ArrayCollection( \iterator_to_array( $cardsToPlayIterator ) );
-        
-        return new PlayCardAction( $availableCards->first() );
     }
 }

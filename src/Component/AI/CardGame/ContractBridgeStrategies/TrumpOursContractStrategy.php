@@ -30,7 +30,7 @@ class TrumpOursContractStrategy implements IPlayStrategy
             }
         )->count();
         
-        if ( ( $playedCardsFromTrump + $myCardsFromTrump ) == 8 ) {
+        if ( ( $playedCardsFromTrump + $myCardsFromTrump ) == 13 ) {
             // No trump cards in other players
             foreach ( $context->AvailableCardsToPlay as $card ) {
                 if ( $card->Suit != $trumpSuit && $card->Type == CardType::Ace )
@@ -102,14 +102,6 @@ class TrumpOursContractStrategy implements IPlayStrategy
                 }
             }
         }
-        
-        //// if (context.AvailableCardsToPlay.HasAnyOfSuit(context.CurrentContract.Type.ToCardSuit()))
-        //// {
-        ////     Interlocked.Increment(ref GlobalCounters.Counters[1]);
-        ////     return new PlayCardAction(
-        ////         context.AvailableCardsToPlay.Where(x => x.Suit == context.CurrentContract.Type.ToCardSuit())
-        ////             .Highest(x => x.TrumpOrder));
-        //// }
         
         $cardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
         $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {

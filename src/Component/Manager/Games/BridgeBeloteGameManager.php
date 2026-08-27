@@ -198,6 +198,50 @@ class BridgeBeloteGameManager extends CardGameManager
         $this->Game->AddTrickAction( $trickAction );
     }
     
+    protected function EnginPlayCard( WebsocketClientInterface $client ): void
+    {
+        $playCardAction = $this->Engine->PlayCard();
+        $this->logger->log( "EnginPlayCard: {$playCardAction->Card->Type->value}", 'GameManager' );
+        
+        // Belote
+        if ( $playCardAction->Belote ) {
+            $belote = $this->Game->IsBeloteAllowed(
+                $this->Game->playerCards[$this->Game->CurrentPlayer->value],
+                $this->Game->CurrentContract->Trump,
+                $this->Game->GetTrickActions(),
+                $playCardAction->Card
+            );
+            
+            if ( $belote ) {
+                $announce = new Announce( AnnounceType::Belot, $playCardAction->Card );
+                
+                $announce->Player = $this->Game->CurrentPlayer;
+                $this->Game->announces[] = $announce;
+                
+                $action = new AnnounceMadeActionDto();
+                $action->announce = Mapper::AnnounceToDto( $announce, $this->Game->CurrentPlayer );
+                
+                $this->Send( $this->Clients->get( PlayerPosition::South->value ), $action );
+                $this->Send( $this->Clients->get( PlayerPosition::East->value ), $action );
+                $this->Send( $this->Clients->get( PlayerPosition::North->value ), $action );
+                $this->Send( $this->Clients->get( PlayerPosition::West->value ), $action );
+            }
+        }
+        
+        $promise = Async\async( function () use ( $client, $playCardAction ) {
+            $sleepMileseconds   = \rand( 700, 1200 );
+            Async\delay( $sleepMileseconds / 1000 );
+            
+            if ( $this->IsDummy() && ! $this->Game->DummyPlayer ) {
+                $this->DummyFaceupAction();
+            } else {
+                $this->OpponentPlayCardAction( $playCardAction, $client );
+            }
+            
+        })();
+        Async\await( $promise );
+    }
+    
     protected function GetWinner(): ?CardGameTeam
     {
         $winner = null;

@@ -13,6 +13,10 @@ abstract class Card
     
     public CardSuit $Suit;
     
+    public int $TrumpOrder;
+    
+    public int $NoTrumpOrder;
+    
     protected int $hashCode;
     
     public static function Equals( Card $left, Card $right ): bool
@@ -33,6 +37,16 @@ abstract class Card
     public function GetHashCode(): int
     {
         return $this->hashCode;
+    }
+    
+    public function TrumpOrder(): int
+    {
+        return $this->TrumpOrder;
+    }
+    
+    public function NoTrumpOrder(): int
+    {
+        return $this->NoTrumpOrder;
     }
     
     public function __toString(): string

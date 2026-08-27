@@ -18,6 +18,10 @@ class ContractBridgeCard extends Card
     
     public CardType $Type;
     
+    private static $TrumpOrders = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ];
+    
+    private static $NoTrumpOrders = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ];
+    
     public static function instance()
     {
         self::$AllCards = new ArrayCollection();
@@ -47,5 +51,8 @@ class ContractBridgeCard extends Card
         $this->hashCode = ( $suit->value * 13 ) + $type->value;
         $this->Suit = $suit;
         $this->Type = $type;
+        
+        $this->TrumpOrder = self::$TrumpOrders[$this->Type->value];
+        $this->NoTrumpOrder = self::$NoTrumpOrders[$this->Type->value];
     }
 }

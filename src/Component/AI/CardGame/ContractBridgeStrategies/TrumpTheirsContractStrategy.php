@@ -30,7 +30,7 @@ class TrumpTheirsContractStrategy implements IPlayStrategy
             }
         )->count();
         
-        if ( ( $playedCardsFromTrump + $myCardsFromTrump ) == 8 ) {
+        if ( ( $playedCardsFromTrump + $myCardsFromTrump ) == 13 ) {
             // No trump cards in other players
             foreach ( $context->AvailableCardsToPlay as $card ) {
                 if ( $card->Suit != $trumpSuit && $card->Type == CardType::Ace )

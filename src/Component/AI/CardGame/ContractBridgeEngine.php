@@ -81,8 +81,7 @@ class ContractBridgeEngine extends Engine
         $context->AvailableCardsToPlay = $availableCards;
         $context->CurrentTrickNumber = $this->EngineGame->trickNumber;
         
-        //$action = $this->_PlayCard( $context );
-        $action = new PlayCardAction( $availableCards->first(), false );
+        $action = $this->_PlayCard( $context );
         
         // Update information after the action
         $this->EngineGame->playerCards[$this->EngineGame->CurrentPlayer->value]->removeElement( $action->Card );
@@ -106,6 +105,9 @@ class ContractBridgeEngine extends Engine
     
     private function _PlayCard( PlayerPlayCardContext $context ): PlayCardAction
     {
+        // DEBUG
+        return new PlayCardAction( $context->AvailableCardsToPlay->first(), false );
+        
         $playedCards = new ArrayCollection();
         foreach ( $context->RoundActions as $action ) {
             if ( $action->TrickNumber < $context->CurrentTrickNumber ) {

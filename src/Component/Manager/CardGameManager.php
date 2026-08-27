@@ -225,7 +225,6 @@ abstract class CardGameManager extends AbstractGameManager
                 
                 $this->Game->DummyPlayer    = $DummyPlayer;
                 $this->Game->DummyOwner     = $this->Game->CurrentContract->Player;
-                $this->Game->DummyFaceup    = true;
             }
             
             $this->Game->ThinkStart = new \DateTime( 'now' );
@@ -296,7 +295,7 @@ abstract class CardGameManager extends AbstractGameManager
     protected function NewTurn( WebsocketClientInterface $socket ): void
     {
         /** $this->Game->DummyFaceup May be Uneeded */
-        if ( $this->Game->PlayState == GameState::playing && $this->IsDummy() && ! $this->Game->DummyFaceup ) {
+        if ( $this->Game->PlayState == GameState::playing && $this->IsDummy() ) {
             return;
         }
         

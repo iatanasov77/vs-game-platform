@@ -33,7 +33,7 @@ class TrickWinnerService
         } else {
             $suit = BidTrump::fromBitMaskValue( $contract->Trump->get() );
             $trumpSuit = BidTrumpExtensions::ToCardSuit( $suit );
-            //// TODO: Remove this check and merge conditions
+            // @TODO: Remove this check and merge conditions
             
             $trumpSuitActions  = $trickActions->filter(
                 function( $entry ) use ( $trumpSuit ) {

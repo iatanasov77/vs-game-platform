@@ -44,7 +44,7 @@ use App\Component\Dto\Actions\AnnounceMadeActionDto;
  * ContractBridgeGame Engine in Phython: https://github.com/lorserker/ben
  * ContractBridgeGame in C#: https://github.com/PatrykkMar/Bridget
  * 
- * Use Conract Bridge Library: https://github.com/garak/bridge
+ * Use Contract Bridge Library: https://github.com/garak/bridge
  */
 class ContractBridgeGameManager extends CardGameManager
 {

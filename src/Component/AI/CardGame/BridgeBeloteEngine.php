@@ -12,7 +12,7 @@ use App\Component\Type\PlayerPosition;
 use App\Component\Rules\CardGame\Game;
 use App\Component\Rules\CardGame\ValidCardsService;
 use App\Component\Rules\CardGame\ValidAnnouncesService;
-use App\Component\Rules\CardGame\TrickWinnerService;
+use App\Component\Rules\CardGame\BridgeBeloteGameMechanics\TrickWinnerService;
 use App\Component\Rules\CardGame\BridgeBeloteCard as Card;
 use App\Component\Rules\CardGame\PlayCardAction;
 use App\Component\Rules\CardGame\Announce;

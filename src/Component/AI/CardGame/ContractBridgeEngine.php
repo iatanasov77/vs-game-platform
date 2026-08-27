@@ -8,6 +8,7 @@ use App\Component\Type\BidTrump;
 use App\Component\Rules\CardGame\Game;
 use App\Component\Rules\CardGame\PlayCardAction;
 use App\Component\Rules\CardGame\ValidCardsService;
+use App\Component\Rules\CardGame\ContractBridgeGameMechanics\TrickWinnerService;
 
 // Contexts
 use App\Component\Rules\CardGame\Context\PlayerGetBidContext;

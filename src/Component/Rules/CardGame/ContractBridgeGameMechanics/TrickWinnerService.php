@@ -1,4 +1,4 @@
-<?php namespace App\Component\Rules\CardGame;
+<?php namespace App\Component\Rules\CardGame\ContractBridgeGameMechanics;
 
 use Doctrine\Common\Collections\Collection;
 use App\Component\Type\PlayerPosition;
@@ -46,7 +46,7 @@ class TrickWinnerService
                     if ( $trickActions[$i]->Card->Suit == $trumpSuit ) {
                         if ( $bestAction->Card->Suit != $trumpSuit ) {
                             $bestAction = $trickActions[$i];
-                        } else if ( $trickActions[$i]->Card->TrumpOrder > $bestAction->Card->TrumpOrder) {
+                        } else if ( $trickActions[$i]->Card->TrumpOrder > $bestAction->Card->TrumpOrder ) {
                             $bestAction = $trickActions[$i];
                         }
                     }

@@ -1,4 +1,4 @@
-<?php namespace App\Component\Rules\CardGame\ConractBridgeGameMechanics;
+<?php namespace App\Component\Rules\CardGame\ContractBridgeGameMechanics;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use BitMask\EnumBitMask;
@@ -113,7 +113,9 @@ class RoundManager
         }
         
         if ( $this->game->PlayState == GameState::playing ) {
+            $this->logger->log( "Trick Number: {$this->game->trickNumber}", 'RoundManager' );
             if ( $this->tricksManager->GetTrickActionNumber() == 4 ) {
+                $this->logger->log( "4 tTrick Actions !!!", 'RoundManager' );
                 $this->game->trickNumber++;
                 return $this->tricksManager->GetTricksWinner();
             }
@@ -145,6 +147,7 @@ class RoundManager
     public function AddTrickAction( PlayCardAction $action ): void
     {
         $this->tricksManager->AddTrickAction( $action );
+        $this->logger->log( "Add Trick Action: {$this->tricksManager->GetTrickActionNumber()}", 'RoundManager' );
     }
     
     public function GetScore(

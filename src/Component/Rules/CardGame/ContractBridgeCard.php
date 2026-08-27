@@ -6,7 +6,7 @@ use App\Component\Type\ContractBridgeCardType as CardType;
 use App\Component\Type\CardSuit;
 
 /**
- * Use Conract Bridge Library: https://github.com/garak/bridge
+ * Use Contract Bridge Library: https://github.com/garak/bridge
  */
 class ContractBridgeCard extends Card
 {

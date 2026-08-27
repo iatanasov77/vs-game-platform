@@ -6,13 +6,13 @@ use Doctrine\Common\Collections\Collection;
 
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\BidTrump;
-use App\Component\Rules\CardGame\ConractBridgeGameMechanics\RoundManager;
+use App\Component\Rules\CardGame\ContractBridgeGameMechanics\RoundManager;
 
 /**
  * ContractBridgeGame Engine in Phython: https://github.com/lorserker/ben
  * ContractBridgeGame in C#: https://github.com/PatrykkMar/Bridget
  * 
- * Conract Bridge PHP Library: https://github.com/garak/bridge
+ * Contract Bridge PHP Library: https://github.com/garak/bridge
  */
 class ContractBridgeGame extends Game
 {

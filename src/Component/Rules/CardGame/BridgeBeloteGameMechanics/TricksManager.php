@@ -12,9 +12,6 @@ use App\Component\Type\PlayerPosition;
 use App\Component\Rules\CardGame\Card;
 use App\Component\Rules\CardGame\Bid;
 use App\Component\Rules\CardGame\PlayCardAction;
-use App\Component\Rules\CardGame\TrickWinnerService;
-use App\Component\Rules\CardGame\ValidCardsService;
-use App\Component\Rules\CardGame\ValidAnnouncesService;
 
 class TricksManager
 {

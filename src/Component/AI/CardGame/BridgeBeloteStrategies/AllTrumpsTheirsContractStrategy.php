@@ -1,4 +1,4 @@
-<?php namespace App\Component\AI\CardGame\Strategies;
+<?php namespace App\Component\AI\CardGame\BridgeBeloteStrategies;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -10,8 +10,10 @@ use App\Component\Rules\CardGame\PlayCardAction;
 use App\Component\Rules\CardGame\BridgeBeloteCard as Card;
 use App\Component\Rules\CardGame\CardExtensions;
 use App\Component\Rules\CardGame\PlayerPositionExtensions;
+use App\Component\AI\CardGame\IPlayStrategy;
+use App\Component\AI\CardGame\CardHelpers;
 
-class AllTrumpsOursContractStrategy implements IPlayStrategy
+class AllTrumpsTheirsContractStrategy implements IPlayStrategy
 {
     public function PlayFirst( PlayerPlayCardContext $context, Collection $playedCards ): PlayCardAction
     {
@@ -20,7 +22,7 @@ class AllTrumpsOursContractStrategy implements IPlayStrategy
             $context->AvailableCardsToPlay,
             $context->MyCards,
             $playedCards,
-            3
+            1
         );
         if ( $card != null ) {
             return new PlayCardAction( $card );
@@ -41,13 +43,13 @@ class AllTrumpsOursContractStrategy implements IPlayStrategy
                 }
             )->isEmpty();
             if ( $hasTeammateBid && $hasTeammateBidCard ) {
-                return new PlayCardAction(
-                    $context->AvailableCardsToPlay->filter(
-                        function( $entry ) use ( $cardSuit ) {
-                            return $entry && $entry->Suit == $cardSuit;
-                        }
-                    )->first() // .Lowest(x => x.TrumpOrder)
-                );
+                $availableCardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
+                $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
+                    return $a->TrumpOrder <=> $b->TrumpOrder;
+                });
+                $availableCards = new ArrayCollection( \iterator_to_array( $availableCardsToPlayIterator ) );
+                
+                return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.TrumpOrder)
             }
         }
         
@@ -60,13 +62,9 @@ class AllTrumpsOursContractStrategy implements IPlayStrategy
             }
         }
         
-        $availableCardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
-        $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
-            return $a->TrumpOrder <=> $b->TrumpOrder;
-        });
-        $availableCards = new ArrayCollection( \iterator_to_array( $availableCardsToPlayIterator ) );
-        
-        return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.TrumpOrder)
+        return new PlayCardAction(
+            $context->AvailableCardsToPlay->first() // .Lowest(x => x.TrumpOrder)
+        );
     }
     
     public function PlaySecond( PlayerPlayCardContext $context, Collection $playedCards ): PlayCardAction

@@ -10,8 +10,8 @@ use App\Component\Type\CardSuit;
 use App\Component\GameLogger;
 use App\Component\Type\PlayerPosition;
 use App\Component\Rules\CardGame\Game;
-use App\Component\Rules\CardGame\ValidCardsService;
-use App\Component\Rules\CardGame\ValidAnnouncesService;
+use App\Component\Rules\CardGame\BridgeBeloteGameMechanics\ValidCardsService;
+use App\Component\Rules\CardGame\BridgeBeloteGameMechanics\ValidAnnouncesService;
 use App\Component\Rules\CardGame\BridgeBeloteGameMechanics\TrickWinnerService;
 use App\Component\Rules\CardGame\BridgeBeloteCard as Card;
 use App\Component\Rules\CardGame\PlayCardAction;
@@ -23,13 +23,12 @@ use App\Component\Rules\CardGame\Context\PlayerGetBidContext;
 use App\Component\Rules\CardGame\Context\PlayerPlayCardContext;
 
 // Strategies
-use App\Component\AI\CardGame\Strategies\IPlayStrategy;
-use App\Component\AI\CardGame\Strategies\AllTrumpsOursContractStrategy;
-use App\Component\AI\CardGame\Strategies\AllTrumpsTheirsContractStrategy;
-use App\Component\AI\CardGame\Strategies\NoTrumpsOursContractStrategy;
-use App\Component\AI\CardGame\Strategies\NoTrumpsTheirsContractStrategy;
-use App\Component\AI\CardGame\Strategies\TrumpOursContractStrategy;
-use App\Component\AI\CardGame\Strategies\TrumpTheirsContractStrategy;
+use App\Component\AI\CardGame\BridgeBeloteStrategies\AllTrumpsOursContractStrategy;
+use App\Component\AI\CardGame\BridgeBeloteStrategies\AllTrumpsTheirsContractStrategy;
+use App\Component\AI\CardGame\BridgeBeloteStrategies\NoTrumpsOursContractStrategy;
+use App\Component\AI\CardGame\BridgeBeloteStrategies\NoTrumpsTheirsContractStrategy;
+use App\Component\AI\CardGame\BridgeBeloteStrategies\TrumpOursContractStrategy;
+use App\Component\AI\CardGame\BridgeBeloteStrategies\TrumpTheirsContractStrategy;
 
 /**
  * BelotGameEngine in C#: https://github.com/NikolayIT/BelotGameEngine
@@ -39,8 +38,11 @@ class BridgeBeloteEngine extends Engine
     /** @var ValidCardsService */
     private $validCardsService;
     
-    private ValidAnnouncesService $validAnnouncesService;
-    private TrickWinnerService $trickWinnerService;
+    /** @var ValidAnnouncesService */
+    private $validAnnouncesService;
+    
+    /** @var TrickWinnerService */
+    private $trickWinnerService;
     
     private IPlayStrategy $allTrumpsOursContractStrategy;
     private IPlayStrategy $allTrumpsTheirsContractStrategy;

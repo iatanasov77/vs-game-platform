@@ -1,4 +1,4 @@
-<?php namespace App\Component\AI\CardGame\Strategies;
+<?php namespace App\Component\AI\CardGame;
 
 use Doctrine\Common\Collections\Collection;
 use App\Component\Type\BridgeBeloteCardType as CardType;

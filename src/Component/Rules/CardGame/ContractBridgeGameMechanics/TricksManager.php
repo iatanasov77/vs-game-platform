@@ -11,7 +11,6 @@ use App\Component\Type\GameState;
 use App\Component\Type\PlayerPosition;
 use App\Component\Rules\CardGame\Bid;
 use App\Component\Rules\CardGame\PlayCardAction;
-use App\Component\Rules\CardGame\ValidCardsService;
 
 class TricksManager
 {

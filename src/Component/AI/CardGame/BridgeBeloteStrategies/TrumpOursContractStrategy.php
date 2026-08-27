@@ -1,0 +1,176 @@
+<?php namespace App\Component\AI\CardGame\BridgeBeloteStrategies;
+
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+
+use App\Component\Type\PlayerPosition;
+use App\Component\Type\BridgeBeloteCardType as CardType;
+use App\Component\Type\BidTrump;
+use App\Component\Rules\CardGame\Context\PlayerPlayCardContext;
+use App\Component\Rules\CardGame\PlayCardAction;
+use App\Component\Rules\CardGame\BridgeBeloteCard as Card;
+use App\Component\Rules\CardGame\BidTrumpExtensions;
+use App\Component\Rules\CardGame\PlayerPositionExtensions;
+use App\Component\AI\CardGame\IPlayStrategy;
+
+class TrumpOursContractStrategy implements IPlayStrategy
+{
+    public function PlayFirst( PlayerPlayCardContext $context, Collection $playedCards ): PlayCardAction
+    {
+        $suit = BidTrump::fromBitMaskValue( $context->CurrentContract->Trump->get() );
+        $trumpSuit = BidTrumpExtensions::ToCardSuit( $suit );
+        $playedCardsFromTrump = $playedCards->filter(
+            function( $entry ) use ( $trumpSuit ) {
+                return $entry->Suit == $trumpSuit;
+            }
+        )->count();
+        $myCardsFromTrump = $context->MyCards->filter(
+            function( $entry ) use ( $trumpSuit ) {
+                return $entry->Suit == $trumpSuit;
+            }
+        )->count();
+        
+        if ( ( $playedCardsFromTrump + $myCardsFromTrump ) == 8 ) {
+            // No trump cards in other players
+            foreach ( $context->AvailableCardsToPlay as $card ) {
+                if ( $card->Suit != $trumpSuit && $card->Type == CardType::Ace )
+                {
+                    return new PlayCardAction( $card );
+                }
+                
+                if ( $card->Suit != $trumpSuit && $card->Type == CardType::Ten
+                    && $playedCards->contains( Card::GetCard( $card->Suit, CardType::Ace ) )
+                ) {
+                    return new PlayCardAction( $card );
+                }
+                
+                if ( $card->Suit != $trumpSuit && $card->Type == CardType::King
+                    && $playedCards->contains( Card::GetCard( $card->Suit, CardType::Ten ) )
+                    && $playedCards->contains( Card::GetCard( $card->Suit, CardType::Ace ) )
+                ) {
+                    return new PlayCardAction( $card );
+                }
+                
+                if ( $card->Suit != $trumpSuit && $card->Type == CardType::Queen
+                    && $playedCards->contains( Card::GetCard( $card->Suit, CardType::King ) )
+                    && $playedCards->contains( Card::GetCard( $card->Suit, CardType::Ten ) )
+                    && $playedCards->contains( Card::GetCard( $card->Suit, CardType::Ace ) )
+                ) {
+                    return new PlayCardAction( $card );
+                }
+                
+                if ( $card->Suit != $trumpSuit && $card->Type == CardType::Jack
+                    && $playedCards->contains( Card::GetCard( $card->Suit, CardType::Queen ) )
+                    && $playedCards->contains( Card::GetCard( $card->Suit, CardType::King ) )
+                    && $playedCards->contains( Card::GetCard( $card->Suit, CardType::Ten ) )
+                    && $playedCards->contains( Card::GetCard( $card->Suit, CardType::Ace ) )
+                ) {
+                    return new PlayCardAction( $card );
+                }
+                
+                if ( $card->Suit != $trumpSuit && $card->Type == CardType::Nine
+                    && $playedCards->contains( Card::GetCard( $card->Suit, CardType::Jack ) )
+                    && $playedCards->contains( Card::GetCard( $card->Suit, CardType::Queen ) )
+                    && $playedCards->contains( Card::GetCard( $card->Suit, CardType::King ) )
+                    && $playedCards->contains( Card::GetCard( $card->Suit, CardType::Ten ) )
+                    && $playedCards->contains( Card::GetCard( $card->Suit, CardType::Ace ) )
+                ) {
+                    return new PlayCardAction( $card );
+                }
+                
+                if ( $card->Suit != $trumpSuit && $card->Type == CardType::Eight
+                    && $playedCards->contains( Card::GetCard( $card->Suit, CardType::Nine ) )
+                    && $playedCards->contains( Card::GetCard( $card->Suit, CardType::Jack ) )
+                    && $playedCards->contains( Card::GetCard( $card->Suit, CardType::Queen ) )
+                    && $playedCards->contains( Card::GetCard( $card->Suit, CardType::King ) )
+                    && $playedCards->contains( Card::GetCard( $card->Suit, CardType::Ten ) )
+                    && $playedCards->contains( Card::GetCard( $card->Suit, CardType::Ace ) )
+                ) {
+                    return new PlayCardAction( $card );
+                }
+                
+                if ( $card->Suit != $trumpSuit && $card->Type == CardType::Seven
+                    && $playedCards->contains( Card::GetCard( $card->Suit, CardType::Eight ) )
+                    && $playedCards->contains( Card::GetCard( $card->Suit, CardType::Nine ) )
+                    && $playedCards->contains( Card::GetCard( $card->Suit, CardType::Jack ) )
+                    && $playedCards->contains( Card::GetCard( $card->Suit, CardType::Queen ) )
+                    && $playedCards->contains( Card::GetCard( $card->Suit, CardType::King ) )
+                    && $playedCards->contains( Card::GetCard( $card->Suit, CardType::Ten ) )
+                    && $playedCards->contains( Card::GetCard( $card->Suit, CardType::Ace ) )
+                ) {
+                    return new PlayCardAction( $card );
+                }
+            }
+        }
+        
+        //// if (context.AvailableCardsToPlay.HasAnyOfSuit(context.CurrentContract.Type.ToCardSuit()))
+        //// {
+        ////     Interlocked.Increment(ref GlobalCounters.Counters[1]);
+        ////     return new PlayCardAction(
+        ////         context.AvailableCardsToPlay.Where(x => x.Suit == context.CurrentContract.Type.ToCardSuit())
+        ////             .Highest(x => x.TrumpOrder));
+        //// }
+        
+        $cardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
+        $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {
+            return $b->NoTrumpOrder <=> $a->NoTrumpOrder;
+        });
+        $availableCards = new ArrayCollection( \iterator_to_array( $cardsToPlayIterator ) );
+        
+        return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
+    }
+    
+    public function PlaySecond( PlayerPlayCardContext $context, Collection $playedCards ): PlayCardAction
+    {
+        $suit = BidTrump::fromBitMaskValue( $context->CurrentContract->Trump->get() );
+        $trumpSuit = BidTrumpExtensions::ToCardSuit( $suit );
+        $cardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
+        $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {
+            return $b->NoTrumpOrder <=> $a->NoTrumpOrder;
+        });
+        $availableCards = new ArrayCollection( \iterator_to_array( $cardsToPlayIterator ) );
+        
+        return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
+    }
+    
+    public function PlayThird( PlayerPlayCardContext $context, Collection $playedCards, PlayerPosition $trickWinner ): PlayCardAction
+    {
+        $suit = BidTrump::fromBitMaskValue( $context->CurrentContract->Trump->get() );
+        $trumpSuit = BidTrumpExtensions::ToCardSuit( $suit );
+        $cardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
+        $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {
+            return $b->NoTrumpOrder <=> $a->NoTrumpOrder;
+        });
+        $availableCards = new ArrayCollection( \iterator_to_array( $cardsToPlayIterator ) );
+        
+        return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
+    }
+    
+    public function PlayFourth( PlayerPlayCardContext $context, Collection $playedCards, PlayerPosition $trickWinner ): PlayCardAction
+    {
+        $suit = BidTrump::fromBitMaskValue( $context->CurrentContract->Trump->get() );
+        $trumpSuit = BidTrumpExtensions::ToCardSuit( $suit );
+        $cardsToPlay = $context->AvailableCardsToPlay->filter(
+            function( $entry ) use ( $trumpSuit ) {
+                return $entry->Suit != $trumpSuit && $entry->Type != CardType::Ace;
+            }
+        );
+        if ( PlayerPositionExtensions::IsInSameTeamWith( $trickWinner, $context->MyPosition ) && $cardsToPlay->count() ) {
+            $cardsToPlayIterator = $cardsToPlay->getIterator();
+            $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {
+                return $b->NoTrumpOrder <=> $a->NoTrumpOrder;
+            });
+            $availableCards = new ArrayCollection( \iterator_to_array( $cardsToPlayIterator ) );
+            
+            return new PlayCardAction( $availableCards->last() ); // .Highest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
+        }
+        
+        $cardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
+        $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {
+            return $b->NoTrumpOrder <=> $a->NoTrumpOrder;
+        });
+        $availableCards = new ArrayCollection( \iterator_to_array( $cardsToPlayIterator ) );
+        
+        return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
+    }
+}

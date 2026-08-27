@@ -1,4 +1,4 @@
-<?php namespace App\Component\AI\CardGame\Strategies;
+<?php namespace App\Component\AI\CardGame\ContractBridgeStrategies;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -11,8 +11,9 @@ use App\Component\Rules\CardGame\PlayCardAction;
 use App\Component\Rules\CardGame\BridgeBeloteCard as Card;
 use App\Component\Rules\CardGame\BidTrumpExtensions;
 use App\Component\Rules\CardGame\PlayerPositionExtensions;
+use App\Component\AI\CardGame\IPlayStrategy;
 
-class TrumpTheirsContractStrategy implements IPlayStrategy
+class TrumpOursContractStrategy implements IPlayStrategy
 {
     public function PlayFirst( PlayerPlayCardContext $context, Collection $playedCards ): PlayCardAction
     {
@@ -102,33 +103,45 @@ class TrumpTheirsContractStrategy implements IPlayStrategy
             }
         }
         
-        $availableCardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
-        $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
-            return $a->NoTrumpOrder <=> $b->NoTrumpOrder;
+        //// if (context.AvailableCardsToPlay.HasAnyOfSuit(context.CurrentContract.Type.ToCardSuit()))
+        //// {
+        ////     Interlocked.Increment(ref GlobalCounters.Counters[1]);
+        ////     return new PlayCardAction(
+        ////         context.AvailableCardsToPlay.Where(x => x.Suit == context.CurrentContract.Type.ToCardSuit())
+        ////             .Highest(x => x.TrumpOrder));
+        //// }
+        
+        $cardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
+        $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {
+            return $b->NoTrumpOrder <=> $a->NoTrumpOrder;
         });
-        $availableCards = new ArrayCollection( \iterator_to_array( $availableCardsToPlayIterator ) );
+        $availableCards = new ArrayCollection( \iterator_to_array( $cardsToPlayIterator ) );
         
         return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
     }
     
     public function PlaySecond( PlayerPlayCardContext $context, Collection $playedCards ): PlayCardAction
     {
-        $availableCardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
-        $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
-            return $a->NoTrumpOrder <=> $b->NoTrumpOrder;
+        $suit = BidTrump::fromBitMaskValue( $context->CurrentContract->Trump->get() );
+        $trumpSuit = BidTrumpExtensions::ToCardSuit( $suit );
+        $cardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
+        $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {
+            return $b->NoTrumpOrder <=> $a->NoTrumpOrder;
         });
-        $availableCards = new ArrayCollection( \iterator_to_array( $availableCardsToPlayIterator ) );
+        $availableCards = new ArrayCollection( \iterator_to_array( $cardsToPlayIterator ) );
         
         return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
     }
     
     public function PlayThird( PlayerPlayCardContext $context, Collection $playedCards, PlayerPosition $trickWinner ): PlayCardAction
     {
-        $availableCardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
-        $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
-            return $a->NoTrumpOrder <=> $b->NoTrumpOrder;
+        $suit = BidTrump::fromBitMaskValue( $context->CurrentContract->Trump->get() );
+        $trumpSuit = BidTrumpExtensions::ToCardSuit( $suit );
+        $cardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
+        $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {
+            return $b->NoTrumpOrder <=> $a->NoTrumpOrder;
         });
-        $availableCards = new ArrayCollection( \iterator_to_array( $availableCardsToPlayIterator ) );
+        $availableCards = new ArrayCollection( \iterator_to_array( $cardsToPlayIterator ) );
         
         return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
     }
@@ -143,20 +156,20 @@ class TrumpTheirsContractStrategy implements IPlayStrategy
             }
         );
         if ( PlayerPositionExtensions::IsInSameTeamWith( $trickWinner, $context->MyPosition ) && $cardsToPlay->count() ) {
-            $availableCardsToPlayIterator = $cardsToPlay->getIterator();
-            $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
-                return $a->NoTrumpOrder <=> $b->NoTrumpOrder;
+            $cardsToPlayIterator = $cardsToPlay->getIterator();
+            $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {
+                return $b->NoTrumpOrder <=> $a->NoTrumpOrder;
             });
-            $availableCards = new ArrayCollection( \iterator_to_array( $availableCardsToPlayIterator ) );
+            $availableCards = new ArrayCollection( \iterator_to_array( $cardsToPlayIterator ) );
             
-            return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
+            return new PlayCardAction( $availableCards->last() ); // .Highest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
         }
         
-        $availableCardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
-        $availableCardsToPlayIterator->uasort( function ( $a, $b ) {
-            return $a->NoTrumpOrder <=> $b->NoTrumpOrder;
+        $cardsToPlayIterator = $context->AvailableCardsToPlay->getIterator();
+        $cardsToPlayIterator->uasort( function ( $a, $b ) use ( $trumpSuit ) {
+            return $b->NoTrumpOrder <=> $a->NoTrumpOrder;
         });
-        $availableCards = new ArrayCollection( \iterator_to_array( $availableCardsToPlayIterator ) );
+        $availableCards = new ArrayCollection( \iterator_to_array( $cardsToPlayIterator ) );
         
         return new PlayCardAction( $availableCards->first() ); // .Lowest(x => x.Suit == trumpSuit ? (x.TrumpOrder + 8) : x.NoTrumpOrder)
     }

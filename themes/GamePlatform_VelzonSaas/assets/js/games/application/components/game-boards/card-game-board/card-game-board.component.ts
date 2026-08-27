@@ -152,14 +152,10 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
     bottom = '';
     left = '';
     
-    debugDummyPlayerCards: boolean;
-    
     constructor(
         @Inject( TranslateService ) private translateService: TranslateService,
         @Inject( AppStateService ) private appState: AppStateService,
-    ) {
-        this.debugDummyPlayerCards = $( '#GameContainer' ).attr( 'data-debugDummyPlayerCards' );
-    }
+    ) {}
     
     ngOnChanges( changes: SimpleChanges ): void
     {
@@ -327,7 +323,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         // console.log( 'Card Areas', this.cardAreas );
         
         // THIS IS WRONG WAY. SHOULD GENERATE VALID CARDS FOR DUMMY PLAYER IN BACKEND
-        var isDummy = Boolean( this.debugDummyPlayerCards && this.dummyPlayer && this.game.currentPlayer == this.dummyPlayer );
+        var isDummy = Boolean( window.gamePlatformSettings.debugDummyPlayerCards && this.dummyPlayer && this.game.currentPlayer == this.dummyPlayer );
         
         // resetting all
         this.cardAreas.forEach( ( rect ) => {

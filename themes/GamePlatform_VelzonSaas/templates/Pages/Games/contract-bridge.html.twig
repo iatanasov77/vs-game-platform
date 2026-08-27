@@ -7,7 +7,6 @@
     <div class="container text-center" id="GameContainer"
         data-locale="{{ app.request.locale }}"
         data-mercureEventSource="{{ mercure( '/game-play' ) | escape( 'html_attr' ) }}"
-        data-debugDummyPlayerCards={{ debugDummyPlayerCards }}
     >
         <app-contract-bridge></app-contract-bridge>
     </div>

@@ -17,7 +17,6 @@ parameters:
     # For Example: WEBSOCKET_GAME_LOGGER_CONTEXTS='["GameServer","GameService","GameManager","GamePlay","GenerateMoves","FirstThrowState","SwitchPlayer","EngineGenerateMoves"]'
     #######################################################################################################################
     env(WEBSOCKET_GAME_LOGGER_CONTEXTS): '[]'
-    env(DEBUG_DUMMY_PLAYER_CARDS): false
 
     app_end_game_on_total_think_time_elapse: '%env(bool:END_GAME_ON_TOTAL_THINK_TIME_ELAPSE)%'
     

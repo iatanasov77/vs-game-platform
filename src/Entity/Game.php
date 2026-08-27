@@ -1,6 +1,7 @@
 <?php namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\DBAL\Types\Types;
 use Sylius\Component\Resource\Model\ResourceInterface;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -66,7 +67,7 @@ class Game implements ResourceInterface
     private $gameSessions;
     
     /** @var string */
-    #[ORM\Column(type: "string", columnDefinition: "ENUM('not_implemented', 'in_developement', 'in_developement_but', 'game_is_done')", options: ["default" => "symfony_route"])]
+    #[ORM\Column(type: Types::ENUM, options: ['values' => ['not_implemented', 'in_developement', 'in_developement_but', 'game_is_done'], 'default' => 'not_implemented'], nullable: true)]
     private $status;
     
     public function __construct()

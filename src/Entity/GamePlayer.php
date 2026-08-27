@@ -32,7 +32,7 @@ class GamePlayer implements ResourceInterface
     private $user;
     
     /** @var string */
-    #[ORM\Column(type: "string", columnDefinition: "ENUM('computer', 'user')")]
+    #[ORM\Column(type: Types::ENUM, options: ['values' => ['computer', 'user'], 'default' => 'user'], nullable: true)]
     private $type;
     
     /** @var Collection | TempPlayer[] */

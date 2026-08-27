@@ -157,13 +157,16 @@ class ContractBridgeGameManager extends CardGameManager
             
             $this->logger->log( "Continue Play !!!", 'GameManager' );
             if ( $this->Game->PlayState != GameState::roundEnded && $this->AisTurn() ) {
-                $socket = $this->Clients->first();
-                $this->EnginPlayCard( $socket );
                 
-                $promise = Async\async( function () use ( $socket ) {
-                    $this->NewTurn( $socket );
-                })();
-                Async\await( $promise );
+                if ( $this->Game->PlayState == GameState::playing && $this->IsDummy() ) {
+                    $socket = $this->Clients->first();
+                    $this->EnginPlayCard( $socket );
+                    
+                    $promise = Async\async( function () use ( $socket ) {
+                        $this->NewTurn( $socket );
+                    })();
+                    Async\await( $promise );
+                }
             }
         }
         
@@ -220,9 +223,7 @@ class ContractBridgeGameManager extends CardGameManager
             
             if ( $this->IsDummy() && ! $this->Game->DummyPlayer ) {
                 $this->DummyFaceupAction();
-            }
-            
-            if ( ! $this->IsDummy() ) {
+            } else {
                 $this->OpponentPlayCardAction( $playCardAction, $client );
             }
         })();

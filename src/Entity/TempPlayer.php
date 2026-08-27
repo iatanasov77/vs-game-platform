@@ -1,6 +1,7 @@
 <?php namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\DBAL\Types\Types;
 use Sylius\Component\Resource\Model\ResourceInterface;
 
 /**
@@ -34,11 +35,11 @@ class TempPlayer implements ResourceInterface
     private $name;
     
     /** @var string */
-    #[ORM\Column(type: "string", columnDefinition: "ENUM('black', 'white')", nullable: true)]
+    #[ORM\Column(type: Types::ENUM, options: ['values' => ['black', 'white'], 'default' => 'black'], nullable: true)]
     private $color;
     
     /** @var string */
-    #[ORM\Column(type: "string", columnDefinition: "ENUM('north', 'south', 'east', 'west')", nullable: true)]
+    #[ORM\Column(type: Types::ENUM, options: ['values' => ['north', 'south', 'east', 'west'], 'default' => 'south'], nullable: true)]
     private $position;
     
     public function getId(): ?int

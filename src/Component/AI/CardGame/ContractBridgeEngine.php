@@ -106,9 +106,6 @@ class ContractBridgeEngine extends Engine
     {
         $this->logger->log( "Trick Actions Count: {$context->CurrentTrickActions->count()}", 'GameManager' );
         
-        // DEBUG
-        //return new PlayCardAction( $context->AvailableCardsToPlay->first(), false );
-        
         $playedCards = new ArrayCollection();
         foreach ( $context->RoundActions as $action ) {
             if ( $action->TrickNumber < $context->CurrentTrickNumber ) {

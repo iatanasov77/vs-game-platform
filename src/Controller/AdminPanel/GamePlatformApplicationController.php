@@ -14,7 +14,7 @@ class GamePlatformApplicationController extends AbstractCrudController
         ];
     }
     
-    protected function prepareEntity( &$entity, &$form, Request $request )
+    protected function prepareEntity( &$entity, &$form, Request $request ): void
     {
         $formData       = $request->request->all( 'game_platform_application_form' );
         $application    = $this->get( 'vs_application.repository.application' )

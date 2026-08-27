@@ -13,5 +13,6 @@ class BidDto
     public int $Value;
     public int $Trump; // BidTrump
     
+    public bool $LastBid = false;
     public Collection $NextBids; // BidDto[]
 }

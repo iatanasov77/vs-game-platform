@@ -90,16 +90,10 @@ final class Version20250607051857 extends AbstractMigration
             ALTER TABLE VSAPP_Settings DROP FOREIGN KEY FK_4A491FD507FAB6A
         SQL);
         $this->addSql(<<<'SQL'
-            DROP INDEX IDX_4A491FD507FAB6A ON VSAPP_Settings
-        SQL);
-        $this->addSql(<<<'SQL'
             ALTER TABLE VSAPP_Settings CHANGE maintenance_page_id maintenance_page_id  INT DEFAULT NULL
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE VSAPP_Settings ADD CONSTRAINT FK_4A491FD507FAB6A FOREIGN KEY (maintenance_page_id ) REFERENCES VSCMS_Pages (id) ON DELETE CASCADE
-        SQL);
-        $this->addSql(<<<'SQL'
-            CREATE INDEX IDX_4A491FD507FAB6A ON VSAPP_Settings (maintenance_page_id )
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE VSUM_Users ADD last_active_at DATETIME DEFAULT NULL, ADD google_authenticator_secret VARCHAR(255) DEFAULT NULL, ADD api_verify_siganature VARCHAR(255) DEFAULT NULL, ADD api_verify_expires_at DATETIME DEFAULT NULL
@@ -182,16 +176,10 @@ final class Version20250607051857 extends AbstractMigration
             ALTER TABLE VSAPP_Settings DROP FOREIGN KEY FK_4A491FD507FAB6A
         SQL);
         $this->addSql(<<<'SQL'
-            DROP INDEX IDX_4A491FD507FAB6A ON VSAPP_Settings
-        SQL);
-        $this->addSql(<<<'SQL'
             ALTER TABLE VSAPP_Settings CHANGE maintenance_page_id  maintenance_page_id INT DEFAULT NULL
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE VSAPP_Settings ADD CONSTRAINT FK_4A491FD507FAB6A FOREIGN KEY (maintenance_page_id) REFERENCES VSCMS_Pages (id) ON UPDATE NO ACTION ON DELETE CASCADE
-        SQL);
-        $this->addSql(<<<'SQL'
-            CREATE INDEX IDX_4A491FD507FAB6A ON VSAPP_Settings (maintenance_page_id)
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE VSUM_Users DROP last_active_at, DROP google_authenticator_secret, DROP api_verify_siganature, DROP api_verify_expires_at

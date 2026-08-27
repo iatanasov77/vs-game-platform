@@ -19,10 +19,13 @@
         [deck]="deckDto"
         [pile]="pileDto"
         [myPosition]="playerPosition$ | async"
+        [dummyPlayer]="dummyPlayer$ | async"
+        [dummyOwner]="dummyOwner$ | async"
         [themeName]="themeName"
         [timeLeft]="timeLeft$ | async"
         [lobbyButtonsVisible]="lobbyButtonsVisible"
         (playCard)="doPlayCard($event)"
+        (dummyPlayCard)="doDummyPlayCard($event)"
         (playCardAnimFinished)="playCardAnimFinished()"
     ></card-game-board>
     

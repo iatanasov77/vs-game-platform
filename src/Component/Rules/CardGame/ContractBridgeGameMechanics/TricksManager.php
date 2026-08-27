@@ -1,4 +1,4 @@
-<?php namespace App\Component\Rules\CardGame\ConractBridgeGameMechanics;
+<?php namespace App\Component\Rules\CardGame\ContractBridgeGameMechanics;
 
 use BitMask\EnumBitMask;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -11,8 +11,6 @@ use App\Component\Type\GameState;
 use App\Component\Type\PlayerPosition;
 use App\Component\Rules\CardGame\Bid;
 use App\Component\Rules\CardGame\PlayCardAction;
-use App\Component\Rules\CardGame\TrickWinnerService;
-use App\Component\Rules\CardGame\ValidCardsService;
 
 class TricksManager
 {
@@ -47,11 +45,14 @@ class TricksManager
     
     public function GetValidCards( Collection $playerCards, Bid $currentContract, Collection $trickActions ): Collection
     {
+        return $playerCards;
+        /*  
         return $this->validCardsService->GetValidCards(
             $playerCards,
             $currentContract->Trump,
             $trickActions
         );
+        */
     }
     
     public function GetTrickNumber(): int
@@ -93,7 +94,7 @@ class TricksManager
             $this->game->EastWestTricks[] = $this->TrickActions[3]->Card;
         }
         
-        if ( $this->TrickNumber > 8 ) {
+        if ( $this->TrickNumber > 13 ) {
             $this->game->LastTrickWinner = $winner;
         }
         
@@ -102,6 +103,7 @@ class TricksManager
             $this->game->CurrentPlayer = $winner;
             $this->TrickActions = new ArrayCollection();
         }
+        $this->logger->log( "Trick Winner: {$winner->value}", 'RoundManager' );
         
         return $winner;
     }

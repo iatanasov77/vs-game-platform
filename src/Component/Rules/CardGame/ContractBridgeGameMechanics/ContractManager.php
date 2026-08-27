@@ -1,4 +1,4 @@
-<?php namespace App\Component\Rules\CardGame\ConractBridgeGameMechanics;
+<?php namespace App\Component\Rules\CardGame\ContractBridgeGameMechanics;
 
 use BitMask\EnumBitMask;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -35,6 +35,7 @@ class ContractManager
     
     public function SetContract( Bid $bid, PlayerPosition $nextPlayer ): void
     {
+        $this->logger->log( "SetContract Bid Value: {$bid->Value}", 'ContractManager' );
         $this->game->Bids[$bid->Player->value] = $bid;
         
         if ( $bid->Trump->has( BidTrump::Double ) || $bid->Trump->has( BidTrump::ReDouble ) ) {
@@ -48,8 +49,8 @@ class ContractManager
                 $this->game->CurrentContract->KontraPlayer = $this->game->CurrentPlayer;
             }
             
-            $this->logger->log( 'ConsecutivePasses After Kontra: ' . $this->game->ConsecutivePasses, 'RoundManager' );
-            $this->logger->log( 'After Kontra Has Bid Pass: ' . $bid->Trump->has( BidTrump::Pass ), 'RoundManager' );
+            $this->logger->log( 'ConsecutivePasses After Kontra: ' . $this->game->ConsecutivePasses, 'ContractManager' );
+            $this->logger->log( 'After Kontra Has Bid Pass: ' . $bid->Trump->has( BidTrump::Pass ), 'ContractManager' );
         } else if ( ! $bid->Trump->has( BidTrump::Pass ) ) {
             $this->game->CurrentContract = $bid;
         }
@@ -57,7 +58,7 @@ class ContractManager
         $this->game->ConsecutivePasses = $bid->Trump->has( BidTrump::Pass ) ? ++$this->game->ConsecutivePasses : 0;
         $this->game->AvailableBids = $this->GetAvailableBids( $this->game->CurrentContract, $nextPlayer );
         
-        //$this->logger->log( 'AvailableBids: ' . \print_r( $this->game->AvailableBids->toArray(), true ), 'RoundManager' );
+        //$this->logger->log( 'AvailableBids: ' . \print_r( $this->game->AvailableBids->toArray(), true ), 'ContractManager' );
     }
     
     private function GetAvailableBids( ?Bid $currentContract, PlayerPosition $currentPlayer ): Collection
@@ -103,8 +104,6 @@ class ContractManager
                 $availableBids->set( BidTrump::Double->value(), new Bid( $currentPlayer, BidTrump::Double ) );
             }
         }
-        
-        $this->logger->log( 'Current Contract: ' . $cleanContract->get(), 'ContractManager' );
         
         return $availableBids;
     }

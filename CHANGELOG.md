@@ -1,3 +1,19 @@
+1.1.3	|	Release date: **27.08.2026**
+============================================
+* New Features:
+  - Some Improvements on Card Game Services.
+  - Some Improvements of Card Game Contract View.
+  - Set Contract Bridge Bid Value on Game Contract.
+  - Set LastBid Flag on CardGame and OponentBid to Know Card Game Container omponent to Not Open Bidding Dialog.
+  - Playing Cards in Contract Bridge Game.
+  - Fix Bridge Belote Game about changes for Contract Bridge Game.
+  - Face Up Dummy Player Cards on Contract Bridge Game.
+  - Try to Add GamePlatform Setting but should be made of the new version of Vankosoft Library.
+  - Improve Contract Bridge Game Playing After Dummy Faceup your Cards.
+  - Fix a Typo in a Namespace.
+  - Refactoring of Card Game AI Strategigies.
+
+
 1.1.2	|	Release date: **22.08.2026**
 ============================================
 * New Features:

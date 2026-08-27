@@ -98,6 +98,8 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     
     gameDto$: Observable<CardGameDto>;
     playerPosition$: Observable<PlayerPosition>;
+    dummyPlayer$: Observable<PlayerPosition>;
+    dummyOwner$: Observable<PlayerPosition>;
     message$: Observable<StatusMessage>;
     timeLeft$: Observable<number>;
     
@@ -176,6 +178,8 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         this.deckSubs = this.appStateService.deck.observe().subscribe( this.deckChanged.bind( this ) );
         this.pileSubs = this.appStateService.pile.observe().subscribe( this.pileChanged.bind( this ) );
         this.playerPosition$ = this.appStateService.myPosition.observe();
+        this.dummyPlayer$ = this.appStateService.dummyPlayer.observe();
+        this.dummyOwner$ = this.appStateService.dummyOwner.observe();
         
         this.gameSubs = this.appStateService.cardGame.observe().subscribe( this.gameChanged.bind( this ) );
         this.oponnetDoneSubs = this.appStateService.opponentDone.observe().subscribe( this.oponnentDone.bind( this ) );
@@ -268,6 +272,8 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         clearTimeout( this.startedHandle );
         this.appStateService.cardGame.clearValue();
         this.appStateService.myPosition.clearValue();
+        this.appStateService.dummyPlayer.clearValue();
+        this.appStateService.dummyOwner.clearValue();
         this.appStateService.messages.clearValue();
         this.appStateService.moveTimer.clearValue();
         this.started = false;
@@ -345,6 +351,13 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         this.wsService.sendPlayCard( card );
     }
     
+    doDummyPlayCard( card: CardDto ): void
+    {
+        if ( ! card.animate ) this.sound.playChecker();
+        this.wsService.doPlayCard( card );
+        this.wsService.sendDummyPlayCard( card );
+    }
+    
     playCardAnimFinished(): void
     {
 //         this.sound.playChecker();
@@ -375,6 +388,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     
     newRound(): void
     {
+        this.newRoundVisible = false;
         this.gameContractVisible = false;
         this.gameBiddingVisible = true;
         this.wsService.startNewRound();
@@ -388,6 +402,9 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         
         this.gamePlayService.exitCardGame();
         this.playAiQuestion = false;
+        this.gameBiddingVisible = false;
+        this.gameContractVisible = false;
+        
         this.lobbyButtonsVisibleChanged.emit( true );
         this.isStarted.emit( false );
         this.isPlayAi.emit( false );
@@ -502,6 +519,9 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         if ( dto && dto.playState === GameState.roundEnded ) {
             this.started = false;
             this.newRoundVisible = true;
+            
+            this.gameContractVisible = false;
+            this.gameBiddingVisible = false;
         }
         
         if ( dto && dto.playState === GameState.ended ) {
@@ -586,8 +606,6 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
             return;
         }
         
-        //this.started = true; // Needed to Show Contract
-        
         switch( dto.gameCode ) {
             case GameVariant.BRIDGE_BELOTE_CODE:
                 this.playWithComputerVisible = false;
@@ -601,9 +619,9 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
             case GameVariant.CONTRACT_BRIDGE_CODE:
                 this.playWithComputerVisible = false;
                 
-                //this.debugButtonsVisible = true;
-                alert( 'Play State: ' + dto.playState );
-                this.openContractBridgeAuctionDialog();
+                if ( ! dto.LastBid ) {
+                    this.openContractBridgeAuctionDialog();
+                }
                 
                 break;
         }

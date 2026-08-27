@@ -76,11 +76,6 @@ abstract class BoardGameManager extends AbstractGameManager
         $em->flush();
     }
     
-    protected function IsAi( ?string $guid ): bool
-    {
-        return $guid == GamePlayer::AiUser;
-    }
-    
     protected function AisTurn(): bool
     {
         $plyr = $this->Game->CurrentPlayer == PlayerColor::Black ? $this->Game->BlackPlayer : $this->Game->WhitePlayer;

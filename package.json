@@ -73,7 +73,7 @@
         
         "@vankosoft/jquery-duplicate-fields": "^2.0",
         "@vankosoft/jquery-easyui-extensions": "^2.0",
-        "@vankosoft/game-platform": "^1.1",
+        "@vankosoft/game-platform": "^1.2",
         
         "code-prettify-google": "^1.0.1",
         "@stripe/stripe-js": "^2.1",

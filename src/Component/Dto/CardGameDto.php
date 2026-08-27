@@ -25,4 +25,7 @@ class CardGameDto extends GameDto
     
     public Collection $MyCards;
     public array $Bids;
+    
+    public bool $LastBid = false;
+    public ?PlayerPosition $Dummy;
 }

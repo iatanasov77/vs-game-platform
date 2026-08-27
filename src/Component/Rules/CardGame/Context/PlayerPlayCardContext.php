@@ -4,7 +4,7 @@ use Doctrine\Common\Collections\Collection;
 
 class PlayerPlayCardContext extends BasePlayerContext
 {
-    // TODO: Don't disclose the exact type of announce
+    // @TODO: Don't disclose the exact type of announce
     public Collection $Announces;
     
     public Collection $CurrentTrickActions;

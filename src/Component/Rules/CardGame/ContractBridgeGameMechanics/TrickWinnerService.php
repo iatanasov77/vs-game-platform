@@ -1,4 +1,4 @@
-<?php namespace App\Component\Rules\CardGame;
+<?php namespace App\Component\Rules\CardGame\ContractBridgeGameMechanics;
 
 use Doctrine\Common\Collections\Collection;
 use App\Component\Type\PlayerPosition;
@@ -33,7 +33,7 @@ class TrickWinnerService
         } else {
             $suit = BidTrump::fromBitMaskValue( $contract->Trump->get() );
             $trumpSuit = BidTrumpExtensions::ToCardSuit( $suit );
-            //// TODO: Remove this check and merge conditions
+            // @TODO: Remove this check and merge conditions
             
             $trumpSuitActions  = $trickActions->filter(
                 function( $entry ) use ( $trumpSuit ) {
@@ -46,7 +46,7 @@ class TrickWinnerService
                     if ( $trickActions[$i]->Card->Suit == $trumpSuit ) {
                         if ( $bestAction->Card->Suit != $trumpSuit ) {
                             $bestAction = $trickActions[$i];
-                        } else if ( $trickActions[$i]->Card->TrumpOrder > $bestAction->Card->TrumpOrder) {
+                        } else if ( $trickActions[$i]->Card->TrumpOrder > $bestAction->Card->TrumpOrder ) {
                             $bestAction = $trickActions[$i];
                         }
                     }

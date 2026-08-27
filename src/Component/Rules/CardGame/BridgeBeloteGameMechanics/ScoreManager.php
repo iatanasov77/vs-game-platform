@@ -11,7 +11,6 @@ use App\Component\Type\BidTrump;
 use App\Component\Rules\CardGame\Game;
 use App\Component\Rules\CardGame\Bid;
 use App\Component\Rules\CardGame\CardExtensions;
-use App\Component\Rules\CardGame\ValidAnnouncesService;
 
 class ScoreManager
 {

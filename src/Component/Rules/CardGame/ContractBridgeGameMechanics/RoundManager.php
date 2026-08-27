@@ -1,4 +1,4 @@
-<?php namespace App\Component\Rules\CardGame\ConractBridgeGameMechanics;
+<?php namespace App\Component\Rules\CardGame\ContractBridgeGameMechanics;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use BitMask\EnumBitMask;
@@ -18,6 +18,7 @@ use App\Component\Rules\CardGame\Deck;
 use App\Component\Rules\CardGame\Bid;
 use App\Component\Rules\CardGame\PlayerPositionExtensions;
 use App\Component\Rules\CardGame\PlayCardAction;
+use App\Component\Type\BidTrump;
 
 class RoundManager
 {
@@ -100,14 +101,21 @@ class RoundManager
             }
             
             if ( $this->game->CurrentPlayer == $lastBidPlayer && $this->game->ConsecutivePasses == 3 ) {
-                $this->logger->log( 'Consecutive Passes Exceeded !!!', 'RoundManager' );
+                $this->logger->log( "Contract Bridge -> 3 Consecutive Passes !!! {$this->game->CurrentContract->Player->value} -> {$this->game->CurrentContract->Value}", 'RoundManager' );
                 
+                /* DEBUG CURRENT CONTRACT 
+                $contractValue = $this->game->CurrentContract->Value;
+                $contractTrump = BidTrump::fromBitMaskValue( $this->game->CurrentContract->Trump->get() )->value;
+                $this->logger->log( "Contract: {$contractValue}{$contractTrump}", 'RoundManager' );
+                */
                 $this->game->PlayState = GameState::firstRound;
             }
         }
         
         if ( $this->game->PlayState == GameState::playing ) {
+            $this->logger->log( "Trick Number: {$this->game->trickNumber}", 'RoundManager' );
             if ( $this->tricksManager->GetTrickActionNumber() == 4 ) {
+                $this->logger->log( "4 tTrick Actions !!!", 'RoundManager' );
                 $this->game->trickNumber++;
                 return $this->tricksManager->GetTricksWinner();
             }
@@ -139,6 +147,7 @@ class RoundManager
     public function AddTrickAction( PlayCardAction $action ): void
     {
         $this->tricksManager->AddTrickAction( $action );
+        $this->logger->log( "Add Trick Action: {$this->tricksManager->GetTrickActionNumber()}", 'RoundManager' );
     }
     
     public function GetScore(

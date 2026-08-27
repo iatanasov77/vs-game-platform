@@ -18,7 +18,7 @@ use App\Component\Rules\CardGame\Context\PlayerPlayCardContext;
 use App\Component\Rules\CardGame\BridgeBeloteGameMechanics\RoundManager as BridgeBeloteRoundManager;
 use App\Component\Rules\CardGame\BridgeBeloteGameMechanics\RoundResult;
 
-use App\Component\Rules\CardGame\ConractBridgeGameMechanics\RoundManager as ConractBridgeRoundManager;
+use App\Component\Rules\CardGame\ContractBridgeGameMechanics\RoundManager as ContractBridgeRoundManager;
 
 use App\Component\Dto\Actions\PlayCardActionDto;
 
@@ -75,6 +75,15 @@ abstract class Game implements GameInterface
     /** @var PlayerPosition */
     public $CurrentPlayer;
     
+    /** @var PlayerPosition */
+    public $DummyPlayer;
+    
+    /** @var PlayerPosition */
+    public $DummyOwner;
+    
+    /** @var bool */
+    public $DummyFaceup = false;
+    
     /** @var GameState */
     public $PlayState = GameState::firstBid;
     
@@ -108,7 +117,7 @@ abstract class Game implements GameInterface
     /** @var BridgeBeloteRoundManager */
     protected $bridgeBeloteRoundManager;
     
-    /** @var ConractBridgeRoundManager */
+    /** @var ContractBridgeRoundManager */
     protected $contractBridgeRoundManager;
     
     public function __construct( GameLogger $logger, EventDispatcherInterface $eventDispatcher )
@@ -161,6 +170,8 @@ abstract class Game implements GameInterface
     
     public function SetContract( Bid $bid, PlayerPosition $nextPlayer ): void
     {
+        $this->logger->log( "SetContract Bid Value: {$bid->Value}", 'RoundManager' );
+        
         switch ( $this->GameCode ) {
             case GameVariant::CONTRACT_BRIDGE_CODE:
                 $this->contractBridgeRoundManager->SetContract( $bid, $nextPlayer );

@@ -57,6 +57,7 @@ import { GameVariant } from '@vankosoft/game-platform';
 import templateString from './card-game-board.component.html'
 import styleString from './card-game-board.component.scss'
 
+declare var $: any;
 declare global {
     interface Window {
         gamePlatformSettings: any;
@@ -84,11 +85,14 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
     @Input() deck: CardDto[] = [];
     @Input() pile: CardDto[] = [];
     @Input() myPosition: PlayerPosition | null = PlayerPosition.south;
+    @Input() dummyPlayer: PlayerPosition | null = PlayerPosition.neither;
+    @Input() dummyOwner: PlayerPosition | null = PlayerPosition.neither;
     @Input() themeName: string | null = 'card-game';
     @Input() timeLeft: number | null = 0;
     @Input() lobbyButtonsVisible: boolean = false;
     
     @Output() playCard = new EventEmitter<CardDto>();
+    @Output() dummyPlayCard = new EventEmitter<CardDto>();
     @Output() playCardAnimFinished = new EventEmitter<void>();
     
     borderWidth = 0;
@@ -148,10 +152,14 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
     bottom = '';
     left = '';
     
+    debugDummyPlayerCards: boolean;
+    
     constructor(
         @Inject( TranslateService ) private translateService: TranslateService,
         @Inject( AppStateService ) private appState: AppStateService,
-    ) {}
+    ) {
+        this.debugDummyPlayerCards = $( '#GameContainer' ).attr( 'data-debugDummyPlayerCards' );
+    }
     
     ngOnChanges( changes: SimpleChanges ): void
     {
@@ -226,11 +234,15 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             return false;
         }
         
-        if ( this.myPosition != this.game.currentPlayer ) {
+        if ( this.game.playState === GameState.ended ) {
             return false;
         }
         
-        if ( this.game.playState === GameState.ended ) {
+        if ( this.myPosition == this.dummyOwner ) {
+            return true;
+        }
+        
+        if ( this.myPosition != this.game.currentPlayer ) {
             return false;
         }
         
@@ -311,15 +323,19 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         if ( ! this.game ) {
             return;
         }
-        //console.log( 'Valid Cards', this.game.validCards );
+        // console.log( 'Valid Cards', this.game.validCards );
+        // console.log( 'Card Areas', this.cardAreas );
+        
+        // THIS IS WRONG WAY. SHOULD GENERATE VALID CARDS FOR DUMMY PLAYER IN BACKEND
+        var isDummy = Boolean( this.debugDummyPlayerCards && this.dummyPlayer && this.game.currentPlayer == this.dummyPlayer );
         
         // resetting all
         this.cardAreas.forEach( ( rect ) => {
             rect.hasValidCard = false;
-            rect.canBePlayed = false;
+            rect.canBePlayed = isDummy;
         });
         
-        this.cxCursor = 'default';
+        this.cxCursor = isDummy ? 'pointer' : 'default';
         for ( let i = 0; i < this.cardAreas.length; i++ ) {
             const rect = this.cardAreas[i];
             if ( ! rect.contains( clientX, clientY ) ) {
@@ -420,7 +436,13 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             }
             
             if ( card ) {
-                this.playCard.emit( { ...card, animate: isClick } );
+                var isDummy = Boolean( this.dummyPlayer && this.game.currentPlayer == this.dummyPlayer );
+                if ( isDummy ) {
+                    this.dummyPlayCard.emit( { ...card, animate: isClick } );
+                } else {
+                    this.playCard.emit( { ...card, animate: isClick } );
+                }
+                
                 break;
             }
         }
@@ -545,7 +567,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         }
         
         const image = new Image( this.cardWidth, this.cardHeight );
-        image.src = "/build/gameplatform-velzonsaas-theme/images/Cards/BridgeBelote/back.png";
+        image.src = this.cardBack( this.game.gameCode );
         
         var cardX = this.width / 2 - image.width / 2;
         var cardY = this.height / 2 - image.height / 2;
@@ -557,20 +579,6 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             this.cardWidth,
             this.cardHeight
         );
-        /*
-        for ( let c = 0; c < this.game.deck.length; c++ ) {
-            cardX -= 1;
-            cardY -= 1;
-            
-            cx.drawImage(
-                image,
-                cardX,
-                cardY,
-                this.cardWidth,
-                this.cardHeight
-            );
-        }
-        */
     }
     
     drawPlayers( cx: CanvasRenderingContext2D ): void
@@ -678,16 +686,9 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
                 angle = 0;
             }
             
-            var cardImagesPath, cardBack;
-            switch ( this.game.gameCode ) {
-                case GameVariant.BRIDGE_BELOTE_CODE:
-                    cardImagesPath = '/build/gameplatform-velzonsaas-theme/images/Cards/BridgeBelote';
-                    cardBack = `${cardImagesPath}/back.png`;
-                    break;
-                default:
-                    cardImagesPath = '/build/gameplatform-velzonsaas-theme/images/Cards/ContractBridge';
-                    cardBack = `${cardImagesPath}/blue_back.png`;
-            }
+            var cardImagesPath = this.cardImagesPath( this.game.gameCode );
+            var cardBack = this.cardBack( this.game.gameCode );
+            var isDummy = Boolean( this.dummyPlayer && playerPosition == this.dummyPlayer );
             
             Card.draw(
                 this.cx,
@@ -700,6 +701,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
                 angle,
                 this.theme,
                 playerPosition,
+                isDummy,
                 highLight,
                 window.gamePlatformSettings.debugCardGamePlayerCards
             );
@@ -725,7 +727,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             return;
         }
         
-        let cardImagesPath = '/build/gameplatform-velzonsaas-theme/images/Cards/BridgeBelote';
+        let cardImagesPath = this.cardImagesPath( this.game.gameCode );
         Pile.drawAsPile(
             this.cx,
             cardImagesPath,
@@ -846,10 +848,14 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             return;
         }
         
-        const playerCards = this.playerCards[PlayerPosition.south];
-        const cardsWidth = this.cardWidth + ( ( playerCards.length - 1 ) * this.cardOffset );
+        //const playerPosition    = PlayerPosition.south;
+        //const playerPosition    = PlayerPosition.north;
+        const playerPosition    = this.game.currentPlayer;
         
-        const pa = this.playerAreas.find( ( x ) => x.playerPosition === PlayerPosition.south );
+        const playerCards       = this.playerCards[playerPosition];
+        const cardsWidth        = this.cardWidth + ( ( playerCards.length - 1 ) * this.cardOffset );
+        
+        const pa = this.playerAreas.find( ( x ) => x.playerPosition === playerPosition );
         if ( ! pa ) {
             return;
         }
@@ -857,8 +863,8 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         const yOffset = pa.height - this.cardHeight;
         const cardY = pa.y + yOffset;
         
-        //console.log( 'Card Areas', this.cardAreas );
-        //alert( playerCards.length );
+        console.log( 'Player Cards', this.playerCards );
+        // alert( playerCards.length );
         
         for ( let c = 0; c < playerCards.length; c++ ) {
             let cardX = pa.x + pa.width / 2 - ( cardsWidth / 2 ) + ( c * this.cardOffset );
@@ -866,6 +872,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             
             this.cardAreas[c].set( cardX, cardY, areaWidth, this.cardHeight, playerCards[c].cardIndex );
         }
+        // console.log( 'Card Areas', this.cardAreas );
     }
     
     drawPlayerArea( playerArea: CardGamePlayerArea ): void
@@ -1071,16 +1078,41 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             this.playerCards[PlayerPosition.west][0]
         ];
         
-        let cardImagesPath = '/build/gameplatform-velzonsaas-theme/images/Cards/BridgeBelote';
-        Pile.drawAsPile(
-            this.cx,
-            cardImagesPath,
-            pile,
-            this.width,
-            this.height,
-            this.cardWidth,
-            this.cardHeight,
-            this.theme
-        );
+        if ( this.game ) {
+            let cardImagesPath = this.cardImagesPath( this.game.gameCode );
+            Pile.drawAsPile(
+                this.cx,
+                cardImagesPath,
+                pile,
+                this.width,
+                this.height,
+                this.cardWidth,
+                this.cardHeight,
+                this.theme
+            );
+        }
+    }
+    
+    cardImagesPath( gameCode: string ): string
+    {
+        switch ( gameCode ) {
+            case GameVariant.BRIDGE_BELOTE_CODE:
+                return '/build/gameplatform-velzonsaas-theme/images/Cards/BridgeBelote';
+                break;
+            default:
+                return '/build/gameplatform-velzonsaas-theme/images/Cards/ContractBridge';
+        }
+    }
+    
+    cardBack( gameCode: string ): string
+    {
+        let cardImagesPath = this.cardImagesPath( gameCode );
+        switch (gameCode ) {
+            case GameVariant.BRIDGE_BELOTE_CODE:
+                return `${cardImagesPath}/back.png`;
+                break;
+            default:
+                return `${cardImagesPath}/blue_back.png`;
+        }
     }
 }

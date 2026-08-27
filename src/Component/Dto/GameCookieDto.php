@@ -20,14 +20,8 @@ class GameCookieDto
     /** @var PlayerPosition */
     public PlayerPosition $position;
     
-//     public static function TryParse( ?string $v ): ?GameCookieDto
-//     {
-//         if ( $v ) {
-//             return \json_decode( $v, false );
-//         }
-        
-//         return null;
-//     }
+    /** @var PlayerPosition */
+    public ?PlayerPosition $dummyPlayer;
     
     public function __toString(): string
     {

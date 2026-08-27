@@ -55,10 +55,10 @@ Encore
 
     // Application Assets
     .copyFiles([
+        {from: './node_modules/@vankosoft/game-platform/dist/assets/i18n', to: 'i18n/[path][name].[ext]'},
         {from: './node_modules/@vankosoft/game-platform/dist/assets/images', to: 'images/[path][name].[ext]'},
+        {from: './node_modules/@vankosoft/game-platform/dist/assets/sound', to: 'sound/[path][name].[ext]'},
         {from: './themes/GamePlatform_VelzonSaas/assets/images', to: 'images/[path][name].[ext]'},
-        {from: './themes/GamePlatform_VelzonSaas/assets/sound', to: 'sound/[path][name].[ext]'},
-        {from: './themes/GamePlatform_VelzonSaas/assets/i18n', to: 'i18n/[path][name].[ext]'},
      ])
      
      // Velzon Images

@@ -81,6 +81,9 @@ abstract class Game implements GameInterface
     /** @var PlayerPosition */
     public $DummyOwner;
     
+    /** @var bool */
+    public $DummyFaceup = false;
+    
     /** @var GameState */
     public $PlayState = GameState::firstBid;
     

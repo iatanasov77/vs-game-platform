@@ -16,7 +16,8 @@ use Amp\DeferredCancellation;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use App\Component\Manager\CardGameManager;
 use App\Component\Websocket\Client\WebsocketClientInterface;
-use App\Component\Rules\CardGame\Card;
+
+use App\Component\Rules\CardGame\ContractBridgeCard as Card;
 use App\Component\Rules\CardGame\Bid;
 use App\Component\Rules\CardGame\Announce;
 use App\Component\Rules\CardGame\PlayCardAction;
@@ -30,6 +31,7 @@ use App\Component\Type\BidTrump;
 use App\Component\Type\AnnounceType;
 use App\Component\Type\GameState;
 use App\Component\Type\CardGameTeam;
+use App\Component\Type\ContractBridgeCardType;
 
 // DTO Actions
 use App\Component\Dto\Mapper;
@@ -124,6 +126,11 @@ class ContractBridgeGameManager extends CardGameManager
     {
         $DummyPlayer = PlayerPositionExtensions::GetTeammate( $this->Game->CurrentContract->Player );
         
+        /*  
+        $this->Game->DummyPlayer    = $DummyPlayer;
+        $this->Game->DummyOwner     = $this->Game->CurrentContract->Player;
+        */
+        
         $action = new DummyFaceupActionDto();
         $action->DummyPlayer    = $DummyPlayer;
         $action->Player         = $this->Game->CurrentContract->Player;
@@ -191,33 +198,8 @@ class ContractBridgeGameManager extends CardGameManager
     
     protected function PlayCard( PlayCardActionDto $action ): void
     {
-        $playedCard = Card::GetCard( $action->Card->Suit, $action->Card->Type );
+        $playedCard = Card::GetCard( $action->Card->Suit, ContractBridgeCardType::from( $action->Card->Type ) );
         $trickAction = new PlayCardAction( $playedCard, $this->Game->playerCards[$this->Game->CurrentPlayer->value]->count() > 1 );
-        
-        // Belote
-        if ( $trickAction->Belote ) {
-            $belote = $this->Game->IsBeloteAllowed(
-                $this->Game->playerCards[$this->Game->CurrentPlayer->value],
-                $this->Game->CurrentContract->Trump,
-                $this->Game->GetTrickActions(),
-                $trickAction->Card
-                );
-            
-            if ( $belote ) {
-                $announce = new Announce( AnnounceType::Belot, $trickAction->Card );
-                
-                $announce->Player = $this->Game->CurrentPlayer;
-                $this->Game->announces[] = $announce;
-                
-                $action = new AnnounceMadeActionDto();
-                $action->announce = Mapper::AnnounceToDto( $announce, $this->Game->CurrentPlayer );
-                
-                $this->Send( $this->Clients->get( PlayerPosition::South->value ), $action );
-                $this->Send( $this->Clients->get( PlayerPosition::East->value ), $action );
-                $this->Send( $this->Clients->get( PlayerPosition::North->value ), $action );
-                $this->Send( $this->Clients->get( PlayerPosition::West->value ), $action );
-            }
-        }
         
         // Update information after the action
         $this->Game->playerCards[$this->Game->CurrentPlayer->value]->removeElement( $trickAction->Card );

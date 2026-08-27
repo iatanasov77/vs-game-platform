@@ -30,6 +30,7 @@ use App\Component\Type\BidTrump;
 use App\Component\Type\AnnounceType;
 use App\Component\Type\GameState;
 use App\Component\Type\CardGameTeam;
+use App\Component\Type\BridgeBeloteCardType;
 
 // DTO Actions
 use App\Component\Dto\Mapper;
@@ -161,7 +162,7 @@ class BridgeBeloteGameManager extends CardGameManager
     
     protected function PlayCard( PlayCardActionDto $action ): void
     {
-        $playedCard = Card::GetCard( $action->Card->Suit, $action->Card->Type );
+        $playedCard = Card::GetCard( $action->Card->Suit, BridgeBeloteCardType::from( $action->Card->Type ) );
         $trickAction = new PlayCardAction( $playedCard, $this->Game->playerCards[$this->Game->CurrentPlayer->value]->count() > 1 );
         
         // Belote

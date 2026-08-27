@@ -19,6 +19,7 @@ use App\Component\Utils\Guid;
 use App\Component\Utils\HumanName;
 use App\Component\Rules\CardGame\Announce;
 use App\Component\Rules\CardGame\BridgeBeloteGameMechanics\RoundResult;
+use App\Component\Rules\CardGame\PlayerPositionExtensions;
 use App\Entity\GamePlayer;
 use App\Entity\TempPlayer;
 
@@ -40,6 +41,7 @@ use App\Component\Dto\Actions\BidMadeActionDto;
 use App\Component\Dto\Actions\OpponentBidsActionDto;
 use App\Component\Dto\Actions\AnnounceMadeActionDto;
 use App\Component\Dto\Actions\PlayCardActionDto;
+use App\Component\Dto\Actions\DummyPlayCardActionDto;
 use App\Component\Dto\Actions\OpponentPlayCardActionDto;
 use App\Component\Dto\Actions\PlayingStartedActionDto;
 use App\Component\Dto\Actions\TrickEndedActionDto;
@@ -216,6 +218,24 @@ abstract class CardGameManager extends AbstractGameManager
                 $this->NewTurn( $socket );
             })();
             Async\await( $promise );
+        } else if ( $actionName == ActionNames::dummyPlayCard ) {
+            $this->logger->log( 'dummyPlayCard action recieved from GameManager.', 'GameManager' );
+            if  ( ! $this->Game->DummyPlayer ) {
+                $DummyPlayer = PlayerPositionExtensions::GetTeammate( $this->Game->CurrentContract->Player );
+                
+                $this->Game->DummyPlayer    = $DummyPlayer;
+                $this->Game->DummyOwner     = $this->Game->CurrentContract->Player;
+                $this->Game->DummyFaceup    = true;
+            }
+            
+            $this->Game->ThinkStart = new \DateTime( 'now' );
+            $action = $this->serializer->deserialize( $actionText, DummyPlayCardActionDto::class, JsonEncoder::FORMAT );
+            
+            $this->PlayCard( $action );
+            $promise = Async\async( function () use ( $socket ) {
+                $this->NewTurn( $socket );
+            })();
+            Async\await( $promise );
         } else if ( $actionName == ActionNames::opponentPlayCard ) {
             $action = $this->serializer->deserialize( $actionText, OpponentPlayCardActionDto::class, JsonEncoder::FORMAT );
             foreach ( $otherSockets as $otherSocket ) {
@@ -275,7 +295,8 @@ abstract class CardGameManager extends AbstractGameManager
     
     protected function NewTurn( WebsocketClientInterface $socket ): void
     {
-        if ( $this->Game->PlayState == GameState::playing && $this->IsDummy() ) {
+        /** $this->Game->DummyFaceup May be Uneeded */
+        if ( $this->Game->PlayState == GameState::playing && $this->IsDummy() && ! $this->Game->DummyFaceup ) {
             return;
         }
         

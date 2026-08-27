@@ -25,6 +25,7 @@
         [timeLeft]="timeLeft$ | async"
         [lobbyButtonsVisible]="lobbyButtonsVisible"
         (playCard)="doPlayCard($event)"
+        (dummyPlayCard)="doDummyPlayCard($event)"
         (playCardAnimFinished)="playCardAnimFinished()"
     ></card-game-board>
     

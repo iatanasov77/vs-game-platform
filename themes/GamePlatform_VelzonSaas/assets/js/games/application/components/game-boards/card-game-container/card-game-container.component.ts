@@ -351,6 +351,13 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         this.wsService.sendPlayCard( card );
     }
     
+    doDummyPlayCard( card: CardDto ): void
+    {
+        if ( ! card.animate ) this.sound.playChecker();
+        this.wsService.doPlayCard( card );
+        this.wsService.sendDummyPlayCard( card );
+    }
+    
     playCardAnimFinished(): void
     {
 //         this.sound.playChecker();

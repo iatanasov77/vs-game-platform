@@ -57,6 +57,7 @@ import { GameVariant } from '@vankosoft/game-platform';
 import templateString from './card-game-board.component.html'
 import styleString from './card-game-board.component.scss'
 
+declare var $: any;
 declare global {
     interface Window {
         gamePlatformSettings: any;
@@ -91,6 +92,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
     @Input() lobbyButtonsVisible: boolean = false;
     
     @Output() playCard = new EventEmitter<CardDto>();
+    @Output() dummyPlayCard = new EventEmitter<CardDto>();
     @Output() playCardAnimFinished = new EventEmitter<void>();
     
     borderWidth = 0;
@@ -150,10 +152,14 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
     bottom = '';
     left = '';
     
+    debugDummyPlayerCards: boolean;
+    
     constructor(
         @Inject( TranslateService ) private translateService: TranslateService,
         @Inject( AppStateService ) private appState: AppStateService,
-    ) {}
+    ) {
+        this.debugDummyPlayerCards = $( '#GameContainer' ).attr( 'data-debugDummyPlayerCards' );
+    }
     
     ngOnChanges( changes: SimpleChanges ): void
     {
@@ -317,16 +323,15 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         if ( ! this.game ) {
             return;
         }
-        //console.log( 'Valid Cards', this.game.validCards );
+        // console.log( 'Valid Cards', this.game.validCards );
+        // console.log( 'Card Areas', this.cardAreas );
         
         // THIS IS WRONG WAY. SHOULD GENERATE VALID CARDS FOR DUMMY PLAYER IN BACKEND
-        var isDummy = Boolean( this.dummyPlayer && this.game.currentPlayer == this.dummyPlayer );
-        //alert( isDummy );
+        var isDummy = Boolean( this.debugDummyPlayerCards && this.dummyPlayer && this.game.currentPlayer == this.dummyPlayer );
         
         // resetting all
         this.cardAreas.forEach( ( rect ) => {
             rect.hasValidCard = false;
-            //rect.canBePlayed = false;
             rect.canBePlayed = isDummy;
         });
         
@@ -431,7 +436,13 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             }
             
             if ( card ) {
-                this.playCard.emit( { ...card, animate: isClick } );
+                var isDummy = Boolean( this.dummyPlayer && this.game.currentPlayer == this.dummyPlayer );
+                if ( isDummy ) {
+                    this.dummyPlayCard.emit( { ...card, animate: isClick } );
+                } else {
+                    this.playCard.emit( { ...card, animate: isClick } );
+                }
+                
                 break;
             }
         }
@@ -568,20 +579,6 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             this.cardWidth,
             this.cardHeight
         );
-        /*
-        for ( let c = 0; c < this.game.deck.length; c++ ) {
-            cardX -= 1;
-            cardY -= 1;
-            
-            cx.drawImage(
-                image,
-                cardX,
-                cardY,
-                this.cardWidth,
-                this.cardHeight
-            );
-        }
-        */
     }
     
     drawPlayers( cx: CanvasRenderingContext2D ): void
@@ -851,10 +848,14 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             return;
         }
         
-        const playerCards = this.playerCards[PlayerPosition.south];
-        const cardsWidth = this.cardWidth + ( ( playerCards.length - 1 ) * this.cardOffset );
+        //const playerPosition    = PlayerPosition.south;
+        //const playerPosition    = PlayerPosition.north;
+        const playerPosition    = this.game.currentPlayer;
         
-        const pa = this.playerAreas.find( ( x ) => x.playerPosition === PlayerPosition.south );
+        const playerCards       = this.playerCards[playerPosition];
+        const cardsWidth        = this.cardWidth + ( ( playerCards.length - 1 ) * this.cardOffset );
+        
+        const pa = this.playerAreas.find( ( x ) => x.playerPosition === playerPosition );
         if ( ! pa ) {
             return;
         }
@@ -862,8 +863,8 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         const yOffset = pa.height - this.cardHeight;
         const cardY = pa.y + yOffset;
         
-        //console.log( 'Card Areas', this.cardAreas );
-        //alert( playerCards.length );
+        console.log( 'Player Cards', this.playerCards );
+        // alert( playerCards.length );
         
         for ( let c = 0; c < playerCards.length; c++ ) {
             let cardX = pa.x + pa.width / 2 - ( cardsWidth / 2 ) + ( c * this.cardOffset );
@@ -871,6 +872,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             
             this.cardAreas[c].set( cardX, cardY, areaWidth, this.cardHeight, playerCards[c].cardIndex );
         }
+        // console.log( 'Card Areas', this.cardAreas );
     }
     
     drawPlayerArea( playerArea: CardGamePlayerArea ): void

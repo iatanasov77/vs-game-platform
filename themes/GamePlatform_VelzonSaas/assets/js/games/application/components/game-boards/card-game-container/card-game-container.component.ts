@@ -132,6 +132,8 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     playWithComputerVisible = false;
     newVisible = false;
     exitVisible = true;
+    rotateVisible = false;
+    flipVisible = false;
     gameBiddingVisible = false;
     gameContractVisible = false;
     newRoundVisible = false;
@@ -625,6 +627,8 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
                 break;
             case GameVariant.CONTRACT_BRIDGE_CODE:
                 this.playWithComputerVisible = false;
+                this.rotateVisible = true;
+                this.flipVisible = true;
                 
                 if ( ! dto.LastBid ) {
                     this.openContractBridgeAuctionDialog();

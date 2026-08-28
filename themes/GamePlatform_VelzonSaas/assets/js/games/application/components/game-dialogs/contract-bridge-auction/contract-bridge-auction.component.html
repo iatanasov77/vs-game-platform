@@ -11,13 +11,12 @@
         <h5 class="mb-2">Valid Bids</h5>
         <pre>{{ validBids | json }}</pre>
     </div>
-    
-    
-    <div class="text-center mb-2">
-        <div>It's youe turn. Highest bid is 3D</div>
-        <div>E countered</div>
-    </div>
     -->
+    
+    <div class="text-center mb-2" *ngIf="lastBid">
+        <div>{{ 'contract-bridge-auction.youe_turn' | translate }} {{ 'contract-bridge-auction.highest_bid' | translate }} {{ lastBid.Value }}{{ bidTrumpString( lastBid.Trump ) }}</div>
+        <div *ngIf="contract.KontraPlayer">{{ playerPositionString( lastBid.KontraPlayer ) }} {{ 'contract-bridge-auction.countered' | translate }}</div>
+    </div>
     
     <div class="bridge-auction-container">
         <div class="text-center">

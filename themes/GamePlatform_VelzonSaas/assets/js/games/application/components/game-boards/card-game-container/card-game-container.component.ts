@@ -155,6 +155,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     
     startedHandle: any;
     
+    bidHistory: BidDto[] = [];
     debugGameSoundsVisible = window.gamePlatformSettings.debugGameSounds;
     
     constructor(
@@ -305,10 +306,16 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     openContractBridgeAuctionDialog(): void
     {
         const modalRef = this.ngbModal.open( ContractBridgeAuctionComponent );
+        modalRef.componentInstance.bidHistory = this.bidHistory;
         
         modalRef.componentInstance.closeModal.subscribe( () => {
             // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
             modalRef.dismiss();
+        });
+        
+        modalRef.componentInstance.passEntry.subscribe( ( receivedEntry: any ) => {
+            alert( `Add to BID History: ${JSON.stringify( receivedEntry )}` );
+            this.bidHistory.push( receivedEntry );
         });
     }
     

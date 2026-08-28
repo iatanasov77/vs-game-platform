@@ -377,7 +377,7 @@ export class CardGameService extends AbstractGameService
         }
         
         const playerBids = this.appState.playerBids.getValue();
-        
+         
         this.appState.playerBids.setValue({
             ...playerBids,
             [playerPosition]: bid

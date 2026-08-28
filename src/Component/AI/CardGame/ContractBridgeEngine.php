@@ -98,8 +98,6 @@ class ContractBridgeEngine extends Engine
     
     private function GetBid( PlayerGetBidContext $context ): BidTrump
     {
-        //$bid = BidTrump::Pass;
-        
         $bids = new ArrayCollection();
         
         if ( $context->AvailableBids->containsKey( BidTrump::Clubs->value() ) ) {
@@ -154,6 +152,9 @@ class ContractBridgeEngine extends Engine
         
         //$this->logger->log( 'Available Bids for Player ' . $context->MyPosition->value . ': ' . \print_r( $context->AvailableBids->toArray(), true ), 'BridgeBeloteEngine' );
         $this->logger->log( 'Selected Bid for Player ' . $context->MyPosition->value . ': ' . \print_r( $bid, true ), 'BridgeBeloteEngine' );
+        
+        // DEBUGGING
+        // $bid = BidTrump::Pass;
         
         return $bid;
     }

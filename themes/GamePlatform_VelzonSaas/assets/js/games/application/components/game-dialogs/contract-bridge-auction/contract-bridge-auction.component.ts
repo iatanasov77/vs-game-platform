@@ -3,7 +3,11 @@ import {
     ChangeDetectionStrategy,
     Inject,
     EventEmitter,
-    Output
+    Input,
+    Output,
+    OnDestroy,
+    OnChanges,
+    SimpleChanges
 } from '@angular/core';
 
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -15,6 +19,7 @@ import { CardGameAnnounceSymbolModel } from '@vankosoft/game-platform';
 import { BidTrump } from '@vankosoft/game-platform';
 import { ContractBridgeBidDto } from '@vankosoft/game-platform';
 import { PlayerPosition } from '@vankosoft/game-platform';
+import { Helper } from '@vankosoft/game-platform';
 
 import { AppStateService } from '../../../state/app-state.service';
 import { CardGameService } from '../../../services/websocket/card-game.service';
@@ -33,9 +38,11 @@ import templateString from './contract-bridge-auction.component.html';
         cssString || 'Game CSS Not Loaded !!!',
     ]
 })
-export class ContractBridgeAuctionComponent
+export class ContractBridgeAuctionComponent implements OnDestroy, OnChanges
 {
+    @Input() bidHistory: ContractBridgeBidDto[] = [];
     @Output() closeModal: EventEmitter<any> = new EventEmitter();
+    @Output() passEntry: EventEmitter<any> = new EventEmitter();
     
     announceSymbols: Array<CardGameAnnounceSymbolModel> = [];
     
@@ -43,7 +50,7 @@ export class ContractBridgeAuctionComponent
     contract: ContractBridgeBidDto | null = null;
     
     myPosition: PlayerPosition;
-    lastBid: ContractBridgeBidDto | null = null;
+    lastBid: ContractBridgeBidDto | null;
     
     bidValueChanged: boolean = false;
     bidValue: number = 1;
@@ -59,7 +66,27 @@ export class ContractBridgeAuctionComponent
         this.myPosition = this.appStateService.myPosition.getValue();
         this.getAnnounceSymbols();
         
-        this.validBids = this.appStateService.cardGame.getValue().validBids;
+        this.validBids  = this.appStateService.cardGame.getValue().validBids;
+        this.lastBid    = this.bidHistory.length ? this.bidHistory[this.bidHistory.length - 1] : null;
+    }
+    
+    ngOnChanges( changes: SimpleChanges ): void
+    {
+        for ( const propName in changes ) {
+            const changedProp = changes[propName];
+            
+            switch ( propName ) {
+                case 'bidHistory':
+                    this.bidHistory = changedProp.currentValue;
+                    alert( this.bidHistory.length );
+                    break;
+            }
+        }
+    }
+    
+    ngOnDestroy(): void
+    {
+        
     }
     
     dismissModal(): void
@@ -84,6 +111,15 @@ export class ContractBridgeAuctionComponent
     
     bidValueIsDisabled( value: number ): boolean
     {
+        if (
+            this.bidTrump &&
+            this.contract &&
+            this.bidTrump == this.contract.Trump &&
+            value <= this.contract.Value
+        ) {
+            return true;
+        }
+        
         return false;
     }
     
@@ -141,9 +177,9 @@ export class ContractBridgeAuctionComponent
             LastBid: false,
             NextBids: []
         };
-        //alert( JSON.stringify( bid ) );
-        
         this.doBid( bid );
+        
+        this.passEntry.emit( bid );
         this.dismissModal();
     }
     
@@ -155,5 +191,15 @@ export class ContractBridgeAuctionComponent
         let playerBids = this.appStateService.playerBids.getValue();
         alert( playerBids.length );
         */
+    }
+    
+    playerPositionString( position: PlayerPosition ): string
+    {
+        return Helper.cardgamePlayerPosition( position );
+    }
+    
+    bidTrumpString( trump: BidTrump ): string
+    {
+        return Helper.shortBidTrump( trump );
     }
 }

@@ -148,6 +148,8 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
     newVisible = false;
     exitVisible = true;
     resignVisible = false;
+    rotateVisible = false;
+    flipVisible = false;
     acceptDoublingVisible = false;
     requestDoublingVisible = false;
     requestHintVisible = false;
@@ -639,10 +641,15 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
     {
         if ( ! this.myTurn() || this.doublingRequested() ) {
             this.resignVisible = false;
+            this.rotateVisible = false;
+            this.flipVisible = false;
+            
             return;
         }
         
         this.resignVisible = true;
+        this.rotateVisible = true;
+        this.flipVisible = true;
     }
     
     resignGame(): void

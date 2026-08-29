@@ -792,6 +792,7 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
     onRotated(): void
     {
         this.rotated = ! this.rotated;
+        // both flipped and rotated is not supported
         if ( this.rotated ) {
             this.flipped = false;
         }

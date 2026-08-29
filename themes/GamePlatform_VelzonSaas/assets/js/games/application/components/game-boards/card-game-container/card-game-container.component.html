@@ -13,6 +13,8 @@
         [width]="width"
         [height]="height"
         [game]="gameDto$ | async"
+        [rotated]="rotated"
+        [flipped]="flipped"
         [playerCards]="playerCardsDto"
         [playerBids]="playerBidsDto"
         [playerAnnounces]="playerAnnouncesDto"
@@ -58,6 +60,10 @@
             (onInviteFriend)="inviteFriend()"
             (onAcceptInvite)="acceptInvite( $event )"
             (onCancelInvite)="cancelInvite()"
+            
+            (onRotate)="onRotated()"
+            (onFlip)="onFlipped()"
+            (onResign)="resignGame()"
         ></app-board-buttons>
         
         <bridge-belote-contract

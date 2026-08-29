@@ -120,6 +120,8 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     height: number = 510;
     started = false;
     messageCenter = -15;
+    rotated = false;
+    flipped = false;
     gameId = "";
     playAiFlag = false;
     forGoldFlag = false;
@@ -381,6 +383,24 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
             // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
             modalRef.dismiss();
         });
+    }
+    
+    onFlipped(): void
+    {
+        this.flipped = ! this.flipped;
+        // both flipped and rotated is not supported
+        if ( this.flipped ) {
+            this.rotated = false;
+        }
+    }
+    
+    onRotated(): void
+    {
+        this.rotated = ! this.rotated;
+        // both flipped and rotated is not supported
+        if ( this.rotated ) {
+            this.flipped = false;
+        }
     }
     
     resignGame(): void

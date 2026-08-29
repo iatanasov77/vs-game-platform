@@ -79,6 +79,8 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
     @Input() public width: number = 710;
     @Input() public height: number = 510;
     @Input() game: CardGameDto | null = null;
+    @Input() rotated = false;
+    @Input() flipped = false;
     @Input() playerCards: Array<CardDto[]> | null = [];
     @Input() playerBids: BidDto[] = [];
     @Input() playerAnnounces: Array<AnnounceDto[]> | null = [];

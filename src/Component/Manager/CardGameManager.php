@@ -465,16 +465,14 @@ abstract class CardGameManager extends AbstractGameManager
         $playerCards = $this->Game->playerCards[$this->Game->CurrentPlayer->value];
         
         $engineBid  = $this->Engine->DoBid();
-        $bid        = new Bid( $this->Game->CurrentPlayer, $engineBid );
-        $this->logger->log( "EnginBids -> BidTrump: {$engineBid->value()}", 'GameManager' );
+        $bidDto = $this->_createBidDto( $engineBid );
         
-        $bidDto = $this->_createBidDto( $bid );
-        $promise = Async\async( function () use ( $client, $bid, $bidDto, $playerCards ) {
+        $promise = Async\async( function () use ( $client, $engineBid, $bidDto, $playerCards ) {
             $sleepMileseconds   = \rand( 700, 1200 );
             Async\delay( $sleepMileseconds / 1000 );
             
             $nextPlayer = $this->Game->NextPlayer();
-            $this->Game->SetContract( $bid, $nextPlayer );
+            $this->Game->SetContract( $engineBid, $nextPlayer );
             
             $action = new OpponentBidsActionDto();
             $action->bid = $bidDto;

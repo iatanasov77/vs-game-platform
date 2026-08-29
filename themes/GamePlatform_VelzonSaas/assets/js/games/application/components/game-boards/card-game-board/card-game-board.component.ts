@@ -28,6 +28,7 @@ import { CardGamePlayerDto } from '@vankosoft/game-platform';
 import { PlayerPosition } from '@vankosoft/game-platform';
 import { CardDto } from '@vankosoft/game-platform';
 import { BidDto } from '@vankosoft/game-platform';
+import { ContractBridgeBidDto } from '@vankosoft/game-platform';
 import { BidTrump } from '@vankosoft/game-platform';
 import { AnnounceDto } from '@vankosoft/game-platform';
 import { AnnounceType } from '@vankosoft/game-platform';
@@ -926,7 +927,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
     
     drawPlayerBid( playerArea: CardGamePlayerArea, bid: BidDto ): void
     {
-        if ( ! this.cx ) {
+        if ( ! this.game || ! this.cx ) {
             return;
         }
         
@@ -962,7 +963,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         
         this.cx.textAlign = "center";
         this.cx.font = "bold 10pt Courier";
-        this.cx.fillText( this.translateService.instant( this.bidTrumps[bid.Trump] ), 0, 0 );
+        this.cx.fillText( this.bidText( this.game.gameCode, bid ), 0, 0 );
         
         this.cx.restore();
     }
@@ -1112,5 +1113,18 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             default:
                 return `${cardImagesPath}/blue_back.png`;
         }
+    }
+    
+    bidText( gameCode: string, bid: BidDto ): string
+    {
+        var bidTrumpText = this.translateService.instant( this.bidTrumps[bid.Trump] );
+        var bidText = `${bidTrumpText}`;
+        
+        if ( gameCode == GameVariant.CONTRACT_BRIDGE_CODE ) {
+            var cbBid = ( bid as ContractBridgeBidDto );
+            bidText = bid.Trump == BidTrump.Pass ? `${bidTrumpText}` : `${cbBid.Value} ${bidTrumpText}`;
+        }
+        
+        return bidText;
     }
 }

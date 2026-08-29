@@ -91,7 +91,11 @@ export class ContractBridgeAuctionComponent implements OnDestroy, OnChanges
     
     dismissModal(): void
     {
+        // Comment it When NOT Debugging
         this.closeModal.emit();
+        
+        // Comment it When Debugging
+        //this.makeBid();
     }
     
     getAnnounceSymbols(): void
@@ -180,7 +184,7 @@ export class ContractBridgeAuctionComponent implements OnDestroy, OnChanges
         this.doBid( bid );
         
         this.passEntry.emit( bid );
-        this.dismissModal();
+        this.closeModal.emit();
     }
     
     doBid( bid: ContractBridgeBidDto ): void

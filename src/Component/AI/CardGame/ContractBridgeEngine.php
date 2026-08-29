@@ -5,6 +5,7 @@ use Doctrine\Common\Collections\Collection;
 
 use App\Component\GameLogger;
 use App\Component\Type\PlayerPosition;
+use App\Component\Rules\CardGame\Bid;
 use App\Component\Type\BidTrump;
 use App\Component\Type\ContractBridgeCardType as CardType;
 use App\Component\Rules\CardGame\ContractBridgeCard as Card;
@@ -52,7 +53,7 @@ class ContractBridgeEngine extends Engine
         $this->trumpTheirsContractStrategy = new TrumpTheirsContractStrategy();
     }
     
-    public function DoBid(): BidTrump
+    public function DoBid(): Bid
     {
         $context = new PlayerGetBidContext();
         $context->MyPosition = $this->EngineGame->CurrentPlayer;
@@ -96,7 +97,7 @@ class ContractBridgeEngine extends Engine
         
     }
     
-    private function GetBid( PlayerGetBidContext $context ): BidTrump
+    private function GetBid( PlayerGetBidContext $context ): Bid
     {
         $bids = new ArrayCollection();
         
@@ -135,26 +136,30 @@ class ContractBridgeEngine extends Engine
             );
         }
         
-        $this->logger->log( 'Bids Before Filter for Player ' . $context->MyPosition->value . ': ' . \print_r( $bids->toArray(), true ), 'BridgeBeloteEngine' );
+        $this->logger->log( 'Bids Before Filter for Player ' . $context->MyPosition->value . ': ' . \print_r( $bids->toArray(), true ), 'ContractBridgeEngine' );
         $bids = $bids->filter(
             function( $entry ) {
                 return $entry >= 100;
             }
         );
-        $this->logger->log( 'Bids After Filter for Player ' . $context->MyPosition->value . ': ' . \print_r( $bids->toArray(), true ), 'BridgeBeloteEngine' );
+        $this->logger->log( 'Bids After Filter for Player ' . $context->MyPosition->value . ': ' . \print_r( $bids->toArray(), true ), 'ContractBridgeEngine' );
         
         $bidsIterator = $bids->getIterator();
         $bidsIterator->uasort( function ( $a, $b ) {
             return $b <=> $a;
         });
-        $bids = new ArrayCollection( \iterator_to_array( $bidsIterator ) );
-        $bid = $bids->first() ? BidTrump::fromValue( $bids->key() ) : BidTrump::Pass;
         
-        //$this->logger->log( 'Available Bids for Player ' . $context->MyPosition->value . ': ' . \print_r( $context->AvailableBids->toArray(), true ), 'BridgeBeloteEngine' );
-        $this->logger->log( 'Selected Bid for Player ' . $context->MyPosition->value . ': ' . \print_r( $bid, true ), 'BridgeBeloteEngine' );
+        $bids = new ArrayCollection( \iterator_to_array( $bidsIterator ) );
+        $bidTrump = $bids->first() ? BidTrump::fromValue( $bids->key() ) : BidTrump::Pass;
+        //$this->logger->log( 'Available Bids for Player ' . $context->MyPosition->value . ': ' . \print_r( $context->AvailableBids->toArray(), true ), 'ContractBridgeEngine' );
         
         // DEBUGGING
         // $bid = BidTrump::Pass;
+        
+        $bid = new Bid( $this->EngineGame->CurrentPlayer, $bidTrump );
+        //$this->logger->log( 'BidTrump Value for Player ' . $context->MyPosition->value . ': ' . $bidTrump->value() , 'ContractBridgeEngine' );
+        //$bid->Value = 1;
+        $bid->Value = $context->AvailableBids[$bidTrump->value()]->Value;
         
         return $bid;
     }

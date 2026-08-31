@@ -3,14 +3,10 @@ import {
     ChangeDetectionStrategy,
     Inject,
     EventEmitter,
-    Input,
     Output,
-    OnDestroy,
-    OnChanges,
-    SimpleChanges
+    OnInit
 } from '@angular/core';
 
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { TranslateService } from '@ngx-translate/core';
 
 import { GetTrumps, GetAnnounceSymbol } from '@vankosoft/game-platform';
@@ -24,8 +20,6 @@ import { Helper } from '@vankosoft/game-platform';
 import { AppStateService } from '../../../state/app-state.service';
 import { CardGameService } from '../../../services/websocket/card-game.service';
 
-import { ButtonComponent } from '../../shared/button/button.component';
-
 import cssString from './contract-bridge-auction.component.scss';
 import templateString from './contract-bridge-auction.component.html';
 
@@ -38,19 +32,19 @@ import templateString from './contract-bridge-auction.component.html';
         cssString || 'Game CSS Not Loaded !!!',
     ]
 })
-export class ContractBridgeAuctionComponent implements OnDestroy, OnChanges
+export class ContractBridgeAuctionComponent implements OnInit
 {
-    @Input() bidHistory: ContractBridgeBidDto[] = [];
     @Output() closeModal: EventEmitter<any> = new EventEmitter();
     @Output() passEntry: EventEmitter<any> = new EventEmitter();
     
     announceSymbols: Array<CardGameAnnounceSymbolModel> = [];
     
     validBids: ContractBridgeBidDto[] = [];
+    bidHistory: ContractBridgeBidDto[] = [];
     contract: ContractBridgeBidDto | null = null;
-    
+    lastBid?: ContractBridgeBidDto;
+    lastBidString?: string;
     myPosition: PlayerPosition;
-    lastBid: ContractBridgeBidDto | null;
     
     bidValueChanged: boolean = false;
     bidValue: number = 1;
@@ -63,54 +57,22 @@ export class ContractBridgeAuctionComponent implements OnDestroy, OnChanges
         @Inject( AppStateService ) private appStateService: AppStateService,
         @Inject( CardGameService ) private wsService: CardGameService,
     ) {
-        this.myPosition = this.appStateService.myPosition.getValue();
-        this.getAnnounceSymbols();
+        this.myPosition         = this.appStateService.myPosition.getValue();
+        this.announceSymbols    = GetTrumps();
         
-        this.validBids  = this.appStateService.cardGame.getValue().validBids;
-        this.lastBid    = this.bidHistory.length ? this.bidHistory[this.bidHistory.length - 1] : null;
+        this.validBids          = this.appStateService.cardGame.getValue().validBids;
+        this.bidHistory         = this.appStateService.cardGame.getValue().bidHistory;
     }
     
-    ngOnChanges( changes: SimpleChanges ): void
+    ngOnInit(): void
     {
-        for ( const propName in changes ) {
-            const changedProp = changes[propName];
-            
-            switch ( propName ) {
-                case 'bidHistory':
-                    this.bidHistory = changedProp.currentValue;
-                    alert( this.bidHistory.length );
-                    break;
-            }
-        }
-    }
-    
-    ngOnDestroy(): void
-    {
-        
+        this.lastBid        = this.bidHistory.filter( ( bh ) => bh.Trump != BidTrump.Pass ).pop();
+        this.lastBidString  = this.bidTrumpString();
     }
     
     dismissModal(): void
     {
-        // Comment it When NOT Debugging
-        this.closeModal.emit();
-        
-        // Comment it When Debugging
-        //this.makeBid();
-    }
-    
-    getAnnounceSymbols(): void
-    {
-        this.announceSymbols = GetTrumps();
-        return;
-        
-        this.announceSymbols = [];
-        var symbol;
-        for ( var i = 0; i < this.validBids.length; i++ ) {
-            symbol = GetAnnounceSymbol( this.validBids[i].Trump );
-            if ( symbol ) {
-                this.announceSymbols.push( symbol );
-            }
-        }
+        this.makeBid();
     }
     
     bidValueIsDisabled( value: number ): boolean
@@ -191,10 +153,6 @@ export class ContractBridgeAuctionComponent implements OnDestroy, OnChanges
     {
         this.wsService.doBid( bid );
         this.wsService.sendBid( bid );
-        /*  
-        let playerBids = this.appStateService.playerBids.getValue();
-        alert( playerBids.length );
-        */
     }
     
     playerPositionString( position: PlayerPosition ): string
@@ -202,8 +160,13 @@ export class ContractBridgeAuctionComponent implements OnDestroy, OnChanges
         return Helper.cardgamePlayerPosition( position );
     }
     
-    bidTrumpString( trump: BidTrump ): string
+    bidTrumpString()
     {
-        return Helper.shortBidTrump( trump );
+        if ( ! this.lastBid ) {
+            return;
+        }
+        let announceSymbol = GetAnnounceSymbol( Number( this.lastBid.Trump ) );
+        
+        return `${this.lastBid.Value} ${announceSymbol.htmlEntity}`;
     }
 }

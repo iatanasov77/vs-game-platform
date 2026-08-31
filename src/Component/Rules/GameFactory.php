@@ -288,6 +288,7 @@ final class GameFactory
         
         $game->AvailableBids = new ArrayCollection();
         $game->ValidCards = new ArrayCollection();
+        $game->BidHistory = new ArrayCollection();
         $game->Bids = new ArrayCollection();
         
         $game->SetStartPosition();
@@ -330,6 +331,7 @@ final class GameFactory
         
         $game->AvailableBids = new ArrayCollection();
         $game->ValidCards = new ArrayCollection();
+        $game->BidHistory = new ArrayCollection();
         $game->Bids = new ArrayCollection();
         
         $game->SetStartPosition();

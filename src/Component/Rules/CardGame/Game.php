@@ -67,6 +67,9 @@ abstract class Game implements GameInterface
     public $ValidCards;
     
     /** @var Collection | Bid[] */
+    public $BidHistory;
+    
+    /** @var Collection | Bid[] */
     public $Bids;
     
     /** @var int */

@@ -11,6 +11,7 @@ class CardGameDto extends GameDto
     
     public array $validBids;
     public array $validCards;
+    public array $bidHistory;
     public ?BidDto $contract;
     
     public ?PlayerPosition $currentPlayer;

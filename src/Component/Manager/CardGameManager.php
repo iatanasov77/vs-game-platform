@@ -154,6 +154,7 @@ abstract class CardGameManager extends AbstractGameManager
         $this->Game->Deck = new Deck( $this->GameCode );
         
         $this->Game->CurrentPlayer = $this->Game->firstInRound;
+        $this->Game->BidHistory = new ArrayCollection();
         $this->Game->SouthNorthTricks = new ArrayCollection();
         $this->Game->EastWestTricks = new ArrayCollection();
         
@@ -466,6 +467,7 @@ abstract class CardGameManager extends AbstractGameManager
         
         $engineBid  = $this->Engine->DoBid();
         $bidDto = $this->_createBidDto( $engineBid );
+        $this->Game->BidHistory[] = $engineBid;
         
         $promise = Async\async( function () use ( $client, $engineBid, $bidDto, $playerCards ) {
             $sleepMileseconds   = \rand( 700, 1200 );
@@ -483,6 +485,13 @@ abstract class CardGameManager extends AbstractGameManager
                 }
             )->toArray();
             $action->validBids = \array_values( $validBids );
+            
+            $bidHistory = $this->Game->BidHistory->map(
+                function( $entry ) {
+                    return Mapper::BidToDto( $entry );
+                }
+            )->toArray();
+            $action->bidHistory = \array_values( $bidHistory );
             
             $action->nextPlayer = $nextPlayer;
             $action->playState = $this->Game->PlayState;

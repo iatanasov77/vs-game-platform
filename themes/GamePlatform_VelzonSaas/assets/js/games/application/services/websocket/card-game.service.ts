@@ -189,6 +189,7 @@ export class CardGameService extends AbstractGameService
                 const cGame = {
                     ...game,
                     validBids: action.validBids,
+                    bidHistory: action.bidHistory,
                     currentPlayer: action.nextPlayer,
                     playState: action.playState,
                     LastBid: action.bid.LastBid
@@ -377,7 +378,6 @@ export class CardGameService extends AbstractGameService
         }
         
         const playerBids = this.appState.playerBids.getValue();
-         
         this.appState.playerBids.setValue({
             ...playerBids,
             [playerPosition]: bid
@@ -402,6 +402,7 @@ export class CardGameService extends AbstractGameService
             bid: { ...bid, NextBids: [] },
             
             validBids: [],
+            bidHistory: [],
             nextPlayer: game.currentPlayer,
             playState: game.playState,
             

@@ -44,7 +44,7 @@ import { NgxChessBoardModule } from 'ngx-chess-board';
         TranslateModule.forChild(),
         SharedModule,
         GameDialogsModule,
-        NgxChessBoardModule.forRoot(),
+        NgxChessBoardModule.forRoot()
     ],
     exports: [
         CardGameContainerComponent,

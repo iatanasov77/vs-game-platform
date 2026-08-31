@@ -194,6 +194,8 @@ class ContractBridgeGameManager extends CardGameManager
         
         $nextPlayer = $this->Game->NextPlayer();
         $this->Game->SetContract( $bid, $nextPlayer );
+        
+        $this->Game->BidHistory[] = $bid;
     }
     
     protected function PlayCard( PlayCardActionDto $action ): void

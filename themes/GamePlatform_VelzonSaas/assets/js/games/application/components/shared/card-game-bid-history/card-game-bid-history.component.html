@@ -1,0 +1,17 @@
+<table class="bridge-table mt-4">
+    <thead>
+        <tr>
+            <th *ngFor="let playerPosition of hystoryTableHeaders()" [innerHTML]="playerPosition"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @for( bidHistoryNth of bidHistoryTransformed; track $index ) {
+            <tr>
+                @for( bid of bidHistoryNth; track $index ) {
+                    <td><span [ngClass]="bid == 'Pass' ? 'pass' : 'bid-suit'" [innerHTML]="bid"></span></td>
+                }
+            </tr>
+        }
+        <tr><td></td><td></td><td></td><td></td></tr>
+    </tbody>
+</table>

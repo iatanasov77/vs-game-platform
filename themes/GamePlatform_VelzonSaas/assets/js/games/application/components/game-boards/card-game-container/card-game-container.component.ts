@@ -139,6 +139,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     gameBiddingVisible = false;
     gameContractVisible = false;
     newRoundVisible = false;
+    openAuctionDialogVisible = false;
     debugButtonsVisible = false;
     
     gameDto: CardGameDto | undefined;
@@ -309,10 +310,13 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     
     openContractBridgeAuctionDialog(): void
     {
+        this.openAuctionDialogVisible = ! this.openAuctionDialogVisible;
+        
         const modalRef = this.ngbModal.open( ContractBridgeAuctionComponent, { size: 'xl' } );
         
         modalRef.componentInstance.closeModal.subscribe( () => {
             // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
+            this.openAuctionDialogVisible = ! this.openAuctionDialogVisible;
             modalRef.dismiss();
         });
         
@@ -541,6 +545,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
             this.contract = dto.contract;
             this.playerBidsDto = [];
             this.gameBiddingVisible = false;
+            this.openAuctionDialogVisible = false;
             this.gameContractVisible = true;
         }
         
@@ -650,6 +655,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
                 this.flipVisible = true;
                 
                 if ( ! dto.LastBid ) {
+                    this.openAuctionDialogVisible = true;
                     this.openContractBridgeAuctionDialog();
                 }
                 

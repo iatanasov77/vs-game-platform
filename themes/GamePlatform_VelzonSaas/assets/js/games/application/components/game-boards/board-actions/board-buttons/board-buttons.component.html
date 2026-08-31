@@ -39,6 +39,10 @@
             {{ 'game_board.new_game' | translate }}
         </button>
         
+        <button (click)="openAuctionDialog()" *ngIf="openAuctionDialogVisible" class="default-button">
+            {{ 'contract-bridge-auction.auction' | translate }}
+        </button>
+        
         <button (click)="exitGame()" *ngIf="exitVisible" class="secondary-button">
             {{ 'game_board.exit_game' | translate }}
         </button>

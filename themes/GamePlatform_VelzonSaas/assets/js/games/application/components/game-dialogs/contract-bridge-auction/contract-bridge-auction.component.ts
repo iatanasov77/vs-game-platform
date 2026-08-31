@@ -72,7 +72,8 @@ export class ContractBridgeAuctionComponent implements OnInit
     
     dismissModal(): void
     {
-        this.makeBid();
+        // this.makeBid();
+        this.closeModal.emit();
     }
     
     bidValueIsDisabled( value: number ): boolean

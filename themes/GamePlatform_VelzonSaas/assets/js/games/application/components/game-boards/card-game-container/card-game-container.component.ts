@@ -309,8 +309,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     
     openContractBridgeAuctionDialog(): void
     {
-        // alert( `BID History Before Open Auction: ${JSON.stringify( this.bidHistory )}` );
-        const modalRef = this.ngbModal.open( ContractBridgeAuctionComponent );
+        const modalRef = this.ngbModal.open( ContractBridgeAuctionComponent, { size: 'xl' } );
         
         modalRef.componentInstance.closeModal.subscribe( () => {
             // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular

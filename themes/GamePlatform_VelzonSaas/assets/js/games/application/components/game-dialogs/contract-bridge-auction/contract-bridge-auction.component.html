@@ -18,6 +18,7 @@
     </div>
     
     <div class="bridge-auction-container">
+        
         <div class="text-center">
             <mat-button-toggle-group
                 *ngIf="bidTrump"
@@ -73,13 +74,41 @@
                 id="collapseOne"
                 class="accordion-collapse collapse show"
                 aria-labelledby="headingOne"
-                data-bs-parent="#faqAccordion"
+                data-bs-parent="#cbaAccordion"
             >
                 <div class="accordion-body">
                     <card-game-bid-history></card-game-bid-history>
                 </div>
             </div>
         </div>
+        
+        <!-- I cannot styling this block 
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingTwo">
+                <button
+                    class="accordion-button"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapseTwo"
+                    aria-expanded="true"
+                    aria-controls="collapseTwo"
+                >
+                    {{ 'card-game.my_cards' | translate }}
+                </button>
+            </h2>
+            <div
+                id="collapseTwo"
+                class="accordion-collapse collapse show"
+                aria-labelledby="headingTwo"
+                data-bs-parent="#cbaAccordion"
+            >
+                <div class="accordion-body">
+                    <card-game-my-player-cards></card-game-my-player-cards>
+                </div>
+            </div>
+        </div>
+        -->
+        
     </div>
 </div>
 

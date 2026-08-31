@@ -12,6 +12,7 @@ import { ErrorHandlerComponent } from './error-handler/error-handler.component';
 import { ButtonComponent } from './button/button.component';
 import { InputCopyComponent } from './input-copy/input-copy.component';
 import { CardGameBidHistoryComponent } from './card-game-bid-history/card-game-bid-history.component';
+import { CardGameMyPlayerCardsComponent } from './card-game-my-player-cards/card-game-my-player-cards.component';
 
 @NgModule({
     declarations: [
@@ -21,7 +22,8 @@ import { CardGameBidHistoryComponent } from './card-game-bid-history/card-game-b
         ErrorHandlerComponent,
         ButtonComponent,
         InputCopyComponent,
-        CardGameBidHistoryComponent
+        CardGameBidHistoryComponent,
+        CardGameMyPlayerCardsComponent
     ],
     imports: [
         CommonModule,
@@ -37,7 +39,8 @@ import { CardGameBidHistoryComponent } from './card-game-bid-history/card-game-b
         ErrorHandlerComponent,
         ButtonComponent,
         InputCopyComponent,
-        CardGameBidHistoryComponent
+        CardGameBidHistoryComponent,
+        CardGameMyPlayerCardsComponent
     ]
 })
 export class SharedModule { }

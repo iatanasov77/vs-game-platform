@@ -1,3 +1,20 @@
+1.1.4	|	Release date: **01.09.2026**
+============================================
+* New Features:
+  - Improve Contract Bridge Playing.
+  - Move I18n and Game Sounds Assets into NPM Package.
+  - Update to Symfony 7 and Vankosoft Library 1.  - More Updates to New Versions of Required Dependencies.
+  - Improve Contract Bridge AI Engine.
+  - Debug and improve Contract Bridge Bidding.
+  - Improve Backgamon Board.
+  - Rotating and Flipping Card Game Board.
+  - Improve Contract Bridge Bidding.
+  - Improe Contract Bridge Auction Dialog.
+  - Create My Player Cards Component.
+  - Ass a Button to Open Card Game Auction Dialog.
+  - Create a Clock Rounding a Card Game Players.
+
+
 1.1.3	|	Release date: **27.08.2026**
 ============================================
 * New Features:

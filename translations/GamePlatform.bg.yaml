@@ -65,6 +65,7 @@ game_platform:
             settings_key_help: Used to load different Settings in Different Application Environements.
             game_settings: Game Settings
             timeout_between_players: Timeout between Players
+            auto_open_card_game_auction_dialog: Auto Open CardGame Auction Dialog
             game_debugging: Game Debugging
             debug_game_sounds: Debug Game Sounds
             debug_card_game_player_areas: Debug Card Game Player Areas

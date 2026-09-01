@@ -28,6 +28,10 @@ class GamePlatformSettings implements ResourceInterface
     private $timeoutBetweenPlayers;
     
     /** @var bool */
+    #[ORM\Column(name: "auto_open_card_game_auction_dialog", type: "boolean", options: ["default" => 0], nullable: true)]
+    private $autoOpenCardGameAuctionDialog = false;
+    
+    /** @var bool */
     #[ORM\Column(name: "debug_game_sounds", type: "boolean", options: ["default" => 0], nullable: true)]
     private $debugGameSounds = false;
     
@@ -80,6 +84,18 @@ class GamePlatformSettings implements ResourceInterface
     public function setTimeoutBetweenPlayers($timeoutBetweenPlayers)
     {
         $this->timeoutBetweenPlayers  = $timeoutBetweenPlayers;
+        
+        return $this;
+    }
+    
+    public function getAutoOpenCardGameAuctionDialog()
+    {
+        return $this->autoOpenCardGameAuctionDialog;
+    }
+    
+    public function setAutoOpenCardGameAuctionDialog($autoOpenCardGameAuctionDialog)
+    {
+        $this->autoOpenCardGameAuctionDialog  = $autoOpenCardGameAuctionDialog;
         
         return $this;
     }

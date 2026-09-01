@@ -204,6 +204,7 @@ abstract class CardGameManager extends AbstractGameManager
                 $this->NewTurn( $socket );
             })();
             Async\await( $promise );
+            $this->logger->log( "Doing action bidMade !!!", 'GameManager' );
         } else if ( $actionName == ActionNames::opponentBids ) {
             $action = $this->serializer->deserialize( $actionText, OpponentBidsActionDto::class, JsonEncoder::FORMAT );
             foreach ( $otherSockets as $otherSocket ) {
@@ -298,6 +299,7 @@ abstract class CardGameManager extends AbstractGameManager
     {
         /** $this->Game->DummyFaceup May be Uneeded */
         if ( $this->Game->PlayState == GameState::playing && $this->IsDummy() && ! $this->Game->DummyFaceup ) {
+            $this->logger->log( "This is Dummy Player !!!", 'GameManager' );
             return;
         }
         

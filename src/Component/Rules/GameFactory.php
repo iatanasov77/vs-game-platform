@@ -7,14 +7,14 @@ use App\Component\Utils\Guid;
 use App\Component\GameVariant;
 use App\Component\Type\PlayerColor;
 use App\Component\Type\PlayerPosition;
+use App\Component\Type\PlayerDirection;
 
 // Games
 use App\Component\Rules\BoardGame\BackgammonNormalGame;
 use App\Component\Rules\BoardGame\BackgammonTapaGame;
 use App\Component\Rules\BoardGame\BackgammonGulBaraGame;
 use App\Component\Rules\BoardGame\ChessGame;
-use App\Component\Rules\CardGame\BridgeBeloteGame;
-use App\Component\Rules\CardGame\ContractBridgeGame;
+use App\Component\Rules\CardGame\Game as CardGame;
 
 use App\Component\Rules\BoardGame\Player as BoardGamePlayer;
 use App\Component\Rules\BoardGame\Point;
@@ -255,10 +255,11 @@ final class GameFactory
     
     private function createBridgeBeloteGame( string $gameCode, bool $forGold ): GameInterface
     {
-        $game = new BridgeBeloteGame( $this->logger, $this->eventDispatcher );
+        $game = new CardGame( $this->logger, $this->eventDispatcher );
         
-        $game->Id           = Guid::NewGuid();
-        $game->GameCode     = $gameCode;
+        $game->Id               = Guid::NewGuid();
+        $game->GameCode         = $gameCode;
+        $game->PlayerDirection  = PlayerDirection::BackClockwise;
         
         $game->Players[PlayerPosition::South->value] = new CardGamePlayer();
         $game->Players[PlayerPosition::South->value]->PlayerPosition = PlayerPosition::South;
@@ -298,10 +299,11 @@ final class GameFactory
     
     private function createContractBridgeGame( string $gameCode, bool $forGold ): GameInterface
     {
-        $game = new ContractBridgeGame( $this->logger, $this->eventDispatcher );
+        $game = new CardGame( $this->logger, $this->eventDispatcher );
         
-        $game->Id           = Guid::NewGuid();
-        $game->GameCode     = $gameCode;
+        $game->Id               = Guid::NewGuid();
+        $game->GameCode         = $gameCode;
+        $game->PlayerDirection  = PlayerDirection::Clockwise;
         
         $game->Players[PlayerPosition::South->value] = new CardGamePlayer();
         $game->Players[PlayerPosition::South->value]->PlayerPosition = PlayerPosition::South;

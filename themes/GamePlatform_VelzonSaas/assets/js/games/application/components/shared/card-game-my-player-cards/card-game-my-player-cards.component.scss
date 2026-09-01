@@ -1,0 +1,30 @@
+.myPlayerCards {
+    position: absolute;
+    bottom: 0; /* https://stackoverflow.com/a/10487329/12693473 */
+}
+
+.myPlayerCards .myCard:not(:first-child) {
+    margin-left: calc(0px - 50 / 1.5);
+}
+
+.myPlayerCards .myCard {
+    position: relative;
+    float: left;
+    display: inline;
+    margin-right: auto;
+}
+
+.myCard {
+    
+    width: 50px;
+    /*  
+    height: 160px;
+    */
+    transition: transform 0.2s linear, margin 0.2s linear;
+    transform-style: preserve-3d;
+    text-align: center;
+}
+
+.myPlayerCards .myCard img {
+    width: 50px;
+}

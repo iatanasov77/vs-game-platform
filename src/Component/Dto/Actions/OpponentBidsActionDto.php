@@ -19,6 +19,8 @@ class OpponentBidsActionDto extends ActionDto
     public BidDto $bid;
     
     public array $validBids;
+    public array $bidHistory;
+    
     public PlayerPosition $nextPlayer;
     public GameState $playState;
     

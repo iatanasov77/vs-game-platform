@@ -154,6 +154,7 @@ abstract class CardGameManager extends AbstractGameManager
         $this->Game->Deck = new Deck( $this->GameCode );
         
         $this->Game->CurrentPlayer = $this->Game->firstInRound;
+        $this->Game->BidHistory = new ArrayCollection();
         $this->Game->SouthNorthTricks = new ArrayCollection();
         $this->Game->EastWestTricks = new ArrayCollection();
         
@@ -208,7 +209,6 @@ abstract class CardGameManager extends AbstractGameManager
             foreach ( $otherSockets as $otherSocket ) {
                 $this->Send( $otherSocket, $action );
             }
-            $this->logger->log( "Doing action opponentBids !!!", 'GameManager' );
         } else if ( $actionName == ActionNames::playCard ) {
             $this->Game->ThinkStart = new \DateTime( 'now' );
             $action = $this->serializer->deserialize( $actionText, PlayCardActionDto::class, JsonEncoder::FORMAT );
@@ -219,7 +219,6 @@ abstract class CardGameManager extends AbstractGameManager
             })();
             Async\await( $promise );
         } else if ( $actionName == ActionNames::dummyPlayCard ) {
-            $this->logger->log( 'dummyPlayCard action recieved from GameManager.', 'GameManager' );
             if  ( ! $this->Game->DummyPlayer ) {
                 $DummyPlayer = PlayerPositionExtensions::GetTeammate( $this->Game->CurrentContract->Player );
                 
@@ -242,12 +241,10 @@ abstract class CardGameManager extends AbstractGameManager
                 $this->Send( $otherSocket, $action );
             }
         } else if ( $actionName == ActionNames::startNewRound ) {
-            $this->logger->log( 'startNewRound action recieved from GameManager.', 'GameManager' );
             $this->StartNewRound();
             $this->PlayRound( $socket );
         } else if ( $actionName == ActionNames::startNewGame ) {
             // New Game in the Same GameSession / GameRoom
-            $this->logger->log( 'startNewGame action recieved from GameManager.', 'GameManager' );
             $this->StartNewGame();
             $this->PlayRound( $socket );
         } else if ( $actionName == ActionNames::connectionInfo ) {
@@ -259,7 +256,6 @@ abstract class CardGameManager extends AbstractGameManager
 //             $winner = $this->Clients->get( PlayerColor::Black->value ) == $otherSocket ? PlayerColor::Black : PlayerColor::White;
 //             $this->Resign( $winner );
         } else if ( $actionName == ActionNames::exitGame ) {
-            $this->logger->log( 'exitGame action recieved from GameManager.', 'GameManager' );
             $this->Game->CurrentContract = null;
             $this->CloseConnections( $socket );
         }
@@ -297,6 +293,7 @@ abstract class CardGameManager extends AbstractGameManager
     {
         /** $this->Game->DummyFaceup May be Uneeded */
         if ( $this->Game->PlayState == GameState::playing && $this->IsDummy() && ! $this->Game->DummyFaceup ) {
+            $this->logger->log( "This is Dummy Player !!!", 'GameManager' );
             return;
         }
         
@@ -323,7 +320,6 @@ abstract class CardGameManager extends AbstractGameManager
             case PlayerPosition::West:
                 $plyr = $this->Game->Players[PlayerPosition::West->value];
                 break;
-                break;
             case PlayerPosition::East:
                 $plyr = $this->Game->Players[PlayerPosition::East->value];
                 break;
@@ -331,7 +327,6 @@ abstract class CardGameManager extends AbstractGameManager
                 throw new \RuntimeException( 'Wrong Current Player !' );
         }
         
-        $this->logger->log( "AisTurn CurrentPlayer: " . \print_r( $plyr, true ) , 'SwitchPlayer' );
         return $plyr->IsAi();
     }
     
@@ -465,16 +460,15 @@ abstract class CardGameManager extends AbstractGameManager
         $playerCards = $this->Game->playerCards[$this->Game->CurrentPlayer->value];
         
         $engineBid  = $this->Engine->DoBid();
-        $bid        = new Bid( $this->Game->CurrentPlayer, $engineBid );
-        $this->logger->log( "EnginBids -> BidTrump: {$engineBid->value()}", 'GameManager' );
+        $bidDto = $this->_createBidDto( $engineBid );
+        $this->Game->BidHistory[] = $engineBid;
         
-        $bidDto = $this->_createBidDto( $bid );
-        $promise = Async\async( function () use ( $client, $bid, $bidDto, $playerCards ) {
+        $promise = Async\async( function () use ( $client, $engineBid, $bidDto, $playerCards ) {
             $sleepMileseconds   = \rand( 700, 1200 );
             Async\delay( $sleepMileseconds / 1000 );
             
             $nextPlayer = $this->Game->NextPlayer();
-            $this->Game->SetContract( $bid, $nextPlayer );
+            $this->Game->SetContract( $engineBid, $nextPlayer );
             
             $action = new OpponentBidsActionDto();
             $action->bid = $bidDto;
@@ -486,6 +480,13 @@ abstract class CardGameManager extends AbstractGameManager
             )->toArray();
             $action->validBids = \array_values( $validBids );
             
+            $bidHistory = $this->Game->BidHistory->map(
+                function( $entry ) {
+                    return Mapper::BidToDto( $entry );
+                }
+            )->toArray();
+            $action->bidHistory = \array_values( $bidHistory );
+            
             $action->nextPlayer = $nextPlayer;
             $action->playState = $this->Game->PlayState;
             
@@ -496,50 +497,6 @@ abstract class CardGameManager extends AbstractGameManager
             );
             
             $this->Send( $client, $action );
-        })();
-        Async\await( $promise );
-    }
-    
-    protected function EnginPlayCard( WebsocketClientInterface $client ): void
-    {
-        $playCardAction = $this->Engine->PlayCard();
-        $this->logger->log( "EnginPlayCard: {$playCardAction->Card->Type->value}", 'GameManager' );
-        
-        // Belote
-        if ( $playCardAction->Belote ) {
-            $belote = $this->Game->IsBeloteAllowed(
-                $this->Game->playerCards[$this->Game->CurrentPlayer->value],
-                $this->Game->CurrentContract->Trump,
-                $this->Game->GetTrickActions(),
-                $playCardAction->Card
-            );
-            
-            if ( $belote ) {
-                $announce = new Announce( AnnounceType::Belot, $playCardAction->Card );
-                
-                $announce->Player = $this->Game->CurrentPlayer;
-                $this->Game->announces[] = $announce;
-                
-                $action = new AnnounceMadeActionDto();
-                $action->announce = Mapper::AnnounceToDto( $announce, $this->Game->CurrentPlayer );
-                
-                $this->Send( $this->Clients->get( PlayerPosition::South->value ), $action );
-                $this->Send( $this->Clients->get( PlayerPosition::East->value ), $action );
-                $this->Send( $this->Clients->get( PlayerPosition::North->value ), $action );
-                $this->Send( $this->Clients->get( PlayerPosition::West->value ), $action );
-            }
-        }
-        
-        $promise = Async\async( function () use ( $client, $playCardAction ) {
-            $sleepMileseconds   = \rand( 700, 1200 );
-            Async\delay( $sleepMileseconds / 1000 );
-            
-            if ( $this->IsDummy() && ! $this->Game->DummyPlayer ) {
-                $this->DummyFaceupAction();
-            } else {
-                $this->OpponentPlayCardAction( $playCardAction, $client );
-            }
-            
         })();
         Async\await( $promise );
     }
@@ -712,6 +669,8 @@ abstract class CardGameManager extends AbstractGameManager
     abstract protected function DoBid( BidMadeActionDto $action ): void;
     
     abstract protected function PlayCard( PlayCardActionDto $action ): void;
+    
+    abstract protected function EnginPlayCard( WebsocketClientInterface $client ): void;
     
     abstract protected function GetWinner(): ?CardGameTeam;
     

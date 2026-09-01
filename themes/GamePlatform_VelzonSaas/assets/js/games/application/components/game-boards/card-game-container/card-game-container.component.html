@@ -13,6 +13,8 @@
         [width]="width"
         [height]="height"
         [game]="gameDto$ | async"
+        [rotated]="rotated"
+        [flipped]="flipped"
         [playerCards]="playerCardsDto"
         [playerBids]="playerBidsDto"
         [playerAnnounces]="playerAnnouncesDto"
@@ -36,8 +38,11 @@
             
             [newVisible]="newVisible"
             [exitVisible]="exitVisible"
+            [rotateVisible]="rotateVisible"
+            [flipVisible]="flipVisible"
             [newRoundVisible]="newRoundVisible"
             [playWithComputerVisible]="playWithComputerVisible"
+            [openAuctionDialogVisible]="openAuctionDialogVisible"
             
             [debugButtonsVisible]="debugButtonsVisible"
             [debugGameSoundsVisible]="debugGameSoundsVisible"
@@ -51,11 +56,16 @@
             (onOpenDebugGameSoundsDialog)="openDebugGameSoundsDialog()"
             
             (onPlayWithComputer)="playAi()"
+            (onOpenAuctionDialog)="openContractBridgeAuctionDialog()"
             
             (onPlayGame)="playGame($event)"
             (onInviteFriend)="inviteFriend()"
             (onAcceptInvite)="acceptInvite( $event )"
             (onCancelInvite)="cancelInvite()"
+            
+            (onRotate)="onRotated()"
+            (onFlip)="onFlipped()"
+            (onResign)="resignGame()"
         ></app-board-buttons>
         
         <bridge-belote-contract

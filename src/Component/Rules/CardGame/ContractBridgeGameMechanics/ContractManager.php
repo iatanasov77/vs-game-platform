@@ -57,7 +57,6 @@ class ContractManager
         
         $this->game->ConsecutivePasses = $bid->Trump->has( BidTrump::Pass ) ? ++$this->game->ConsecutivePasses : 0;
         $this->game->AvailableBids = $this->GetAvailableBids( $this->game->CurrentContract, $nextPlayer );
-        
         //$this->logger->log( 'AvailableBids: ' . \print_r( $this->game->AvailableBids->toArray(), true ), 'ContractManager' );
     }
     
@@ -71,24 +70,58 @@ class ContractManager
         $availableBids = new ArrayCollection();
         $availableBids->set( BidTrump::Pass->value(), new Bid( $currentPlayer, BidTrump::Pass ) );
         
-        if ( $cleanContract->get() < BidTrump::Clubs->bitMaskValue() ) {
-            $availableBids->set( BidTrump::Clubs->value(), new Bid( $currentPlayer, BidTrump::Clubs ) );
+        if ( $cleanContract->get() <= BidTrump::Clubs->bitMaskValue() ) {
+            $bid = new Bid( $currentPlayer, BidTrump::Clubs );
+            $bid->Value = $cleanContract->get() == BidTrump::Clubs->bitMaskValue() && $currentContract->Value <= 7 ?
+                $currentContract->Value + 1 :
+                $currentContract->Value
+            ;
+            
+            $availableBids->set( BidTrump::Clubs->value(), $bid );
         }
         
-        if ( $cleanContract->get() < BidTrump::Diamonds->bitMaskValue() ) {
-            $availableBids->set( BidTrump::Diamonds->value(), new Bid( $currentPlayer, BidTrump::Diamonds ) );
+        if ( $cleanContract->get() <= BidTrump::Diamonds->bitMaskValue() ) {
+            $bid = new Bid( $currentPlayer, BidTrump::Diamonds );
+            $bid->Value = $currentContract->Value + 1;
+            $bid->Value = $cleanContract->get() == BidTrump::Diamonds->bitMaskValue() && $currentContract->Value <= 7 ?
+                $currentContract->Value + 1 :
+                $currentContract->Value
+            ;
+            
+            $availableBids->set( BidTrump::Diamonds->value(), $bid );
         }
         
-        if ( $cleanContract->get() < BidTrump::Hearts->bitMaskValue() ) {
-            $availableBids->set( BidTrump::Hearts->value(), new Bid( $currentPlayer, BidTrump::Hearts ) );
+        if ( $cleanContract->get() <= BidTrump::Hearts->bitMaskValue() ) {
+            $bid = new Bid( $currentPlayer, BidTrump::Hearts );
+            $bid->Value = $currentContract->Value + 1;
+            $bid->Value = $cleanContract->get() == BidTrump::Hearts->bitMaskValue() && $currentContract->Value <= 7 ?
+                $currentContract->Value + 1 :
+                $currentContract->Value
+            ;
+            
+            $availableBids->set( BidTrump::Hearts->value(), $bid );
         }
         
-        if ( $cleanContract->get() < BidTrump::Spades->bitMaskValue() ) {
-            $availableBids->set( BidTrump::Spades->value(), new Bid( $currentPlayer, BidTrump::Spades ) );
+        if ( $cleanContract->get() <= BidTrump::Spades->bitMaskValue() ) {
+            $bid = new Bid( $currentPlayer, BidTrump::Spades );
+            $bid->Value = $currentContract->Value + 1;
+            $bid->Value = $cleanContract->get() == BidTrump::Spades->bitMaskValue() && $currentContract->Value <= 7 ?
+                $currentContract->Value + 1 :
+                $currentContract->Value
+            ;
+            
+            $availableBids->set( BidTrump::Spades->value(), $bid );
         }
         
-        if ( $cleanContract->get() < BidTrump::NoTrumps->bitMaskValue() ) {
-            $availableBids->set( BidTrump::NoTrumps->value(), new Bid( $currentPlayer, BidTrump::NoTrumps ) );
+        if ( $cleanContract->get() <= BidTrump::NoTrumps->bitMaskValue() ) {
+            $bid = new Bid( $currentPlayer, BidTrump::NoTrumps );
+            $bid->Value = $currentContract->Value + 1;
+            $bid->Value = $cleanContract->get() == BidTrump::NoTrumps->bitMaskValue() && $currentContract->Value <= 7 ?
+                $currentContract->Value + 1 :
+                $currentContract->Value
+            ;
+            
+            $availableBids->set( BidTrump::NoTrumps->value(), $bid );
         }
         
         if (

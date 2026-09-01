@@ -5,21 +5,20 @@
 
 <div class="modal-body">
     <!-- Example Screenshot: https://github.com/PatrykkMar/Bridget/blob/main/Screenshots/1.png -->
-    
-    <!--  DEBUGGING
-    <div class="mt-2 mb-2">
-        <h5 class="mb-2">Valid Bids</h5>
-        <pre>{{ validBids | json }}</pre>
+    <div class="text-center mb-2" *ngIf="lastBid">
+        <div>
+            {{ 'contract-bridge-auction.youe_turn' | translate }} 
+            {{ 'contract-bridge-auction.highest_bid' | translate }} 
+            <span [innerHTML]="lastBidString"></span>
+        </div>
+        <div *ngIf="lastBid.KontraPlayer">
+            {{ playerPositionString( lastBid.KontraPlayer ) }} 
+            {{ 'contract-bridge-auction.countered' | translate }}
+        </div>
     </div>
-    
-    
-    <div class="text-center mb-2">
-        <div>It's youe turn. Highest bid is 3D</div>
-        <div>E countered</div>
-    </div>
-    -->
     
     <div class="bridge-auction-container">
+        
         <div class="text-center">
             <mat-button-toggle-group
                 *ngIf="bidTrump"
@@ -29,13 +28,12 @@
                 (change)="onChangeBidValue()"
                 (click)="setBidValue( group )"
             >
-                <mat-button-toggle value="1" [disabled]="bidValueIsDisabled( 1 )">1</mat-button-toggle>
-                <mat-button-toggle value="2" [disabled]="bidValueIsDisabled( 2 )">2</mat-button-toggle>
-                <mat-button-toggle value="3" [disabled]="bidValueIsDisabled( 3 )">3</mat-button-toggle>
-                <mat-button-toggle value="4" [disabled]="bidValueIsDisabled( 4 )">4</mat-button-toggle>
-                <mat-button-toggle value="5" [disabled]="bidValueIsDisabled( 5 )">5</mat-button-toggle>
-                <mat-button-toggle value="6" [disabled]="bidValueIsDisabled( 6 )">6</mat-button-toggle>
-                <mat-button-toggle value="7" [disabled]="bidValueIsDisabled( 7 )">7</mat-button-toggle>
+                @for ( value of [1, 2, 3, 4, 5, 6, 7]; track $index ) {
+                    <mat-button-toggle
+                        value="{{ value }}"
+                        [disabled]="bidValueIsDisabled( value )"
+                    >{{ value }}</mat-button-toggle>
+                }
             </mat-button-toggle-group>
         </div>
         
@@ -48,44 +46,69 @@
                 (change)="onChangeBidTrump()"
                 (click)="setBidTrump( group )"
             >
-                <mat-button-toggle
-                    *ngFor="let icon of announceSymbols"
-                    value="{{ icon.id }}"
-                    [disabled]="bidTrumpIsDisabled( icon.id )"
-                >
-                    <span [innerHTML]="icon.htmlEntity"></span>
-                </mat-button-toggle>
+                @for ( icon of announceSymbols; track $index ) {
+                    <mat-button-toggle
+                        value="{{ icon.id }}"
+                        [disabled]="bidTrumpIsDisabled( icon.id )"
+                    >
+                        <span [innerHTML]="icon.htmlEntity"></span>
+                    </mat-button-toggle>
+                }
             </mat-button-toggle-group>
         </div>
         
-        <!--  
-        <table class="bridge-table mt-4">
-            <thead>
-                <tr>
-                    <th>{{ 'contract-bridge-auction.west' | translate }}</th>
-                    <th>{{ 'contract-bridge-auction.north' | translate }}</th>
-                    <th>{{ 'contract-bridge-auction.east' | translate }}</th>
-                    <th>{{ 'contract-bridge-auction.south' | translate }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><span class="pass">Pass</span></td>
-                    <td>1 <span class="bid-suit">♥</span></td>
-                    <td><span class="pass">Pass</span></td>
-                    <td>2 <span class="bid-suit">♥</span></td>
-                </tr>
-                <tr>
-                    <td><span class="pass">Pass</span></td>
-                    <td><span class="pass">Pass</span></td>
-                    <td><span class="pass">Pass</span></td>
-                    <td></td>
-                </tr>
-                <tr><td></td><td></td><td></td><td></td></tr>
-                <tr><td></td><td></td><td></td><td></td></tr>
-            </tbody>
-        </table>
+        <div class="accordion-item" *ngIf="bidHistory.length">
+            <h2 class="accordion-header" id="headingOne">
+                <button
+                    class="accordion-button"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapseOne"
+                    aria-expanded="true"
+                    aria-controls="collapseOne"
+                >
+                    {{ 'contract-bridge-auction.bid_history' | translate }}
+                </button>
+            </h2>
+            <div
+                id="collapseOne"
+                class="accordion-collapse collapse show"
+                aria-labelledby="headingOne"
+                data-bs-parent="#cbaAccordion"
+            >
+                <div class="accordion-body">
+                    <card-game-bid-history></card-game-bid-history>
+                </div>
+            </div>
+        </div>
+        
+        <!-- I cannot styling this block 
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingTwo">
+                <button
+                    class="accordion-button"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapseTwo"
+                    aria-expanded="true"
+                    aria-controls="collapseTwo"
+                >
+                    {{ 'card-game.my_cards' | translate }}
+                </button>
+            </h2>
+            <div
+                id="collapseTwo"
+                class="accordion-collapse collapse show"
+                aria-labelledby="headingTwo"
+                data-bs-parent="#cbaAccordion"
+            >
+                <div class="accordion-body">
+                    <card-game-my-player-cards></card-game-my-player-cards>
+                </div>
+            </div>
+        </div>
         -->
+        
     </div>
 </div>
 

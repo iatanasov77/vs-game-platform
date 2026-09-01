@@ -26,6 +26,9 @@ export class BoardButtonsComponent implements OnInit, OnChanges
     @Input() sendVisible = false;
     @Input() undoVisible = false;
     @Input() newRoundVisible = false;
+    @Input() openAuctionDialogVisible = false;
+    @Input() rotateVisible = false;
+    @Input() flipVisible = false;
     
     @Input() playWithComputerVisible = false;
     @Input() debugButtonsVisible = false;
@@ -102,6 +105,9 @@ export class BoardButtonsComponent implements OnInit, OnChanges
                 case 'newRoundVisible':
                     this.newRoundVisible = changedProp.currentValue;
                     break;
+                case 'openAuctionDialogVisible':
+                    this.openAuctionDialogVisible = changedProp.currentValue;
+                    break;
             }
         }
     }
@@ -129,6 +135,11 @@ export class BoardButtonsComponent implements OnInit, OnChanges
     newRound(): void
     {
         this.onNewRound.emit();
+    }
+    
+    openAuctionDialog(): void
+    {
+        this.onOpenContractBridgeAuctionDialog.emit();
     }
     
     exitGame(): void

@@ -3,12 +3,15 @@
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use BitMask\EnumBitMask;
 
 use App\Component\Rules\GameInterface;
 use App\Component\GameLogger;
 use App\Component\GameVariant;
+use App\Component\PlayerPositions;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerPosition;
+use App\Component\Type\PlayerDirection;
 use App\Component\Type\BidTrump;
 
 use App\Component\Rules\CardGame\Context\PlayerGetBidContext;
@@ -16,13 +19,11 @@ use App\Component\Rules\CardGame\Context\PlayerGetAnnouncesContext;
 use App\Component\Rules\CardGame\Context\PlayerPlayCardContext;
 
 use App\Component\Rules\CardGame\BridgeBeloteGameMechanics\RoundManager as BridgeBeloteRoundManager;
-use App\Component\Rules\CardGame\BridgeBeloteGameMechanics\RoundResult;
-
 use App\Component\Rules\CardGame\ContractBridgeGameMechanics\RoundManager as ContractBridgeRoundManager;
 
 use App\Component\Dto\Actions\PlayCardActionDto;
 
-abstract class Game implements GameInterface
+class Game implements GameInterface
 {
     /** @var int */
     const ClientCountDown = 40;
@@ -35,6 +36,9 @@ abstract class Game implements GameInterface
     
     /** @var string */
     public $GameCode;
+    
+    /** @var PlayerDirection */
+    public $PlayerDirection;
     
     /** @var Deck */
     public $Deck;
@@ -65,6 +69,9 @@ abstract class Game implements GameInterface
     
     /** @var Collection | Card[] */
     public $ValidCards;
+    
+    /** @var Collection | Bid[] */
+    public $BidHistory;
     
     /** @var Collection | Bid[] */
     public $Bids;
@@ -108,6 +115,18 @@ abstract class Game implements GameInterface
     /** @var int */
     public $trickNumber;
     
+    /** @var int */
+    public $southNorthPoints;
+    
+    /** @var int */
+    public $eastWestPoints;
+    
+    /** @var int */
+    public $hangingPoints;
+    
+    /** @var Collection | Announce[] */
+    public $announces;
+    
     /** @var GameLogger */
     protected  $logger;
     
@@ -126,8 +145,35 @@ abstract class Game implements GameInterface
         $this->eventDispatcher  = $eventDispatcher;
     }
     
-    abstract public function NextPlayer(): PlayerPosition;
-    abstract public function PlayGame( PlayerPosition $firstToPlay = PlayerPosition::South ): void;
+    public function NextPlayer(): PlayerPosition
+    {
+        if ( $this->PlayerDirection === PlayerDirection::Clockwise ) {
+            return PlayerPositions::Next( $this->CurrentPlayer );
+        }
+        
+        return PlayerPositions::Prev( $this->CurrentPlayer );
+    }
+    
+    public function PlayGame( PlayerPosition $firstToPlay = PlayerPosition::South ): void
+    {
+        switch ( $this->GameCode ) {
+            case GameVariant::BRIDGE_BELOTE_CODE:
+                $this->bridgeBeloteRoundManager = new BridgeBeloteRoundManager( $this, $this->logger, $this->eventDispatcher );
+                break;
+            case GameVariant::CONTRACT_BRIDGE_CODE:
+                $this->contractBridgeRoundManager = new ContractBridgeRoundManager( $this, $this->logger, $this->eventDispatcher );
+                break;
+        }
+        
+        $this->firstInRound = $firstToPlay;
+        $this->roundNumber = 1;
+        $this->trickNumber = 1;
+        
+        $this->southNorthPoints = 0;
+        $this->eastWestPoints = 0;
+        $this->hangingPoints = 0;
+        $this->announces = new ArrayCollection();
+    }
     
     public function SetStartPosition(): void
     {
@@ -223,6 +269,11 @@ abstract class Game implements GameInterface
         return $action;
     }
     
+    public function IsBeloteAllowed( Collection $playerCards, EnumBitMask $contract, Collection $currentTrickActions, Card $playedCard ): bool
+    {
+        return $this->bridgeBeloteRoundManager->IsBeloteAllowed( $playerCards, $contract, $currentTrickActions, $playedCard );
+    }
+    
     public function GetTrickActionNumber(): int
     {
         switch ( $this->GameCode ) {
@@ -264,6 +315,18 @@ abstract class Game implements GameInterface
     public function EndOfRound( RoundResult $roundResult ): void
     {
         
+    }
+    
+    public function GetNewScore(): RoundResult
+    {
+        return $this->bridgeBeloteRoundManager->GetScore(
+            $this->CurrentContract,
+            $this->SouthNorthTricks,
+            $this->EastWestTricks,
+            $this->announces,
+            $this->hangingPoints,
+            $this->LastTrickWinner
+        );
     }
     
     public function EndOfGame( GameResult $gameResult ): void

@@ -197,6 +197,13 @@ final class Mapper
         )->toArray();
         $gameDto->validCards = \array_values( $validCards );
         
+        $bidHistory = $game->BidHistory->map(
+            function( $entry ) {
+                return self::BidToDto( $entry );
+            }
+        )->toArray();
+        $gameDto->bidHistory = \array_values( $bidHistory );
+        
         $gameDto->contract = $game->CurrentContract ? self::BidToDto( $game->CurrentContract ) : null;
         
         $gameDto->currentPlayer = $game->CurrentPlayer;

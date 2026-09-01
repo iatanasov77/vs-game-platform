@@ -11,6 +11,8 @@ import { BusyComponent } from './busy/busy.component';
 import { ErrorHandlerComponent } from './error-handler/error-handler.component';
 import { ButtonComponent } from './button/button.component';
 import { InputCopyComponent } from './input-copy/input-copy.component';
+import { CardGameBidHistoryComponent } from './card-game-bid-history/card-game-bid-history.component';
+import { CardGameMyPlayerCardsComponent } from './card-game-my-player-cards/card-game-my-player-cards.component';
 
 @NgModule({
     declarations: [
@@ -19,7 +21,9 @@ import { InputCopyComponent } from './input-copy/input-copy.component';
         BusyComponent,
         ErrorHandlerComponent,
         ButtonComponent,
-        InputCopyComponent
+        InputCopyComponent,
+        CardGameBidHistoryComponent,
+        CardGameMyPlayerCardsComponent
     ],
     imports: [
         CommonModule,
@@ -34,7 +38,9 @@ import { InputCopyComponent } from './input-copy/input-copy.component';
         BusyComponent,
         ErrorHandlerComponent,
         ButtonComponent,
-        InputCopyComponent
+        InputCopyComponent,
+        CardGameBidHistoryComponent,
+        CardGameMyPlayerCardsComponent
     ]
 })
 export class SharedModule { }

@@ -43,6 +43,11 @@ class GamePlatformSettingsForm extends AbstractForm
                 'label'                 => 'game_platform.form.game_platform_settings.debug_card_game_player_cards',
                 'translation_domain'    => 'GamePlatform',
             ])
+            
+            ->add( 'debugDummyPlayerCards', CheckboxType::class, [
+                'label'                 => 'game_platform.form.game_platform_settings.debug_dummy_player_cards',
+                'translation_domain'    => 'GamePlatform',
+            ])
         ;
     }
     

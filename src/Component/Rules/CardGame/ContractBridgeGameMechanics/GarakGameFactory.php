@@ -7,13 +7,13 @@ use Garak\Bridge\Table;
 
 use App\Component\GameLogger;
 use App\Component\Type\PlayerPosition;
-use App\Component\Rules\CardGame\ContractBridgeGame;
+use App\Component\Rules\CardGame\Game;
 use App\Component\Type\ContractBridgeCardType;
 use App\Component\Type\CardSuit;
 
 final class GarakGameFactory
 {
-    public static function CreateGame( ContractBridgeGame $vsGame, GameLogger $logger ): GarakGame
+    public static function CreateGame( Game $vsGame, GameLogger $logger ): GarakGame
     {
         /*  
         $debugCards = self::PlayerCardsString( $vsGame->playerCards[PlayerPosition::South->value] );

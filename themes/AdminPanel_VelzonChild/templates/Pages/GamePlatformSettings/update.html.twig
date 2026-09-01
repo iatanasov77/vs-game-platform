@@ -108,6 +108,16 @@
                                 </label>
                             </div>
                             
+                            <div class="form-check form-check-secondary mb-3">
+                                <input type="checkbox" id="game_platform_settings_form_debugDummyPlayerCards" name="game_platform_settings_form[debugDummyPlayerCards]"
+                                    class="form-check-input"
+                                    {% if form.vars.value.debugDummyPlayerCards %}checked="checked"{% endif %}
+                                />
+                                <label class="form-check-label" for="game_platform_settings_form_debugDummyPlayerCards">
+                                    {{ 'game_platform.form.game_platform_settings.debug_dummy_player_cards'|trans({}, 'GamePlatform') }}
+                                </label>
+                            </div>
+                            
                         </fieldset>
                         
                     </div>

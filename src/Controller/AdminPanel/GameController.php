@@ -24,7 +24,7 @@ class GameController extends AbstractCrudController
     	];
     }
     
-    protected function prepareEntity( &$entity, &$form, Request $request )
+    protected function prepareEntity( &$entity, &$form, Request $request ): void
     {
         $pcr        = $this->get( 'vsapp.repository.game_categories' );
         $formPost   = $request->request->all( 'game_form' );
@@ -39,7 +39,7 @@ class GameController extends AbstractCrudController
         }
     }
     
-    private function getTranslations()
+    protected function getTranslations(): array
     {
         $translations   = [];
         $transRepo      = $this->get( 'vs_application.repository.translation' );

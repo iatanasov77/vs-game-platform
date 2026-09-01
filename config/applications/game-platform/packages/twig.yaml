@@ -13,7 +13,6 @@ twig:
         picturesPath: '%vs_cms.filemanager_shared_media_gaufrette.app_pictures%'
         analyticsMeasurementId: '%env(GOOGLE_MEASUREMENT_ID)%'
         useCkEditor: '%env(resolve:USE_CKEDITOR)%'
-        debugDummyPlayerCards: '%env(bool:DEBUG_DUMMY_PLAYER_CARDS)%'
         
     form_themes:
         - '@FOSCKEditor/Form/ckeditor_widget.html.twig'

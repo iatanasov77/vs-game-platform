@@ -3,10 +3,10 @@ import {
     ChangeDetectionStrategy,
     Inject,
     EventEmitter,
-    Output
+    Output,
+    OnInit
 } from '@angular/core';
 
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { TranslateService } from '@ngx-translate/core';
 
 import { GetTrumps, GetAnnounceSymbol } from '@vankosoft/game-platform';
@@ -15,11 +15,10 @@ import { CardGameAnnounceSymbolModel } from '@vankosoft/game-platform';
 import { BidTrump } from '@vankosoft/game-platform';
 import { ContractBridgeBidDto } from '@vankosoft/game-platform';
 import { PlayerPosition } from '@vankosoft/game-platform';
+import { Helper } from '@vankosoft/game-platform';
 
 import { AppStateService } from '../../../state/app-state.service';
 import { CardGameService } from '../../../services/websocket/card-game.service';
-
-import { ButtonComponent } from '../../shared/button/button.component';
 
 import cssString from './contract-bridge-auction.component.scss';
 import templateString from './contract-bridge-auction.component.html';
@@ -33,17 +32,19 @@ import templateString from './contract-bridge-auction.component.html';
         cssString || 'Game CSS Not Loaded !!!',
     ]
 })
-export class ContractBridgeAuctionComponent
+export class ContractBridgeAuctionComponent implements OnInit
 {
     @Output() closeModal: EventEmitter<any> = new EventEmitter();
+    @Output() passEntry: EventEmitter<any> = new EventEmitter();
     
     announceSymbols: Array<CardGameAnnounceSymbolModel> = [];
     
     validBids: ContractBridgeBidDto[] = [];
+    bidHistory: ContractBridgeBidDto[] = [];
     contract: ContractBridgeBidDto | null = null;
-    
+    lastBid?: ContractBridgeBidDto;
+    lastBidString?: string;
     myPosition: PlayerPosition;
-    lastBid: ContractBridgeBidDto | null = null;
     
     bidValueChanged: boolean = false;
     bidValue: number = 1;
@@ -56,34 +57,36 @@ export class ContractBridgeAuctionComponent
         @Inject( AppStateService ) private appStateService: AppStateService,
         @Inject( CardGameService ) private wsService: CardGameService,
     ) {
-        this.myPosition = this.appStateService.myPosition.getValue();
-        this.getAnnounceSymbols();
+        this.myPosition         = this.appStateService.myPosition.getValue();
+        this.announceSymbols    = GetTrumps();
         
-        this.validBids = this.appStateService.cardGame.getValue().validBids;
+        this.validBids          = this.appStateService.cardGame.getValue().validBids;
+        this.bidHistory         = this.appStateService.cardGame.getValue().bidHistory;
+    }
+    
+    ngOnInit(): void
+    {
+        this.lastBid        = this.bidHistory.filter( ( bh ) => bh.Trump != BidTrump.Pass ).pop();
+        this.lastBidString  = this.bidTrumpString();
     }
     
     dismissModal(): void
     {
+        // this.makeBid();
         this.closeModal.emit();
-    }
-    
-    getAnnounceSymbols(): void
-    {
-        this.announceSymbols = GetTrumps();
-        return;
-        
-        this.announceSymbols = [];
-        var symbol;
-        for ( var i = 0; i < this.validBids.length; i++ ) {
-            symbol = GetAnnounceSymbol( this.validBids[i].Trump );
-            if ( symbol ) {
-                this.announceSymbols.push( symbol );
-            }
-        }
     }
     
     bidValueIsDisabled( value: number ): boolean
     {
+        if (
+            this.bidTrump &&
+            this.contract &&
+            this.bidTrump == this.contract.Trump &&
+            value <= this.contract.Value
+        ) {
+            return true;
+        }
+        
         return false;
     }
     
@@ -141,19 +144,30 @@ export class ContractBridgeAuctionComponent
             LastBid: false,
             NextBids: []
         };
-        //alert( JSON.stringify( bid ) );
-        
         this.doBid( bid );
-        this.dismissModal();
+        
+        this.passEntry.emit( bid );
+        this.closeModal.emit();
     }
     
     doBid( bid: ContractBridgeBidDto ): void
     {
         this.wsService.doBid( bid );
         this.wsService.sendBid( bid );
-        /*  
-        let playerBids = this.appStateService.playerBids.getValue();
-        alert( playerBids.length );
-        */
+    }
+    
+    playerPositionString( position: PlayerPosition ): string
+    {
+        return Helper.cardgamePlayerPosition( position );
+    }
+    
+    bidTrumpString()
+    {
+        if ( ! this.lastBid ) {
+            return;
+        }
+        let announceSymbol = GetAnnounceSymbol( Number( this.lastBid.Trump ) );
+        
+        return `${this.lastBid.Value} ${announceSymbol.htmlEntity}`;
     }
 }

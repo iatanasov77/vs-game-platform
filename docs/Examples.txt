@@ -7,3 +7,14 @@ https://backgammon.azurewebsites.net/
 Play TicTacToe (with AI)
 =========================
 https://github.com/BennyThadikaran/TicTacToe
+
+BridgeBelot
+=========================
+BelotGameEngine in C#: https://github.com/NikolayIT/BelotGameEngine
+
+ContractBridge
+=========================
+ContractBridgeGame Engine in Phython: https://github.com/lorserker/ben
+ContractBridgeGame in C#: https://github.com/PatrykkMar/Bridget
+
+Contract Bridge PHP Library: https://github.com/garak/bridge

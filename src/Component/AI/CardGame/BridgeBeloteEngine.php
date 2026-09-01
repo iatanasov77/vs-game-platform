@@ -3,6 +3,7 @@
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
+use App\Component\Rules\CardGame\Bid;
 use App\Component\Type\BidTrump;
 use App\Component\Type\AnnounceType;
 use App\Component\Type\BridgeBeloteCardType as CardType;
@@ -67,7 +68,7 @@ class BridgeBeloteEngine extends Engine
         $this->trumpTheirsContractStrategy = new TrumpTheirsContractStrategy();
     }
     
-    public function DoBid(): BidTrump
+    public function DoBid(): Bid
     {
         $context = new PlayerGetBidContext();
         $context->MyPosition = $this->EngineGame->CurrentPlayer;
@@ -127,7 +128,7 @@ class BridgeBeloteEngine extends Engine
         
     }
     
-    private function GetBid( PlayerGetBidContext $context ): BidTrump
+    private function GetBid( PlayerGetBidContext $context ): Bid
     {
         $availableAnnounces = $this->validAnnouncesService->GetAvailableAnnounces( $context->MyCards );
         //$this->logger->log( 'Available Announces for Player ' . $context->MyPosition->value . ': ' . \print_r( $availableAnnounces->toArray(), true ), 'BridgeBeloteEngine' );
@@ -201,11 +202,11 @@ class BridgeBeloteEngine extends Engine
             return $b <=> $a;
         });
         $bids = new ArrayCollection( \iterator_to_array( $bidsIterator ) );
-        $bid = $bids->first() ? BidTrump::fromValue( $bids->key() ) : BidTrump::Pass;
+        $bidTrump = $bids->first() ? BidTrump::fromValue( $bids->key() ) : BidTrump::Pass;
         
         //$this->logger->log( 'Available Bids for Player ' . $context->MyPosition->value . ': ' . \print_r( $context->AvailableBids->toArray(), true ), 'BridgeBeloteEngine' );
-        $this->logger->log( 'Selected Bid for Player ' . $context->MyPosition->value . ': ' . \print_r( $bid, true ), 'BridgeBeloteEngine' );
         
+        $bid = new Bid( $this->EngineGame->CurrentPlayer, $bidTrump );
         return $bid;
     }
     

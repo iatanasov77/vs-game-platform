@@ -28,17 +28,14 @@ use App\Entity\GamePlayer;
 // Types
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\BidTrump;
-use App\Component\Type\AnnounceType;
 use App\Component\Type\GameState;
 use App\Component\Type\CardGameTeam;
 use App\Component\Type\ContractBridgeCardType;
 
 // DTO Actions
-use App\Component\Dto\Mapper;
 use App\Component\Dto\Actions\BidMadeActionDto;
 use App\Component\Dto\Actions\PlayCardActionDto;
 use App\Component\Dto\Actions\DummyFaceupActionDto;
-use App\Component\Dto\Actions\AnnounceMadeActionDto;
 
 /**
  * ContractBridgeGame Engine in Phython: https://github.com/lorserker/ben
@@ -157,13 +154,16 @@ class ContractBridgeGameManager extends CardGameManager
             
             $this->logger->log( "Continue Play !!!", 'GameManager' );
             if ( $this->Game->PlayState != GameState::roundEnded && $this->AisTurn() ) {
-                $socket = $this->Clients->first();
-                $this->EnginPlayCard( $socket );
                 
-                $promise = Async\async( function () use ( $socket ) {
-                    $this->NewTurn( $socket );
-                })();
-                Async\await( $promise );
+                if ( $this->Game->PlayState == GameState::playing && $this->IsDummy() ) {
+                    $socket = $this->Clients->first();
+                    $this->EnginPlayCard( $socket );
+                    
+                    $promise = Async\async( function () use ( $socket ) {
+                        $this->NewTurn( $socket );
+                    })();
+                    Async\await( $promise );
+                }
             }
         }
         
@@ -194,6 +194,8 @@ class ContractBridgeGameManager extends CardGameManager
         
         $nextPlayer = $this->Game->NextPlayer();
         $this->Game->SetContract( $bid, $nextPlayer );
+        
+        $this->Game->BidHistory[] = $bid;
     }
     
     protected function PlayCard( PlayCardActionDto $action ): void
@@ -207,6 +209,24 @@ class ContractBridgeGameManager extends CardGameManager
         $trickAction->TrickNumber = $this->Game->GetTrickActionNumber() + 1;
         
         $this->Game->AddTrickAction( $trickAction );
+    }
+    
+    protected function EnginPlayCard( WebsocketClientInterface $client ): void
+    {
+        $playCardAction = $this->Engine->PlayCard();
+        $this->logger->log( "EnginPlayCard: {$playCardAction->Card->Type->value}", 'GameManager' );
+        
+        $promise = Async\async( function () use ( $client, $playCardAction ) {
+            $sleepMileseconds   = \rand( 700, 1200 );
+            Async\delay( $sleepMileseconds / 1000 );
+            
+            if ( $this->IsDummy() && ! $this->Game->DummyPlayer ) {
+                $this->DummyFaceupAction();
+            } else {
+                $this->OpponentPlayCardAction( $playCardAction, $client );
+            }
+        })();
+        Async\await( $promise );
     }
     
     protected function GetWinner(): ?CardGameTeam

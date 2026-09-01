@@ -69,6 +69,7 @@ game_platform:
             debug_game_sounds: Debug Game Sounds
             debug_card_game_player_areas: Debug Card Game Player Areas
             debug_card_game_player_cards: Debug Card Game Player Cards
+            debug_dummy_player_cards: Debug Dummy Player Cards
         
         login:
             email: Имейл Адрес

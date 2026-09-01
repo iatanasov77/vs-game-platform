@@ -2,6 +2,7 @@
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 
 class GetPlayersController extends AbstractController
@@ -14,7 +15,7 @@ class GetPlayersController extends AbstractController
         $this->playersRepository    = $playersRepository;
     }
     
-    public function __invoke( Request $request ): iterable
+    public function __invoke( Request $request ): JsonResponse
     {
         $players    = $this->playersRepository->findAll();
         $response   = [];
@@ -34,6 +35,6 @@ class GetPlayersController extends AbstractController
             ];
         }
         
-        return $response;
+        return new JsonResponse( $response );
     }
 }

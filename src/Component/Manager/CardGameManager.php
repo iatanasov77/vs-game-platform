@@ -320,7 +320,6 @@ abstract class CardGameManager extends AbstractGameManager
             case PlayerPosition::West:
                 $plyr = $this->Game->Players[PlayerPosition::West->value];
                 break;
-                break;
             case PlayerPosition::East:
                 $plyr = $this->Game->Players[PlayerPosition::East->value];
                 break;
@@ -328,7 +327,6 @@ abstract class CardGameManager extends AbstractGameManager
                 throw new \RuntimeException( 'Wrong Current Player !' );
         }
         
-        $this->logger->log( "AisTurn CurrentPlayer: " . \print_r( $plyr, true ) , 'SwitchPlayer' );
         return $plyr->IsAi();
     }
     

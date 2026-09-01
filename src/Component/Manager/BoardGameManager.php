@@ -79,7 +79,6 @@ abstract class BoardGameManager extends AbstractGameManager
     protected function AisTurn(): bool
     {
         $plyr = $this->Game->CurrentPlayer == PlayerColor::Black ? $this->Game->BlackPlayer : $this->Game->WhitePlayer;
-        $this->logger->log( "AisTurn CurrentPlayer: " . \print_r( $plyr, true ) , 'SwitchPlayer' );
         
         return $plyr->IsAi();
     }

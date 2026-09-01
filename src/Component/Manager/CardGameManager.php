@@ -204,13 +204,11 @@ abstract class CardGameManager extends AbstractGameManager
                 $this->NewTurn( $socket );
             })();
             Async\await( $promise );
-            $this->logger->log( "Doing action bidMade !!!", 'GameManager' );
         } else if ( $actionName == ActionNames::opponentBids ) {
             $action = $this->serializer->deserialize( $actionText, OpponentBidsActionDto::class, JsonEncoder::FORMAT );
             foreach ( $otherSockets as $otherSocket ) {
                 $this->Send( $otherSocket, $action );
             }
-            $this->logger->log( "Doing action opponentBids !!!", 'GameManager' );
         } else if ( $actionName == ActionNames::playCard ) {
             $this->Game->ThinkStart = new \DateTime( 'now' );
             $action = $this->serializer->deserialize( $actionText, PlayCardActionDto::class, JsonEncoder::FORMAT );
@@ -221,7 +219,6 @@ abstract class CardGameManager extends AbstractGameManager
             })();
             Async\await( $promise );
         } else if ( $actionName == ActionNames::dummyPlayCard ) {
-            $this->logger->log( 'dummyPlayCard action recieved from GameManager.', 'GameManager' );
             if  ( ! $this->Game->DummyPlayer ) {
                 $DummyPlayer = PlayerPositionExtensions::GetTeammate( $this->Game->CurrentContract->Player );
                 
@@ -244,12 +241,10 @@ abstract class CardGameManager extends AbstractGameManager
                 $this->Send( $otherSocket, $action );
             }
         } else if ( $actionName == ActionNames::startNewRound ) {
-            $this->logger->log( 'startNewRound action recieved from GameManager.', 'GameManager' );
             $this->StartNewRound();
             $this->PlayRound( $socket );
         } else if ( $actionName == ActionNames::startNewGame ) {
             // New Game in the Same GameSession / GameRoom
-            $this->logger->log( 'startNewGame action recieved from GameManager.', 'GameManager' );
             $this->StartNewGame();
             $this->PlayRound( $socket );
         } else if ( $actionName == ActionNames::connectionInfo ) {
@@ -261,7 +256,6 @@ abstract class CardGameManager extends AbstractGameManager
 //             $winner = $this->Clients->get( PlayerColor::Black->value ) == $otherSocket ? PlayerColor::Black : PlayerColor::White;
 //             $this->Resign( $winner );
         } else if ( $actionName == ActionNames::exitGame ) {
-            $this->logger->log( 'exitGame action recieved from GameManager.', 'GameManager' );
             $this->Game->CurrentContract = null;
             $this->CloseConnections( $socket );
         }

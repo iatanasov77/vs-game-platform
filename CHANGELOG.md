@@ -1,3 +1,12 @@
+1.2.0	|	Release date: **02.09.2026**
+============================================
+* New Features:
+  - Create a Game Platform Setting for Auto Open Card Game Auction Dialog.
+  - Use GamePlatform Setting AutoOpen CardGameAuctionDialog.
+  - Improve Conract Bridge Auction Dialog Disabled Bid Values.
+  - Improve Contract Bridge Bidding.
+
+
 1.1.4	|	Release date: **01.09.2026**
 ============================================
 * New Features:

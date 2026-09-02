@@ -93,7 +93,8 @@ export class ContractBridgeAuctionComponent implements OnInit
     
     bidTrumpIsDisabled( trump: BidTrump ): boolean
     {
-        return ! this.validBids.some( b => b.Trump === trump );
+        // return ! this.validBids.some( b => b.Trump === trump );
+        return false;
     }
     
     onChangeBidValue(): void

@@ -74,7 +74,7 @@ class ContractManager
             $bid = new Bid( $currentPlayer, BidTrump::Clubs );
             $bid->Value = $cleanContract->get() == BidTrump::Clubs->bitMaskValue() && $currentContract->Value <= 7 ?
                 $currentContract->Value + 1 :
-                $currentContract->Value
+                1 // $currentContract->Value
             ;
             
             $availableBids->set( BidTrump::Clubs->value(), $bid );
@@ -85,7 +85,7 @@ class ContractManager
             $bid->Value = $currentContract->Value + 1;
             $bid->Value = $cleanContract->get() == BidTrump::Diamonds->bitMaskValue() && $currentContract->Value <= 7 ?
                 $currentContract->Value + 1 :
-                $currentContract->Value
+                1 // $currentContract->Value
             ;
             
             $availableBids->set( BidTrump::Diamonds->value(), $bid );
@@ -96,7 +96,7 @@ class ContractManager
             $bid->Value = $currentContract->Value + 1;
             $bid->Value = $cleanContract->get() == BidTrump::Hearts->bitMaskValue() && $currentContract->Value <= 7 ?
                 $currentContract->Value + 1 :
-                $currentContract->Value
+                1 // $currentContract->Value
             ;
             
             $availableBids->set( BidTrump::Hearts->value(), $bid );
@@ -107,7 +107,7 @@ class ContractManager
             $bid->Value = $currentContract->Value + 1;
             $bid->Value = $cleanContract->get() == BidTrump::Spades->bitMaskValue() && $currentContract->Value <= 7 ?
                 $currentContract->Value + 1 :
-                $currentContract->Value
+                1 // $currentContract->Value
             ;
             
             $availableBids->set( BidTrump::Spades->value(), $bid );
@@ -118,7 +118,7 @@ class ContractManager
             $bid->Value = $currentContract->Value + 1;
             $bid->Value = $cleanContract->get() == BidTrump::NoTrumps->bitMaskValue() && $currentContract->Value <= 7 ?
                 $currentContract->Value + 1 :
-                $currentContract->Value
+                1 // $currentContract->Value
             ;
             
             $availableBids->set( BidTrump::NoTrumps->value(), $bid );

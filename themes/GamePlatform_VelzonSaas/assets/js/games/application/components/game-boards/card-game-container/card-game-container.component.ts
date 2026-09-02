@@ -533,7 +533,6 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
             dto.playState === GameState.bidding &&
             dto.currentPlayer == this.appStateService.myPosition.getValue()
         ) {
-            this.openAuctionDialogVisible = ! this.autoOpenCardGameAuctionDialog;
             this.showBidding( dto );
         }
         
@@ -652,6 +651,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
                 
                 break;
             case GameVariant.CONTRACT_BRIDGE_CODE:
+                this.openAuctionDialogVisible = ! this.autoOpenCardGameAuctionDialog;
                 this.playWithComputerVisible = false;
                 this.rotateVisible = true;
                 this.flipVisible = true;

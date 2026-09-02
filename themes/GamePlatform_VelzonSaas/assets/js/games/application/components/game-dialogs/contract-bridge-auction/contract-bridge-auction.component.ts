@@ -41,7 +41,6 @@ export class ContractBridgeAuctionComponent implements OnInit
     
     validBids: ContractBridgeBidDto[] = [];
     bidHistory: ContractBridgeBidDto[] = [];
-    contract: ContractBridgeBidDto | null = null;
     lastBid?: ContractBridgeBidDto;
     lastBidString?: string;
     myPosition: PlayerPosition;
@@ -80,9 +79,11 @@ export class ContractBridgeAuctionComponent implements OnInit
     {
         if (
             this.bidTrump &&
-            this.contract &&
-            this.bidTrump == this.contract.Trump &&
-            value <= this.contract.Value
+            this.lastBid &&
+            (
+                ( this.bidTrump == this.lastBid.Trump && value <= this.lastBid.Value ) ||
+                ( this.bidTrump < this.lastBid.Trump && value < this.lastBid.Value )
+            )
         ) {
             return true;
         }
@@ -92,7 +93,8 @@ export class ContractBridgeAuctionComponent implements OnInit
     
     bidTrumpIsDisabled( trump: BidTrump ): boolean
     {
-        return ! this.validBids.some( b => b.Trump === trump );
+        // return ! this.validBids.some( b => b.Trump === trump );
+        return false;
     }
     
     onChangeBidValue(): void

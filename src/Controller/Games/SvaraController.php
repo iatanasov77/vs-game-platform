@@ -15,8 +15,22 @@ class SvaraController extends GameController
         
         $gamePlatformSettings   = $this->applicationContext->getApplication()->getGamePlatformApplication()->getSettings();
         $gameSettings           = [
+            'gameSlug'              => $gameSlug,
+            'socketChatUrl'         => $this->getParameter( 'app_websocket_chat_url' ),
+            'socketGameUrl'         => $this->getParameter( 'app_websocket_game_url' ),
             'apiVerifySiganature'   => $signature,
-            'timeoutBetweenPlayers' => $gamePlatformSettings->getTimeoutBetweenPlayers(),
+            
+            'timeoutBetweenPlayers'         => $gamePlatformSettings->getTimeoutBetweenPlayers(),
+            'autoOpenCardGameAuctionDialog' => $gamePlatformSettings->getAutoOpenCardGameAuctionDialog(),
+            
+            'debugGameSounds'               => $gamePlatformSettings->getDebugGameSounds(),
+            'debugCardGamePlayerAreas'      => $gamePlatformSettings->getDebugCardGamePlayerAreas(),
+            'debugCardGamePlayerCards'      => $gamePlatformSettings->getDebugCardGamePlayerCards(),
+            
+            'queryParams'           => [
+                'gameId'    => $request->query->get( 'gameId' ),
+                'inviteId'  => $request->query->get( 'inviteId' ),
+            ],
         ];
         
         if ( $game->getStatus() && $game->getStatus() != GamePlatform::GAME_STATUS_DONE ) {

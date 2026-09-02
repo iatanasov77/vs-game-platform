@@ -29,6 +29,11 @@ class GamePlatformSettingsForm extends AbstractForm
                 'translation_domain'    => 'GamePlatform',
             ])
             
+            ->add( 'autoOpenCardGameAuctionDialog', CheckboxType::class, [
+                'label'                 => 'game_platform.form.game_platform_settings.auto_open_card_game_auction_dialog',
+                'translation_domain'    => 'GamePlatform',
+            ])
+            
             ->add( 'debugGameSounds', CheckboxType::class, [
                 'label'                 => 'game_platform.form.game_platform_settings.debug_game_sounds',
                 'translation_domain'    => 'GamePlatform',

@@ -23,10 +23,12 @@ class BridgeBeloteController extends GameController
             'socketGameUrl'         => $this->getParameter( 'app_websocket_game_url' ),
             'apiVerifySiganature'   => $signature,
             
-            'timeoutBetweenPlayers'     => $gamePlatformSettings->getTimeoutBetweenPlayers(),
-            'debugGameSounds'           => $gamePlatformSettings->getDebugGameSounds(),
-            'debugCardGamePlayerAreas'  => $gamePlatformSettings->getDebugCardGamePlayerAreas(),
-            'debugCardGamePlayerCards'  => $gamePlatformSettings->getDebugCardGamePlayerCards(),
+            'timeoutBetweenPlayers'         => $gamePlatformSettings->getTimeoutBetweenPlayers(),
+            'autoOpenCardGameAuctionDialog' => $gamePlatformSettings->getAutoOpenCardGameAuctionDialog(),
+            
+            'debugGameSounds'               => $gamePlatformSettings->getDebugGameSounds(),
+            'debugCardGamePlayerAreas'      => $gamePlatformSettings->getDebugCardGamePlayerAreas(),
+            'debugCardGamePlayerCards'      => $gamePlatformSettings->getDebugCardGamePlayerCards(),
             
             'queryParams'           => [
                 'gameId'    => $request->query->get( 'gameId' ),

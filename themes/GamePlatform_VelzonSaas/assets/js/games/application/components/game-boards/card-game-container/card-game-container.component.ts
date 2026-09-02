@@ -154,6 +154,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     
     appState?: MyGameState;
     gameStarted: boolean = false;
+    autoOpenCardGameAuctionDialog = window.gamePlatformSettings.autoOpenCardGameAuctionDialog;
     
     isRoomSelected: boolean = false;
     hasRooms: boolean       = false;
@@ -650,11 +651,12 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
                 
                 break;
             case GameVariant.CONTRACT_BRIDGE_CODE:
+                this.openAuctionDialogVisible = ! this.autoOpenCardGameAuctionDialog;
                 this.playWithComputerVisible = false;
                 this.rotateVisible = true;
                 this.flipVisible = true;
                 
-                if ( ! dto.LastBid ) {
+                if ( ! dto.LastBid && this.autoOpenCardGameAuctionDialog ) {
                     this.openAuctionDialogVisible = true;
                     this.openContractBridgeAuctionDialog();
                 }

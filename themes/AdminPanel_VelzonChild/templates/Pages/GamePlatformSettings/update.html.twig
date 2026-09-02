@@ -69,6 +69,16 @@
                                 
                                 {{ form_widget(form.timeoutBetweenPlayers, {'attr': {'class': 'form-control'}}) }}
                             </div>
+                            
+                            <div class="form-check form-check-secondary mb-3">
+                                <input type="checkbox" id="game_platform_settings_form_autoOpenCardGameAuctionDialog" name="game_platform_settings_form[autoOpenCardGameAuctionDialog]"
+                                    class="form-check-input"
+                                    {% if form.vars.value.autoOpenCardGameAuctionDialog %}checked="checked"{% endif %}
+                                />
+                                <label class="form-check-label" for="game_platform_settings_form_autoOpenCardGameAuctionDialog">
+                                    {{ 'game_platform.form.game_platform_settings.auto_open_card_game_auction_dialog'|trans({}, 'GamePlatform') }}
+                                </label>
+                            </div>
                         </fieldset>
                         
                 	</div>

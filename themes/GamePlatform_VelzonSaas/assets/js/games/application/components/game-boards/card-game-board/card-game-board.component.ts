@@ -862,7 +862,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         const yOffset = pa.height - this.cardHeight;
         const cardY = pa.y + yOffset;
         
-        console.log( 'Player Cards', this.playerCards );
+        // console.log( 'Player Cards', this.playerCards );
         // alert( playerCards.length );
         
         for ( let c = 0; c < playerCards.length; c++ ) {

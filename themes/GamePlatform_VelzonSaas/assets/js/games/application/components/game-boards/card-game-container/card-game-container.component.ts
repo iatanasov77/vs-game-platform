@@ -495,6 +495,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     
     async playAi()
     {
+        // alert( 'Card Game playAi() Called !!!' );
         this.playAiQuestion = false;
         this.wsService.exitGame();
         

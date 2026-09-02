@@ -159,6 +159,7 @@ final class GameService
         if ( $manager == null || $playAi ) {
             $this->logger->log( "Possibly Play AI !!!", 'GameService' );
             $manager            = $this->managerFactory->createGameManager( $forGold, $gameCode, $gameVariant );
+            
             //manager.Ended += Game_Ended;
             $manager->dispatchGameEnded();
             

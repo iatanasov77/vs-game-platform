@@ -52,6 +52,9 @@ final class GameFactory
             case GameVariant::CONTRACT_BRIDGE_CODE:
                 return $this->createContractBridgeGame( $gameCode, $ForGold );
                 break;
+            case GameVariant::SVARA_CODE:
+                return $this->createSvaraGame( $gameCode, $ForGold );
+                break;
             default:
                 throw new \RuntimeException( 'Unknown Game Code !!!' );
         }
@@ -298,6 +301,50 @@ final class GameFactory
     }
     
     private function createContractBridgeGame( string $gameCode, bool $forGold ): GameInterface
+    {
+        $game = new CardGame( $this->logger, $this->eventDispatcher );
+        
+        $game->Id               = Guid::NewGuid();
+        $game->GameCode         = $gameCode;
+        $game->PlayerDirection  = PlayerDirection::Clockwise;
+        
+        $game->Players[PlayerPosition::South->value] = new CardGamePlayer();
+        $game->Players[PlayerPosition::South->value]->PlayerPosition = PlayerPosition::South;
+        $game->Players[PlayerPosition::South->value]->Name = "Guest";
+        
+        $game->Players[PlayerPosition::East->value] = new CardGamePlayer();
+        $game->Players[PlayerPosition::East->value]->PlayerPosition = PlayerPosition::East;
+        $game->Players[PlayerPosition::East->value]->Name = "Guest";
+        
+        $game->Players[PlayerPosition::North->value] = new CardGamePlayer();
+        $game->Players[PlayerPosition::North->value]->PlayerPosition = PlayerPosition::North;
+        $game->Players[PlayerPosition::North->value]->Name = "Guest";
+        
+        $game->Players[PlayerPosition::West->value] = new CardGamePlayer();
+        $game->Players[PlayerPosition::West->value]->PlayerPosition = PlayerPosition::West;
+        $game->Players[PlayerPosition::West->value]->Name = "Guest";
+        
+        $game->Created = new \DateTime( 'now' );
+        
+        $game->GoldMultiplier = 1;
+        $game->IsGoldGame = $forGold;
+        
+        $game->Deck = new Deck( GameVariant::CONTRACT_BRIDGE_CODE );
+        $game->Pile = new ArrayCollection();
+        $game->SouthNorthTricks = new ArrayCollection();
+        $game->EastWestTricks = new ArrayCollection();
+        
+        $game->AvailableBids = new ArrayCollection();
+        $game->ValidCards = new ArrayCollection();
+        $game->BidHistory = new ArrayCollection();
+        $game->Bids = new ArrayCollection();
+        
+        $game->SetStartPosition();
+        
+        return $game;
+    }
+    
+    private function createSvaraGame( string $gameCode, bool $forGold ): GameInterface
     {
         $game = new CardGame( $this->logger, $this->eventDispatcher );
         

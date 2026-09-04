@@ -14,11 +14,12 @@ use Vankosoft\UsersBundle\Security\SecurityBridge;
 use App\Component\Manager\GameManagerInterface;
 use App\Component\Manager\GameManagerFactory;
 use App\Component\Manager\AbstractGameManager;
+use App\Component\Utils\Guid;
+
+// Websocket Connector Traits
 use App\Component\Manager\Websocket\BoardGameConnect;
 use App\Component\Manager\Websocket\CardGameConnect;
 use App\Component\Manager\Websocket\SvaraGameConnect;
-use App\Component\AI\EngineFactory as AiEngineFactory;
-use App\Component\Utils\Guid;
 
 // DTO Objects
 use App\Component\Dto\GameCookieDto;
@@ -320,46 +321,24 @@ final class GameService
                     }
                 )->first();
                 
+                if ( ! $gameManager ) {
+                    return null;
+                }
+                
                 $json = $this->serializer->serialize( $gameManager, JsonEncoder::FORMAT );
                 $this->logger->log( "Found ReConnect GameManager: {$json}", 'GameService' );
                 
                 switch ( $cookie->game ) {
                     case GameVariant::BACKGAMMON_CODE:
                     case GameVariant::CHESS_CODE:
-                        $color = $cookie->color;
-                        if ( $gameManager && self::MyColor( $gameManager, $dbUser, $color ) ) {
-                            $gameManager->Engine = AiEngineFactory::CreateAiEngine(
-                                $gameManager->GameCode,
-                                $gameManager->GameVariant,
-                                $this->logger,
-                                $gameManager->Game
-                            );
-                            $this->logger->log( "Restoring game {$cookie->id} for {$color->value}", 'GameService' );
-                            
-                            // entering socket loop
-                            $gameManager->Restore( $color->value, $webSocket );
-                            
-                            $otherColor = $color == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
-                            $this->SendConnectionLost( $gameManager, $otherColor->value );
-                            
-                            // socket loop exited
-                            $this->RemoveDissconnected( $gameManager );
-                            
-                            return $cookie->id;
-                        }
+                        return $this->reconnectBoardGame( $gameManager, $webSocket, $cookie, $dbUser );
                         break;
                     case GameVariant::BRIDGE_BELOTE_CODE:
                     case GameVariant::CONTRACT_BRIDGE_CODE:
-                        $position = $cookie->position;
-                        if ( $gameManager && self::MyPosition( $gameManager, $dbUser, $position ) ) {
-                            
-                            $this->logger->log( "Restoring game {$cookie->id} for {$position->value}", 'GameService' );
-                            
-                            // entering socket loop
-                            $gameManager->Restore( $position->value, $webSocket );
-                            
-                            return $cookie->id;
-                        }
+                        return $this->reconnectCardGame( $gameManager, $webSocket, $cookie, $dbUser );
+                        break;
+                    case GameVariant::SVARA_CODE:
+                        return $this->reconnectSvaraGame( $gameManager, $webSocket, $cookie, $dbUser );
                         break;
                 }
             }
@@ -374,19 +353,14 @@ final class GameService
             switch ( $gameCode ) {
                 case GameVariant::BACKGAMMON_CODE:
                 case GameVariant::CHESS_CODE:
-                    // Guest vs guest must be allowed. When guest games are enabled.
-                    if (
-                        $m->Game->BlackPlayer->Id == $userId ||
-                        $m->Game->WhitePlayer->Id == $userId &&
-                        $userId != Guid::Empty()
-                    ) {
-                        $this->logger->log( "Game Already Started", 'GameService' );
-                        return true;
-                    }
+                    return $this->isBoardGameAlreadyStarted( $m, $userId );
                     break;
                 case GameVariant::BRIDGE_BELOTE_CODE:
                 case GameVariant::CONTRACT_BRIDGE_CODE:
-                    return false;
+                    return $this->isCardGameAlreadyStarted( $m, $userId );
+                    break;
+                case GameVariant::SVARA_CODE:
+                    return $this->isSvaraGameAlreadyStarted( $m, $userId );
                     break;
             }
         }
@@ -461,30 +435,6 @@ final class GameService
             $this->logger->log( "SendConnectionLost for PlayerColor: {$clientId}", 'GameService' );
             $manager->Send( $socket, $action );
         }
-    }
-    
-    private static function MyColor( GameManagerInterface $manager, GamePlayer $dbUser, PlayerColor $color ): bool
-    {
-        //prevents someone with same game id, get someone elses side in the game.
-        $player = $manager->Game->BlackPlayer;
-        
-        if ( $color == PlayerColor::White ) {
-            $player = $manager->Game->WhitePlayer;
-        }
-            
-        return $dbUser != null && $dbUser->getId() == $player->Id;
-    }
-    
-    private static function MyPosition( GameManagerInterface $manager, GamePlayer $dbUser, PlayerPosition $position ): bool
-    {
-        //prevents someone with same game id, get someone elses side in the game.
-        $player = $manager->Game->SouthPlayer;
-        
-        if ( $position == PlayerPosition::East ) {
-            $player = $manager->Game->WhitePlayer;
-        }
-        
-        return $dbUser != null && $dbUser->getId() == $player->Id;
     }
     
     private function GetDbUser( $userId ): ?UserInterface

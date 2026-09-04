@@ -467,8 +467,10 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         }
         
         this.borderWidth = this.width * 0.01;
-        if ( this.game && this.game.gameCode === GameVariant.CONTRACT_BRIDGE_CODE ) {
-            this.cardOffset -= 4 * this.borderWidth;
+        if ( this.game ) {
+            if ( this.game.gameCode === GameVariant.CONTRACT_BRIDGE_CODE || this.game.gameCode === GameVariant.SVARA_CODE ) {
+                this.cardOffset -= 4 * this.borderWidth;
+            }
         }
         
         this.initPlayerAreas();
@@ -1120,7 +1122,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         var bidTrumpText = this.translateService.instant( this.bidTrumps[bid.Trump] );
         var bidText = `${bidTrumpText}`;
         
-        if ( gameCode == GameVariant.CONTRACT_BRIDGE_CODE ) {
+        if ( gameCode == GameVariant.CONTRACT_BRIDGE_CODE || gameCode == GameVariant.SVARA_CODE ) {
             var cbBid = ( bid as ContractBridgeBidDto );
             bidText = bid.Trump == BidTrump.Pass ? `${bidTrumpText}` : `${cbBid.Value} ${bidTrumpText}`;
         }

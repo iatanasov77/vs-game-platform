@@ -47,8 +47,8 @@ class RoundManager
         $this->logger           = $logger;
         $this->eventDispatcher  = $eventDispatcher;
         
-        /*
         $this->contractManager = new ContractManager( $this->game, $this->logger );
+        /*
         $this->tricksManager = new TricksManager( $this->game, $this->logger );
         $this->scoreManager = new ScoreManager( $this->game, $this->logger );
         */
@@ -62,6 +62,8 @@ class RoundManager
     
     public function PlayRound(): ?PlayerPosition
     {
+        $this->logger->log( "Svara GameState on PlayRound: {$this->game->PlayState->value}", 'RoundManager' );
+        
         if ( $this->game->PlayState == GameState::firstBid ) {
             // Initialize the cards
             $this->game->Deck->Shuffle();
@@ -72,6 +74,7 @@ class RoundManager
             
             // Deal 5 cards to each player
             $this->DealCards( 3 );
+            $this->contractManager->StartNewRound();
         }
         
         if ( $this->game->PlayState == GameState::bidding ) {
@@ -142,7 +145,7 @@ class RoundManager
                 $this->game->playerCards[$dealToPlayer->value][] = $card;
                 $dealToPlayer = PlayerPositionExtensions::Next( $dealToPlayer );
                 if( $dealToPlayer === $this->game->firstInRound ) {
-                    //break;
+                    break;
                 }
             }
         }

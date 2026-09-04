@@ -373,7 +373,7 @@ final class GameFactory
         $game->GoldMultiplier = 1;
         $game->IsGoldGame = $forGold;
         
-        $game->Deck = new Deck( GameVariant::CONTRACT_BRIDGE_CODE );
+        $game->Deck = new Deck( GameVariant::SVARA_CODE );
         $game->Pile = new ArrayCollection();
         $game->SouthNorthTricks = new ArrayCollection();
         $game->EastWestTricks = new ArrayCollection();

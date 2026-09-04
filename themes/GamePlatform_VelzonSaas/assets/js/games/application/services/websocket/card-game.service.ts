@@ -68,7 +68,7 @@ export class CardGameService extends AbstractGameService
         
         const user      = this.appState.user.getValue();
         const userId    = user ? user.id : '';
-        const tree      = this.router.createUrlTree([], {
+        const tree      = this.router.createUrlTree( [], {
             queryParams: {
                 token: window.gamePlatformSettings.apiVerifySiganature,
                 gameCode: window.gamePlatformSettings.gameSlug,
@@ -81,8 +81,8 @@ export class CardGameService extends AbstractGameService
             }
         });
         const url = this.url + this.serializer.serialize( tree );
+        // alert( `WebSocket URL: ${url}` );
         
-        //alert( url );
         this.socket = new WebSocket( url );
         this.socket.onmessage   = this.onMessage.bind( this );
         this.socket.onerror     = this.onError.bind( this );

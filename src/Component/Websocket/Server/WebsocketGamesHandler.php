@@ -122,13 +122,13 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         //$this->debugGameManager( $from->resourceId );
         
         if ( ! isset( $this->games[$from->resourceId] ) ) {
-            $this->logger->log( "Not Existing Game Manager {$from->resourceId} in WebsocketGamesHandler !!!", 'GameServer' );
+            $this->logger->log( "Not Existing Game {$from->resourceId} in WebsocketGamesHandler !!!", 'GameServer' );
             return;
         }
         
         $gameManager    = $this->gameService->getGameManager( $this->games[$from->resourceId] );
         if ( ! $gameManager ) {
-            $this->logger->log( "Not Existing Game Manager {$from->resourceId} in WebsocketGamesHandler !!!", 'GameServer' );
+            $this->logger->log( "Not Existing Game Manager {$this->games[$from->resourceId]} in WebsocketGamesHandler !!!", 'GameServer' );
             return;
         }
         

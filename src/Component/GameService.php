@@ -14,6 +14,9 @@ use Vankosoft\UsersBundle\Security\SecurityBridge;
 use App\Component\Manager\GameManagerInterface;
 use App\Component\Manager\GameManagerFactory;
 use App\Component\Manager\AbstractGameManager;
+use App\Component\Manager\Websocket\BoardGameConnect;
+use App\Component\Manager\Websocket\CardGameConnect;
+use App\Component\Manager\Websocket\SvaraGameConnect;
 use App\Component\AI\EngineFactory as AiEngineFactory;
 use App\Component\Utils\Guid;
 
@@ -34,6 +37,9 @@ use App\Entity\GamePlayer;
 final class GameService
 {
     use GameHelper;
+    use BoardGameConnect;
+    use CardGameConnect;
+    use SvaraGameConnect;
     
     /** @var GameLogger */
     private $logger;
@@ -173,17 +179,14 @@ final class GameService
             switch ( $gameCode ) {
                 case GameVariant::BACKGAMMON_CODE:
                 case GameVariant::CHESS_CODE:
-                    $manager->Game->CurrentPlayer = PlayerColor::Black;
-                    $manager->ConnectAndListen( $webSocket, $gamePlayer, $playAi );
-                    $this->SendConnectionLost( $manager, PlayerColor::White->value );
+                    $this->connectBoardGameOwner( $manager, $webSocket, $gamePlayer, $playAi );
                     break;
                 case GameVariant::BRIDGE_BELOTE_CODE:
                 case GameVariant::CONTRACT_BRIDGE_CODE:
-                    $manager->Game->CurrentPlayer = PlayerPosition::South;
-                    $manager->ConnectAndListen( $webSocket, $gamePlayer, $playAi );
-                    $this->SendConnectionLost( $manager, PlayerPosition::East->value );
-                    $this->SendConnectionLost( $manager, PlayerPosition::North->value );
-                    $this->SendConnectionLost( $manager, PlayerPosition::West->value );
+                    $this->connectCardGameOwner( $manager, $webSocket, $gamePlayer, $playAi );
+                    break;
+                case GameVariant::SVARA_CODE:
+                    $this->connectSvaraGameOwner( $manager, $webSocket, $gamePlayer, $playAi );
                     break;
             }
             //This is the end of the connection
@@ -198,25 +201,14 @@ final class GameService
             switch ( $gameCode ) {
                 case GameVariant::BACKGAMMON_CODE:
                 case GameVariant::CHESS_CODE:
-                    $color = $manager->Clients->get( PlayerColor::Black->value ) == null ? PlayerColor::Black : PlayerColor::White;
-                    $colorName = $color === PlayerColor::Black ? 'Black' : 'White';
-                    $this->logger->log( "{$colorName} player disconnected.", 'GameService' );
-                    
-                    $manager->Game->CurrentPlayer = $color;
-                    $manager->ConnectAndListen( $webSocket, $gamePlayer, $playAi );
-                    $this->SendConnectionLost( $manager, PlayerColor::White->value );
+                    $this->connectBoardGameOpponent( $manager, $webSocket, $gamePlayer, $playAi );
                     break;
                 case GameVariant::BRIDGE_BELOTE_CODE:
                 case GameVariant::CONTRACT_BRIDGE_CODE:
-                    $position = $manager->Clients->get( PlayerPosition::South->value ) == null ? PlayerPosition::South : PlayerPosition::East;
-                    //$colorName = $color === PlayerColor::Black ? 'Black' : 'White';
-                    //$this->logger->log( "{$colorName} player disconnected.", 'GameService' );
-                    
-                    $manager->Game->CurrentPlayer = $position;
-                    $manager->ConnectAndListen( $webSocket, $gamePlayer, $playAi );
-                    $this->SendConnectionLost( $manager, PlayerPosition::East->value );
-                    $this->SendConnectionLost( $manager, PlayerPosition::North->value );
-                    $this->SendConnectionLost( $manager, PlayerPosition::West->value );
+                    $this->connectCardGameOpponent( $manager, $webSocket, $gamePlayer, $playAi );
+                    break;
+                case GameVariant::SVARA_CODE:
+                    $this->connectSvaraGameOpponent( $manager, $webSocket, $gamePlayer, $playAi );
                     break;
             }
             //This is the end of the connection

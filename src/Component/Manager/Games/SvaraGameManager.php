@@ -44,7 +44,35 @@ class SvaraGameManager extends CardGameManager
     {
         $this->logger->log( "Connecting Game Manager ...", 'GameManager' );
         if ( $this->Game->CurrentPlayer == PlayerPosition::South ) {
+            $this->Clients->set( PlayerPosition::South->value, $webSocket );
             
+            $this->InitializePlayer( $dbUser, false, $this->Game->Players[PlayerPosition::South->value] );
+            
+            if ( $playAi ) {
+                $this->logger->log( "Play AI is TRUE !!!", 'GameManager' );
+                
+                $aiUser = $this->playersRepository->findOneBy( ['guid' => GamePlayer::AiUser] );
+                $this->InitializePlayer( $aiUser, true, $this->Game->Players[PlayerPosition::East->value] );
+                $this->InitializePlayer( $aiUser, true, $this->Game->Players[PlayerPosition::North->value] );
+                $this->InitializePlayer( $aiUser, true, $this->Game->Players[PlayerPosition::West->value] );
+                
+                $this->Engine = AiEngineFactory::CreateAiEngine(
+                    $this->GameCode,
+                    $this->GameVariant,
+                    $this->logger,
+                    $this->Game
+                );
+                $this->CreateDbGame();
+                $this->StartGame();
+                
+                if ( $this->Game->CurrentPlayer != PlayerPosition::South ) {
+                    $promise = \React\Async\async( function () {
+                        $this->logger->log( "GameManager CurrentPlayer: Computer", 'GameManager' );
+                        $this->EnginBids( $this->Clients->get( PlayerPosition::South->value ) );
+                    })();
+                    \React\Async\await( $promise );
+                }
+            }
         } else {
             if ( $playAi ) {
                 throw new \Exception( "Ai always plays as north. This is not expected" );
@@ -59,6 +87,43 @@ class SvaraGameManager extends CardGameManager
             
             //$this->dispatchGameEnded();
         }
+    }
+    
+    protected function ContinuePlay(): bool
+    {
+        $tricksWinner   = $this->Game->PlayRound();
+        if ( $tricksWinner ) {
+            if ( $this->Game->trickNumber > 8 ) {
+                $this->Game->roundNumber++;
+                $this->Game->trickNumber = 1;
+                $this->EndRound();
+                return false;
+            }
+            
+            //sleep( 10 );
+            $this->SendTrickWinner( $tricksWinner );
+            
+            $this->logger->log( "Continue Play with Trick Winner !!!", 'GameManager' );
+            if ( $this->Game->PlayState != GameState::roundEnded && $this->AisTurn() ) {
+                $socket = $this->Clients->first();
+                $this->EnginPlayCard( $socket );
+                
+                $promise = Async\async( function () use ( $socket ) {
+                    $this->NewTurn( $socket );
+                })();
+                Async\await( $promise );
+            }
+        }
+        
+        if ( $this->Game->PlayState == GameState::firstRound ) {
+            $this->StartGamePlay();
+        }
+        
+        if ( $this->Game->PlayState == GameState::roundEnded ) {
+            $this->EndRound();
+        }
+        
+        return true;
     }
     
     protected function DoBid( BidMadeActionDto $action ): void

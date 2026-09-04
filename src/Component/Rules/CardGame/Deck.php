@@ -15,13 +15,20 @@ class Deck
     public function __construct( string $gameCode )
     {
         switch ( $gameCode ) {
+            case GameVariant::BRIDGE_BELOTE_CODE:
+                BridgeBeloteCard::instance();
+                $this->listOfCards = BridgeBeloteCard::$AllCards;
+                break;
             case GameVariant::CONTRACT_BRIDGE_CODE:
                 ContractBridgeCard::instance();
                 $this->listOfCards = ContractBridgeCard::$AllCards;
                 break;
+            case GameVariant::SVARA_CODE:
+                ContractBridgeCard::instance();
+                $this->listOfCards = ContractBridgeCard::$AllCards;
+                break;
             default:
-                BridgeBeloteCard::instance();
-                $this->listOfCards = BridgeBeloteCard::$AllCards;
+                throw new \RuntimeException( 'Unknown Game Code !!!' );
         }
     }
     

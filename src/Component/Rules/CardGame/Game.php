@@ -20,6 +20,7 @@ use App\Component\Rules\CardGame\Context\PlayerPlayCardContext;
 
 use App\Component\Rules\CardGame\BridgeBeloteGameMechanics\RoundManager as BridgeBeloteRoundManager;
 use App\Component\Rules\CardGame\ContractBridgeGameMechanics\RoundManager as ContractBridgeRoundManager;
+use App\Component\Rules\CardGame\SvaraGameMechanics\RoundManager as SvaraRoundManager;
 
 use App\Component\Dto\Actions\PlayCardActionDto;
 
@@ -139,6 +140,9 @@ class Game implements GameInterface
     /** @var ContractBridgeRoundManager */
     protected $contractBridgeRoundManager;
     
+    /** @var SvaraRoundManager */
+    protected $svaraRoundManager;
+    
     public function __construct( GameLogger $logger, EventDispatcherInterface $eventDispatcher )
     {
         $this->logger           = $logger;
@@ -164,7 +168,7 @@ class Game implements GameInterface
                 $this->contractBridgeRoundManager = new ContractBridgeRoundManager( $this, $this->logger, $this->eventDispatcher );
                 break;
             case GameVariant::SVARA_CODE:
-                // $this->svaraRoundManager = new SvaraRoundManager( $this, $this->logger, $this->eventDispatcher );
+                $this->svaraRoundManager = new SvaraRoundManager( $this, $this->logger, $this->eventDispatcher );
                 break;
             default:
                 throw new \RuntimeException( 'Unknown Game Code !!!' );
@@ -218,7 +222,7 @@ class Game implements GameInterface
                 return $this->contractBridgeRoundManager->PlayRound();
                 break;
             case GameVariant::SVARA_CODE:
-                // NOT IMPLEMENTED
+                return $this->svaraRoundManager->PlayRound();
                 break;
             default:
                 throw new \RuntimeException( 'Unknown Game Code !!!' );
@@ -237,7 +241,7 @@ class Game implements GameInterface
                 $this->contractBridgeRoundManager->SetContract( $bid, $nextPlayer );
                 break;
             case GameVariant::SVARA_CODE:
-                // NOT IMPLEMENTED
+                $this->svaraRoundManager->SetContract( $bid, $nextPlayer );
                 break;
             default:
                 throw new \RuntimeException( 'Unknown Game Code !!!' );
@@ -254,7 +258,7 @@ class Game implements GameInterface
                 return $this->contractBridgeRoundManager->GetValidCards( $playerCards, $currentContract, $trickActions );
                 break;
             case GameVariant::SVARA_CODE:
-                // NOT IMPLEMENTED
+                return $this->svaraRoundManager->GetValidCards( $playerCards, $currentContract, $trickActions );
                 break;
             default:
                 throw new \RuntimeException( 'Unknown Game Code !!!' );
@@ -272,7 +276,7 @@ class Game implements GameInterface
                 return new ArrayCollection();
                 break;
             case GameVariant::SVARA_CODE:
-                // NOT IMPLEMENTED
+                return new ArrayCollection();
                 break;
             default:
                 throw new \RuntimeException( 'Unknown Game Code !!!' );
@@ -312,7 +316,7 @@ class Game implements GameInterface
             case GameVariant::CONTRACT_BRIDGE_CODE:
                 return $this->contractBridgeRoundManager->GetTrickActionNumber();
             case GameVariant::SVARA_CODE:
-                // NOT IMPLEMENTED
+                return $this->svaraRoundManager->GetTrickActionNumber();
                 break;
             default:
                 throw new \RuntimeException( 'Unknown Game Code !!!' );
@@ -328,7 +332,7 @@ class Game implements GameInterface
             case GameVariant::CONTRACT_BRIDGE_CODE:
                 return $this->contractBridgeRoundManager->GetTrickActions();
             case GameVariant::SVARA_CODE:
-                // NOT IMPLEMENTED
+                return $this->svaraRoundManager->GetTrickActions();
                 break;
             default:
                 throw new \RuntimeException( 'Unknown Game Code !!!' );
@@ -344,7 +348,7 @@ class Game implements GameInterface
             case GameVariant::CONTRACT_BRIDGE_CODE:
                 $this->contractBridgeRoundManager->AddTrickAction( $action );
             case GameVariant::SVARA_CODE:
-                // NOT IMPLEMENTED
+                $this->svaraRoundManager->AddTrickAction( $action );
                 break;
             default:
                 throw new \RuntimeException( 'Unknown Game Code !!!' );

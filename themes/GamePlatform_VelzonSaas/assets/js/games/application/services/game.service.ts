@@ -61,12 +61,20 @@ export class GameService
         );
     }
     
-    loadGameRooms( gameSlug: string ): Observable<IGameRoom[]>
+    loadGameSessions( gameSlug: string ): Observable<IGameRoom[]>
     {
         //alert( gameSlug );
         var url = `${this.url}/game-sessions/${gameSlug}`;
         
         return this.httpClient.get<IGameRoom[]>( url );
+    }
+    
+    clearGameSessions( gameSlug: string ): Observable<IGameRoom[]>
+    {
+        var url = `${this.url}/clear-game-sessions/${gameSlug}`;
+        
+        
+        return this.httpClient.delete<IGameRoom[]>( url );
     }
     
     loadPlayers(): Observable<IPlayer[]>

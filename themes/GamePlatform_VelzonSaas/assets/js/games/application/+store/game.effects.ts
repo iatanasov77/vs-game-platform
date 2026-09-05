@@ -85,7 +85,7 @@ export class GameEffects
         this.actions$.pipe(
             ofType( loadGameRooms ),
             switchMap( ( { gameSlug } ) =>
-                this.gameService.loadGameRooms( gameSlug ).pipe(
+                this.gameService.loadGameSessions( gameSlug ).pipe(
                     map( ( rooms: IGameRoom[] ) => loadGameRoomsSuccess( { rooms } ) ),
                     catchError( error => [loadGameRoomsFailure( { error } )] )
                 )

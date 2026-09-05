@@ -41,6 +41,7 @@ import { AuthService } from '../../../services/auth.service';
 import { StatusMessageService } from '../../../services/status-message.service';
 import { SoundService } from '../../../services/sound.service';
 import { CardGameService } from '../../../services/websocket/card-game.service';
+import { GameService } from '../../../services/game.service';
 import { GamePlayService } from '../../../services/game-play.service';
 
 import { GameCookieDto } from '@vankosoft/game-platform';
@@ -75,6 +76,8 @@ declare global {
         gamePlatformSettings: any;
     }
 }
+
+const {context} = require( '../../../context' );
 
 @Component({
     selector: 'card-game-container',
@@ -140,7 +143,6 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     gameContractVisible = false;
     newRoundVisible = false;
     openAuctionDialogVisible = false;
-    debugButtonsVisible = false;
     
     gameDto: CardGameDto | undefined;
     playerCardsDto: Array<CardDto[]> | undefined;
@@ -162,7 +164,11 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     startedHandle: any;
     
     bidHistory: BidDto[] = [];
+    
+    /** Debug Buttons */
     debugGameSoundsVisible = window.gamePlatformSettings.debugGameSounds;
+    debugContractBridgeAuctionVisible = false;
+    clearGameSessionsVisible = ! context.isProduction;
     
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,
@@ -173,6 +179,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         @Inject( AuthService ) private authService: AuthService,
         @Inject( CardGameService ) private wsService: CardGameService,
         @Inject( CookieService ) private cookieService: CookieService,
+        @Inject( GameService ) private gameService: GameService,
         @Inject( GamePlayService ) private gamePlayService: GamePlayService,
         @Inject( Store ) private store: Store,
         @Inject( Actions ) private actions$: Actions,
@@ -217,6 +224,8 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     
     ngOnInit(): void
     {
+        // alert( `gameSlug: ${window.gamePlatformSettings.gameSlug}` );
+        
         this.authService.isLoggedIn().subscribe( ( isLoggedIn: boolean ) => {
             this.isLoggedIn = isLoggedIn;
             let auth        = this.authService.getAuth();
@@ -307,6 +316,16 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
                     break;
             }
         }
+    }
+    
+    clearGameSessions(): void
+    {
+        var gameCode = window.gamePlatformSettings.gameSlug;
+        
+        this.gameService.clearGameSessions( gameCode ).subscribe( ( response ) => {
+            // alert( `clearGameSessions: ${JSON.stringify( response )}` );
+            alert( 'Game Sessions Cleared.' );
+        });
     }
     
     openContractBridgeAuctionDialog(): void
@@ -528,6 +547,8 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     
     gameChanged( dto: CardGameDto ): void
     {
+        this.clearGameSessionsVisible = ! context.isProduction && ! this.started && ! dto;
+        
         if (
             ! this.started &&
             dto &&

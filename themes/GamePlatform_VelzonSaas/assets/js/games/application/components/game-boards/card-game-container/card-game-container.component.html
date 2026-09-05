@@ -44,7 +44,8 @@
             [playWithComputerVisible]="playWithComputerVisible"
             [openAuctionDialogVisible]="openAuctionDialogVisible"
             
-            [debugButtonsVisible]="debugButtonsVisible"
+            [clearGameSessionsVisible]="clearGameSessionsVisible"
+            [debugContractBridgeAuctionVisible]="debugContractBridgeAuctionVisible"
             [debugGameSoundsVisible]="debugGameSoundsVisible"
             
             (onLogin)="login()"
@@ -52,6 +53,7 @@
             (onNewRound)="newRound()"
             (onExit)="exitGame()"
             
+            (onClearGameSessions)="clearGameSessions()"
             (onOpenContractBridgeAuctionDialog)="openContractBridgeAuctionDialog()"
             (onOpenDebugGameSoundsDialog)="openDebugGameSoundsDialog()"
             

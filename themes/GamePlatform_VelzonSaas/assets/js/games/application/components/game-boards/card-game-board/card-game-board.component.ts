@@ -563,7 +563,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             return;
         }
         
-        if ( ! this.deck.length ) {
+        if ( ! this.deck.length || this.game.gameCode === GameVariant.SVARA_CODE ) {
             return;
         }
         

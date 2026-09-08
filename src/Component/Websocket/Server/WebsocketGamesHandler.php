@@ -219,7 +219,7 @@ final class WebsocketGamesHandler implements MessageComponentInterface
             $queryParameters    = [];
             
             \parse_str( $queryString, $queryParameters );
-            //$this->logger->log( "API Verify Signature: ". $queryParameters['token'], 'GameServer' );
+            $this->logger->log( "API Verify Signature: ". $queryParameters['token'], 'GameServer' );
             
             $verifyToken    = isset( $queryParameters['token'] ) ? $queryParameters['token'] : null;
             $user           = $this->usersRepository->findOneBy( ['apiVerifySiganature' => $verifyToken ] );

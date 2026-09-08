@@ -3,6 +3,7 @@
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Exception\DriverException;
 
 use React\Async;
 use Ratchet\RFC6455\Messaging\Frame;
@@ -263,30 +264,36 @@ abstract class CardGameManager extends AbstractGameManager
     
     protected function CreateDbGame(): void
     {
-        $southPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::South->value]->Id, PlayerPosition::South->value );
-        $eastPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::East->value]->Id, PlayerPosition::East->value );
-        $northPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::North->value]->Id, PlayerPosition::North->value );
-        $westPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::West->value]->Id, PlayerPosition::West->value );
-        
-        // Create Game Session
-        $gameBase   = $this->gameRepository->findOneBy(['slug' => $this->GameCode]);
-        $game       = $this->gamePlayFactory->createNew();
-        $game->setGame( $gameBase );
-        $game->setGuid( $this->Game->Id );
-        
-        $southPlayer->setGame( $game );
-        $eastPlayer->setGame( $game );
-        $northPlayer->setGame( $game );
-        $westPlayer->setGame( $game );
-        
-        $game->addGamePlayer( $southPlayer );
-        $game->addGamePlayer( $eastPlayer );
-        $game->addGamePlayer( $northPlayer );
-        $game->addGamePlayer( $westPlayer );
-        
-        $em = $this->doctrine->getManager();
-        $em->persist( $game );
-        $em->flush();
+        try {
+            $southPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::South->value]->Id, PlayerPosition::South->value );
+            $eastPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::East->value]->Id, PlayerPosition::East->value );
+            $northPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::North->value]->Id, PlayerPosition::North->value );
+            $westPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::West->value]->Id, PlayerPosition::West->value );
+            
+            // Create Game Session
+            $gameBase   = $this->gameRepository->findOneBy(['slug' => $this->GameCode]);
+            $game       = $this->gamePlayFactory->createNew();
+            $game->setGame( $gameBase );
+            $game->setGuid( $this->Game->Id );
+            
+            $southPlayer->setGame( $game );
+            $eastPlayer->setGame( $game );
+            $northPlayer->setGame( $game );
+            $westPlayer->setGame( $game );
+            
+            $game->addGamePlayer( $southPlayer );
+            $game->addGamePlayer( $eastPlayer );
+            $game->addGamePlayer( $northPlayer );
+            $game->addGamePlayer( $westPlayer );
+            
+            $em = $this->doctrine->getManager();
+            $em->persist( $game );
+            $em->flush();
+        } catch ( DriverException $e ) {
+            $this->logger->log( "Has CreateDbGame Mysql Exception !!!", 'GameManager' );
+            
+            return;
+        }
     }
     
     protected function NewTurn( WebsocketClientInterface $socket ): void

@@ -261,8 +261,11 @@ final class Mapper
             case GameVariant::CONTRACT_BRIDGE_CODE:
                 $cardDto->cardIndex = \substr( CardExtensions::SuitToString( $card->Suit ), 0, 1 ) . ( $card->Type->value + 2 );
                 break;
+            case GameVariant::SVARA_CODE:
+                $cardDto->cardIndex = \substr( CardExtensions::SuitToString( $card->Suit ), 0, 1 ) . ( $card->Type->value + 2 );
+                break;
             default:
-                $cardDto->cardIndex = '';
+                throw new \RuntimeException( "Unknown Game Code: '{$gameCode}' !" );
         }
         
         return $cardDto;

@@ -15,19 +15,8 @@ import {
 } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
 import { of, Observable, Subscription, map, merge, take } from 'rxjs';
-
-import {
-    selectGameRoom,
-    selectGameRoomSuccess,
-    startCardGame,
-    startCardGameSuccess,
-    loadGameBySlug,
-    loadGameRooms
-} from '../../../+store/game.actions';
-import { GameState as MyGameState } from '../../../+store/game.reducers';
 
 // App State
 import { Keys } from '@vankosoft/game-platform';
@@ -41,6 +30,7 @@ import { AuthService } from '../../../services/auth.service';
 import { StatusMessageService } from '../../../services/status-message.service';
 import { SoundService } from '../../../services/sound.service';
 import { CardGameService } from '../../../services/websocket/card-game.service';
+import { GameService } from '../../../services/game.service';
 import { GamePlayService } from '../../../services/game-play.service';
 
 import { GameCookieDto } from '@vankosoft/game-platform';
@@ -75,6 +65,8 @@ declare global {
         gamePlatformSettings: any;
     }
 }
+
+const {context} = require( '../../../context' );
 
 @Component({
     selector: 'card-game-container',
@@ -140,7 +132,6 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     gameContractVisible = false;
     newRoundVisible = false;
     openAuctionDialogVisible = false;
-    debugButtonsVisible = false;
     
     gameDto: CardGameDto | undefined;
     playerCardsDto: Array<CardDto[]> | undefined;
@@ -152,7 +143,6 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     currentPlayer: PlayerPosition | undefined;
     contract: BidDto | undefined;
     
-    appState?: MyGameState;
     gameStarted: boolean = false;
     autoOpenCardGameAuctionDialog = window.gamePlatformSettings.autoOpenCardGameAuctionDialog;
     
@@ -162,7 +152,11 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     startedHandle: any;
     
     bidHistory: BidDto[] = [];
+    
+    /** Debug Buttons */
     debugGameSoundsVisible = window.gamePlatformSettings.debugGameSounds;
+    debugContractBridgeAuctionVisible = false;
+    clearGameSessionsVisible = ! context.isProduction;
     
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,
@@ -173,8 +167,8 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         @Inject( AuthService ) private authService: AuthService,
         @Inject( CardGameService ) private wsService: CardGameService,
         @Inject( CookieService ) private cookieService: CookieService,
+        @Inject( GameService ) private gameService: GameService,
         @Inject( GamePlayService ) private gamePlayService: GamePlayService,
-        @Inject( Store ) private store: Store,
         @Inject( Actions ) private actions$: Actions,
         @Inject( NgbModal ) private ngbModal: NgbModal,
     ) {
@@ -217,6 +211,8 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     
     ngOnInit(): void
     {
+        // alert( `gameSlug: ${window.gamePlatformSettings.gameSlug}` );
+        
         this.authService.isLoggedIn().subscribe( ( isLoggedIn: boolean ) => {
             this.isLoggedIn = isLoggedIn;
             let auth        = this.authService.getAuth();
@@ -228,37 +224,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         
         this.gameDto$.subscribe( res => {
             this.gameDto = res;
-        });
-        
-        this.store.subscribe( ( state: any ) => {
-            // console.log( state.app.main );
-            
-            this.appState   = state.app.main;
-            
-            if ( state.app.main.gamePlay ) {
-                this.gameStarted    = true;
-            }
-            
             this.fireResize();
-        });
-        
-        /**
-         * Cannot Remove Game Rooms from Board Games Because Game Room is a Game Session for Now.
-         */
-        this.actions$.pipe( ofType( selectGameRoomSuccess ) ).subscribe( () => {
-            this.newVisible = false;
-            this.exitVisible = false;
-            
-            let gameCookie  = this.cookieService.get( Keys.gameIdKey );
-            //alert( gameCookie );
-            if ( gameCookie ) {
-                let gameCookieDto   = JSON.parse( gameCookie ) as GameCookieDto;
-                
-                gameCookieDto.roomSelected = true;
-                this.cookieService.set( Keys.gameIdKey, JSON.stringify( gameCookieDto ), 2 );
-            }
-            
-            this.isRoomSelected = true;
         });
     }
     
@@ -307,6 +273,16 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
                     break;
             }
         }
+    }
+    
+    clearGameSessions(): void
+    {
+        var gameCode = window.gamePlatformSettings.gameSlug;
+        
+        this.gameService.clearGameSessions( gameCode ).subscribe( ( response ) => {
+            // alert( `clearGameSessions: ${JSON.stringify( response )}` );
+            alert( 'Game Sessions Cleared.' );
+        });
     }
     
     openContractBridgeAuctionDialog(): void
@@ -478,23 +454,11 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
             this.openRequirementsDialog();
             return;
         }
-        
-        if ( this.appState ) {
-            if ( this.appState.game && ! this.appState.game.room ) {
-                // Try With This Room Only For Now
-                let gameRoom    = this?.appState?.rooms?.find( ( item: any ) => item?.slug === 'test-bridge-belote-room' );
-                //console.log( 'Available Game Rooms', this?.appState?.rooms );
-                //console.log( 'Selected Game Room', gameRoom );
-                
-                if ( gameRoom ) {
-                    this.store.dispatch( selectGameRoom( { game: this.appState.game, room:  gameRoom } ) );
-                }
-            }
-        }
     }
     
     async playAi()
     {
+        // alert( 'Card Game playAi() Called !!!' );
         this.playAiQuestion = false;
         this.wsService.exitGame();
         
@@ -527,6 +491,8 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     
     gameChanged( dto: CardGameDto ): void
     {
+        this.clearGameSessionsVisible = ! context.isProduction && ! this.started && ! dto;
+        
         if (
             ! this.started &&
             dto &&
@@ -672,6 +638,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         }
         
         this.initFlags();
+        this.selectGameRoomSuccess();
         this.wsService.connect( gameId, this.playAiFlag, this.forGoldFlag );
         
         this.lobbyButtonsVisibleChanged.emit( false );
@@ -692,5 +659,22 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         this.playAiFlag = this.queryParamsService.playAi.getValue() === true;
         this.forGoldFlag = this.queryParamsService.forGold.getValue() === true;
         this.lokalStake = 0;
+    }
+    
+    selectGameRoomSuccess(): void
+    {
+        this.newVisible = false;
+        this.exitVisible = false;
+        
+        let gameCookie  = this.cookieService.get( Keys.gameIdKey );
+        //alert( gameCookie );
+        if ( gameCookie ) {
+            let gameCookieDto   = JSON.parse( gameCookie ) as GameCookieDto;
+            
+            gameCookieDto.roomSelected = true;
+            this.cookieService.set( Keys.gameIdKey, JSON.stringify( gameCookieDto ), 2 );
+        }
+        
+        this.isRoomSelected = true;
     }
 }

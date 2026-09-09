@@ -1,5 +1,4 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 
 import { AuthService } from '../application/services/auth.service'
@@ -37,12 +36,11 @@ export class SvaraComponent extends GameBaseComponent implements OnInit
         @Inject( AuthService ) authService: AuthService,
         @Inject( SoundService ) soundService: SoundService,
         @Inject( GameService ) gameService: GameService,
-        @Inject( Store ) store: Store,
         
         @Inject( ErrorReportService ) private errorReportService: ErrorReportService,
         @Inject( AppStateService ) private appState: AppStateService
     ) {
-        super( authService, soundService, gameService, store );
+        super( authService, soundService, gameService );
         
         this.errors$    = this.appState.errors.observe();
     }

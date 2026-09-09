@@ -3,6 +3,7 @@
 use App\Component\Type\PlayerColor;
 use App\Component\Utils\Guid;
 use App\Entity\GamePlayer;
+use App\Component\Manager\GameManagerInterface;
 
 class Player
 {
@@ -47,6 +48,28 @@ class Player
     /** @var bool */
     public $FirstMoveMade;
     
+    public static function MyColor( GameManagerInterface $manager, GamePlayer $dbUser, PlayerColor $color ): bool
+    {
+        //prevents someone with same game id, get someone elses side in the game.
+        $player = $manager->Game->BlackPlayer;
+        
+        if ( $color == PlayerColor::White ) {
+            $player = $manager->Game->WhitePlayer;
+        }
+        
+        return $dbUser != null && $dbUser->getId() == $player->Id;
+    }
+    
+    public function IsGuest(): bool
+    {
+        return $this->Id == Guid::Empty();
+    }
+    
+    public function IsAi(): bool
+    {
+        return $this->Guid == GamePlayer::AiUser;
+    }
+    
     public function __toString(): string
     {
         switch ( $this->PlayerColor->value ) {
@@ -57,18 +80,8 @@ class Player
                 $playerColor = 'White';
                 break;
             default:
-                $playerColor = 'Neither';   
+                $playerColor = 'Neither';
         }
         return $playerColor . " player";
-    }
-        
-    public function IsGuest(): bool
-    {
-        return $this->Id == Guid::Empty();
-    }
-    
-    public function IsAi(): bool
-    {
-        return $this->Guid == GamePlayer::AiUser;
     }
 }

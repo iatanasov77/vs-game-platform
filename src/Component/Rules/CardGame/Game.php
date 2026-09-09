@@ -20,6 +20,7 @@ use App\Component\Rules\CardGame\Context\PlayerPlayCardContext;
 
 use App\Component\Rules\CardGame\BridgeBeloteGameMechanics\RoundManager as BridgeBeloteRoundManager;
 use App\Component\Rules\CardGame\ContractBridgeGameMechanics\RoundManager as ContractBridgeRoundManager;
+use App\Component\Rules\CardGame\SvaraGameMechanics\RoundManager as SvaraRoundManager;
 
 use App\Component\Dto\Actions\PlayCardActionDto;
 
@@ -139,6 +140,9 @@ class Game implements GameInterface
     /** @var ContractBridgeRoundManager */
     protected $contractBridgeRoundManager;
     
+    /** @var SvaraRoundManager */
+    protected $svaraRoundManager;
+    
     public function __construct( GameLogger $logger, EventDispatcherInterface $eventDispatcher )
     {
         $this->logger           = $logger;
@@ -163,6 +167,11 @@ class Game implements GameInterface
             case GameVariant::CONTRACT_BRIDGE_CODE:
                 $this->contractBridgeRoundManager = new ContractBridgeRoundManager( $this, $this->logger, $this->eventDispatcher );
                 break;
+            case GameVariant::SVARA_CODE:
+                $this->svaraRoundManager = new SvaraRoundManager( $this, $this->logger, $this->eventDispatcher );
+                break;
+            default:
+                throw new \RuntimeException( 'Unknown Game Code !!!' );
         }
         
         $this->firstInRound = $firstToPlay;
@@ -206,11 +215,17 @@ class Game implements GameInterface
     public function PlayRound(): ?PlayerPosition
     {
         switch ( $this->GameCode ) {
+            case GameVariant::BRIDGE_BELOTE_CODE:
+                return $this->bridgeBeloteRoundManager->PlayRound();
+                break;
             case GameVariant::CONTRACT_BRIDGE_CODE:
                 return $this->contractBridgeRoundManager->PlayRound();
                 break;
+            case GameVariant::SVARA_CODE:
+                return $this->svaraRoundManager->PlayRound();
+                break;
             default:
-                return $this->bridgeBeloteRoundManager->PlayRound();
+                throw new \RuntimeException( 'Unknown Game Code !!!' );
         }
     }
     
@@ -219,34 +234,52 @@ class Game implements GameInterface
         $this->logger->log( "SetContract Bid Value: {$bid->Value}", 'RoundManager' );
         
         switch ( $this->GameCode ) {
+            case GameVariant::BRIDGE_BELOTE_CODE:
+                $this->bridgeBeloteRoundManager->SetContract( $bid, $nextPlayer );
+                break;
             case GameVariant::CONTRACT_BRIDGE_CODE:
                 $this->contractBridgeRoundManager->SetContract( $bid, $nextPlayer );
                 break;
+            case GameVariant::SVARA_CODE:
+                $this->svaraRoundManager->SetContract( $bid, $nextPlayer );
+                break;
             default:
-                $this->bridgeBeloteRoundManager->SetContract( $bid, $nextPlayer );
+                throw new \RuntimeException( 'Unknown Game Code !!!' );
         }
     }
     
     public function GetValidCards( Collection $playerCards, Bid $currentContract, Collection $trickActions ): Collection
     {
         switch ( $this->GameCode ) {
+            case GameVariant::BRIDGE_BELOTE_CODE:
+                return $this->bridgeBeloteRoundManager->GetValidCards( $playerCards, $currentContract, $trickActions );
+                break;
             case GameVariant::CONTRACT_BRIDGE_CODE:
                 return $this->contractBridgeRoundManager->GetValidCards( $playerCards, $currentContract, $trickActions );
                 break;
+            case GameVariant::SVARA_CODE:
+                return $this->svaraRoundManager->GetValidCards( $playerCards, $currentContract, $trickActions );
+                break;
             default:
-                return $this->bridgeBeloteRoundManager->GetValidCards( $playerCards, $currentContract, $trickActions );
+                throw new \RuntimeException( 'Unknown Game Code !!!' );
         }
     }
     
     public function GetAvailableAnnounces( Collection $playerCards ): Collection
     {
         switch ( $this->GameCode ) {
+            case GameVariant::BRIDGE_BELOTE_CODE:
+                return $this->bridgeBeloteRoundManager->GetAvailableAnnounces( $playerCards );
+                break;
             case GameVariant::CONTRACT_BRIDGE_CODE:
                 //return $this->contractBridgeRoundManager->GetAvailableAnnounces( $playerCards );
                 return new ArrayCollection();
                 break;
+            case GameVariant::SVARA_CODE:
+                return new ArrayCollection();
+                break;
             default:
-                return $this->bridgeBeloteRoundManager->GetAvailableAnnounces( $playerCards );
+                throw new \RuntimeException( 'Unknown Game Code !!!' );
         }
     }
      
@@ -277,33 +310,48 @@ class Game implements GameInterface
     public function GetTrickActionNumber(): int
     {
         switch ( $this->GameCode ) {
+            case GameVariant::BRIDGE_BELOTE_CODE:
+                return $this->bridgeBeloteRoundManager->GetTrickActionNumber();
+                break;
             case GameVariant::CONTRACT_BRIDGE_CODE:
                 return $this->contractBridgeRoundManager->GetTrickActionNumber();
+            case GameVariant::SVARA_CODE:
+                return $this->svaraRoundManager->GetTrickActionNumber();
                 break;
             default:
-                return $this->bridgeBeloteRoundManager->GetTrickActionNumber();
+                throw new \RuntimeException( 'Unknown Game Code !!!' );
         }
     }
     
     public function GetTrickActions(): Collection
     {
         switch ( $this->GameCode ) {
+            case GameVariant::BRIDGE_BELOTE_CODE:
+                return $this->bridgeBeloteRoundManager->GetTrickActions();
+                break;
             case GameVariant::CONTRACT_BRIDGE_CODE:
                 return $this->contractBridgeRoundManager->GetTrickActions();
+            case GameVariant::SVARA_CODE:
+                return $this->svaraRoundManager->GetTrickActions();
                 break;
             default:
-                return $this->bridgeBeloteRoundManager->GetTrickActions();
+                throw new \RuntimeException( 'Unknown Game Code !!!' );
         }
     }
     
     public function AddTrickAction( PlayCardAction $action ): void
     {
         switch ( $this->GameCode ) {
+            case GameVariant::BRIDGE_BELOTE_CODE:
+                $this->bridgeBeloteRoundManager->AddTrickAction( $action );
+                break;
             case GameVariant::CONTRACT_BRIDGE_CODE:
                 $this->contractBridgeRoundManager->AddTrickAction( $action );
+            case GameVariant::SVARA_CODE:
+                $this->svaraRoundManager->AddTrickAction( $action );
                 break;
             default:
-                $this->bridgeBeloteRoundManager->AddTrickAction( $action );
+                throw new \RuntimeException( 'Unknown Game Code !!!' );
         }
     }
     

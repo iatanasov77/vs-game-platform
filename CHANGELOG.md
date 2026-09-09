@@ -1,3 +1,19 @@
+1.2.1	|	Release date: **09.09.2026**
+============================================
+* New Features:
+  - Begin Svara Game Manager.
+  - Creating Svara Game AI Engine and Improve Svara Game Manager.
+  - Add Svara Game Cards into Deck.
+  - Many Fixes and Improvements on Svara Card Game.
+  - Add a Clear Game Rooms Button.
+  - Svara Game is Ready for Build Hazard Auction.
+  - Update Dev Database to Maria DB.
+  - Workaround on some CreateDbGame Exception.
+  - Remove Some NGRX Store Actions.
+  - Remove All NGRX Game Store Actions.
+  - Remove Some NGRX Auth Store Actions.
+
+
 1.2.0	|	Release date: **02.09.2026**
 ============================================
 * New Features:

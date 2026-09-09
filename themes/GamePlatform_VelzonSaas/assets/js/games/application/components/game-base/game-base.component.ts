@@ -1,20 +1,12 @@
 import { Component, OnInit, OnDestroy, isDevMode } from '@angular/core';
-import { Observable, map } from 'rxjs';
-import { Store } from '@ngrx/store';
-import { provideEffects } from '@ngrx/effects';
-import Swal from 'sweetalert2'
+import { Observable, Subscription, map } from 'rxjs';
 
 import { IAuth } from '@vankosoft/game-platform';
 import { IPlayer } from '@vankosoft/game-platform';
-import { loginBySignature } from '../../+store/login.actions';
-import { selectAuth } from '../../+store/login.selectors';
-import { AuthState } from '../../+store/login.reducers';
+
 import { AuthService } from '../../services/auth.service'
 import { SoundService } from '../../services/sound.service'
 import { GameService } from '../../services/game.service'
-
-import { loadGameBySlug } from '../../+store/game.actions';
-import { getGame } from '../../+store/game.selectors';
 
 declare global {
     interface Window {
@@ -30,6 +22,8 @@ declare global {
 })
 export class GameBaseComponent implements OnInit, OnDestroy
 {
+    authSubs: Subscription | undefined;
+    
     isLoggedIn: boolean         = false;
     introPlaying: boolean       = false;
     hasPlayer: boolean          = false;
@@ -40,15 +34,15 @@ export class GameBaseComponent implements OnInit, OnDestroy
         protected authService: AuthService,
         protected soundService: SoundService,
         protected gameService: GameService,
-        protected store: Store
     ) {
         if( isDevMode() ) {
             this.developementClass  = 'developement';
         }
         
-        // alert( `GamePlatform Settings: ${JSON.stringify( window.gamePlatformSettings )}` );
         if ( ! this.authService.getAuth() && window.gamePlatformSettings.apiVerifySiganature.length ) {
-            this.store.dispatch( loginBySignature( { apiVerifySiganature: window.gamePlatformSettings.apiVerifySiganature } ) );
+            this.authSubs = this.authService.loginBySignature( window.gamePlatformSettings.apiVerifySiganature  ).subscribe( ( auth ) => {
+                // alert( `Login By Signature Response: ${JSON.stringify( auth )}` );
+            });
         }
     }
     
@@ -59,7 +53,7 @@ export class GameBaseComponent implements OnInit, OnDestroy
             let auth        = this.authService.getAuth();
             
             if ( isLoggedIn && auth ) {
-                //alert( 'Auth ID: ' + auth.id );
+                // alert( 'Auth ID: ' + auth.id );
                 this.gameService.loadPlayerByUser( auth.id ).subscribe( ( player: IPlayer ) => {
                     //console.log( player );
                     this.currentPlayer  = player;
@@ -67,21 +61,23 @@ export class GameBaseComponent implements OnInit, OnDestroy
             }
         });
         
-        setTimeout( () => {
-            this.soundService.isIntroPlaying().subscribe( ( introPlaying: boolean ) => {
-                //alert( 'Intro Playing: ' + introPlaying );
-                this.introPlaying = introPlaying;
-            });
+        this.gameService.hasPlayer().subscribe( ( hasPlayer: boolean ) => {
+            // alert( hasPlayer );
+            this.hasPlayer = hasPlayer;
         });
         
-        this.gameService.hasPlayer().subscribe( ( hasPlayer: boolean ) => {
-            //alert( hasPlayer );
-            this.hasPlayer = hasPlayer;
+        setTimeout( () => {
+            this.soundService.isIntroPlaying().subscribe( ( introPlaying: boolean ) => {
+                // alert( 'Intro Playing: ' + introPlaying );
+                this.introPlaying = introPlaying;
+            });
         });
     }
     
     ngOnDestroy(): void
     {
-
+        if ( this.authSubs ) {
+            this.authSubs.unsubscribe();
+        }
     }
 }

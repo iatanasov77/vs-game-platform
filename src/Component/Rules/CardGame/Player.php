@@ -4,6 +4,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use App\Component\Type\PlayerPosition;
 use App\Component\Utils\Guid;
+use App\Component\Manager\GameManagerInterface;
 use App\Entity\GamePlayer;
 
 class Player // implements PlayerInterface
@@ -41,6 +42,28 @@ class Player // implements PlayerInterface
     /** @var bool */
     public $FirstMoveMade;
     
+    public static function MyPosition( GameManagerInterface $manager, GamePlayer $dbUser, PlayerPosition $position ): bool
+    {
+        //prevents someone with same game id, get someone elses side in the game.
+        $player = $manager->Game->SouthPlayer;
+        
+        if ( $position == PlayerPosition::East ) {
+            $player = $manager->Game->WhitePlayer;
+        }
+        
+        return $dbUser != null && $dbUser->getId() == $player->Id;
+    }
+        
+    public function IsGuest(): bool
+    {
+        return $this->Id == Guid::Empty();
+    }
+    
+    public function IsAi(): bool
+    {
+        return $this->Guid == GamePlayer::AiUser;
+    }
+    
     public function __toString(): string
     {
         switch ( $this->PlayerPosition->value ) {
@@ -61,15 +84,5 @@ class Player // implements PlayerInterface
         }
         
         return $playerPosition . " player";
-    }
-        
-    public function IsGuest(): bool
-    {
-        return $this->Id == Guid::Empty();
-    }
-    
-    public function IsAi(): bool
-    {
-        return $this->Guid == GamePlayer::AiUser;
     }
 }

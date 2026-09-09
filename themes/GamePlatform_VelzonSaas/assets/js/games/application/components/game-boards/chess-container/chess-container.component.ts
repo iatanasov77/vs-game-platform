@@ -16,14 +16,7 @@ import {
 } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable, Subscription, map } from 'rxjs';
-import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
-import {
-    selectGameRoom,
-    selectGameRoomSuccess,
-    loadGameRooms
-} from '../../../+store/game.actions';
-import { GameState as MyGameState } from '../../../+store/game.reducers';
 
 // NgxChessBoard API Reference: https://www.npmjs.com/package/ngx-chess-board
 import { NgxChessBoardView, NgxChessBoardService } from 'ngx-chess-board';
@@ -132,8 +125,6 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
     sendVisible = false;
     undoVisible = false;
     
-    appState?: MyGameState;
-    
     isRoomSelected: boolean = false;
     hasRooms: boolean       = false;
     
@@ -142,7 +133,6 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
     theme: IThemes = new DarkTheme();
     
     constructor(
-        @Inject( Store ) private store: Store,
         @Inject( Actions ) private actions$: Actions,
         @Inject( NgbModal ) private ngbModal: NgbModal,
         @Inject( ChangeDetectorRef ) private changeDetector: ChangeDetectorRef,
@@ -193,38 +183,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
         
         this.gameDto$.subscribe( res => {
             this.gameDto = res;
-        });
-        
-        this.store.subscribe( ( state: any ) => {
-            //console.log( state.app.main );
-            
-            this.appState   = state.app.main;
-            this.hasRooms   = this?.appState?.rooms?.length && this?.appState?.rooms?.length > 0 ? true : false;
-            
-            if ( state.app.main.gamePlay ) {
-                this.statusMessageService.setWaitingForConnect();
-            }
-            
             this.fireResize();
-        });
-        
-        /**
-         * Cannot Remove Game Rooms from Board Games Because Game Room is a Game Session for Now.
-         */
-        this.actions$.pipe( ofType( selectGameRoomSuccess ) ).subscribe( () => {
-            this.newVisible = false;
-            this.exitVisible = false;
-            
-            let gameCookie  = this.cookieService.get( Keys.gameIdKey );
-            //alert( gameCookie );
-            if ( gameCookie ) {
-                let gameCookieDto   = JSON.parse( gameCookie ) as GameCookieDto;
-                
-                gameCookieDto.roomSelected = true;
-                this.cookieService.set( Keys.gameIdKey, JSON.stringify( gameCookieDto ), 2 );
-            }
-            
-            this.isRoomSelected = true;
         });
     }
     
@@ -633,6 +592,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
         }
         
         this.initFlags();
+        this.selectGameRoomSuccess();
         this.wsService.connect( gameId, this.playAiFlag, this.forGoldFlag );
         
         this.lobbyButtonsVisibleChanged.emit( false );
@@ -653,5 +613,22 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
         this.playAiFlag = this.queryParamsService.playAi.getValue() === true;
         this.forGoldFlag = this.queryParamsService.forGold.getValue() === true;
         this.lokalStake = 0;
+    }
+    
+    selectGameRoomSuccess(): void
+    {
+        this.newVisible = false;
+        this.exitVisible = false;
+        
+        let gameCookie  = this.cookieService.get( Keys.gameIdKey );
+        //alert( gameCookie );
+        if ( gameCookie ) {
+            let gameCookieDto   = JSON.parse( gameCookie ) as GameCookieDto;
+            
+            gameCookieDto.roomSelected = true;
+            this.cookieService.set( Keys.gameIdKey, JSON.stringify( gameCookieDto ), 2 );
+        }
+        
+        this.isRoomSelected = true;
     }
 }

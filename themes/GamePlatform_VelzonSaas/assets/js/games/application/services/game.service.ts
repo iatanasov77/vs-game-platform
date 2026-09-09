@@ -41,16 +41,16 @@ export class GameService
         return this.httpClient.get<IGame>( url );
     }
     
-    loadGameBySlug( slug: string ): Observable<IGame>
-    {
-        //alert( 'loadGameBySlug Called !' );
-        const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
-        var url         = `${this.url}/games-ext/${slug}`;
-        
-        return this.httpClient.get<IGame>( url, {headers} ).pipe(
-            map( ( response: any ) => this.mapGame( response ) )
-        );
-    }
+//     loadGameBySlug( slug: string ): Observable<IGame>
+//     {
+//         //alert( 'loadGameBySlug Called !' );
+//         const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
+//         var url         = `${this.url}/games-ext/${slug}`;
+//         
+//         return this.httpClient.get<IGame>( url, {headers} ).pipe(
+//             map( ( response: any ) => this.mapGame( response ) )
+//         );
+//     }
     
     loadGameVariants( baseGameSlug: string ): Observable<IGame[]>
     {
@@ -61,12 +61,20 @@ export class GameService
         );
     }
     
-    loadGameRooms( gameSlug: string ): Observable<IGameRoom[]>
+    loadGameSessions( gameSlug: string ): Observable<IGameRoom[]>
     {
-        //alert( gameSlug );
+        // alert( gameSlug );
         var url = `${this.url}/game-sessions/${gameSlug}`;
         
         return this.httpClient.get<IGameRoom[]>( url );
+    }
+    
+    clearGameSessions( gameSlug: string ): Observable<IGameRoom[]>
+    {
+        var url = `${this.url}/clear-game-sessions/${gameSlug}`;
+        
+        
+        return this.httpClient.delete<IGameRoom[]>( url );
     }
     
     loadPlayers(): Observable<IPlayer[]>

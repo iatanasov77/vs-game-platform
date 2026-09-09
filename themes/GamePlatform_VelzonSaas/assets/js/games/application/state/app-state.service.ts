@@ -13,6 +13,7 @@ import { ConnectionDto } from '@vankosoft/game-platform';
 import { UserDto } from '@vankosoft/game-platform';
 import { GameState } from '@vankosoft/game-platform';
 import { GameDto } from '@vankosoft/game-platform';
+import { IGameRoom } from '@vankosoft/game-platform';
 
 // BoardGame Interfaces
 import { BoardGameDto } from '@vankosoft/game-platform';
@@ -85,6 +86,8 @@ export class AppStateService
     
     chessOpponentMove: StateObject<ChessMoveDto>;
     
+    gameRooms: StateObject<IGameRoom[]>;
+    
     constructor()
     {
         this.busy = new StateObject<Busy>();
@@ -148,6 +151,9 @@ export class AppStateService
         this.bridgeBeloteScore = new StateObject<BridgeBeloteScoreDto>();
         
         this.chessOpponentMove = new StateObject<ChessMoveDto>();
+        
+        this.gameRooms = new StateObject<IGameRoom[]>();
+        this.gameRooms.setValue( [] );
     }
 
     myTurn(): boolean

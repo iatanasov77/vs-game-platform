@@ -18,6 +18,10 @@ vs_api_game_play_by_game:
     path: /api/game-sessions/{gameSlug}
     controller: App\Controller\Api\Games\GetGamePlayByGameController::index
 
+vs_api_remove_all_game_play_by_game:
+    path: /api/clear-game-sessions/{gameSlug}
+    controller: App\Controller\Api\Games\RemoveAllGamePlayByGameController::index
+
 vs_api_mercure_game_message:
     path: /api/game-message
     controller: App\Controller\Api\MercureController::index

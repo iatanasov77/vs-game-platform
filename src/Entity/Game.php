@@ -50,7 +50,7 @@ class Game implements ResourceInterface
     private $slug;
     
     /** @var int */
-    #[ORM\Column(type: "integer")]
+    #[ORM\Column(type: "integer", options: ["default" => 0], nullable: true)]
     #[Gedmo\SortablePosition]
     private $position;
     

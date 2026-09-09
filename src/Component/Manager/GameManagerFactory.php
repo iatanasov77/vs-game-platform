@@ -15,6 +15,7 @@ use App\Component\Manager\Games\BackgammonGameManager;
 use App\Component\Manager\Games\ChessGameManager;
 use App\Component\Manager\Games\BridgeBeloteGameManager;
 use App\Component\Manager\Games\ContractBridgeGameManager;
+use App\Component\Manager\Games\SvaraGameManager;
 
 final class GameManagerFactory
 {
@@ -98,6 +99,9 @@ final class GameManagerFactory
             case GameVariant::CONTRACT_BRIDGE_CODE:
                 return $this->createContractBridgeGameManager( $forGold, $gameCode, $gameVariant );
                 break;
+            case GameVariant::SVARA_CODE:
+                return $this->createSvaraGameManager( $forGold, $gameCode, $gameVariant );
+                break;
             default:
                 throw new \RuntimeException( "Unknown Game Code: '{$gameCode}' !" );
         }
@@ -172,6 +176,28 @@ final class GameManagerFactory
     private function createContractBridgeGameManager( bool $forGold, string $gameCode, ?string $gameVariant ): GameManagerInterface
     {
         return new ContractBridgeGameManager(
+            $this->logger,
+            $this->serializer,
+            $this->imagineCacheManager,
+            $this->eventDispatcher,
+            $this->doctrine,
+            $this->gameRulesFactory,
+            $this->gameRepository,
+            $this->gamePlayRepository,
+            $this->gamePlayFactory,
+            $this->playersRepository,
+            $this->tempPlayersFactory,
+            $forGold,
+            $gameCode,
+            $gameVariant,
+            
+            $this->EndGameOnTotalThinkTimeElapse
+        );
+    }
+    
+    private function createSvaraGameManager( bool $forGold, string $gameCode, ?string $gameVariant ): GameManagerInterface
+    {
+        return new SvaraGameManager(
             $this->logger,
             $this->serializer,
             $this->imagineCacheManager,

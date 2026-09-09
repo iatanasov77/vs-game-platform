@@ -9,12 +9,8 @@ import { AppStateService } from '../../state/app-state.service';
 import { QueryParamsService } from '../../state/query-params.service';
 import { GameService } from '../game.service';
 
-// NGRX Store
-import { Store } from '@ngrx/store';
-import { selectGameRoom } from '../../+store/game.actions';
-import { IGameRoom } from '@vankosoft/game-platform';
-
 // Core Interfaces
+import { IGameRoom } from '@vankosoft/game-platform';
 import { GameState } from '@vankosoft/game-platform';
 import { GameDto } from '@vankosoft/game-platform';
 import { GameCookieDto } from '@vankosoft/game-platform';
@@ -58,7 +54,6 @@ export abstract class AbstractGameService
     protected appState: AppStateService;
     protected queryParamsService: QueryParamsService;
     protected gameService: GameService;
-    protected store: Store;
         
     socket: WebSocket | undefined;
     url: string = '';
@@ -82,14 +77,6 @@ export abstract class AbstractGameService
         this.appState = injector.get( AppStateService );
         this.queryParamsService = injector.get( QueryParamsService );
         this.gameService = injector.get( GameService );
-        this.store = injector.get( Store );
-    
-        this.store.subscribe( ( state: any ) => {
-            //alert( state.app.main.rooms );
-            if ( state.app.main.rooms ) {
-                this.selectGameRoomFromCookie( state.app.main.rooms );
-            }
-        });
     }
     
     selectGameRoomFromCookie( rooms: IGameRoom[] ): void
@@ -102,8 +89,8 @@ export abstract class AbstractGameService
             
             let gameRoom    = rooms.find( ( item: any ) => item?.name === gameCookieDto.id );
             if ( gameRoom && ! gameCookieDto.roomSelected ) {
-                //alert( 'Game Room Found From Cookie.' );
-                this.store.dispatch( selectGameRoom( { game: gameRoom.game, room: gameRoom } ) );
+                // alert( 'Game Room Found From Cookie.' );
+                // this.store.dispatch( selectGameRoom( { game: gameRoom.game, room: gameRoom } ) );
             }
         }
     }

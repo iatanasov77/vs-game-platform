@@ -81,14 +81,20 @@
         
     </ng-container>
     
-    <ng-container *ngIf="debugButtonsVisible">
-        <button (click)="debugContractBridgeAuction()" class="default-button ms-4">
+    <ng-container *ngIf="clearGameSessionsVisible">
+        <button (click)="clearGameSessions()" class="red-button ms-4">
+            Clear Game Sessions
+        </button>
+    </ng-container>
+    
+    <ng-container *ngIf="debugContractBridgeAuctionVisible">
+        <button (click)="debugContractBridgeAuction()" class="red-button ms-4">
             Debug Contract Bridge Auction
         </button>
     </ng-container>
     
     <ng-container *ngIf="debugGameSoundsVisible">
-        <button (click)="debugGameSounds()" class="default-button ms-4">
+        <button (click)="debugGameSounds()" class="red-button ms-4">
             Debug Game Sounds
         </button>
     </ng-container>

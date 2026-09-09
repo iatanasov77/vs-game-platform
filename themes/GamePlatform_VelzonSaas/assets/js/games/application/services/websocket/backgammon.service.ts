@@ -2,7 +2,7 @@ import { Injectable, Inject, Injector } from '@angular/core';
 import { AbstractGameService } from './abstract-game.service';
 
 // NGRX Store
-import { loadGameRooms } from '../../+store/game.actions';
+// import { loadGameRooms } from '../../+store/game.actions';
 
 // Core Interfaces
 import { GameCookieDto } from '@vankosoft/game-platform';
@@ -143,7 +143,7 @@ export class BackgammonService extends AbstractGameService
                 this.cookieService.set( Keys.gameIdKey, JSON.stringify( cookie ), 2 );
                 this.statusMessageService.setTextMessage( dto.game );
                 
-                this.store.dispatch( loadGameRooms( { gameSlug: window.gamePlatformSettings.gameSlug } ) );
+//                 this.store.dispatch( loadGameRooms( { gameSlug: window.gamePlatformSettings.gameSlug } ) );
                 
                 this.appState.moveTimer.setValue( dto.game.thinkTime );
                 this.sound.fadeIntro();

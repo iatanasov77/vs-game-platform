@@ -13,9 +13,6 @@ import { AuthService } from '../../services/auth.service'
 import { SoundService } from '../../services/sound.service'
 import { GameService } from '../../services/game.service'
 
-import { loadGameBySlug } from '../../+store/game.actions';
-import { getGame } from '../../+store/game.selectors';
-
 declare global {
     interface Window {
         gamePlatformSettings: any;
@@ -59,7 +56,7 @@ export class GameBaseComponent implements OnInit, OnDestroy
             let auth        = this.authService.getAuth();
             
             if ( isLoggedIn && auth ) {
-                //alert( 'Auth ID: ' + auth.id );
+                // alert( 'Auth ID: ' + auth.id );
                 this.gameService.loadPlayerByUser( auth.id ).subscribe( ( player: IPlayer ) => {
                     //console.log( player );
                     this.currentPlayer  = player;
@@ -67,16 +64,16 @@ export class GameBaseComponent implements OnInit, OnDestroy
             }
         });
         
-        setTimeout( () => {
-            this.soundService.isIntroPlaying().subscribe( ( introPlaying: boolean ) => {
-                //alert( 'Intro Playing: ' + introPlaying );
-                this.introPlaying = introPlaying;
-            });
+        this.gameService.hasPlayer().subscribe( ( hasPlayer: boolean ) => {
+            // alert( hasPlayer );
+            this.hasPlayer = hasPlayer;
         });
         
-        this.gameService.hasPlayer().subscribe( ( hasPlayer: boolean ) => {
-            //alert( hasPlayer );
-            this.hasPlayer = hasPlayer;
+        setTimeout( () => {
+            this.soundService.isIntroPlaying().subscribe( ( introPlaying: boolean ) => {
+                // alert( 'Intro Playing: ' + introPlaying );
+                this.introPlaying = introPlaying;
+            });
         });
     }
     

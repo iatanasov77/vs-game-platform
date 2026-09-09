@@ -4,26 +4,9 @@ import { createEffect, Actions, ofType } from '@ngrx/effects';
 import { switchMap, map, catchError } from "rxjs";
 
 import {
-    loadGame,
-    loadGameBySlug,
-    loadGameFailure,
-    loadGameSuccess,
-    
-    loadPlayers,
-    loadPlayersFailure,
-    loadPlayersSuccess,
-    
-    loadGameRooms,
-    loadGameRoomsFailure,
-    loadGameRoomsSuccess,
-    
     selectGameRoom,
     selectGameRoomFailure,
     selectGameRoomSuccess,
-    
-    startCardGame,
-    startCardGameFailure,
-    startCardGameSuccess
 } from "./game.actions";
 
 import { GameService } from "../services/game.service";
@@ -57,54 +40,6 @@ export class GameEffects
         @Inject( EventSourceService ) private eventSourceService: EventSourceService
     ) { }
     
-    loadGame = createEffect( (): any =>
-        this.actions$.pipe(
-            ofType( loadGame ),
-            switchMap( ( { id } ) =>
-                this.gameService.loadGame( id ).pipe(
-                    map( ( game: IGame ) => loadGameSuccess( { game } ) ),
-                    catchError( error => [loadGameFailure( { error } )] )
-                )
-            )
-        )
-    );
-    
-    loadGameBySlug = createEffect( (): any =>
-        this.actions$.pipe(
-            ofType( loadGameBySlug ),
-            switchMap( ( { slug } ) =>
-                this.gameService.loadGameBySlug( slug ).pipe(
-                    map( ( game: IGame ) => loadGameSuccess( { game } ) ),
-                    catchError( error => [loadGameFailure( { error } )] )
-                )
-            )
-        )
-    );
-    
-    loadGameRooms = createEffect( (): any =>
-        this.actions$.pipe(
-            ofType( loadGameRooms ),
-            switchMap( ( { gameSlug } ) =>
-                this.gameService.loadGameSessions( gameSlug ).pipe(
-                    map( ( rooms: IGameRoom[] ) => loadGameRoomsSuccess( { rooms } ) ),
-                    catchError( error => [loadGameRoomsFailure( { error } )] )
-                )
-            )
-        )
-    );
-    
-    loadPlayers = createEffect( (): any =>
-        this.actions$.pipe(
-            ofType( loadPlayers ),
-            switchMap( () =>
-                this.gameService.loadPlayers().pipe(
-                    map( ( players: IPlayer[] ) => loadPlayersSuccess( { players } ) ),
-                    catchError( error => [loadPlayersFailure( { error } )] )
-                )
-            )
-        )
-    );
-    
     selectGameRoom = createEffect( (): any =>
         this.actions$.pipe(
             ofType( selectGameRoom ),
@@ -112,18 +47,6 @@ export class GameEffects
                 this.gamePlayService.selectGameRoom( inputProps ).pipe(
                     map( ( game: IGame ) => selectGameRoomSuccess( { game } ) ),
                     catchError( error => [selectGameRoomFailure( { error } )] )
-                )
-            )
-        )
-    );
-    
-    startCardGame = createEffect( (): any =>
-        this.actions$.pipe(
-            ofType( startCardGame ),
-            switchMap( ( { game } ) =>
-                this.gamePlayService.startCardGameOld( game ).pipe(
-                    map( ( gamePlay: IGamePlay ) => startCardGameSuccess( { gamePlay } ) ),
-                    catchError( error => [startCardGameFailure( { error } )] )
                 )
             )
         )

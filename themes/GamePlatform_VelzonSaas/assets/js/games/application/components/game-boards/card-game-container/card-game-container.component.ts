@@ -15,17 +15,12 @@ import {
 } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
 import { of, Observable, Subscription, map, merge, take } from 'rxjs';
 
 import {
     selectGameRoom,
     selectGameRoomSuccess,
-    startCardGame,
-    startCardGameSuccess,
-    loadGameBySlug,
-    loadGameRooms
 } from '../../../+store/game.actions';
 import { GameState as MyGameState } from '../../../+store/game.reducers';
 
@@ -181,7 +176,6 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         @Inject( CookieService ) private cookieService: CookieService,
         @Inject( GameService ) private gameService: GameService,
         @Inject( GamePlayService ) private gamePlayService: GamePlayService,
-        @Inject( Store ) private store: Store,
         @Inject( Actions ) private actions$: Actions,
         @Inject( NgbModal ) private ngbModal: NgbModal,
     ) {
@@ -237,17 +231,6 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         
         this.gameDto$.subscribe( res => {
             this.gameDto = res;
-        });
-        
-        this.store.subscribe( ( state: any ) => {
-            // console.log( state.app.main );
-            
-            this.appState   = state.app.main;
-            
-            if ( state.app.main.gamePlay ) {
-                this.gameStarted    = true;
-            }
-            
             this.fireResize();
         });
         
@@ -504,10 +487,6 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
                 let gameRoom    = this?.appState?.rooms?.find( ( item: any ) => item?.slug === 'test-bridge-belote-room' );
                 //console.log( 'Available Game Rooms', this?.appState?.rooms );
                 //console.log( 'Selected Game Room', gameRoom );
-                
-                if ( gameRoom ) {
-                    this.store.dispatch( selectGameRoom( { game: this.appState.game, room:  gameRoom } ) );
-                }
             }
         }
     }

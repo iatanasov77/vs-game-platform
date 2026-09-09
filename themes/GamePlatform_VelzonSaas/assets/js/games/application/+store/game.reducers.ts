@@ -1,14 +1,8 @@
 import { ActionReducerMap, createReducer, on } from "@ngrx/store";
 
 import {
-    loadGameSuccess,
-    loadPlayersSuccess,
-    loadGameRoomsSuccess,
-    
     selectGameRoom,
     selectGameRoomSuccess,
-    
-    startCardGameSuccess
 } from "./game.actions";
 
 import { IGamePlay } from '@vankosoft/game-platform';
@@ -33,12 +27,3 @@ const initialState: GameState = {
     
     gamePlay:       null
 };
-
-export const gameReducer = createReducer( initialState,
-    on( loadGameSuccess, ( state, { game } ) => ( { ...state, game } ) ),
-    on( loadPlayersSuccess, ( state, { players } ) => ( { ...state, players } ) ),
-    on( loadGameRoomsSuccess, ( state, { rooms } ) => ( { ...state, rooms } ) ),
-    
-    on( selectGameRoomSuccess, ( state, { game } ) => ( { ...state, game } ) ),
-    on( startCardGameSuccess, ( state, { gamePlay } ) => ( { ...state, gamePlay } ) ),
-);

@@ -1,5 +1,7 @@
 <?php namespace App\Component\Manager;
 
+use Doctrine\DBAL\Exception\DriverException;
+
 use Ratchet\RFC6455\Messaging\Frame;
 use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Rules\BoardGame\Score;
@@ -57,23 +59,29 @@ abstract class BoardGameManager extends AbstractGameManager
     
     protected function CreateDbGame(): void
     {
-        $blackPlayer = $this->CreateTempPlayer( $this->Game->BlackPlayer->Id, PlayerColor::Black->value );
-        $whitePlayer = $this->CreateTempPlayer( $this->Game->WhitePlayer->Id, PlayerColor::White->value );
-        
-        $gameBase   = $this->gameRepository->findOneBy(['slug' => $this->GameCode]);
-        $game       = $this->gamePlayFactory->createNew();
-        $game->setGame( $gameBase );
-        $game->setGuid( $this->Game->Id );
-        
-        $blackPlayer->setGame( $game );
-        $whitePlayer->setGame( $game );
-        
-        $game->addGamePlayer( $blackPlayer );
-        $game->addGamePlayer( $whitePlayer );
-        
-        $em = $this->doctrine->getManager();
-        $em->persist( $game );
-        $em->flush();
+        try {
+            $blackPlayer = $this->CreateTempPlayer( $this->Game->BlackPlayer->Id, PlayerColor::Black->value );
+            $whitePlayer = $this->CreateTempPlayer( $this->Game->WhitePlayer->Id, PlayerColor::White->value );
+            
+            $gameBase   = $this->gameRepository->findOneBy(['slug' => $this->GameCode]);
+            $game       = $this->gamePlayFactory->createNew();
+            $game->setGame( $gameBase );
+            $game->setGuid( $this->Game->Id );
+            
+            $blackPlayer->setGame( $game );
+            $whitePlayer->setGame( $game );
+            
+            $game->addGamePlayer( $blackPlayer );
+            $game->addGamePlayer( $whitePlayer );
+            
+            $em = $this->doctrine->getManager();
+            $em->persist( $game );
+            $em->flush();
+        } catch ( DriverException $e ) {
+            $this->logger->log( "Has CreateDbGame Mysql Exception !!!", 'GameManager' );
+            
+            return;
+        }
     }
     
     protected function AisTurn(): bool

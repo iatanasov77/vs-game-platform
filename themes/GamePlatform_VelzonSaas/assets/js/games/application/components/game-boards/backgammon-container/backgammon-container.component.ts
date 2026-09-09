@@ -16,12 +16,10 @@ import {
 } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable, Subscription, map } from 'rxjs';
-import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
 import {
     selectGameRoom,
     selectGameRoomSuccess,
-    loadGameRooms
 } from '../../../+store/game.actions';
 import { GameState as MyGameState } from '../../../+store/game.reducers';
 import { GameVariant } from "@vankosoft/game-platform";
@@ -165,7 +163,6 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
     startedHandle: any;
     
     constructor(
-        @Inject( Store ) private store: Store,
         @Inject( Actions ) private actions$: Actions,
         @Inject( NgbModal ) private ngbModal: NgbModal,
         @Inject( ChangeDetectorRef ) private changeDetector: ChangeDetectorRef,
@@ -254,19 +251,6 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
         
         this.gameDto$.subscribe( res => {
             this.gameDto = res;
-        });
-        
-        this.store.subscribe( ( state: any ) => {
-            //console.log( state.app.main );
-            
-            this.appState   = state.app.main;
-            this.hasRooms   = this?.appState?.rooms?.length && this?.appState?.rooms?.length > 0 ? true : false;
-            
-            if ( state.app.main.gamePlay ) {
-                this.gameStarted    = true;
-                this.statusMessageService.setWaitingForConnect();
-            }
-            
             this.fireResize();
         });
         

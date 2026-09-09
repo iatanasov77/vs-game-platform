@@ -16,7 +16,7 @@ import { loginReducer } from '../application/+store/login.reducers';
 import { LoginEffects } from '../application/+store/login.effects';
 
 import { GameEffects } from '../application/+store/game.effects';
-import { IAppState, getReducers } from '../application/+store/state';
+//import { IAppState, getReducers } from '../application/+store/state';
 
 import { GlobalErrorService } from '../application/services/global-error-service';
 import { SvaraComponent } from './svara.component';
@@ -24,7 +24,7 @@ import { SharedModule } from '../application/components/shared/shared.module';
 import { GameBoardsModule } from '../application/components/game-boards/game-boards.module';
 import { SideBarsModule } from '../application/components/side-bars/side-bars.module';
 
-export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppState>>( 'Game Reducers' );
+//export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppState>>( 'Game Reducers' );
 
 export function HttpLoaderFactory( http: HttpClient ) {
     return new TranslateHttpLoader( http, '/build/gameplatform-velzonsaas-theme/i18n/', '.json' );
@@ -61,15 +61,17 @@ export function HttpLoaderFactory( http: HttpClient ) {
             LoginEffects,
         ]),
         
+        /*  
         StoreModule.forFeature( 'app', FEATURE_REDUCER_TOKEN ),
         EffectsModule.forFeature([
             GameEffects,
         ]),
+        */
     ],
     bootstrap: [SvaraComponent],
     providers: [
         { provide: APP_BASE_HREF, useValue: window.location.pathname },
-        { provide: FEATURE_REDUCER_TOKEN, useFactory: getReducers },
+        //{ provide: FEATURE_REDUCER_TOKEN, useFactory: getReducers },
         { provide: ErrorHandler, useClass: GlobalErrorService }
     ]
 })

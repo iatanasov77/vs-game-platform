@@ -83,13 +83,14 @@ export abstract class AbstractGameService
         this.queryParamsService = injector.get( QueryParamsService );
         this.gameService = injector.get( GameService );
         this.store = injector.get( Store );
-    
+        /*  
         this.store.subscribe( ( state: any ) => {
             //alert( state.app.main.rooms );
             if ( state.app.main.rooms ) {
                 this.selectGameRoomFromCookie( state.app.main.rooms );
             }
         });
+        */
     }
     
     selectGameRoomFromCookie( rooms: IGameRoom[] ): void

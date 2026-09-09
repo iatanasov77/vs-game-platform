@@ -3,7 +3,7 @@
     
     <caption class="font-weight-bold text-nowrap">{{ 'game_board.rooms.title' | translate }}</caption>
     <table class="table caption-top">
-        <tbody *ngIf="! ( isFetchingRooms$ | async )" class="game-rooms-tbody">
+        <tbody class="game-rooms-tbody">
             <ng-container *ngFor="let room of rooms">
                 <tr class="game-rooms-row">
                     <td class="text-start p-1">

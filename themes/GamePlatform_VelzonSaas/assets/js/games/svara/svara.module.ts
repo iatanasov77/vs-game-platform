@@ -10,10 +10,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 
 import { StoreModule, ActionReducerMap } from '@ngrx/store';
-import { EffectsModule } from '@ngrx/effects';
-
 import { loginReducer } from '../application/+store/login.reducers';
-import { LoginEffects } from '../application/+store/login.effects';
 
 import { GlobalErrorService } from '../application/services/global-error-service';
 import { SvaraComponent } from './svara.component';
@@ -53,9 +50,6 @@ export function HttpLoaderFactory( http: HttpClient ) {
         
         StoreModule.forRoot([
             loginReducer,
-        ]),
-        EffectsModule.forRoot([
-            LoginEffects,
         ]),
     ],
     bootstrap: [SvaraComponent],

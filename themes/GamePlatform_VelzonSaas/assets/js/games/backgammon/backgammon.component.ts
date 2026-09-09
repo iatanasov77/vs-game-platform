@@ -1,7 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
-import { Actions, ofType } from '@ngrx/effects';
 
 import { IAuth } from '@vankosoft/game-platform';
 import { Busy } from '../application/state/busy';
@@ -45,7 +43,6 @@ export class BackgammonComponent extends GameBaseComponent implements OnInit
         @Inject( AuthService ) authService: AuthService,
         @Inject( SoundService ) soundService: SoundService,
         @Inject( GameService ) gameService: GameService,
-        @Inject( Actions ) private actions$: Actions,
         
         @Inject( ErrorReportService ) private errorReportService: ErrorReportService,
         @Inject( AppStateService ) private appState: AppStateService

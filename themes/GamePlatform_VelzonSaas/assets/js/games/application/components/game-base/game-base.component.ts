@@ -1,11 +1,9 @@
 import { Component, OnInit, OnDestroy, isDevMode } from '@angular/core';
-import { Observable, map } from 'rxjs';
+import { Observable, Subscription, map } from 'rxjs';
 
 import { IAuth } from '@vankosoft/game-platform';
 import { IPlayer } from '@vankosoft/game-platform';
-import { loginBySignature } from '../../+store/login.actions';
-import { selectAuth } from '../../+store/login.selectors';
-import { AuthState } from '../../+store/login.reducers';
+
 import { AuthService } from '../../services/auth.service'
 import { SoundService } from '../../services/sound.service'
 import { GameService } from '../../services/game.service'
@@ -24,6 +22,8 @@ declare global {
 })
 export class GameBaseComponent implements OnInit, OnDestroy
 {
+    authSubs: Subscription | undefined;
+    
     isLoggedIn: boolean         = false;
     introPlaying: boolean       = false;
     hasPlayer: boolean          = false;
@@ -39,9 +39,10 @@ export class GameBaseComponent implements OnInit, OnDestroy
             this.developementClass  = 'developement';
         }
         
-        // alert( `GamePlatform Settings: ${JSON.stringify( window.gamePlatformSettings )}` );
         if ( ! this.authService.getAuth() && window.gamePlatformSettings.apiVerifySiganature.length ) {
-            //this.store.dispatch( loginBySignature( { apiVerifySiganature: window.gamePlatformSettings.apiVerifySiganature } ) );
+            this.authSubs = this.authService.loginBySignature( window.gamePlatformSettings.apiVerifySiganature  ).subscribe( ( auth ) => {
+                // alert( `Login By Signature Response: ${JSON.stringify( auth )}` );
+            });
         }
     }
     
@@ -75,6 +76,8 @@ export class GameBaseComponent implements OnInit, OnDestroy
     
     ngOnDestroy(): void
     {
-
+        if ( this.authSubs ) {
+            this.authSubs.unsubscribe();
+        }
     }
 }

@@ -1,4 +1,4 @@
-import { NgModule, InjectionToken, ErrorHandler } from '@angular/core';
+import { NgModule, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { APP_BASE_HREF, Location } from '@angular/common';
@@ -9,7 +9,7 @@ import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 
-import { StoreModule, ActionReducerMap } from '@ngrx/store';
+import { StoreModule } from '@ngrx/store';
 import { loginReducer } from '../application/+store/login.reducers';
 
 import { GlobalErrorService } from '../application/services/global-error-service';
@@ -17,8 +17,6 @@ import { ContractBridgeComponent } from './contract-bridge.component';
 import { SharedModule } from '../application/components/shared/shared.module';
 import { GameBoardsModule } from '../application/components/game-boards/game-boards.module';
 import { SideBarsModule } from '../application/components/side-bars/side-bars.module';
-
-//export const FEATURE_REDUCER_TOKEN = new InjectionToken<ActionReducerMap<IAppState>>( 'Game Reducers' );
 
 export function HttpLoaderFactory( http: HttpClient ) {
     return new TranslateHttpLoader( http, '/build/gameplatform-velzonsaas-theme/i18n/', '.json' );
@@ -56,7 +54,6 @@ export function HttpLoaderFactory( http: HttpClient ) {
     bootstrap: [ContractBridgeComponent],
     providers: [
         { provide: APP_BASE_HREF, useValue: window.location.pathname },
-        //{ provide: FEATURE_REDUCER_TOKEN, useFactory: getReducers },
         { provide: ErrorHandler, useClass: GlobalErrorService }
     ]
 })

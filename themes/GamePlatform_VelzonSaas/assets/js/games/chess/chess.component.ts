@@ -1,6 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Store } from '@ngrx/store';
 
 import { Busy } from '../application/state/busy';
 
@@ -45,12 +44,11 @@ export class ChessComponent extends GameBaseComponent implements OnInit
         @Inject( AuthService ) authService: AuthService,
         @Inject( SoundService ) soundService: SoundService,
         @Inject( GameService ) gameService: GameService,
-        @Inject( Store ) store: Store,
         
         @Inject( ErrorReportService ) private errorReportService: ErrorReportService,
         @Inject( AppStateService ) private appState: AppStateService
     ) {
-        super( authService, soundService, gameService, store );
+        super( authService, soundService, gameService );
         
         this.errors$ = this.appState.errors.observe();
         this.busy$ = this.appState.busy.observe();

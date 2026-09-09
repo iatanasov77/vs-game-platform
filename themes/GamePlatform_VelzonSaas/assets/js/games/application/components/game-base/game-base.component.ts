@@ -1,8 +1,5 @@
 import { Component, OnInit, OnDestroy, isDevMode } from '@angular/core';
 import { Observable, map } from 'rxjs';
-import { Store } from '@ngrx/store';
-import { provideEffects } from '@ngrx/effects';
-import Swal from 'sweetalert2'
 
 import { IAuth } from '@vankosoft/game-platform';
 import { IPlayer } from '@vankosoft/game-platform';
@@ -37,7 +34,6 @@ export class GameBaseComponent implements OnInit, OnDestroy
         protected authService: AuthService,
         protected soundService: SoundService,
         protected gameService: GameService,
-        protected store: Store
     ) {
         if( isDevMode() ) {
             this.developementClass  = 'developement';
@@ -45,7 +41,7 @@ export class GameBaseComponent implements OnInit, OnDestroy
         
         // alert( `GamePlatform Settings: ${JSON.stringify( window.gamePlatformSettings )}` );
         if ( ! this.authService.getAuth() && window.gamePlatformSettings.apiVerifySiganature.length ) {
-            this.store.dispatch( loginBySignature( { apiVerifySiganature: window.gamePlatformSettings.apiVerifySiganature } ) );
+            //this.store.dispatch( loginBySignature( { apiVerifySiganature: window.gamePlatformSettings.apiVerifySiganature } ) );
         }
     }
     

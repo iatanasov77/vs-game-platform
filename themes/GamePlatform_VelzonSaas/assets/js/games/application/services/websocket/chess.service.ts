@@ -2,9 +2,6 @@ import { Injectable, Inject, Injector } from '@angular/core';
 import { AbstractGameService } from './abstract-game.service';
 import {NgxChessBoardService} from 'ngx-chess-board';
 
-// NGRX Store
-// import { loadGameRooms } from '../../+store/game.actions';
-
 // Core Interfaces
 import { GameCookieDto } from '@vankosoft/game-platform';
 import { GameState } from '@vankosoft/game-platform';

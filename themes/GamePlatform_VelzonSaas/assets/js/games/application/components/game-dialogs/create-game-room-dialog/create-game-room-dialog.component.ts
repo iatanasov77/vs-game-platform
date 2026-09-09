@@ -1,8 +1,6 @@
 import { Component, Inject, Input, Output, EventEmitter } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
-import { Store } from '@ngrx/store';
-import { selectGameRoom } from '../../../+store/game.actions';
 import { IGameRoom } from '@vankosoft/game-platform';
 import { IPlayer } from '@vankosoft/game-platform';
 
@@ -21,7 +19,6 @@ export class CreateGameRoomDialogComponent
     
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,
-        @Inject( Store ) private store: Store,
     ) { }
     
     dismissModal(): void
@@ -33,10 +30,6 @@ export class CreateGameRoomDialogComponent
     {
         let postData    = form.value;
         let player      = this?.players?.find( ( item: any ) => item?.id === postData.selectedRoom );
-        
-//         if ( this.game && gameRoom ) {
-//             this.store.dispatch( selectGameRoom( { game: this.game, room:  gameRoom } ) );
-//         }
         
         this.closeModal.emit();
     }

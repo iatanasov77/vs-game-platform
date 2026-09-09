@@ -18,12 +18,6 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Actions, ofType } from '@ngrx/effects';
 import { of, Observable, Subscription, map, merge, take } from 'rxjs';
 
-import {
-    selectGameRoom,
-    selectGameRoomSuccess,
-} from '../../../+store/game.actions';
-import { GameState as MyGameState } from '../../../+store/game.reducers';
-
 // App State
 import { Keys } from '@vankosoft/game-platform';
 import { Helper } from '@vankosoft/game-platform';
@@ -149,7 +143,6 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     currentPlayer: PlayerPosition | undefined;
     contract: BidDto | undefined;
     
-    appState?: MyGameState;
     gameStarted: boolean = false;
     autoOpenCardGameAuctionDialog = window.gamePlatformSettings.autoOpenCardGameAuctionDialog;
     
@@ -232,25 +225,6 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         this.gameDto$.subscribe( res => {
             this.gameDto = res;
             this.fireResize();
-        });
-        
-        /**
-         * Cannot Remove Game Rooms from Board Games Because Game Room is a Game Session for Now.
-         */
-        this.actions$.pipe( ofType( selectGameRoomSuccess ) ).subscribe( () => {
-            this.newVisible = false;
-            this.exitVisible = false;
-            
-            let gameCookie  = this.cookieService.get( Keys.gameIdKey );
-            //alert( gameCookie );
-            if ( gameCookie ) {
-                let gameCookieDto   = JSON.parse( gameCookie ) as GameCookieDto;
-                
-                gameCookieDto.roomSelected = true;
-                this.cookieService.set( Keys.gameIdKey, JSON.stringify( gameCookieDto ), 2 );
-            }
-            
-            this.isRoomSelected = true;
         });
     }
     
@@ -480,15 +454,6 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
             this.openRequirementsDialog();
             return;
         }
-        
-        if ( this.appState ) {
-            if ( this.appState.game && ! this.appState.game.room ) {
-                // Try With This Room Only For Now
-                let gameRoom    = this?.appState?.rooms?.find( ( item: any ) => item?.slug === 'test-bridge-belote-room' );
-                //console.log( 'Available Game Rooms', this?.appState?.rooms );
-                //console.log( 'Selected Game Room', gameRoom );
-            }
-        }
     }
     
     async playAi()
@@ -673,6 +638,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         }
         
         this.initFlags();
+        this.selectGameRoomSuccess();
         this.wsService.connect( gameId, this.playAiFlag, this.forGoldFlag );
         
         this.lobbyButtonsVisibleChanged.emit( false );
@@ -693,5 +659,22 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         this.playAiFlag = this.queryParamsService.playAi.getValue() === true;
         this.forGoldFlag = this.queryParamsService.forGold.getValue() === true;
         this.lokalStake = 0;
+    }
+    
+    selectGameRoomSuccess(): void
+    {
+        this.newVisible = false;
+        this.exitVisible = false;
+        
+        let gameCookie  = this.cookieService.get( Keys.gameIdKey );
+        //alert( gameCookie );
+        if ( gameCookie ) {
+            let gameCookieDto   = JSON.parse( gameCookie ) as GameCookieDto;
+            
+            gameCookieDto.roomSelected = true;
+            this.cookieService.set( Keys.gameIdKey, JSON.stringify( gameCookieDto ), 2 );
+        }
+        
+        this.isRoomSelected = true;
     }
 }

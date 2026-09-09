@@ -1,9 +1,6 @@
 import { Injectable, Inject, Injector } from '@angular/core';
 import { AbstractGameService } from './abstract-game.service';
 
-// NGRX Store
-// import { loadGameRooms } from '../../+store/game.actions';
-
 // Core Interfaces
 import { GameState } from '@vankosoft/game-platform';
 import { GameCookieDto } from '@vankosoft/game-platform';

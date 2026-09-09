@@ -15,9 +15,6 @@ import { EffectsModule } from '@ngrx/effects';
 import { loginReducer } from '../application/+store/login.reducers';
 import { LoginEffects } from '../application/+store/login.effects';
 
-import { GameEffects } from '../application/+store/game.effects';
-//import { IAppState, getReducers } from '../application/+store/state';
-
 import { GlobalErrorService } from '../application/services/global-error-service';
 import { BridgeBeloteComponent } from './bridge-belote.component';
 import { SharedModule } from '../application/components/shared/shared.module';
@@ -60,13 +57,6 @@ export function HttpLoaderFactory( http: HttpClient ) {
         EffectsModule.forRoot([
             LoginEffects,
         ]),
-        
-        /*  
-        StoreModule.forFeature( 'app', FEATURE_REDUCER_TOKEN ),
-        EffectsModule.forFeature([
-            GameEffects,
-        ]),
-        */
     ],
     bootstrap: [BridgeBeloteComponent],
     providers: [

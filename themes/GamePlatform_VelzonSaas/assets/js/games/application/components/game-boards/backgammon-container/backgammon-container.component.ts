@@ -17,11 +17,7 @@ import {
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable, Subscription, map } from 'rxjs';
 import { Actions, ofType } from '@ngrx/effects';
-import {
-    selectGameRoom,
-    selectGameRoomSuccess,
-} from '../../../+store/game.actions';
-import { GameState as MyGameState } from '../../../+store/game.reducers';
+
 import { GameVariant } from "@vankosoft/game-platform";
 
 // Dialogs
@@ -153,7 +149,6 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
     requestHintVisible = false;
     dicesDto: DiceDto[] | undefined;
     
-    appState?: MyGameState;
     gameStarted: boolean = false;
     
     isRoomSelected: boolean = false;
@@ -252,25 +247,6 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
         this.gameDto$.subscribe( res => {
             this.gameDto = res;
             this.fireResize();
-        });
-        
-        /**
-         * Cannot Remove Game Rooms from Board Games Because Game Room is a Game Session for Now.
-         */
-        this.actions$.pipe( ofType( selectGameRoomSuccess ) ).subscribe( () => {
-            this.newVisible = false;
-            this.exitVisible = true;
-            
-            let gameCookie  = this.cookieService.get( Keys.gameIdKey );
-            //alert( gameCookie );
-            if ( gameCookie ) {
-                let gameCookieDto   = JSON.parse( gameCookie ) as GameCookieDto;
-                
-                gameCookieDto.roomSelected = true;
-                this.cookieService.set( Keys.gameIdKey, JSON.stringify( gameCookieDto ), 2 );
-            }
-            
-            this.isRoomSelected = true;
         });
     }
     
@@ -816,6 +792,7 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
         }
         
         this.initFlags();
+        this.selectGameRoomSuccess();
         this.wsService.connect( gameId, this.playAiFlag, this.forGoldFlag );
         
         this.lobbyButtonsVisibleChanged.emit( false );
@@ -838,5 +815,22 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
         this.lokalStake = 0;
         this.tutorial = this.queryParamsService.tutorial.getValue() === true;
         this.editing = this.queryParamsService.editing.getValue() === true;
+    }
+    
+    selectGameRoomSuccess(): void
+    {
+        this.newVisible = false;
+        this.exitVisible = false;
+        
+        let gameCookie  = this.cookieService.get( Keys.gameIdKey );
+        //alert( gameCookie );
+        if ( gameCookie ) {
+            let gameCookieDto   = JSON.parse( gameCookie ) as GameCookieDto;
+            
+            gameCookieDto.roomSelected = true;
+            this.cookieService.set( Keys.gameIdKey, JSON.stringify( gameCookieDto ), 2 );
+        }
+        
+        this.isRoomSelected = true;
     }
 }

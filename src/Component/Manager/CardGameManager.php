@@ -265,10 +265,12 @@ abstract class CardGameManager extends AbstractGameManager
     protected function CreateDbGame(): void
     {
         try {
-            $southPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::South->value]->Id, PlayerPosition::South->value );
-            $eastPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::East->value]->Id, PlayerPosition::East->value );
-            $northPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::North->value]->Id, PlayerPosition::North->value );
-            $westPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::West->value]->Id, PlayerPosition::West->value );
+            $this->logger->log( "CreateDbGame !!!", 'GameManager' );
+            
+            $southPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::South->value]->Id, PlayerPosition::South );
+            $eastPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::East->value]->Id, PlayerPosition::East );
+            $northPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::North->value]->Id, PlayerPosition::North );
+            $westPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::West->value]->Id, PlayerPosition::West );
             
             // Create Game Session
             $gameBase   = $this->gameRepository->findOneBy(['slug' => $this->GameCode]);
@@ -290,7 +292,8 @@ abstract class CardGameManager extends AbstractGameManager
             $em->persist( $game );
             $em->flush();
         } catch ( DriverException $e ) {
-            $this->logger->log( "Has CreateDbGame Mysql Exception !!!", 'GameManager' );
+            $this->logger->log( "Has CreateDbGame Mysql Exception: {$e->getMessage()}", 'GameManager' );
+            // $this->logger->log( "CreateDbGame Exception Trace: {$e->getTraceAsString()}", 'GameManager' );
             
             return;
         }
@@ -683,7 +686,7 @@ abstract class CardGameManager extends AbstractGameManager
     
     abstract protected function FirstToPlay(): PlayerPosition;
     
-    private function CreateTempPlayer( int $playerId, int $playerPositionId ): TempPlayer
+    private function CreateTempPlayer( int $playerId, PlayerPosition $playerPosition ): TempPlayer
     {
         $player = $this->playersRepository->find( $playerId );
         
@@ -698,7 +701,7 @@ abstract class CardGameManager extends AbstractGameManager
         $tempPlayer = $this->tempPlayersFactory->createNew();
         $tempPlayer->setGuid( Guid::NewGuid() );
         $tempPlayer->setPlayer( $player );
-        $tempPlayer->setPosition( $playerPositionId );
+        $tempPlayer->setPosition( $playerPosition->toString() );
         $tempPlayer->setName( $player->getName() );
         $player->addGamePlayer( $tempPlayer );
         

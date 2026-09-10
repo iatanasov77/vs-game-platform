@@ -60,8 +60,8 @@ abstract class BoardGameManager extends AbstractGameManager
     protected function CreateDbGame(): void
     {
         try {
-            $blackPlayer = $this->CreateTempPlayer( $this->Game->BlackPlayer->Id, PlayerColor::Black->value );
-            $whitePlayer = $this->CreateTempPlayer( $this->Game->WhitePlayer->Id, PlayerColor::White->value );
+            $blackPlayer = $this->CreateTempPlayer( $this->Game->BlackPlayer->Id, PlayerColor::Black );
+            $whitePlayer = $this->CreateTempPlayer( $this->Game->WhitePlayer->Id, PlayerColor::White );
             
             $gameBase   = $this->gameRepository->findOneBy(['slug' => $this->GameCode]);
             $game       = $this->gamePlayFactory->createNew();
@@ -221,7 +221,7 @@ abstract class BoardGameManager extends AbstractGameManager
         }
     }
     
-    protected function CreateTempPlayer( int $playerId, int $playerPositionId ): TempPlayer
+    protected function CreateTempPlayer( int $playerId, PlayerColor $playerPosition ): TempPlayer
     {
         $player = $this->playersRepository->find( $playerId );
         
@@ -236,7 +236,7 @@ abstract class BoardGameManager extends AbstractGameManager
         $tempPlayer = $this->tempPlayersFactory->createNew();
         $tempPlayer->setGuid( Guid::NewGuid() );
         $tempPlayer->setPlayer( $player );
-        $tempPlayer->setColor( $playerPositionId );
+        $tempPlayer->setColor( $playerPosition->toString() );
         $tempPlayer->setName( $player->getName() );
         $player->addGamePlayer( $tempPlayer );
         

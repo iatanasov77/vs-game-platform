@@ -34,13 +34,20 @@ export class StatusMessageService
     
     setTextMessage( game: any ): void
     {
-        if (
-            game.gameCode == GameVariant.BACKGAMMON_CODE ||
-            game.gameCode == GameVariant.CHESS_CODE
-        ) {
-            this.setBoardGameTextMessage( game );
-        } else {
-            this.setCardGameTextMessage( game );
+        switch( game.gameCode ) {
+            case GameVariant.BACKGAMMON_CODE:
+            case GameVariant.CHESS_CODE:
+                this.setBoardGameTextMessage( game );
+                break;
+            case GameVariant.BRIDGE_BELOTE_CODE:
+            case GameVariant.CONTRACT_BRIDGE_CODE:
+                this.setCardGameTextMessage( game );
+                break;
+            case GameVariant.SVARA_CODE:
+                // Nothing For Now
+                break;
+            default:
+                throw new Error( 'Invalid Card Game !!!' );
         }
     }
     

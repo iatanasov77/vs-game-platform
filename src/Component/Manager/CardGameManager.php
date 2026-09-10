@@ -302,7 +302,12 @@ abstract class CardGameManager extends AbstractGameManager
     protected function NewTurn( WebsocketClientInterface $socket ): void
     {
         /** $this->Game->DummyFaceup May be Uneeded */
-        if ( $this->Game->PlayState == GameState::playing && $this->IsDummy() && ! $this->Game->DummyFaceup ) {
+        if (
+            $this->Game->PlayState == GameState::playing &&
+            $this->IsDummy() &&
+            ! $this->IsDummyAi() &&
+            ! $this->Game->DummyFaceup
+        ) {
             $this->logger->log( "This is Dummy Player !!!", 'GameManager' );
             return;
         }

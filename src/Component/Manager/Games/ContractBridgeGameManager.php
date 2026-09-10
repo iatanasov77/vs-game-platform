@@ -120,6 +120,13 @@ class ContractBridgeGameManager extends CardGameManager
         return $this->Game->CurrentPlayer == $DummyPlayer;
     }
     
+    protected function IsDummyAi(): bool
+    {
+        $contractPlayer = $this->Game->Players[$this->Game->CurrentContract->Player->value];
+        
+        return $this->IsAi( $contractPlayer->Guid );
+    }
+    
     protected function DummyFaceupAction(): void
     {
         $DummyPlayer = PlayerPositionExtensions::GetTeammate( $this->Game->CurrentContract->Player );
@@ -170,6 +177,7 @@ class ContractBridgeGameManager extends CardGameManager
         
         if ( $this->Game->PlayState == GameState::firstRound ) {
             $this->StartGamePlay();
+            $this->PlayRound( $this->Clients->get( PlayerPosition::South->value ) );
         }
         
         if ( $this->Game->PlayState == GameState::roundEnded ) {

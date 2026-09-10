@@ -347,6 +347,7 @@ class Game implements GameInterface
                 break;
             case GameVariant::CONTRACT_BRIDGE_CODE:
                 $this->contractBridgeRoundManager->AddTrickAction( $action );
+                break;
             case GameVariant::SVARA_CODE:
                 $this->svaraRoundManager->AddTrickAction( $action );
                 break;

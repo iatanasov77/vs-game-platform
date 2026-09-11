@@ -90,8 +90,6 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     
     gameDto$: Observable<CardGameDto>;
     playerPosition$: Observable<PlayerPosition>;
-    dummyPlayer$: Observable<PlayerPosition>;
-    dummyOwner$: Observable<PlayerPosition>;
     message$: Observable<StatusMessage>;
     timeLeft$: Observable<number>;
     
@@ -179,8 +177,6 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         this.deckSubs = this.appStateService.deck.observe().subscribe( this.deckChanged.bind( this ) );
         this.pileSubs = this.appStateService.pile.observe().subscribe( this.pileChanged.bind( this ) );
         this.playerPosition$ = this.appStateService.myPosition.observe();
-        this.dummyPlayer$ = this.appStateService.dummyPlayer.observe();
-        this.dummyOwner$ = this.appStateService.dummyOwner.observe();
         
         this.gameSubs = this.appStateService.cardGame.observe().subscribe( this.gameChanged.bind( this ) );
         this.oponnetDoneSubs = this.appStateService.opponentDone.observe().subscribe( this.oponnentDone.bind( this ) );
@@ -245,8 +241,6 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         clearTimeout( this.startedHandle );
         this.appStateService.cardGame.clearValue();
         this.appStateService.myPosition.clearValue();
-        this.appStateService.dummyPlayer.clearValue();
-        this.appStateService.dummyOwner.clearValue();
         this.appStateService.messages.clearValue();
         this.appStateService.moveTimer.clearValue();
         this.started = false;
@@ -507,7 +501,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         }
         
         if ( dto && dto.playState === GameState.playing ) {
-            //alert( 'Game Playing Started !!!' );
+            // alert( `Game Playing Started - Dummy Player: ${dto.DummyPlayer}` );
             
             this.contract = dto.contract;
             this.playerBidsDto = [];

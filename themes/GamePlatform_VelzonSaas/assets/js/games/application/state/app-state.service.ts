@@ -52,8 +52,7 @@ export class AppStateService
     
     cardGame: StateObject<CardGameDto>;
     myPosition: StateObject<PlayerPosition>;
-    dummyPlayer: StateObject<PlayerPosition>;
-    dummyOwner: StateObject<PlayerPosition>;
+    myTeamMate: StateObject<PlayerPosition>;
     
     dices: StateObject<DiceDto[]>;
     moveAnimations: StateObject<MoveDto[]>;
@@ -99,11 +98,8 @@ export class AppStateService
         this.cardGame = new StateObject<CardGameDto>();
         this.myPosition = new StateObject<PlayerPosition>();
         this.myPosition.setValue( PlayerPosition.neither );
-        
-        this.dummyPlayer = new StateObject<PlayerPosition>();
-        this.dummyPlayer.setValue( PlayerPosition.neither );
-        this.dummyOwner = new StateObject<PlayerPosition>();
-        this.dummyOwner.setValue( PlayerPosition.neither );
+        this.myTeamMate = new StateObject<PlayerPosition>();
+        this.myTeamMate.setValue( PlayerPosition.neither );
         
         this.dices = new StateObject<DiceDto[]>();
         this.dices.setValue( [] );

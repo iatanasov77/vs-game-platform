@@ -206,6 +206,9 @@ final class Mapper
         
         $gameDto->contract = $game->CurrentContract ? self::BidToDto( $game->CurrentContract ) : null;
         
+        $gameDto->DummyPlayer   = $game->DummyPlayer;
+        $gameDto->DummyOwner    = $game->DummyOwner;
+        
         $gameDto->currentPlayer = $game->CurrentPlayer;
         $gameDto->playState = $game->PlayState;
         

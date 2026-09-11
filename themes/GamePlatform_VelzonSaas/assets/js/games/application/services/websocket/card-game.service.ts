@@ -126,21 +126,21 @@ export class CardGameService extends AbstractGameService
                 
                 const dto = JSON.parse( message.data ) as CardGameCreatedActionDto;
                 // console.log( 'WebSocket Action Game Created', dto.game );
+                
                 this.appState.myPosition.setValue( dto.myPosition );
+                this.appState.myTeamMate.setValue( dto.myTeamMate );
                 this.appState.cardGame.setValue( dto.game );
                 
                 const cookie: GameCookieDto = {
                     id: dto.game.id,
                     game: window.gamePlatformSettings.gameSlug,
-                    position: dto.myPosition,
+                    myPosition: dto.myPosition,
+                    myTeamMate: dto.myTeamMate,
                     roomSelected: false
                 };
                 this.cookieService.deleteAll( Keys.gameIdKey );
-                // console.log('Settings cookie', cookie);
                 this.cookieService.set( Keys.gameIdKey, JSON.stringify( cookie ), 2 );
                 this.statusMessageService.setTextMessage( dto.game );
-                
-                //this.store.dispatch( loadGameRooms( { gameSlug: window.gamePlatformSettings.gameSlug } ) );
                 
                 this.appState.moveTimer.setValue( dto.game.thinkTime );
                 this.sound.fadeIntro();
@@ -266,8 +266,12 @@ export class CardGameService extends AbstractGameService
                 // console.log( 'Dummy Faceup Action', action );
                 // alert( `Dummy Faceup Action : ${message.data}` );
                 
-                this.appState.dummyPlayer.setValue( action.DummyPlayer );
-                this.appState.dummyOwner.setValue( action.Player );
+                const cGame = {
+                    ...game,
+                    DummyPlayer: action.DummyPlayer,
+                    DummyOwner: action.Player
+                };
+                this.appState.cardGame.setValue( cGame );
                 
                 break;
             }
@@ -343,7 +347,8 @@ export class CardGameService extends AbstractGameService
                 const dto = JSON.parse( message.data ) as CardGameRestoreActionDto;
                 // console.log( 'WebSocket Action Game Restore', dto );
                 
-                this.appState.myPosition.setValue( dto.position );
+                this.appState.myPosition.setValue( dto.myPosition );
+                this.appState.myTeamMate.setValue( dto.myTeamMate );
                 this.appState.cardGame.setValue( dto.game );
                 
                 this.appState.moveTimer.setValue( dto.game.thinkTime );

@@ -132,7 +132,7 @@ export class BackgammonService extends AbstractGameService
                 const cookie: GameCookieDto = {
                     id: dto.game.id,
                     game: window.gamePlatformSettings.gameSlug,
-                    color: dto.myColor,
+                    myColor: dto.myColor,
                     roomSelected: false
                 };
                 this.cookieService.deleteAll( Keys.gameIdKey );

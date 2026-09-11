@@ -14,8 +14,9 @@ class CardGameDto extends GameDto
     public array $bidHistory;
     public ?BidDto $contract;
     
+    public ?PlayerPosition $DummyPlayer;
+    public ?PlayerPosition $DummyOwner;
     public ?PlayerPosition $currentPlayer;
-    public CardGameTeam $winner = CardGameTeam::Neither;
     
     public PlayerPosition $FirstToPlayInTheRound;
     public int $RoundNumber;
@@ -23,10 +24,9 @@ class CardGameDto extends GameDto
     
     public int $SouthNorthPoints;
     public int $EastWestPoints;
+    public CardGameTeam $winner = CardGameTeam::Neither;
     
     public Collection $MyCards;
     public array $Bids;
-    
     public bool $LastBid = false;
-    public ?PlayerPosition $Dummy;
 }

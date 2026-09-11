@@ -84,10 +84,10 @@ class Game implements GameInterface
     public $CurrentPlayer;
     
     /** @var PlayerPosition */
-    public $DummyPlayer;
+    public $DummyPlayer = PlayerPosition::Neither;
     
     /** @var PlayerPosition */
-    public $DummyOwner;
+    public $DummyOwner = PlayerPosition::Neither;
     
     /** @var bool */
     public $DummyFaceup = false;

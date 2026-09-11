@@ -120,21 +120,26 @@ class ContractBridgeGameManager extends CardGameManager
         return $this->Game->CurrentPlayer == $DummyPlayer;
     }
     
+    protected function IsDummyOwnerAi(): bool
+    {
+        $DummyOwner = $this->Game->Players[$this->Game->DummyOwner->value];
+        
+        return $this->IsAi( $DummyOwner->Guid );
+    }
+    
     protected function IsDummyAi(): bool
     {
-        $contractPlayer = $this->Game->Players[$this->Game->CurrentContract->Player->value];
+        $DummyPlayer = $this->Game->Players[$this->Game->DummyPlayer->value];
         
-        return $this->IsAi( $contractPlayer->Guid );
+        return $this->IsAi( $DummyPlayer->Guid );
     }
     
     protected function DummyFaceupAction(): void
     {
         $DummyPlayer = PlayerPositionExtensions::GetTeammate( $this->Game->CurrentContract->Player );
         
-        /*  
         $this->Game->DummyPlayer    = $DummyPlayer;
         $this->Game->DummyOwner     = $this->Game->CurrentContract->Player;
-        */
         
         $action = new DummyFaceupActionDto();
         $action->DummyPlayer    = $DummyPlayer;
@@ -229,9 +234,12 @@ class ContractBridgeGameManager extends CardGameManager
             $sleepMileseconds   = \rand( 700, 1200 );
             Async\delay( $sleepMileseconds / 1000 );
             
-            if ( $this->IsDummy() && ! $this->Game->DummyPlayer ) {
+            if ( $this->IsDummy() && $this->Game->DummyPlayer == PlayerPosition::Neither ) {
                 $this->DummyFaceupAction();
-            } else {
+                $this->Game->DummyFaceup = true;
+            }
+            
+            if ( ! $this->Game->DummyFaceup  || $this->IsDummyOwnerAi() ) {
                 $this->OpponentPlayCardAction( $playCardAction, $client );
             }
         })();

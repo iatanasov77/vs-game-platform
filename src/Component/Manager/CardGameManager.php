@@ -53,17 +53,19 @@ abstract class CardGameManager extends AbstractGameManager
 {
     public function Restore( int $playerPositionId, WebsocketClientInterface $socket ): void
     {
-        $position = PlayerPosition::from( $playerPositionId );
+        $myPosition = PlayerPosition::from( $playerPositionId );
+        $myTeamMate = PlayerPositionExtensions::GetTeammate( $myPosition );
         
         $gameDto = Mapper::CardGameToDto( $this->Game );
         $restoreAction = new GameRestoreActionDto();
         $restoreAction->game = $gameDto;
-        $restoreAction->position = $position;
+        $restoreAction->myPosition = $myPosition;
+        $restoreAction->myTeamMate = $myTeamMate;
         
-        $this->Clients->set( $position->value, $socket );
+        $this->Clients->set( $myPosition->value, $socket );
         $otherSockets = [];
         foreach ( $this->Clients->toArray() as $key => $client ) {
-            if ( $key !== $position->value ) {
+            if ( $key !== $myPosition->value ) {
                 $otherSockets[$key] = $client;
             }
         }
@@ -73,7 +75,7 @@ abstract class CardGameManager extends AbstractGameManager
         //Also send the state to the other clients in case it has made moves.
         foreach ( $otherSockets as $key => $otherSocket ) {
             if ( $otherSocket != null && $otherSocket->State == WebSocketState::Open ) {
-                $restoreAction->position = PlayerPosition::from( $key );
+                $restoreAction->myPosition = PlayerPosition::from( $key );
                 $this->Send( $otherSocket, $restoreAction );
             }
         }
@@ -90,15 +92,19 @@ abstract class CardGameManager extends AbstractGameManager
         $action->game = $gameDto;
         
         $action->myPosition = PlayerPosition::South;
+        $action->myTeamMate = PlayerPositionExtensions::GetTeammate( $action->myPosition );
         $this->Send( $this->Clients->get( PlayerPosition::South->value ), $action );
         
         $action->myPosition = PlayerPosition::East;
+        $action->myTeamMate = PlayerPositionExtensions::GetTeammate( $action->myPosition );
         $this->Send( $this->Clients->get( PlayerPosition::East->value ), $action );
         
         $action->myPosition = PlayerPosition::North;
+        $action->myTeamMate = PlayerPositionExtensions::GetTeammate( $action->myPosition );
         $this->Send( $this->Clients->get( PlayerPosition::North->value ), $action );
         
         $action->myPosition = PlayerPosition::West;
+        $action->myTeamMate = PlayerPositionExtensions::GetTeammate( $action->myPosition );
         $this->Send( $this->Clients->get( PlayerPosition::West->value ), $action );
         
         $this->startGameBidding();
@@ -111,6 +117,9 @@ abstract class CardGameManager extends AbstractGameManager
         $score = $this->Game->GetNewScore();
         $this->Game->CurrentPlayer = $this->Game->firstInRound;
         $this->Game->PlayState = GameState::roundEnded;
+        
+        $this->Game->DummyPlayer = PlayerPosition::Neither;
+        $this->Game->DummyOwner = PlayerPosition::Neither;
         
         $this->Game->southNorthPoints += $score->SouthNorthPoints;
         $this->Game->eastWestPoints += $score->EastWestPoints;
@@ -225,7 +234,6 @@ abstract class CardGameManager extends AbstractGameManager
                 
                 $this->Game->DummyPlayer    = $DummyPlayer;
                 $this->Game->DummyOwner     = $this->Game->CurrentContract->Player;
-                $this->Game->DummyFaceup    = true;
             }
             
             $this->Game->ThinkStart = new \DateTime( 'now' );
@@ -301,11 +309,10 @@ abstract class CardGameManager extends AbstractGameManager
     
     protected function NewTurn( WebsocketClientInterface $socket ): void
     {
-        /** $this->Game->DummyFaceup May be Uneeded */
         if (
             $this->Game->PlayState == GameState::playing &&
             $this->IsDummy() &&
-            ! $this->IsDummyAi() &&
+            ! $this->IsDummyOwnerAi() &&
             ! $this->Game->DummyFaceup
         ) {
             $this->logger->log( "This is Dummy Player !!!", 'GameManager' );
@@ -574,6 +581,9 @@ abstract class CardGameManager extends AbstractGameManager
     
     protected function SendWinner( CardGameTeam $team, ?RoundResult $newScore = null ): void
     {
+        $this->Game->DummyPlayer = PlayerPosition::Neither;
+        $this->Game->DummyOwner = PlayerPosition::Neither;
+        
         $game = Mapper::CardGameToDto( $this->Game );
         $game->winner = $team;
         $gameEndedAction = new GameEndedActionDto();

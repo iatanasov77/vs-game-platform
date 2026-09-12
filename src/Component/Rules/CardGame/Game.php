@@ -368,7 +368,21 @@ class Game implements GameInterface
     
     public function GetNewScore(): RoundResult
     {
-        return $this->bridgeBeloteRoundManager->GetScore(
+        switch ( $this->GameCode ) {
+            case GameVariant::BRIDGE_BELOTE_CODE:
+                $RoundManager = $this->bridgeBeloteRoundManager;
+                break;
+            case GameVariant::CONTRACT_BRIDGE_CODE:
+                $RoundManager = $this->contractBridgeRoundManager;
+                break;
+            case GameVariant::SVARA_CODE:
+                $RoundManager = $this->svaraRoundManager;
+                break;
+            default:
+                throw new \RuntimeException( 'Unknown Game Code !!!' );
+        }
+        
+        return $RoundManager->GetScore(
             $this->CurrentContract,
             $this->SouthNorthTricks,
             $this->EastWestTricks,

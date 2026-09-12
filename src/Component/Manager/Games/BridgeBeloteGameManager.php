@@ -115,6 +115,7 @@ class BridgeBeloteGameManager extends CardGameManager
                 $this->Game->roundNumber++;
                 $this->Game->trickNumber = 1;
                 $this->EndRound();
+                
                 return false;
             }
             

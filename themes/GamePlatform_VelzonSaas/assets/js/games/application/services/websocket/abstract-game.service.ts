@@ -101,6 +101,7 @@ export abstract class AbstractGameService
     onError( event: Event ): void
     {
         console.error( 'Error', { event } );
+        
         const cnn = this.appState.myConnection.getValue();
         this.appState.myConnection.setValue( { ...cnn, connected: false } );
         this.statusMessageService.setMyConnectionLost( '' );

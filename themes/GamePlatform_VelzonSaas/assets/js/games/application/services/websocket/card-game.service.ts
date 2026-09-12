@@ -85,6 +85,8 @@ export class CardGameService extends AbstractGameService
         this.socket.onerror     = this.onError.bind( this );
         this.socket.onopen      = this.onOpen.bind( this );
         this.socket.onclose     = this.onClose.bind( this );
+        
+        this.queryParamsService.playAi.setValue( playAi );
     }
     
     onOpen(): void

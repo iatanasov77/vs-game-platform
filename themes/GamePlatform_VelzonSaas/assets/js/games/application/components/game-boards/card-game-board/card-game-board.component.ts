@@ -3,6 +3,7 @@ import {
     Inject,
     EventEmitter,
     HostListener,
+    HostBinding,
     OnInit,
     AfterViewInit,
     OnDestroy,
@@ -80,14 +81,19 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
     @Input() public width: number = 710;
     @Input() public height: number = 510;
     @Input() game: CardGameDto | null = null;
+    
     @Input() rotated = false;
     @Input() flipped = false;
+    @Input() rotateCardGameUser?: PlayerPosition;
+    
     @Input() playerCards: Array<CardDto[]> | null = [];
     @Input() playerBids: BidDto[] = [];
     @Input() playerAnnounces: Array<AnnounceDto[]> | null = [];
     @Input() deck: CardDto[] = [];
     @Input() pile: CardDto[] = [];
     @Input() myPosition: PlayerPosition | null = PlayerPosition.south;
+    @Input() myTeamMate: PlayerPosition | null = PlayerPosition.north;
+    @Input() playAiFlag = false;
     @Input() themeName: string | null = 'card-game';
     @Input() timeLeft: number | null = 0;
     @Input() lobbyButtonsVisible: boolean = false;
@@ -95,6 +101,8 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
     @Output() playCard = new EventEmitter<CardDto>();
     @Output() dummyPlayCard = new EventEmitter<CardDto>();
     @Output() playCardAnimFinished = new EventEmitter<void>();
+    
+    @HostBinding( 'style.--rotatedCardTable' ) @Input() rotateAngle: string = '180deg';
     
     borderWidth = 0;
     cx: CanvasRenderingContext2D | null = null;
@@ -173,6 +181,13 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             this.initPlayerCards();
             this.initCardAreas();
         }
+        
+        /*  
+        if ( changes['rotateAngle'] ) {
+            alert( `Change Rotate Angle: ${changes['rotateAngle'].currentValue}` );
+            // this.rotatedCardTable = changes['rotateAngle'].currentValue;
+        }
+        */
         
         this.requestDraw();
     }
@@ -489,6 +504,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
         canvasEl.width = this.width;
         canvasEl.height = this.height;
+        
         const cx = this.cx;
         this.drawBoard( cx );
         

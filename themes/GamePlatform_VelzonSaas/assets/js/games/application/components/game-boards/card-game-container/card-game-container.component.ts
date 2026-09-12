@@ -90,6 +90,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     
     gameDto$: Observable<CardGameDto>;
     playerPosition$: Observable<PlayerPosition>;
+    playerTeamMate$: Observable<PlayerPosition>;
     message$: Observable<StatusMessage>;
     timeLeft$: Observable<number>;
     
@@ -110,8 +111,12 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     height: number = 510;
     started = false;
     messageCenter = -15;
+    
+    rotateAngle = '180deg';
     rotated = false;
     flipped = false;
+    rotateCardGameUser?: PlayerPosition;
+    
     gameId = "";
     playAiFlag = false;
     forGoldFlag = false;
@@ -124,8 +129,10 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     playWithComputerVisible = false;
     newVisible = false;
     exitVisible = true;
+    
     rotateVisible = false;
     flipVisible = false;
+    
     gameBiddingVisible = false;
     gameContractVisible = false;
     newRoundVisible = false;
@@ -177,6 +184,8 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         this.deckSubs = this.appStateService.deck.observe().subscribe( this.deckChanged.bind( this ) );
         this.pileSubs = this.appStateService.pile.observe().subscribe( this.pileChanged.bind( this ) );
         this.playerPosition$ = this.appStateService.myPosition.observe();
+        this.playerPosition$.subscribe( this.gotPlayerPosition.bind( this ) );
+        this.playerTeamMate$ = this.appStateService.myTeamMate.observe();
         
         this.gameSubs = this.appStateService.cardGame.observe().subscribe( this.gameChanged.bind( this ) );
         this.oponnetDoneSubs = this.appStateService.opponentDone.observe().subscribe( this.oponnentDone.bind( this ) );
@@ -322,6 +331,27 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         }, 11000 );
     }
     
+    gotPlayerPosition()
+    {
+        switch( this.appStateService.myPosition.getValue() ) {
+            case PlayerPosition.east:
+                this.rotateAngle = '90deg';
+                this.rotated = true;
+                
+                break;
+            case PlayerPosition.north:
+                this.rotateAngle = '180deg';
+                this.rotated = true;
+                
+                break;
+            case PlayerPosition.west:
+                this.rotateAngle = '270deg';
+                this.rotated = true;
+                
+                break;
+        }
+    }
+    
     doBid( bid: BidDto ): void
     {
         //alert( 'Make a BID !!!' );
@@ -370,6 +400,9 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     
     onRotated(): void
     {
+        // FOR DEBUGGING
+        this.rotateAngle = '270deg';
+        
         this.rotated = ! this.rotated;
         // both flipped and rotated is not supported
         if ( this.rotated ) {
@@ -462,6 +495,9 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         
         this.isPlayAi.emit( true );
         this.wsService.connect( '', true, this.forGoldFlag );
+        
+        this.initFlags();
+        // alert( `Plai AI State: ${this.playAiFlag}` );
     }
     
     keepWaiting(): void
@@ -486,7 +522,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     gameChanged( dto: CardGameDto ): void
     {
         this.clearGameSessionsVisible = ! context.isProduction && ! this.started && ! dto;
-        
+         
         if (
             ! this.started &&
             dto &&

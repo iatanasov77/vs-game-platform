@@ -603,24 +603,20 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     @HostListener( 'window:resize', ['$event'] )
     onResize(): void
     {
-        //const _innerWidth   = window.innerWidth;
         const _innerWidth   = $( '#GameBoardContainer' ).width();
-        //const _innerHeight   = window.innerHeight;
         const _innerHeight   = $( '#GameBoardContainer' ).height();
-        
-        //console.log( 'Window innerHeight', window.innerHeight );
-        //console.log( 'Container innerHeight', $( '#GameBoardContainer' ).height() );
         
         this.width = Math.min( _innerWidth, 1024 );
         const span = this.messages?.nativeElement as Element;
-        // console.log( span.getElementsByTagName( 'span' ) );
         const spanWidth = span.getElementsByTagName( 'span' )[0].clientWidth;
-        // alert( spanWidth );
         
         this.messageCenter = this.width / 2 - spanWidth / 2;
-        // alert( this.messageCenter );
         
+        // The Game Board is Rectangle Like Board Games
         this.height = Math.min( _innerHeight - 40, this.width * 0.6 );
+        
+        // The Game Board is Square
+        // this.height = this.width;
     }
     
     fireResize(): void

@@ -30,6 +30,7 @@ import { CardDto } from '@vankosoft/game-platform';
 import { BidDto } from '@vankosoft/game-platform';
 import { AnnounceDto } from '@vankosoft/game-platform';
 import { BridgeBeloteScoreDto } from '@vankosoft/game-platform';
+import { ContractBridgeScoreDto } from '@vankosoft/game-platform';
 
 // State
 import { StateObject } from './state-object';
@@ -83,6 +84,7 @@ export class AppStateService
     pile: StateObject<CardDto[]>;
     
     bridgeBeloteScore: StateObject<BridgeBeloteScoreDto>;
+    contractBridgeScore: StateObject<ContractBridgeScoreDto>;
     
     chessOpponentMove: StateObject<ChessMoveDto>;
     
@@ -146,6 +148,7 @@ export class AppStateService
         this.pile = new StateObject<CardDto[]>();
         this.pile.setValue( [] );
         this.bridgeBeloteScore = new StateObject<BridgeBeloteScoreDto>();
+        this.contractBridgeScore = new StateObject<ContractBridgeScoreDto>();
         
         this.chessOpponentMove = new StateObject<ChessMoveDto>();
         

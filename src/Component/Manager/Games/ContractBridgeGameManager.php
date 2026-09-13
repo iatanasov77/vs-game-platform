@@ -33,9 +33,11 @@ use App\Component\Type\CardGameTeam;
 use App\Component\Type\ContractBridgeCardType;
 
 // DTO Actions
+use App\Component\Dto\Mapper;
 use App\Component\Dto\Actions\BidMadeActionDto;
 use App\Component\Dto\Actions\PlayCardActionDto;
 use App\Component\Dto\Actions\DummyFaceupActionDto;
+use App\Component\Dto\Actions\RoundEndedActionDto;
 
 /**
  * ContractBridgeGame Engine in Phython: https://github.com/lorserker/ben
@@ -282,5 +284,32 @@ class ContractBridgeGameManager extends CardGameManager
         }
         
         return $firstToPlay;
+    }
+    
+    protected function RoundEndedAction(): RoundEndedActionDto
+    {
+        $score = $this->Game->GetNewScore();
+        
+        $action = new RoundEndedActionDto();
+        $action->game = Mapper::CardGameToDto( $this->Game );
+        
+        $newScore = Mapper::ContractBridgeRoundResultToDto( $score );
+        $newScore->contract = Mapper::BidToDto( $this->Game->CurrentContract );
+        $action->newScore = $newScore;
+        
+        // Debug Tricks
+        $action->SouthNorthTricks = $this->Game->SouthNorthTricks->map(
+            function( $entry ) {
+                return Mapper::CardToDto( $entry, $this->Game->GameCode );
+            }
+        )->toArray();
+        
+        $action->EastWestTricks = $this->Game->EastWestTricks->map(
+            function( $entry ) {
+                return Mapper::CardToDto( $entry, $this->Game->GameCode );
+            }
+        )->toArray();
+        
+        return $action;
     }
 }

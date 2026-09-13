@@ -1,9 +1,7 @@
 <?php namespace App\Component\Dto;
 
-class BridgeBeloteScoreDto
+class BridgeBeloteScoreDto extends ScoreDto
 {
-    public ?BidDto $contract;
-    
     public int $SouthNorthPoints;
     
     public int $SouthNorthTotalInRoundPoints;

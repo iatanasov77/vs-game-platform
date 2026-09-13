@@ -200,7 +200,7 @@ export class CardGameService extends AbstractGameService
             }
             case ActionNames.playingStarted: {
                 const playingStartedAction = JSON.parse( message.data ) as PlayingStartedActionDto;
-                // console.log( 'Playing Started Action', playingStartedAction );
+                console.log( 'Playing Started Action', playingStartedAction );
                 
                 // alert( `Playing Started -> Contract Owner: ${playingStartedAction.contract.Player}` );
                 // alert( `Playing Started -> First To Play: ${playingStartedAction.firstToPlay}` );

@@ -22,7 +22,8 @@ use App\Component\Rules\CardGame\Card;
 use App\Component\Rules\CardGame\Bid;
 use App\Component\Rules\CardGame\Announce;
 use App\Component\Rules\CardGame\CardExtensions;
-use App\Component\Rules\CardGame\BridgeBeloteGameMechanics\RoundResult;
+use App\Component\Rules\CardGame\BridgeBeloteGameMechanics\RoundResult as BridgeBeloteRoundResult;
+use App\Component\Rules\CardGame\ContractBridgeGameMechanics\RoundResult as ContractBridgeRoundResult;
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\BidTrump;
 
@@ -299,7 +300,7 @@ final class Mapper
         return $announceDto;
     }
     
-    public static function RoundResultToDto( RoundResult $score ): BridgeBeloteScoreDto
+    public static function BridgeBeloteRoundResultToDto( BridgeBeloteRoundResult $score ): BridgeBeloteScoreDto
     {
         $scoreDto = new BridgeBeloteScoreDto();
         
@@ -307,6 +308,13 @@ final class Mapper
         $scoreDto->SouthNorthTotalInRoundPoints = $score->SouthNorthTotalInRoundPoints;
         $scoreDto->EastWestPoints = $score->EastWestPoints;
         $scoreDto->EastWestTotalInRoundPoints = $score->EastWestTotalInRoundPoints;
+        
+        return $scoreDto;
+    }
+    
+    public static function ContractBridgeRoundResultToDto( ContractBridgeRoundResult $score ): ContractBridgeScoreDto
+    {
+        $scoreDto = new ContractBridgeScoreDto();
         
         return $scoreDto;
     }

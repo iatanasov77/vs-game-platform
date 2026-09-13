@@ -81,6 +81,7 @@ export class AppStateService
     playerAnnounces: StateObject<Array<AnnounceDto[]>>;
     deck: StateObject<CardDto[]>;
     pile: StateObject<CardDto[]>;
+    
     bridgeBeloteScore: StateObject<BridgeBeloteScoreDto>;
     
     chessOpponentMove: StateObject<ChessMoveDto>;

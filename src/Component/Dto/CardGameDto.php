@@ -22,8 +22,6 @@ class CardGameDto extends GameDto
     public int $RoundNumber;
     public int $TrickNumber;
     
-    public int $SouthNorthPoints;
-    public int $EastWestPoints;
     public CardGameTeam $winner = CardGameTeam::Neither;
     
     public Collection $MyCards;

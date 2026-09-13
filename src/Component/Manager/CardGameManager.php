@@ -114,37 +114,13 @@ abstract class CardGameManager extends AbstractGameManager
     {
         $this->logger->log( "Card_Game_Round_Ended !!!", 'GameManager' );
         
-        $score = $this->Game->GetNewScore();
         $this->Game->CurrentPlayer = $this->Game->firstInRound;
         $this->Game->PlayState = GameState::roundEnded;
         
         $this->Game->DummyPlayer = PlayerPosition::Neither;
         $this->Game->DummyOwner = PlayerPosition::Neither;
         
-        $this->Game->southNorthPoints += $score->SouthNorthPoints;
-        $this->Game->eastWestPoints += $score->EastWestPoints;
-        $this->Game->hangingPoints = $score->HangingPoints;
-        
-        $action = new RoundEndedActionDto();
-        $action->game = Mapper::CardGameToDto( $this->Game );
-        
-        $newScore = Mapper::RoundResultToDto( $score );
-        $newScore->contract = Mapper::BidToDto( $this->Game->CurrentContract );
-        $action->newScore = $newScore;
-        
-        // Debug Tricks
-        $action->SouthNorthTricks = $this->Game->SouthNorthTricks->map(
-            function( $entry ) {
-                return Mapper::CardToDto( $entry, $this->Game->GameCode );
-            }
-        )->toArray();
-        
-        $action->EastWestTricks = $this->Game->EastWestTricks->map(
-            function( $entry ) {
-                return Mapper::CardToDto( $entry, $this->Game->GameCode );
-            }
-        )->toArray();
-        
+        $action = $this->RoundEndedAction();
         $this->Send( $this->Clients->get( PlayerPosition::South->value ), $action );
         $this->Send( $this->Clients->get( PlayerPosition::East->value ), $action );
         $this->Send( $this->Clients->get( PlayerPosition::North->value ), $action );
@@ -700,6 +676,8 @@ abstract class CardGameManager extends AbstractGameManager
     abstract protected function GetWinner(): ?CardGameTeam;
     
     abstract protected function FirstToPlay(): PlayerPosition;
+    
+    abstract protected function RoundEndedAction(): RoundEndedActionDto;
     
     private function CreateTempPlayer( int $playerId, PlayerPosition $playerPosition ): TempPlayer
     {

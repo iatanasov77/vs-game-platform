@@ -37,6 +37,7 @@ use App\Component\Dto\Mapper;
 use App\Component\Dto\Actions\BidMadeActionDto;
 use App\Component\Dto\Actions\PlayCardActionDto;
 use App\Component\Dto\Actions\AnnounceMadeActionDto;
+use App\Component\Dto\Actions\RoundEndedActionDto;
 
 class BridgeBeloteGameManager extends CardGameManager
 {
@@ -261,5 +262,36 @@ class BridgeBeloteGameManager extends CardGameManager
     protected function FirstToPlay(): PlayerPosition
     {
         return $this->Game->firstInRound;
+    }
+    
+    protected function RoundEndedAction(): RoundEndedActionDto
+    {
+        $score = $this->Game->GetNewScore();
+        
+        $this->Game->southNorthPoints += $score->SouthNorthPoints;
+        $this->Game->eastWestPoints += $score->EastWestPoints;
+        $this->Game->hangingPoints = $score->HangingPoints;
+        
+        $action = new RoundEndedActionDto();
+        $action->game = Mapper::CardGameToDto( $this->Game );
+        
+        $newScore = Mapper::BridgeBeloteRoundResultToDto( $score );
+        $newScore->contract = Mapper::BidToDto( $this->Game->CurrentContract );
+        $action->newScore = $newScore;
+        
+        // Debug Tricks
+        $action->SouthNorthTricks = $this->Game->SouthNorthTricks->map(
+            function( $entry ) {
+                return Mapper::CardToDto( $entry, $this->Game->GameCode );
+            }
+        )->toArray();
+        
+        $action->EastWestTricks = $this->Game->EastWestTricks->map(
+            function( $entry ) {
+                return Mapper::CardToDto( $entry, $this->Game->GameCode );
+            }
+        )->toArray();
+        
+        return $action;
     }
 }

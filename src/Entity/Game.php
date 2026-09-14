@@ -10,10 +10,6 @@ use Sylius\Component\Resource\Model\ToggleableTrait;
 use Vankosoft\CmsBundle\Model\FileInterface;
 use App\Entity\Application\Translation;
 
-/**
- * @Doctrine\Common\Annotations\Annotation\IgnoreAnnotation( "ORM\MappedSuperclass" )
- * @Doctrine\Common\Annotations\Annotation\IgnoreAnnotation("ORM\Column")
- */
 #[ORM\Entity]
 #[ORM\Table(name: "VSGP_Games")]
 #[Gedmo\TranslationEntity(class: Translation::class)]

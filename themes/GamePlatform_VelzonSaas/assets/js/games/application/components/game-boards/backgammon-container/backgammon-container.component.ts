@@ -511,21 +511,28 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
         
         const dices = this.dices?.nativeElement as HTMLElement;
         if ( dices ) {
+            // let leftIndex = 20;
+            let leftIndex = -40;
+            
+            // let rightIndex = 20;
+            let rightIndex = 70;
+            
             // Puts the dices on right side if its my turn.
             if ( this.myTurn() ) {
-                dices.style.left = `${this.width / 2 + 20}px`;
+                dices.style.left = `${this.width / 2 + leftIndex}px`;
                 dices.style.right = '';
             } else {
-                dices.style.right = `${this.width / 2 + 20}px`;
+                dices.style.right = `${this.width / 2 + rightIndex}px`;
                 dices.style.left = '';
                 //alert( dices.style.right );
             }
-            
             let dicesTop  = this.height / 2 - btnsOffset - 10;
+            
             // My Workaround
             if ( $( 'canvas.game-board' ).hasClass( 'flipped' ) ) {
                 dicesTop  = dicesTop - 15;
             }
+            
             dices.style.top = `${dicesTop}px`;
         }
     }

@@ -12,9 +12,10 @@ class GameRestoreActionDto extends ActionDto
     }
     
     public GameDto $game;
+    public ?PlayerColor $myColor;
     
-    public PlayerColor $color;
-    public PlayerPosition $position;
+    public ?PlayerPosition $myPosition;
+    public ?PlayerPosition $myTeamMate;
     
     public array $dices; // DiceDto[]
 }

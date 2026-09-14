@@ -1,3 +1,19 @@
+1.2.2	|	Release date: **14.09.2026**
+============================================
+* New Features:
+  - Some Code Cleaning.
+  - Fix Game Managers When Create DB Game.
+  - Improve Contract Bridge Bidding.
+  - Add Card Game TeamMate into State.
+  - Card Game Board Rotate Current User.
+  - Create a Sore Manager for Contract Bridge.
+  - Improve Contract Bridge Bidding and Scoring.
+  - Create a Contract Bridge Statistics Component.
+  - Some Improvements.
+  - Fix GameRooms Side Bar Component.
+  - Improve Backgamon Dices Styling.
+
+
 1.2.1	|	Release date: **09.09.2026**
 ============================================
 * New Features:

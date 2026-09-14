@@ -11,6 +11,7 @@ import { GameRoomsComponent } from './game-rooms/game-rooms.component';
 import { GamePlayersComponent } from './game-players/game-players.component';
 import { GameStatisticsComponent } from './game-statistics/game-statistics.component';
 import { BridgeBeloteStatisticsComponent } from './bridge-belote-statistics/bridge-belote-statistics.component';
+import { ContractBridgeStatisticsComponent } from './contract-bridge-statistics/contract-bridge-statistics.component';
 
 @NgModule({
     declarations: [
@@ -18,7 +19,8 @@ import { BridgeBeloteStatisticsComponent } from './bridge-belote-statistics/brid
         GameRoomsComponent,
         GamePlayersComponent,
         GameStatisticsComponent,
-        BridgeBeloteStatisticsComponent
+        BridgeBeloteStatisticsComponent,
+        ContractBridgeStatisticsComponent
     ],
     imports: [
         CommonModule,
@@ -33,7 +35,8 @@ import { BridgeBeloteStatisticsComponent } from './bridge-belote-statistics/brid
         GameRoomsComponent,
         GamePlayersComponent,
         GameStatisticsComponent,
-        BridgeBeloteStatisticsComponent
+        BridgeBeloteStatisticsComponent,
+        ContractBridgeStatisticsComponent
     ]
 })
 export class SideBarsModule { }

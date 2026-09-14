@@ -3,6 +3,7 @@ import {
     Inject,
     EventEmitter,
     HostListener,
+    HostBinding,
     OnInit,
     AfterViewInit,
     OnDestroy,
@@ -80,16 +81,19 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
     @Input() public width: number = 710;
     @Input() public height: number = 510;
     @Input() game: CardGameDto | null = null;
+    
     @Input() rotated = false;
     @Input() flipped = false;
+    @Input() rotateCardGameUser?: PlayerPosition;
+    
     @Input() playerCards: Array<CardDto[]> | null = [];
     @Input() playerBids: BidDto[] = [];
     @Input() playerAnnounces: Array<AnnounceDto[]> | null = [];
     @Input() deck: CardDto[] = [];
     @Input() pile: CardDto[] = [];
     @Input() myPosition: PlayerPosition | null = PlayerPosition.south;
-    @Input() dummyPlayer: PlayerPosition | null = PlayerPosition.neither;
-    @Input() dummyOwner: PlayerPosition | null = PlayerPosition.neither;
+    @Input() myTeamMate: PlayerPosition | null = PlayerPosition.north;
+    @Input() playAiFlag = false;
     @Input() themeName: string | null = 'card-game';
     @Input() timeLeft: number | null = 0;
     @Input() lobbyButtonsVisible: boolean = false;
@@ -97,6 +101,8 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
     @Output() playCard = new EventEmitter<CardDto>();
     @Output() dummyPlayCard = new EventEmitter<CardDto>();
     @Output() playCardAnimFinished = new EventEmitter<void>();
+    
+    @HostBinding( 'style.--rotatedCardTable' ) @Input() rotateAngle: string = '180deg';
     
     borderWidth = 0;
     cx: CanvasRenderingContext2D | null = null;
@@ -176,6 +182,13 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             this.initCardAreas();
         }
         
+        /*  
+        if ( changes['rotateAngle'] ) {
+            alert( `Change Rotate Angle: ${changes['rotateAngle'].currentValue}` );
+            // this.rotatedCardTable = changes['rotateAngle'].currentValue;
+        }
+        */
+        
         this.requestDraw();
     }
     
@@ -237,7 +250,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             return false;
         }
         
-        if ( this.myPosition == this.dummyOwner ) {
+        if ( this.myPosition == this.game.DummyOwner ) {
             return true;
         }
         
@@ -325,16 +338,13 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         // console.log( 'Valid Cards', this.game.validCards );
         // console.log( 'Card Areas', this.cardAreas );
         
-        // THIS IS WRONG WAY. SHOULD GENERATE VALID CARDS FOR DUMMY PLAYER IN BACKEND
-        var isDummy = Boolean( window.gamePlatformSettings.debugDummyPlayerCards && this.dummyPlayer && this.game.currentPlayer == this.dummyPlayer );
-        
         // resetting all
         this.cardAreas.forEach( ( rect ) => {
             rect.hasValidCard = false;
-            rect.canBePlayed = isDummy;
+            //rect.canBePlayed = openCard;
         });
         
-        this.cxCursor = isDummy ? 'pointer' : 'default';
+        //this.cxCursor = openCard ? 'pointer' : 'default';
         for ( let i = 0; i < this.cardAreas.length; i++ ) {
             const rect = this.cardAreas[i];
             if ( ! rect.contains( clientX, clientY ) ) {
@@ -435,8 +445,8 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             }
             
             if ( card ) {
-                var isDummy = Boolean( this.dummyPlayer && this.game.currentPlayer == this.dummyPlayer );
-                if ( isDummy ) {
+                var openCard = Boolean( this.game.DummyPlayer && this.game.currentPlayer == this.game.DummyPlayer );
+                if ( openCard ) {
                     this.dummyPlayCard.emit( { ...card, animate: isClick } );
                 } else {
                     this.playCard.emit( { ...card, animate: isClick } );
@@ -494,6 +504,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
         canvasEl.width = this.width;
         canvasEl.height = this.height;
+        
         const cx = this.cx;
         this.drawBoard( cx );
         
@@ -689,7 +700,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
             
             var cardImagesPath = this.cardImagesPath( this.game.gameCode );
             var cardBack = this.cardBack( this.game.gameCode );
-            var isDummy = Boolean( this.dummyPlayer && playerPosition == this.dummyPlayer );
+            var openCard = Boolean( this.game.DummyPlayer && playerPosition == this.game.DummyPlayer );
             
             Card.draw(
                 this.cx,
@@ -702,7 +713,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
                 angle,
                 this.theme,
                 playerPosition,
-                isDummy,
+                openCard,
                 highLight,
                 window.gamePlatformSettings.debugCardGamePlayerCards
             );
@@ -1108,7 +1119,7 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
     cardBack( gameCode: string ): string
     {
         let cardImagesPath = this.cardImagesPath( gameCode );
-        switch (gameCode ) {
+        switch ( gameCode ) {
             case GameVariant.BRIDGE_BELOTE_CODE:
                 return `${cardImagesPath}/back.png`;
                 break;

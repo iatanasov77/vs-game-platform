@@ -37,6 +37,7 @@ use App\Component\Dto\Mapper;
 use App\Component\Dto\Actions\BidMadeActionDto;
 use App\Component\Dto\Actions\PlayCardActionDto;
 use App\Component\Dto\Actions\AnnounceMadeActionDto;
+use App\Component\Dto\Actions\RoundEndedActionDto;
 
 class SvaraGameManager extends CardGameManager
 {
@@ -97,6 +98,7 @@ class SvaraGameManager extends CardGameManager
                 $this->Game->roundNumber++;
                 $this->Game->trickNumber = 1;
                 $this->EndRound();
+                
                 return false;
             }
             
@@ -149,5 +151,15 @@ class SvaraGameManager extends CardGameManager
     protected function FirstToPlay(): PlayerPosition
     {
         return $this->Game->firstInRound;
+    }
+    
+    protected function RoundEndedAction(): RoundEndedActionDto
+    {
+        $score = $this->Game->GetNewScore();
+        
+        $action = new RoundEndedActionDto();
+        $action->game = Mapper::CardGameToDto( $this->Game );
+                
+        return $action;
     }
 }

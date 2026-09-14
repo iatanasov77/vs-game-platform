@@ -84,10 +84,10 @@ class Game implements GameInterface
     public $CurrentPlayer;
     
     /** @var PlayerPosition */
-    public $DummyPlayer;
+    public $DummyPlayer = PlayerPosition::Neither;
     
     /** @var PlayerPosition */
-    public $DummyOwner;
+    public $DummyOwner = PlayerPosition::Neither;
     
     /** @var bool */
     public $DummyFaceup = false;
@@ -347,6 +347,7 @@ class Game implements GameInterface
                 break;
             case GameVariant::CONTRACT_BRIDGE_CODE:
                 $this->contractBridgeRoundManager->AddTrickAction( $action );
+                break;
             case GameVariant::SVARA_CODE:
                 $this->svaraRoundManager->AddTrickAction( $action );
                 break;
@@ -367,7 +368,21 @@ class Game implements GameInterface
     
     public function GetNewScore(): RoundResult
     {
-        return $this->bridgeBeloteRoundManager->GetScore(
+        switch ( $this->GameCode ) {
+            case GameVariant::BRIDGE_BELOTE_CODE:
+                $RoundManager = $this->bridgeBeloteRoundManager;
+                break;
+            case GameVariant::CONTRACT_BRIDGE_CODE:
+                $RoundManager = $this->contractBridgeRoundManager;
+                break;
+            case GameVariant::SVARA_CODE:
+                $RoundManager = $this->svaraRoundManager;
+                break;
+            default:
+                throw new \RuntimeException( 'Unknown Game Code !!!' );
+        }
+        
+        return $RoundManager->GetScore(
             $this->CurrentContract,
             $this->SouthNorthTricks,
             $this->EastWestTricks,

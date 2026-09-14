@@ -180,6 +180,8 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         }
         $socket->State  = WebSocketState::Closed;
         
+        //$gameManager->RemoveDbGame();
+        
         /** @var int $sequenceId */
         $sequenceId = $this->clients[$conn];
         $this->clients->detach( $conn );

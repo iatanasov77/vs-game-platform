@@ -13,5 +13,7 @@ class GameCreatedActionDto extends ActionDto
     
     public GameDto $game;
     public ?PlayerColor $myColor;
+    
     public ?PlayerPosition $myPosition;
+    public ?PlayerPosition $myTeamMate;
 }

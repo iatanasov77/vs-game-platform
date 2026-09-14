@@ -52,9 +52,7 @@ class RoundManager
         
         $this->contractManager = new ContractManager( $this->game, $this->logger );
         $this->tricksManager = new TricksManager( $this->game, $this->logger );
-        /*  
         $this->scoreManager = new ScoreManager( $this->game, $this->logger );
-        */
         
         $this->game->Deck = new Deck( $this->game->GameCode );
         $this->game->playerCards = new ArrayCollection();

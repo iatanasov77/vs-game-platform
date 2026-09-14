@@ -1,10 +1,6 @@
-/* Should be Made it Responsive 
 .game-container {
-    margin-right: 100px !important;
-    margin-left: 100px !important;
-    max-width: 1320px !important;
+    display: block !important;
 }
-*/
 
 *,
 *::before,

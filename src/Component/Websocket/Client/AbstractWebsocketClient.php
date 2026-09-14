@@ -36,13 +36,13 @@ abstract class AbstractWebsocketClient implements WebsocketClientInterface
         $this->State        = WebSocketState::None;
     }
     
-    public function getClientId(): mixed
-    {
-        return $this->clientId;
-    }
-    
     public function close( int $code ): void
     {
         
+    }
+    
+    public function getClientId(): mixed
+    {
+        return $this->clientId;
     }
 }

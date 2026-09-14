@@ -58,6 +58,25 @@ class ContractManager
         $this->game->ConsecutivePasses = $bid->Trump->has( BidTrump::Pass ) ? ++$this->game->ConsecutivePasses : 0;
         $this->game->AvailableBids = $this->GetAvailableBids( $this->game->CurrentContract, $nextPlayer );
         //$this->logger->log( 'AvailableBids: ' . \print_r( $this->game->AvailableBids->toArray(), true ), 'ContractManager' );
+        
+        $this->SetContractOwner();
+    }
+    
+    private function SetContractOwner(): void
+    {
+        if ( ! $this->game->CurrentContract ) {
+            return;
+        }
+        
+        $bidsWithTrump = $this->game->BidHistory->filter(
+            function( $entry ) {
+                return $this->game->CurrentContract->Trump == $entry->Trump;
+            }
+        );
+        $this->logger->log( 'bidsWithTrump: ' . \print_r( $bidsWithTrump->toArray(), true ), 'ContractManager' );
+        
+        $firstBid = $bidsWithTrump->first();
+        $this->game->CurrentContract->BidOwner = $firstBid ? $firstBid->Player : null;
     }
     
     private function GetAvailableBids( ?Bid $currentContract, PlayerPosition $currentPlayer ): Collection

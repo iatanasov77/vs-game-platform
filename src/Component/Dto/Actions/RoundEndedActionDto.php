@@ -1,7 +1,7 @@
 <?php namespace App\Component\Dto\Actions;
 
 use App\Component\Dto\GameDto;
-use App\Component\Dto\BridgeBeloteScoreDto;
+use App\Component\Dto\ScoreDto;
 
 class RoundEndedActionDto extends ActionDto
 {
@@ -11,7 +11,7 @@ class RoundEndedActionDto extends ActionDto
     }
     
     public GameDto $game;
-    public BridgeBeloteScoreDto $newScore;
+    public ScoreDto $newScore;
     
     // Debug Tricks
     public array $SouthNorthTricks;

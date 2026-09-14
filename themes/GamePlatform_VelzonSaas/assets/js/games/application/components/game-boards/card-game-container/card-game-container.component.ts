@@ -90,8 +90,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     
     gameDto$: Observable<CardGameDto>;
     playerPosition$: Observable<PlayerPosition>;
-    dummyPlayer$: Observable<PlayerPosition>;
-    dummyOwner$: Observable<PlayerPosition>;
+    playerTeamMate$: Observable<PlayerPosition>;
     message$: Observable<StatusMessage>;
     timeLeft$: Observable<number>;
     
@@ -112,8 +111,12 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     height: number = 510;
     started = false;
     messageCenter = -15;
+    
+    rotateAngle = '180deg';
     rotated = false;
     flipped = false;
+    rotateCardGameUser?: PlayerPosition;
+    
     gameId = "";
     playAiFlag = false;
     forGoldFlag = false;
@@ -126,8 +129,10 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     playWithComputerVisible = false;
     newVisible = false;
     exitVisible = true;
+    
     rotateVisible = false;
     flipVisible = false;
+    
     gameBiddingVisible = false;
     gameContractVisible = false;
     newRoundVisible = false;
@@ -179,8 +184,8 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         this.deckSubs = this.appStateService.deck.observe().subscribe( this.deckChanged.bind( this ) );
         this.pileSubs = this.appStateService.pile.observe().subscribe( this.pileChanged.bind( this ) );
         this.playerPosition$ = this.appStateService.myPosition.observe();
-        this.dummyPlayer$ = this.appStateService.dummyPlayer.observe();
-        this.dummyOwner$ = this.appStateService.dummyOwner.observe();
+        this.playerPosition$.subscribe( this.gotPlayerPosition.bind( this ) );
+        this.playerTeamMate$ = this.appStateService.myTeamMate.observe();
         
         this.gameSubs = this.appStateService.cardGame.observe().subscribe( this.gameChanged.bind( this ) );
         this.oponnetDoneSubs = this.appStateService.opponentDone.observe().subscribe( this.oponnentDone.bind( this ) );
@@ -245,8 +250,6 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         clearTimeout( this.startedHandle );
         this.appStateService.cardGame.clearValue();
         this.appStateService.myPosition.clearValue();
-        this.appStateService.dummyPlayer.clearValue();
-        this.appStateService.dummyOwner.clearValue();
         this.appStateService.messages.clearValue();
         this.appStateService.moveTimer.clearValue();
         this.started = false;
@@ -328,6 +331,27 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         }, 11000 );
     }
     
+    gotPlayerPosition()
+    {
+        switch( this.appStateService.myPosition.getValue() ) {
+            case PlayerPosition.east:
+                this.rotateAngle = '90deg';
+                this.rotated = true;
+                
+                break;
+            case PlayerPosition.north:
+                this.rotateAngle = '180deg';
+                this.rotated = true;
+                
+                break;
+            case PlayerPosition.west:
+                this.rotateAngle = '270deg';
+                this.rotated = true;
+                
+                break;
+        }
+    }
+    
     doBid( bid: BidDto ): void
     {
         //alert( 'Make a BID !!!' );
@@ -376,6 +400,9 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     
     onRotated(): void
     {
+        // FOR DEBUGGING
+        this.rotateAngle = '270deg';
+        
         this.rotated = ! this.rotated;
         // both flipped and rotated is not supported
         if ( this.rotated ) {
@@ -468,6 +495,9 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         
         this.isPlayAi.emit( true );
         this.wsService.connect( '', true, this.forGoldFlag );
+        
+        this.initFlags();
+        // alert( `Plai AI State: ${this.playAiFlag}` );
     }
     
     keepWaiting(): void
@@ -492,7 +522,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     gameChanged( dto: CardGameDto ): void
     {
         this.clearGameSessionsVisible = ! context.isProduction && ! this.started && ! dto;
-        
+         
         if (
             ! this.started &&
             dto &&
@@ -507,7 +537,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         }
         
         if ( dto && dto.playState === GameState.playing ) {
-            //alert( 'Game Playing Started !!!' );
+            // alert( `Game Playing Started - Dummy Player: ${dto.DummyPlayer}` );
             
             this.contract = dto.contract;
             this.playerBidsDto = [];
@@ -573,24 +603,20 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     @HostListener( 'window:resize', ['$event'] )
     onResize(): void
     {
-        //const _innerWidth   = window.innerWidth;
         const _innerWidth   = $( '#GameBoardContainer' ).width();
-        //const _innerHeight   = window.innerHeight;
         const _innerHeight   = $( '#GameBoardContainer' ).height();
-        
-        //console.log( 'Window innerHeight', window.innerHeight );
-        //console.log( 'Container innerHeight', $( '#GameBoardContainer' ).height() );
         
         this.width = Math.min( _innerWidth, 1024 );
         const span = this.messages?.nativeElement as Element;
-        // console.log( span.getElementsByTagName( 'span' ) );
         const spanWidth = span.getElementsByTagName( 'span' )[0].clientWidth;
-        // alert( spanWidth );
         
         this.messageCenter = this.width / 2 - spanWidth / 2;
-        // alert( this.messageCenter );
         
+        // The Game Board is Rectangle Like Board Games
         this.height = Math.min( _innerHeight - 40, this.width * 0.6 );
+        
+        // The Game Board is Square
+        // this.height = this.width;
     }
     
     fireResize(): void

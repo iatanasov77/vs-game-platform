@@ -195,6 +195,16 @@ abstract class AbstractGameManager implements GameManagerInterface
         $this->eventDispatcher->dispatch( new GameEndedEvent( $this ), GameEndedEvent::NAME );
     }
     
+    public function RemoveDbGame(): void
+    {
+        $game   = $this->gamePlayFactory->findOneBy(['guid' => $this->Game->Id]);
+        if ( $game ) {
+            $em = $this->doctrine->getManager();
+            $em->delete( $game );
+            $em->flush();
+        }
+    }
+    
     public function Send( ?WebsocketClientInterface $socket, object $obj ): void
     {
         //$this->logger->log( 'Game ' . print_r( $obj, true ), 'GameManager' );

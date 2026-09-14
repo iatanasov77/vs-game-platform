@@ -53,17 +53,19 @@ abstract class CardGameManager extends AbstractGameManager
 {
     public function Restore( int $playerPositionId, WebsocketClientInterface $socket ): void
     {
-        $position = PlayerPosition::from( $playerPositionId );
+        $myPosition = PlayerPosition::from( $playerPositionId );
+        $myTeamMate = PlayerPositionExtensions::GetTeammate( $myPosition );
         
         $gameDto = Mapper::CardGameToDto( $this->Game );
         $restoreAction = new GameRestoreActionDto();
         $restoreAction->game = $gameDto;
-        $restoreAction->position = $position;
+        $restoreAction->myPosition = $myPosition;
+        $restoreAction->myTeamMate = $myTeamMate;
         
-        $this->Clients->set( $position->value, $socket );
+        $this->Clients->set( $myPosition->value, $socket );
         $otherSockets = [];
         foreach ( $this->Clients->toArray() as $key => $client ) {
-            if ( $key !== $position->value ) {
+            if ( $key !== $myPosition->value ) {
                 $otherSockets[$key] = $client;
             }
         }
@@ -73,7 +75,7 @@ abstract class CardGameManager extends AbstractGameManager
         //Also send the state to the other clients in case it has made moves.
         foreach ( $otherSockets as $key => $otherSocket ) {
             if ( $otherSocket != null && $otherSocket->State == WebSocketState::Open ) {
-                $restoreAction->position = PlayerPosition::from( $key );
+                $restoreAction->myPosition = PlayerPosition::from( $key );
                 $this->Send( $otherSocket, $restoreAction );
             }
         }
@@ -90,15 +92,19 @@ abstract class CardGameManager extends AbstractGameManager
         $action->game = $gameDto;
         
         $action->myPosition = PlayerPosition::South;
+        $action->myTeamMate = PlayerPositionExtensions::GetTeammate( $action->myPosition );
         $this->Send( $this->Clients->get( PlayerPosition::South->value ), $action );
         
         $action->myPosition = PlayerPosition::East;
+        $action->myTeamMate = PlayerPositionExtensions::GetTeammate( $action->myPosition );
         $this->Send( $this->Clients->get( PlayerPosition::East->value ), $action );
         
         $action->myPosition = PlayerPosition::North;
+        $action->myTeamMate = PlayerPositionExtensions::GetTeammate( $action->myPosition );
         $this->Send( $this->Clients->get( PlayerPosition::North->value ), $action );
         
         $action->myPosition = PlayerPosition::West;
+        $action->myTeamMate = PlayerPositionExtensions::GetTeammate( $action->myPosition );
         $this->Send( $this->Clients->get( PlayerPosition::West->value ), $action );
         
         $this->startGameBidding();
@@ -108,34 +114,13 @@ abstract class CardGameManager extends AbstractGameManager
     {
         $this->logger->log( "Card_Game_Round_Ended !!!", 'GameManager' );
         
-        $score = $this->Game->GetNewScore();
         $this->Game->CurrentPlayer = $this->Game->firstInRound;
         $this->Game->PlayState = GameState::roundEnded;
         
-        $this->Game->southNorthPoints += $score->SouthNorthPoints;
-        $this->Game->eastWestPoints += $score->EastWestPoints;
-        $this->Game->hangingPoints = $score->HangingPoints;
+        $this->Game->DummyPlayer = PlayerPosition::Neither;
+        $this->Game->DummyOwner = PlayerPosition::Neither;
         
-        $action = new RoundEndedActionDto();
-        $action->game = Mapper::CardGameToDto( $this->Game );
-        
-        $newScore = Mapper::RoundResultToDto( $score );
-        $newScore->contract = Mapper::BidToDto( $this->Game->CurrentContract );
-        $action->newScore = $newScore;
-        
-        // Debug Tricks
-        $action->SouthNorthTricks = $this->Game->SouthNorthTricks->map(
-            function( $entry ) {
-                return Mapper::CardToDto( $entry, $this->Game->GameCode );
-            }
-        )->toArray();
-        
-        $action->EastWestTricks = $this->Game->EastWestTricks->map(
-            function( $entry ) {
-                return Mapper::CardToDto( $entry, $this->Game->GameCode );
-            }
-        )->toArray();
-        
+        $action = $this->RoundEndedAction();
         $this->Send( $this->Clients->get( PlayerPosition::South->value ), $action );
         $this->Send( $this->Clients->get( PlayerPosition::East->value ), $action );
         $this->Send( $this->Clients->get( PlayerPosition::North->value ), $action );
@@ -225,7 +210,6 @@ abstract class CardGameManager extends AbstractGameManager
                 
                 $this->Game->DummyPlayer    = $DummyPlayer;
                 $this->Game->DummyOwner     = $this->Game->CurrentContract->Player;
-                $this->Game->DummyFaceup    = true;
             }
             
             $this->Game->ThinkStart = new \DateTime( 'now' );
@@ -265,10 +249,12 @@ abstract class CardGameManager extends AbstractGameManager
     protected function CreateDbGame(): void
     {
         try {
-            $southPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::South->value]->Id, PlayerPosition::South->value );
-            $eastPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::East->value]->Id, PlayerPosition::East->value );
-            $northPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::North->value]->Id, PlayerPosition::North->value );
-            $westPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::West->value]->Id, PlayerPosition::West->value );
+            $this->logger->log( "CreateDbGame !!!", 'GameManager' );
+            
+            $southPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::South->value]->Id, PlayerPosition::South );
+            $eastPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::East->value]->Id, PlayerPosition::East );
+            $northPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::North->value]->Id, PlayerPosition::North );
+            $westPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::West->value]->Id, PlayerPosition::West );
             
             // Create Game Session
             $gameBase   = $this->gameRepository->findOneBy(['slug' => $this->GameCode]);
@@ -290,7 +276,8 @@ abstract class CardGameManager extends AbstractGameManager
             $em->persist( $game );
             $em->flush();
         } catch ( DriverException $e ) {
-            $this->logger->log( "Has CreateDbGame Mysql Exception !!!", 'GameManager' );
+            $this->logger->log( "Has CreateDbGame Mysql Exception: {$e->getMessage()}", 'GameManager' );
+            // $this->logger->log( "CreateDbGame Exception Trace: {$e->getTraceAsString()}", 'GameManager' );
             
             return;
         }
@@ -298,8 +285,12 @@ abstract class CardGameManager extends AbstractGameManager
     
     protected function NewTurn( WebsocketClientInterface $socket ): void
     {
-        /** $this->Game->DummyFaceup May be Uneeded */
-        if ( $this->Game->PlayState == GameState::playing && $this->IsDummy() && ! $this->Game->DummyFaceup ) {
+        if (
+            $this->Game->PlayState == GameState::playing &&
+            $this->IsDummy() &&
+            ! $this->IsDummyOwnerAi() &&
+            ! $this->Game->DummyFaceup
+        ) {
             $this->logger->log( "This is Dummy Player !!!", 'GameManager' );
             return;
         }
@@ -566,6 +557,9 @@ abstract class CardGameManager extends AbstractGameManager
     
     protected function SendWinner( CardGameTeam $team, ?RoundResult $newScore = null ): void
     {
+        $this->Game->DummyPlayer = PlayerPosition::Neither;
+        $this->Game->DummyOwner = PlayerPosition::Neither;
+        
         $game = Mapper::CardGameToDto( $this->Game );
         $game->winner = $team;
         $gameEndedAction = new GameEndedActionDto();
@@ -683,7 +677,9 @@ abstract class CardGameManager extends AbstractGameManager
     
     abstract protected function FirstToPlay(): PlayerPosition;
     
-    private function CreateTempPlayer( int $playerId, int $playerPositionId ): TempPlayer
+    abstract protected function RoundEndedAction(): RoundEndedActionDto;
+    
+    private function CreateTempPlayer( int $playerId, PlayerPosition $playerPosition ): TempPlayer
     {
         $player = $this->playersRepository->find( $playerId );
         
@@ -698,7 +694,7 @@ abstract class CardGameManager extends AbstractGameManager
         $tempPlayer = $this->tempPlayersFactory->createNew();
         $tempPlayer->setGuid( Guid::NewGuid() );
         $tempPlayer->setPlayer( $player );
-        $tempPlayer->setPosition( $playerPositionId );
+        $tempPlayer->setPosition( $playerPosition->toString() );
         $tempPlayer->setName( $player->getName() );
         $player->addGamePlayer( $tempPlayer );
         

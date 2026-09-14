@@ -25,12 +25,12 @@ abstract class BoardGameManager extends AbstractGameManager
 {
     public function Restore( int $playerPositionId, WebsocketClientInterface $socket ): void
     {
-        $color = PlayerColor::from( $playerPositionId );
+        $myColor = PlayerColor::from( $playerPositionId );
         
         $gameDto = Mapper::BoardGameToDto( $this->Game );
         $restoreAction = new GameRestoreActionDto();
         $restoreAction->game = $gameDto;
-        $restoreAction->color = $color;
+        $restoreAction->myColor = $myColor;
         
         // @TODO May be i can check if the game have Dices.
         $restoreAction->dices = $this->Game->Roll->map(
@@ -39,7 +39,7 @@ abstract class BoardGameManager extends AbstractGameManager
             }
         )->toArray();
         
-        if ( $color == PlayerColor::Black ) {
+        if ( $myColor == PlayerColor::Black ) {
             $this->Clients->set( PlayerColor::Black->value, $socket );
             $otherSocket = $this->Clients->get( PlayerColor::White->value );
         } else {
@@ -50,7 +50,7 @@ abstract class BoardGameManager extends AbstractGameManager
         $this->Send( $socket, $restoreAction );
         //Also send the state to the other client in case it has made moves.
         if ( $otherSocket != null && $otherSocket->State == WebSocketState::Open ) {
-            $restoreAction->color = $color == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
+            $restoreAction->myColor = $myColor == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
             $this->Send( $otherSocket, $restoreAction );
         } else {
             $this->logger->log( "Failed to send restore to other client", 'GameManager' );
@@ -60,8 +60,8 @@ abstract class BoardGameManager extends AbstractGameManager
     protected function CreateDbGame(): void
     {
         try {
-            $blackPlayer = $this->CreateTempPlayer( $this->Game->BlackPlayer->Id, PlayerColor::Black->value );
-            $whitePlayer = $this->CreateTempPlayer( $this->Game->WhitePlayer->Id, PlayerColor::White->value );
+            $blackPlayer = $this->CreateTempPlayer( $this->Game->BlackPlayer->Id, PlayerColor::Black );
+            $whitePlayer = $this->CreateTempPlayer( $this->Game->WhitePlayer->Id, PlayerColor::White );
             
             $gameBase   = $this->gameRepository->findOneBy(['slug' => $this->GameCode]);
             $game       = $this->gamePlayFactory->createNew();
@@ -221,7 +221,7 @@ abstract class BoardGameManager extends AbstractGameManager
         }
     }
     
-    protected function CreateTempPlayer( int $playerId, int $playerPositionId ): TempPlayer
+    protected function CreateTempPlayer( int $playerId, PlayerColor $playerPosition ): TempPlayer
     {
         $player = $this->playersRepository->find( $playerId );
         
@@ -236,7 +236,7 @@ abstract class BoardGameManager extends AbstractGameManager
         $tempPlayer = $this->tempPlayersFactory->createNew();
         $tempPlayer->setGuid( Guid::NewGuid() );
         $tempPlayer->setPlayer( $player );
-        $tempPlayer->setColor( $playerPositionId );
+        $tempPlayer->setColor( $playerPosition->toString() );
         $tempPlayer->setName( $player->getName() );
         $player->addGamePlayer( $tempPlayer );
         

@@ -33,9 +33,11 @@ use App\Component\Type\CardGameTeam;
 use App\Component\Type\ContractBridgeCardType;
 
 // DTO Actions
+use App\Component\Dto\Mapper;
 use App\Component\Dto\Actions\BidMadeActionDto;
 use App\Component\Dto\Actions\PlayCardActionDto;
 use App\Component\Dto\Actions\DummyFaceupActionDto;
+use App\Component\Dto\Actions\RoundEndedActionDto;
 
 /**
  * ContractBridgeGame Engine in Phython: https://github.com/lorserker/ben
@@ -47,7 +49,8 @@ class ContractBridgeGameManager extends CardGameManager
 {
     public function ConnectAndListen( WebsocketClientInterface $webSocket, GamePlayer $dbUser, bool $playAi ): void
     {
-        $this->logger->log( "Connecting Game Manager ...", 'GameManager' );
+        $this->logger->log( "Connecting Game Manager From Player: {$this->Game->CurrentPlayer->value}", 'GameManager' );
+        
         if ( $this->Game->CurrentPlayer == PlayerPosition::South ) {
             $this->Clients->set( PlayerPosition::South->value, $webSocket );
             
@@ -119,14 +122,26 @@ class ContractBridgeGameManager extends CardGameManager
         return $this->Game->CurrentPlayer == $DummyPlayer;
     }
     
+    protected function IsDummyOwnerAi(): bool
+    {
+        $DummyOwner = $this->Game->Players[$this->Game->DummyOwner->value];
+        
+        return $this->IsAi( $DummyOwner->Guid );
+    }
+    
+    protected function IsDummyAi(): bool
+    {
+        $DummyPlayer = $this->Game->Players[$this->Game->DummyPlayer->value];
+        
+        return $this->IsAi( $DummyPlayer->Guid );
+    }
+    
     protected function DummyFaceupAction(): void
     {
         $DummyPlayer = PlayerPositionExtensions::GetTeammate( $this->Game->CurrentContract->Player );
         
-        /*  
         $this->Game->DummyPlayer    = $DummyPlayer;
         $this->Game->DummyOwner     = $this->Game->CurrentContract->Player;
-        */
         
         $action = new DummyFaceupActionDto();
         $action->DummyPlayer    = $DummyPlayer;
@@ -146,6 +161,7 @@ class ContractBridgeGameManager extends CardGameManager
                 $this->Game->roundNumber++;
                 $this->Game->trickNumber = 1;
                 $this->EndRound();
+                
                 return false;
             }
             
@@ -169,6 +185,7 @@ class ContractBridgeGameManager extends CardGameManager
         
         if ( $this->Game->PlayState == GameState::firstRound ) {
             $this->StartGamePlay();
+            $this->PlayRound( $this->Clients->get( PlayerPosition::South->value ) );
         }
         
         if ( $this->Game->PlayState == GameState::roundEnded ) {
@@ -220,9 +237,12 @@ class ContractBridgeGameManager extends CardGameManager
             $sleepMileseconds   = \rand( 700, 1200 );
             Async\delay( $sleepMileseconds / 1000 );
             
-            if ( $this->IsDummy() && ! $this->Game->DummyPlayer ) {
+            if ( $this->IsDummy() && $this->Game->DummyPlayer == PlayerPosition::Neither ) {
                 $this->DummyFaceupAction();
-            } else {
+                $this->Game->DummyFaceup = true;
+            }
+            
+            if ( ! $this->Game->DummyFaceup  || $this->IsDummyOwnerAi() ) {
                 $this->OpponentPlayCardAction( $playCardAction, $client );
             }
         })();
@@ -264,5 +284,32 @@ class ContractBridgeGameManager extends CardGameManager
         }
         
         return $firstToPlay;
+    }
+    
+    protected function RoundEndedAction(): RoundEndedActionDto
+    {
+        $score = $this->Game->GetNewScore();
+        
+        $action = new RoundEndedActionDto();
+        $action->game = Mapper::CardGameToDto( $this->Game );
+        
+        $newScore = Mapper::ContractBridgeRoundResultToDto( $score );
+        $newScore->contract = Mapper::BidToDto( $this->Game->CurrentContract );
+        $action->newScore = $newScore;
+        
+        // Debug Tricks
+        $action->SouthNorthTricks = $this->Game->SouthNorthTricks->map(
+            function( $entry ) {
+                return Mapper::CardToDto( $entry, $this->Game->GameCode );
+            }
+        )->toArray();
+        
+        $action->EastWestTricks = $this->Game->EastWestTricks->map(
+            function( $entry ) {
+                return Mapper::CardToDto( $entry, $this->Game->GameCode );
+            }
+        )->toArray();
+        
+        return $action;
     }
 }

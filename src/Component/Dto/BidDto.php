@@ -7,6 +7,8 @@ use App\Component\Type\BidTrump;
 class BidDto
 {
     public PlayerPosition $Player;
+    public ?PlayerPosition $BidOwner = NULL; // Used in Contract Bridge
+    
     public ?PlayerPosition $KontraPlayer = NULL;
     public ?PlayerPosition $ReKontraPlayer = NULL;
     

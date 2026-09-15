@@ -15,6 +15,7 @@ vs_application:
         edit_game_platform_setting: Edit Game Platform Settings
         
         list_games: Игри
+        debug_games: Debug Games
         create_new_game: Създай Нова Игра
         edit_game: Радакция на Игра
         game_categories: Категории Игри

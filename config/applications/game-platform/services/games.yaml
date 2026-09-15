@@ -37,6 +37,13 @@ services:
             - '%kernel.project_dir%'
             - '%env(json:WEBSOCKET_GAME_LOGGER_CONTEXTS)%'
     
+    app_mercure_logger:
+        class: App\Component\MercureLogger
+        public: true
+        arguments:
+            - '@monolog.logger.mercure_game'
+            - '%env(APP_ENV)%'
+    
     ##############################################################
     # Custom Serializer Normalizers
     ##############################################################

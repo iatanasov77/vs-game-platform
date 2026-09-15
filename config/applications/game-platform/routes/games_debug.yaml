@@ -1,0 +1,7 @@
+debug_games:
+    path: /games/debug-games
+    controller: App\Controller\GamePlatform\DebugController::index
+
+debug_games_add_backgammon_ai_player:
+    path: /games/debug-games/{gameSlug}/add-ai-player
+    controller: App\Controller\GamePlatform\DebugController::addBackgammonAiPlayer

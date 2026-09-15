@@ -1,0 +1,20 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+    
+    App\Controller\GamePlatform\DebugController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@doctrine'
+            - '@messenger.default_bus'
+            - '@vsapp.repository.games'
+            - '@vsapp.repository.game_players'
+            - '@vsapp.factory.game_sessions'
+            - '@vsapp.factory.temp_players'
+    
+    App\Component\ServerSentEvent\Handler\AddAiPlayerHandler:
+        arguments:
+            - '@app_mercure_logger'
+            - '@mercure.hub.default'

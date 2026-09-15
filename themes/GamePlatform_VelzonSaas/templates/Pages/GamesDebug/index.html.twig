@@ -1,0 +1,20 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+    <div>
+        <a href="{{ path( 'debug_games_add_backgammon_ai_player', {'gameSlug': 'backgammon'} ) }}">
+            Add Backgammon AI Player
+        </a>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    
+    <script>
+        const eventSource = new EventSource( "{{ mercure( '/test' ) | escape( 'js' ) }}" );
+        eventSource.onmessage = event => {
+            console.log( JSON.parse( event.data ) );
+        }
+    </script>
+{% endblock %}

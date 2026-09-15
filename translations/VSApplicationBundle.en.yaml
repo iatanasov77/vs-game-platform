@@ -15,6 +15,7 @@ vs_application:
         edit_game_platform_setting: Edit Game Platform Settings
         
         list_games: Games
+        debug_games: Debug Games
         create_new_game: Create New Game
         edit_game: Edit Game
         game_categories: Game Categories

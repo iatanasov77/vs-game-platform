@@ -13,4 +13,8 @@ final class GamePlatform
         self::GAME_STATUS_IN_DEVELOPEMENT_BUT   => 'game_platform.form.game.in_developement_but',
         self::GAME_STATUS_DONE                  => 'game_platform.form.game.game_is_done',
     ];
+    
+    const GAME_ROOM_STATUS_WAITING  = 'waiting';
+    const GAME_ROOM_STATUS_PLAYING  = 'playing';
+    const GAME_ROOM_STATUS_FULL     = 'full';
 }

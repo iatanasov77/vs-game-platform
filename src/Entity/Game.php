@@ -62,6 +62,10 @@ class Game implements ResourceInterface
     #[ORM\OneToMany(targetEntity: GamePlay::class, mappedBy: "game", cascade: ["persist", "remove"], orphanRemoval: true)]
     private $gameSessions;
     
+    /** @var int */
+    #[ORM\Column(name: "max_players", type: "integer", options: ["default" => 4], nullable: true)]
+    private $maxPlayers = 4;
+    
     /** @var string */
     #[ORM\Column(type: Types::ENUM, options: ['values' => ['not_implemented', 'in_developement', 'in_developement_but', 'game_is_done'], 'default' => 'not_implemented'], nullable: true)]
     private $status;
@@ -171,6 +175,18 @@ class Game implements ResourceInterface
         if ( $this->gameSessions->contains( $gameSession ) ) {
             $this->gameSessions->removeElement( $gameSession );
         }
+        
+        return $this;
+    }
+    
+    public function getMaxPlayers()
+    {
+        return $this->maxPlayers;
+    }
+    
+    public function setMaxPlayers($maxPlayers)
+    {
+        $this->maxPlayers = $maxPlayers;
         
         return $this;
     }

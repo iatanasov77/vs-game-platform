@@ -96,6 +96,7 @@ game_platform:
             in_developement: In Developement
             in_developement_but: In Developement But Play With Computer (AI) is Done
             game_is_done: Game is Done
+            max_players: Max Players
             
         game_room:
             game: Game

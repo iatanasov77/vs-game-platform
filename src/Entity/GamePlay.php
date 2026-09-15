@@ -1,11 +1,11 @@
 <?php namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Sylius\Component\Resource\Model\ResourceInterface;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
-use Sylius\Component\Resource\Model\ToggleableTrait;
 
 /**
  * GamePlay Entity
@@ -17,7 +17,6 @@ use Sylius\Component\Resource\Model\ToggleableTrait;
 class GamePlay implements ResourceInterface
 {
     use TimestampableEntity;
-    use ToggleableTrait;
     
     /** @var int */
     #[ORM\Id, ORM\Column(type: "integer"), ORM\GeneratedValue(strategy: "IDENTITY")]
@@ -43,9 +42,9 @@ class GamePlay implements ResourceInterface
     #[ORM\Column(type: "json", nullable: true)]
     private $score;
     
-    /** @var bool */
-    #[ORM\Column(name: "active", type: "boolean", options: ["default" => 0])]
-    protected $enabled = true;
+    /** @var string */
+    #[ORM\Column(type: Types::ENUM, options: ['values' => ['waiting', 'playing', 'full'], 'default' => 'waiting'], nullable: true)]
+    private $status;
     
     public function __construct()
     {
@@ -131,14 +130,14 @@ class GamePlay implements ResourceInterface
         return $this;
     }
     
-    public function isActive(): bool
+    public function getStatus()
     {
-        return $this->isEnabled();
+        return $this->status;
     }
     
-    public function setActive( bool $active ): self
+    public function setStatus($status)
     {
-        $this->setEnabled( $active );
+        $this->status = $status;
         
         return $this;
     }

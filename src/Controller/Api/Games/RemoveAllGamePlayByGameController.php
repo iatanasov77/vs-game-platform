@@ -5,6 +5,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\Persistence\ManagerRegistry;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
+use App\Component\GamePlatform;
 
 class RemoveAllGamePlayByGameController extends AbstractController
 {
@@ -41,7 +42,7 @@ class RemoveAllGamePlayByGameController extends AbstractController
                 'name'      => $room->getGuid(),
                 'players'   => $room->getGamePlayers(),
                 
-                'isPlaying' => $room->isActive(),
+                'isPlaying' => $room->getStatus() == GamePlatform::GAME_ROOM_STATUS_PLAYING,
             ];
             
             $em->remove( $room );

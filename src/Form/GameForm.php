@@ -10,6 +10,7 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -110,6 +111,11 @@ class GameForm extends AbstractForm
                 'label'                 => 'game_platform.form.game.game_url',
                 'translation_domain'    => 'GamePlatform',
                 'required'              => false,
+            ])
+            
+            ->add( 'maxPlayers', IntegerType::class, [
+                'label'                 => 'game_platform.form.game.max_players',
+                'translation_domain'    => 'GamePlatform',
             ])
         ;
     }

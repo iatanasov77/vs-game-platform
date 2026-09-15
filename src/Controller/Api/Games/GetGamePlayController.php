@@ -4,6 +4,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
+use App\Component\GamePlatform;
 
 class GetGamePlayController extends AbstractController
 {
@@ -27,7 +28,7 @@ class GetGamePlayController extends AbstractController
                 'name'      => $room->getGuid(),
                 'players'   => $room->getGamePlayers(),
                 
-                'isPlaying' => $room->isActive(),
+                'isPlaying' => $room->getStatus() == GamePlatform::GAME_ROOM_STATUS_PLAYING,
             ];
         }
         

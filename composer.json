@@ -32,7 +32,7 @@
         "vankosoft/application": "1.14.*",
         "vankosoft/application-themes": "^1.9",
         "vankosoft/catalog-bundle": "^2.7",
-        "vankosoft/api-bundle": "^4.0",
+        "vankosoft/api-bundle": "^4.1",
         
         "doctrine/dbal": "4.5.x-dev",
         

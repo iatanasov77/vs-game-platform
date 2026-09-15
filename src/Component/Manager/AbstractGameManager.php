@@ -4,6 +4,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Ratchet\RFC6455\Messaging\Frame;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -56,6 +57,13 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     /** @var EventDispatcherInterface */
     protected $eventDispatcher;
+    
+    /**
+     * \Symfony\Component\Messenger\TraceableMessageBus
+     * 
+     * @var MessageBusInterface
+     */
+    protected $messageBus;
     
     /** @var ManagerRegistry */
     protected $doctrine;
@@ -123,6 +131,7 @@ abstract class AbstractGameManager implements GameManagerInterface
         SerializerInterface $serializer,
         LiipImagineCacheManager $imagineCacheManager,
         EventDispatcherInterface $eventDispatcher,
+        MessageBusInterface $messageBus,
         ManagerRegistry $doctrine,
         GameFactory $gameRulesFactory,
         RepositoryInterface $gameRepository,
@@ -139,6 +148,8 @@ abstract class AbstractGameManager implements GameManagerInterface
         $this->serializer               = $serializer;
         $this->imagineCacheManager      = $imagineCacheManager;
         $this->eventDispatcher          = $eventDispatcher;
+        $this->messageBus               = $messageBus;
+        
         $this->doctrine                 = $doctrine;
         $this->gameRulesFactory         = $gameRulesFactory;
         $this->gameRepository           = $gameRepository;

@@ -94,6 +94,7 @@
         "@ngx-translate/http-loader": "^7.0",
         "@flaticon/flaticon-uicons": "^3.3",
 
+        "ngx-sse-client": "^21.0",
         "event-source-polyfill": "^1.0",
         "@types/event-source-polyfill": "^1.0",
 

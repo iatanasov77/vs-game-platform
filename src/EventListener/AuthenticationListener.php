@@ -87,7 +87,7 @@ final class AuthenticationListener implements EventSubscriberInterface
     
     private function publishConnection( MercureConnection $connection, string $action ): void
     {
-        $publishData    = json_encode([
+        $publishData    = \json_encode([
             'type'      => 'activeConnectionUpdate',
             'action'    => $action,
             'target'    => $connection->getUser()->getUsername(),

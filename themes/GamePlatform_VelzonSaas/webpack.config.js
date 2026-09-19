@@ -89,6 +89,8 @@ Encore
     .addEntry( 'js/contract-bridge', './themes/GamePlatform_VelzonSaas/assets/js/games/contract-bridge/index.js' )
     .addEntry( 'js/chess', './themes/GamePlatform_VelzonSaas/assets/js/games/chess/index.js' )
     .addEntry( 'js/backgammon', './themes/GamePlatform_VelzonSaas/assets/js/games/backgammon/index.js' )
+    
+    .addEntry( 'js/debug-sse', './themes/GamePlatform_VelzonSaas/assets/js/games/debug-sse/index.js' )
 ;
 
 if ( Encore.isDev() ) {

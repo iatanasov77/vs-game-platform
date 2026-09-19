@@ -125,9 +125,9 @@ vs_application:
                     id: user_login
                     iconClass: "bx bx-user-circle"
             
-            debug_games:
-                name: vs_application.menu.debug_games
-                route: debug_games
+            debug_sse:
+                name: vs_application.menu.debug_sse
+                route: debug_sse
                 attributes:
                     iconClass: "fas fa-bug"
                     environements: ['dev', 'staging']

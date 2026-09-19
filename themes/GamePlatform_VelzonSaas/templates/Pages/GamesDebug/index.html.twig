@@ -1,20 +1,18 @@
 {% extends "base.html.twig" %}
 
 {% block content %}
-    <div>
-        <a href="{{ path( 'debug_games_add_backgammon_ai_player', {'gameSlug': 'backgammon'} ) }}">
-            Add Backgammon AI Player
-        </a>
+    <div id="TestSsseContainer"
+        data-locale="{{ app.request.locale }}"
+        data-mercureEventSource="{{ mercure( '/test' ) | escape( 'html_attr' ) }}"
+        
+        data-addBackgammonAiPlayer="{{ path( 'debug_sse_add_backgammon_ai_player', {'gameSlug': 'backgammon'} ) }}"
+    >
+        <app-debug-sse></app-debug-sse>
     </div>
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
     
-    <script>
-        const eventSource = new EventSource( "{{ mercure( '/test' ) | escape( 'js' ) }}" );
-        eventSource.onmessage = event => {
-            console.log( JSON.parse( event.data ) );
-        }
-    </script>
+    {{ encore_entry_script_tags( 'js/debug-sse', null, 'GameplatformVelzonsaasTheme' ) }}
 {% endblock %}

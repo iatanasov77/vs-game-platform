@@ -43,11 +43,14 @@ export class EventSourceService
         @Inject( AuthService ) private authService: AuthService,
     ) {
         this.eventSource    = null;
-        
-        
-        /*  
-         * Try to Use 'ngx-sse-client'
-         *
+        // this.sseClientStream();
+    }
+    
+    /*  
+     * Try to Use 'ngx-sse-client'
+     */
+    sseClientStream(): void
+    {
         const mercureEventSource  = $( '#GameContainer' ).attr( 'data-mercureEventSource' );
         const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
         alert( `SSE Subscribe URL: ${mercureEventSource}` );
@@ -67,7 +70,6 @@ export class EventSourceService
               console.info( `SSE request with type "${messageEvent.type}" and data "${messageEvent.data}"` );
             }
         });
-        */
     }
     
     /**
@@ -78,23 +80,19 @@ export class EventSourceService
     connect( url: string, options: EventSourceInit, eventNames: string[] = [] ): Observable<MessageEvent> | undefined
     {
         this.eventSource    = new EventSourcePolyfill( url, options );
-        //alert( this.eventSource.url );
+        // alert( this.eventSource.url );
         
         return new Observable( ( subscriber: Subscriber<MessageEvent> ) => {
-            if ( ! this.eventSource ) {
-                return;
-            }
+            if ( ! this.eventSource ) return;
             
             this.eventSource.onerror = error => {
                 this.zone.run( () => subscriber.error( error ) );
             };
-    
-            eventNames.forEach( ( event: string ) => {
-                if ( ! this.eventSource ) {
-                    return;
-                }
             
-                //alert( event );
+            eventNames.forEach( ( event: string ) => {
+                if ( ! this.eventSource ) return;
+                
+                // alert( event );
                 this.eventSource.addEventListener( event, data => {
                     console.log( data.data );
                     this.zone.run( () => subscriber.next( data ) );

@@ -97,6 +97,7 @@
         "ngx-sse-client": "^21.0",
         "event-source-polyfill": "^1.0",
         "@types/event-source-polyfill": "^1.0",
+        "jsonwebtoken": "^9.0",
 
         "sweetalert2": "^11.12",
         "ngx-chess-board": "2.2.3",

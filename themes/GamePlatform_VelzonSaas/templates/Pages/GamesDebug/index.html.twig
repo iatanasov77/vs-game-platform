@@ -7,12 +7,12 @@
         
         data-addBackgammonAiPlayer="{{ path( 'debug_sse_add_backgammon_ai_player', {'gameSlug': 'backgammon'} ) }}"
     >
-        <app-debug-sse></app-debug-sse>
+        <app-debug-sse-page></app-debug-sse-page>
     </div>
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
     
-    {{ encore_entry_script_tags( 'js/debug-sse', null, 'GameplatformVelzonsaasTheme' ) }}
+    {{ encore_entry_script_tags( 'js/debug-sse-page', null, 'GameplatformVelzonsaasTheme' ) }}
 {% endblock %}

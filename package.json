@@ -47,7 +47,7 @@
         "remixicon": "^3.5",
 		"velocity-animate": "^1.5.2",
         "prop-types": "^15.7",
-
+        
         "scrolling-tabs-bootstrap-5": "^1.1",
         "bootstrap-icons": "^1.11",
         "move-js": "^0.5",
@@ -63,7 +63,7 @@
         "apexcharts": "^4.3",
  		"@analytics/google-analytics": "^1.0.5",
         "analytics": "^0.8.1",
-
+        
         "dragula": "^3.7",
         "dom-autoscroller": "^2.3",
         "@lordicon/helpers": "^1.10",
@@ -93,12 +93,11 @@
         "@ngx-translate/core": "^14.0",
         "@ngx-translate/http-loader": "^7.0",
         "@flaticon/flaticon-uicons": "^3.3",
-
+        
         "ngx-sse-client": "^21.0",
         "event-source-polyfill": "^1.0",
         "@types/event-source-polyfill": "^1.0",
-        "jsonwebtoken": "^9.0",
-
+        
         "sweetalert2": "^11.12",
         "ngx-chess-board": "2.2.3",
         "ngx-cookie-service": "^17.1",

@@ -13,7 +13,8 @@ import { StoreModule } from '@ngrx/store';
 import { loginReducer } from '../application/+store/login.reducers';
 
 import { GlobalErrorService } from '../application/services/global-error-service';
-import { DebugSseComponent } from './debug-sse.component';
+import { DebugSsePageComponent } from './debug-sse-page.component';
+import { DebugSseModule } from '../application/components/debug-sse/debug-sse.module';
 
 export function HttpLoaderFactory( http: HttpClient ) {
     return new TranslateHttpLoader( http, '/build/gameplatform-velzonsaas-theme/i18n/', '.json' );
@@ -21,7 +22,7 @@ export function HttpLoaderFactory( http: HttpClient ) {
 
 @NgModule({
     declarations: [
-        DebugSseComponent,
+        DebugSsePageComponent,
     ],
     imports: [
         BrowserModule,
@@ -39,14 +40,16 @@ export function HttpLoaderFactory( http: HttpClient ) {
             }
         }),
         
+        DebugSseModule,
+        
         StoreModule.forRoot([
             loginReducer,
         ]),
     ],
-    bootstrap: [DebugSseComponent],
+    bootstrap: [DebugSsePageComponent],
     providers: [
         { provide: APP_BASE_HREF, useValue: window.location.pathname },
         { provide: ErrorHandler, useClass: GlobalErrorService }
     ]
 })
-export class DebugSseModule { }
+export class DebugSsePageModule { }

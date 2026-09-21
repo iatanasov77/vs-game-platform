@@ -9,11 +9,11 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 const {context} = require( '../application/context' );
 
-import { DebugSseModule } from './debug-sse.module';
+import { DebugSsePageModule } from './debug-sse-page.module';
 
 if ( context.isProduction ) {
     enableProdMode();
 }
 
-platformBrowserDynamic().bootstrapModule( DebugSseModule )
+platformBrowserDynamic().bootstrapModule( DebugSsePageModule )
                         .catch( ( err: any ) => console.error( err ) );

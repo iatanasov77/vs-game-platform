@@ -1,7 +1,11 @@
 debug_sse:
-    path: /games/debug-games
-    controller: App\Controller\GamePlatform\DebugController::index
+    path: /games/debug-sse
+    controller: App\Controller\GamePlatform\DebugController::debugSse
+
+vs_api_test_mercure_send_to_test_subscribing_topic:
+    path: /test-mercure/send-to-test-subscribing-topic
+    controller: App\Controller\Application\TestMercureController::sendToTestSubscribingTopic
 
 debug_sse_add_backgammon_ai_player:
     path: /games/debug-games/{gameSlug}/add-ai-player
-    controller: App\Controller\GamePlatform\DebugController::addBackgammonAiPlayer
+    controller: App\Controller\Application\TestMercureController::addBackgammonAiPlayer

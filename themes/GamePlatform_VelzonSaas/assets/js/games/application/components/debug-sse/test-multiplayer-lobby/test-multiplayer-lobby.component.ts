@@ -20,6 +20,8 @@ export class TestMultiplayerLobby implements OnInit
     
     ngOnInit(): void
     {
+        this.sseService.connect();
+        /*  
         const user: User = {
             id: '65PRG6RD0C87KAQV8RS8H5HHBR',
             name: 'Jose'
@@ -31,5 +33,11 @@ export class TestMultiplayerLobby implements OnInit
                 console.log( 'Message received: ' + e.message );
             }
         );
+        */
+    }
+    
+    testMultiplayerLobby(): void
+    {
+        this.sseService.sendToTestMultiplayerLobby();
     }
 }

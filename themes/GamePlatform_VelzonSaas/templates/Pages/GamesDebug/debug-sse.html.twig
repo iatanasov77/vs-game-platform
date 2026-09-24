@@ -3,8 +3,15 @@
 {% block content %}
     <div id="TestSsseContainer"
         data-locale="{{ app.request.locale }}"
-        data-mercureEventSource="{{ mercure( '/test' ) | escape( 'html_attr' ) }}"
         
+        {# SSE URL #}
+        data-mercureJwtSecret="{{ mercureJwtSecret }}"
+        data-mercureEventSource="{{ mercure([
+            absolute_url( path( 'vs_api_test_mercure_send_to_test_subscribing_topic' ) ),
+            absolute_url( path( 'debug_sse_add_backgammon_ai_player', {'gameSlug': 'backgammon'} ) )
+        ]) | escape( 'html_attr' ) }}"
+        
+        {# SSE Push Into Topics #}
         data-addBackgammonAiPlayer="{{ path( 'debug_sse_add_backgammon_ai_player', {'gameSlug': 'backgammon'} ) }}"
     >
         <app-debug-sse-page></app-debug-sse-page>

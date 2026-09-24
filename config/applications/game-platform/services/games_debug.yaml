@@ -6,8 +6,14 @@ services:
     App\Controller\GamePlatform\DebugController:
         tags: ['controller.service_arguments']
         autowire: true
+    
+    App\Controller\Application\TestMercureController:
+        tags: ['controller.service_arguments']
+        autowire: true
         arguments:
+            - '@router'
             - '@doctrine'
+            - '@mercure.hub.default'
             - '@messenger.default_bus'
             - '@vsapp.repository.games'
             - '@vsapp.repository.game_players'

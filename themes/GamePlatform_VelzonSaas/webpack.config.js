@@ -106,6 +106,7 @@ Encore.configureDefinePlugin( ( options ) => {
     options.DEV_API_URL         = JSON.stringify( process.env.DEV_API_URL );
     options.PROD_BACKEND_URL    = JSON.stringify( process.env.PROD_BACKEND_URL );
     options.DEV_BACKEND_URL     = JSON.stringify( process.env.DEV_BACKEND_URL );
+    options.MERCURE_HOST        = JSON.stringify( process.env.MERCURE_HOST );
 });
 
 const config = Encore.getWebpackConfig();

@@ -53,7 +53,7 @@ export class EventSourceServiceNew
     
     connect(): void
     {
-        const url = new URL( "http://myprojects.lh:8080/.well-known/mercure" );
+        const url = new URL( context.mercureHost );
         url.searchParams.append( "match", "https://example.com/books/1" );
         
         const es = new EventSource( url );

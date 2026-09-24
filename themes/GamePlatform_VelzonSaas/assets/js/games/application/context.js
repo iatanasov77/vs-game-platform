@@ -2,6 +2,7 @@ export const context    =  {
     isProduction: IS_PRODUCTION,
     apiURL: IS_PRODUCTION ? PROD_API_URL : DEV_API_URL,
     backendURL: IS_PRODUCTION ? PROD_BACKEND_URL : DEV_BACKEND_URL,
+    mercureHost: IS_PRODUCTION ? MERCURE_HOST : MERCURE_HOST,
     
     themeBuildPath: THEME_BUILD_PATH
 }

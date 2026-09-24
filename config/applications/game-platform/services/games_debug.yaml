@@ -13,8 +13,9 @@ services:
         arguments:
             - '@router'
             - '@doctrine'
-            - '@mercure.hub.default'
             - '@messenger.default_bus'
+            - '@app_mercure_logger'
+            - '@app_mercure_publisher'
             - '@vsapp.repository.games'
             - '@vsapp.repository.game_players'
             - '@vsapp.factory.game_sessions'

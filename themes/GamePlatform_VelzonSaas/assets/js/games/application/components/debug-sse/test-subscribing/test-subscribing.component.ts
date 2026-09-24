@@ -20,8 +20,8 @@ export class TestSubscribingComponent implements OnInit
     
     ngOnInit(): void
     {
-        this.sseService.connect();
-        /*  
+        // this.sseService.connect();
+        /*  */
         const user: User = {
             id: '65PRG6RD0C87KAQV8RS8H5HHBR',
             name: 'Jose'
@@ -31,13 +31,16 @@ export class TestSubscribingComponent implements OnInit
         this.sseService.createEventSource( user, topic ).subscribe (
             ( e: MessageData ) => {
                 console.log( 'Message received: ' + e.message );
+                alert( `Message received: ${e.message}` );
             }
         );
-        */
+        
     }
     
     testSubscribing(): void
     {
-        this.sseService.sendToTestSubscribingTopic();
+        this.sseService.sendToTestSubscribingTopic().subscribe( ( message ) => {
+            alert( `Test Subscribing Component Response: ${JSON.stringify( message )}` );
+        });
     }
 }

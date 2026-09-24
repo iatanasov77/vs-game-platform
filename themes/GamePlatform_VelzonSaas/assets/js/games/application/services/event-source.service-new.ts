@@ -29,17 +29,18 @@ export class EventSourceServiceNew
         @Inject( HttpClient ) private httpClient: HttpClient,
         @Inject( AuthService ) private authService: AuthService,
     ) {
-        // this.url        = `${context.apiURL}`;
-        this.url        = `${context.backendURL}`;
+        // this.url    = `${context.apiURL}`;
+        this.url    = `${context.backendURL}`;
     }
 
     createEventSource( user: User, topic: Topic ): Observable<MessageData>
     {
-        const sseUrl            = $( '#TestSsseContainer' ).attr( 'data-mercureEventSource' );
-        const eventSource       = new EventSource( sseUrl, { withCredentials: true } );
+        // const sseUrl        = $( '#TestSsseContainer' ).attr( 'data-mercureEventSource' );
+        // const eventSource   = new EventSource( sseUrl, { withCredentials: true } );
+        // alert( `Event Source Url: ${sseUrl}` );
         
-        // alert( `Event Source Url: ${eventSourceUrl}` );
-        alert( `Event Source Url: ${sseUrl}` );
+        const topicUri = topic.getTopic( user );
+        const eventSource   = new EventSource( `${context.mercureHost}?match=${topicUri}` );
         
         return new Observable( observer => {
             eventSource.onmessage = event => {
@@ -68,32 +69,33 @@ export class EventSourceServiceNew
    
     sendToTestSubscribingTopic(): Observable<MessageData>
     {
-        alert( `sendToTestSubscribingTopic !!!` );
-        
         const mercureJwtSecret  = $( '#TestSsseContainer' ).attr( 'data-mercureJwtSecret' );
         const headers           = ( new HttpHeaders() ).set( "Authorization", `${mercureJwtSecret}` );
         
         var url                 = `${this.url}/test-mercure/send-to-test-subscribing-topic`;
-        return this.httpClient.get( url, {headers} ).pipe(
+        alert( `sendToTestSubscribingTopic URL: ${url}` );
+        
+        return this.httpClient.get<MessageData>( url, {headers} ).pipe(
             map( ( response: any ) => this.mapMessageData( response ) )
         );
     }
     
     sendToTestMultiplayerLobby(): Observable<MessageData>
     {
-        alert( `sendToTestMultiplayerLobby !!!` );
-        
         const mercureJwtSecret  = $( '#TestSsseContainer' ).attr( 'data-mercureJwtSecret' );
         const headers           = ( new HttpHeaders() ).set( "Authorization", `${mercureJwtSecret}` );
         
         var url                 = `${this.url}/test-mercure/send-to-test-subscribing-topic`;
-        return this.httpClient.get( url, {headers} ).pipe(
+        alert( `sendToTestMultiplayerLobby URL: ${url}` );
+        
+        return this.httpClient.get<MessageData>( url, {headers} ).pipe(
             map( ( response: any ) => this.mapMessageData( response ) )
         );
     }
     
     private mapMessageData( response: any )
     {
+        alert( `MessageData: ${response}` );
         if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
             let message: MessageData = {
                 status: response.status,

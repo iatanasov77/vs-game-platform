@@ -4,14 +4,20 @@
     <div id="TestSsseContainer"
         data-locale="{{ app.request.locale }}"
         
-        {# SSE URL #}
-        data-mercureJwtSecret="{{ mercureJwtSecret }}"
+        {# SSE URL
+         # =======
+         # You cannot use the mercure() helper and the setCookie() method at the same time
+         # (it would set the cookie twice on a single request). Choose either one method or the other.
+         # I prefer to set Cooie in the Controller.
+         # 
         data-mercureEventSource="{{ mercure([
             absolute_url( path( 'vs_api_test_mercure_send_to_test_subscribing_topic' ) ),
             absolute_url( path( 'debug_sse_add_backgammon_ai_player', {'gameSlug': 'backgammon'} ) )
         ]) | escape( 'html_attr' ) }}"
+        #}
         
         {# SSE Push Into Topics #}
+        data-mercureJwtSecret="{{ mercureJwtSecret }}"
         data-addBackgammonAiPlayer="{{ path( 'debug_sse_add_backgammon_ai_player', {'gameSlug': 'backgammon'} ) }}"
     >
         <app-debug-sse-page></app-debug-sse-page>

@@ -20,8 +20,8 @@ export class TestMultiplayerLobby implements OnInit
     
     ngOnInit(): void
     {
-        this.sseService.connect();
-        /*  
+        // this.sseService.connect();
+        /*  */
         const user: User = {
             id: '65PRG6RD0C87KAQV8RS8H5HHBR',
             name: 'Jose'
@@ -31,13 +31,16 @@ export class TestMultiplayerLobby implements OnInit
         this.sseService.createEventSource( user, topic ).subscribe (
             ( e: MessageData ) => {
                 console.log( 'Message received: ' + e.message );
+                alert( `Message received: ${e.message}` );
             }
         );
-        */
+        
     }
     
     testMultiplayerLobby(): void
     {
-        this.sseService.sendToTestMultiplayerLobby();
+        this.sseService.sendToTestMultiplayerLobby().subscribe( ( message ) => {
+            alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
+        });
     }
 }

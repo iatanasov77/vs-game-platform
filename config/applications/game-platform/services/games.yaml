@@ -24,7 +24,22 @@ services:
     _defaults:
         autowire: true
         autoconfigure: true
-
+    
+    App\Component\ServerSentEvent\MyTokenProvider:
+        public: true
+        arguments:
+            - '@lexik_jwt_authentication.jwt_manager'
+            - '@vs_users.security_bridge'
+    
+    app_mercure_publisher:
+        class: App\Component\ServerSentEvent\MercurePublisher
+        public: true
+        arguments:
+            - '@app_mercure_logger'
+            - '@mercure.hub.default'
+            - '@Symfony\Component\Mercure\Discovery'
+            - '@Symfony\Component\Mercure\Authorization'
+    
     ##############################################################
     # Custom Loggers
     ##############################################################

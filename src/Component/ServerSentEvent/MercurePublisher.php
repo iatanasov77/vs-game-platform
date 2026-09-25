@@ -5,6 +5,7 @@ use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Discovery;
 use Symfony\Component\Mercure\Authorization;
 use Symfony\Component\Mercure\Update;
+use Symfony\Component\Mercure\Exception\RuntimeException as MercureRuntimeException;
 use App\Component\MercureLogger;
 
 /*

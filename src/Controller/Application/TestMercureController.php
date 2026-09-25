@@ -6,15 +6,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
-use Symfony\Component\Mercure\Exception\RuntimeException as MercureRuntimeException;
-
-
-
-use Symfony\Component\Mercure\Discovery;
-use Symfony\Component\Mercure\Authorization;
-
 
 use Doctrine\Persistence\ManagerRegistry;
 use Sylius\Component\Resource\Repository\RepositoryInterface;

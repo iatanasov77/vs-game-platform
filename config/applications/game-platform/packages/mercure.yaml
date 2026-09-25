@@ -3,7 +3,10 @@ mercure:
         default:
             url: '%env(MERCURE_URL)%'
             public_url: '%env(MERCURE_PUBLIC_URL)%'
+            protocol_version: '1.0'
+            
             jwt:
                 secret: '%env(MERCURE_JWT_SECRET)%'
                 publish: '*'
-                #provider: App\Component\ServerSentEvent\MyTokenProvider
+                provider: App\Component\ServerSentEvent\MyTokenProvider
+                factory: Symfony\Component\Mercure\Jwt\WebTokenFactory

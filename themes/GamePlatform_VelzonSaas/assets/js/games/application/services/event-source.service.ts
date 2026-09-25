@@ -80,7 +80,7 @@ export class EventSourceService
     connect( url: string, options: EventSourceInit, eventNames: string[] = [] ): Observable<MessageEvent> | undefined
     {
         this.eventSource    = new EventSourcePolyfill( url, options );
-        // alert( this.eventSource.url );
+        alert( this.eventSource.url );
         
         return new Observable( ( subscriber: Subscriber<MessageEvent> ) => {
             if ( ! this.eventSource ) return;

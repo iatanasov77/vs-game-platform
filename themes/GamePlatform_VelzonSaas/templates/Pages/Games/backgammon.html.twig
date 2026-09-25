@@ -6,7 +6,8 @@
 {% block content %}
     <div class="text-center game-container" id="GameContainer"
         data-locale="{{ app.request.locale }}"
-        data-mercureEventSource="{{ mercure( '/game-play' ) | escape( 'html_attr' ) }}"
+        {# data-mercureEventSource="{{ mercure( '/game-play' ) | escape( 'html_attr' ) }}" #}
+        data-mercureEventSource="{{ mercure( 'https://api.game-platform.lh/api/game-sessions' ) | escape( 'html_attr' ) }}"
     >
         <app-backgammon></app-backgammon>
     </div>

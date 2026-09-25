@@ -5,7 +5,10 @@ use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Discovery;
 use Symfony\Component\Mercure\Authorization;
 use Symfony\Component\Mercure\Update;
+
 use Symfony\Component\Mercure\Exception\RuntimeException as MercureRuntimeException;
+use Symfony\Component\Mercure\Exception\InvalidArgumentException as MercureInvalidArgumentException;
+
 use App\Component\MercureLogger;
 
 /*
@@ -49,6 +52,12 @@ final class MercurePublisher
             $this->hub->publish( $update );
         } catch ( MercureRuntimeException $e ) {
             $this->logger->log( "MercureRuntimeException: {$e->getMessage()}" );
+            $this->logger->log( "Exception Trace: {$e->getTraceAsString()}" );
+            
+            throw $e;
+        } catch ( MercureInvalidArgumentException $e ) {
+            $this->logger->log( "MercureInvalidArgumentException: {$e->getMessage()}" );
+            $this->logger->log( "Exception Trace: {$e->getTraceAsString()}" );
             
             throw $e;
         }

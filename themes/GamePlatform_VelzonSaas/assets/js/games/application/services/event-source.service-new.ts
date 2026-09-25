@@ -23,14 +23,15 @@ declare var $: any;
 })
 export class EventSourceServiceNew
 {
-    url: string;
+    private url: string;
+    private eventSource: null | EventSource;
     
     constructor(
         @Inject( HttpClient ) private httpClient: HttpClient,
         @Inject( AuthService ) private authService: AuthService,
     ) {
-        // this.url    = `${context.apiURL}`;
-        this.url    = `${context.backendURL}`;
+        this.url            = `${context.backendURL}`;
+        this.eventSource    = null;
     }
 
     createEventSource( user: User, topic: Topic ): Observable<MessageData>

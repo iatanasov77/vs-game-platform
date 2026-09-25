@@ -8,3 +8,9 @@ mercure:
             jwt:
                 secret: '%env(MERCURE_JWT_SECRET)%'
                 publish: '*'
+                
+                # Define the required default claims here:
+                claims:
+                    iss: 'https://example.com'
+                    sub: 'my-service-subject'
+                    client_id: 'my-client-id'

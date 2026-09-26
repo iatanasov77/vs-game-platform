@@ -72,3 +72,18 @@ chess:
 backgammon:
     path: /games/backgammon
     controller: App\Controller\Games\BackgammonController::index
+
+###################################################################################
+# Game Rooms
+###################################################################################
+app_game_rooms:
+    path: /game-rooms
+    controller: App\Controller\GamePlatform\GameRoomsController::index
+
+app_clear_game_rooms:
+    path: /game-rooms/clear
+    controller: App\Controller\GamePlatform\GameRoomsController::clearGameRooms
+
+app_delete_game_room:
+    path: /game-rooms/delete/{id}
+    controller: App\Controller\GamePlatform\GameRoomsController::deleteGameRoom

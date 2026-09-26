@@ -125,6 +125,13 @@ vs_application:
                     id: user_login
                     iconClass: "bx bx-user-circle"
             
+            game_rooms:
+                name: vs_application.menu.game_rooms
+                route: app_game_rooms
+                attributes:
+                    iconClass: "fas fa-gamepad"
+                    environements: ['dev', 'staging']
+            
             debug_sse:
                 name: vs_application.menu.debug_sse
                 route: debug_sse

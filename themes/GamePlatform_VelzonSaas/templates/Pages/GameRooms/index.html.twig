@@ -1,0 +1,72 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+    <div class="card">
+        <div class="card-header align-items-center d-flex">
+            <h4 class="card-title mb-0 flex-grow-1">
+                Game Sessions
+            </h4>
+            
+            <div class="flex-shrink-0">
+                <button id="ClearGameSessions" class="btn btn-block btn-primary btn-xl">
+                    Clear Game Sessions
+                </button>
+            </div>
+        </div><!-- end card header -->
+
+        <div class="card-body">
+            <div class="table-responsive">
+                
+                <!-- Striped Rows -->
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col">Id</th>
+                            <th scope="col">Game</th>
+                            <th scope="col">Players</th>
+                            <th scope="col">Updated At</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for room in gameRooms %}
+                            <tr>
+                                <th scope="row">{{ loop.index }}</th>
+                                <td>{{ room.guid }}</td>
+                                <td>{{ room.game.title }}</td>
+                                <td>{{ room.gamePlayers | length }} / {{ room.game.maxPlayers }}</td>
+                                <td>{{ room.updatedAt | date( 'd M Y' ) }}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a class="btn btn-danger btnDeleteGameRoom"
+                                            data-url="{{ path( 'app_delete_game_room', {'id': room.id} ) }}"
+                                            title="{{ 'vs_application.template.items_index_row_action_delete' | trans( {},'VSApplicationBundle' ) }}"
+                                        >
+                                            <i class="icon_close_alt2"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+            </div>
+        </div>
+    </div>
+    
+    {% include 'Layout/pagination_container.html.twig' with {'items': gameRooms} %}
+{% endblock %}
+
+{% block head_styles %}
+    {{ parent() }}
+    
+    {{ encore_entry_link_tags( 'js/game-rooms', null, 'GameplatformVelzonsaasTheme' ) }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    
+    {{ encore_entry_script_tags( 'js/game-rooms', null, 'GameplatformVelzonsaasTheme' ) }}
+{% endblock %}

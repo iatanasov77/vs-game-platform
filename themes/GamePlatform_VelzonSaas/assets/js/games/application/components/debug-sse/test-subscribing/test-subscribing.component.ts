@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, NgZone } from '@angular/core';
 
 import { User, PaymentTopic, MessageData } from '../../../services/debug-sse/models';
 import { EventSourceServiceNew } from '../../../services/event-source.service-new'
@@ -16,6 +16,7 @@ export class TestSubscribingComponent implements OnInit
 {
     constructor(
         @Inject( EventSourceServiceNew ) private sseService: EventSourceServiceNew,
+        @Inject( NgZone ) private zone: NgZone,
     ) { }
     
     ngOnInit(): void

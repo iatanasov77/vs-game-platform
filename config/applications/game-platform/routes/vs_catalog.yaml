@@ -26,10 +26,6 @@ vs_catalog_catalog_product_show:
         categorySlug: ''
         productSlug: ''
 
-
-
-
-
 app_vs_catalog_pricing_plans:
     resource: "@VSCatalogBundle/Resources/config/routing/pricing_plans.yaml"
     prefix: /

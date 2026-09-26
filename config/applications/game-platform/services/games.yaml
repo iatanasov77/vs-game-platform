@@ -176,6 +176,13 @@ services:
     ##############################################################
     # Game Controllers
     ##############################################################
+    App\Controller\GamePlatform\GameRoomsController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@doctrine'
+            - '@vsapp.repository.game_sessions'
+    
     App\Controller\GamePlatform\InviteController:
         tags: ['controller.service_arguments']
         autowire: true

@@ -90,6 +90,7 @@ Encore
     .addEntry( 'js/chess', './themes/GamePlatform_VelzonSaas/assets/js/games/chess/index.js' )
     .addEntry( 'js/backgammon', './themes/GamePlatform_VelzonSaas/assets/js/games/backgammon/index.js' )
     
+    .addEntry( 'js/game-rooms', './themes/GamePlatform_VelzonSaas/assets/js/pages/game-rooms.js' )
     .addEntry( 'js/debug-sse-page', './themes/GamePlatform_VelzonSaas/assets/js/games/debug-sse-page/index.js' )
 ;
 

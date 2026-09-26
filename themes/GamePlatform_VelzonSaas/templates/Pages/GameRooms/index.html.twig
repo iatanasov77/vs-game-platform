@@ -8,7 +8,14 @@
             </h4>
             
             <div class="flex-shrink-0">
-                <button id="ClearGameSessions" class="btn btn-block btn-primary btn-xl">
+                <button id="CreateGameRoom" class="btn btn-block btn-primary btn-xl"
+                    data-url="{{ path( 'app_create_game_room' ) }}"
+                >
+                    Create Game Room
+                </button>
+                <button id="ClearGameSessions" class="btn btn-block btn-primary btn-xl"
+                    data-url="{{ path( 'app_clear_game_rooms' ) }}"
+                >
                     Clear Game Sessions
                 </button>
             </div>
@@ -39,6 +46,33 @@
                                 <td>{{ room.updatedAt | date( 'd M Y' ) }}</td>
                                 <td>
                                     <div class="btn-group">
+                                        {% if app.user in room.users %}
+                                            <a class="btn btn-primary btnLeaveGameRoom"
+                                                data-url="{{ path( 'app_leave_game_room' ) }}"
+                                                title="Leave Room"
+                                            >
+                                                <i class="fa-solid fa-right-from-bracket"></i>
+                                            </a>&nbsp;
+                                        {% endif %}
+                                        
+                                        {% if app.user not in room.users and room.gamePlayers | length < room.game.maxPlayers %}
+                                            <a class="btn btn-primary btnJoinGameRoom"
+                                                data-url="{{ path( 'app_join_game_room' ) }}"
+                                                title="Join Room"
+                                            >
+                                                <i class="fa-solid fa-right-to-bracket"></i>
+                                            </a>&nbsp;
+                                        {% endif %}
+                                        
+                                        {% if room.gamePlayers | length < room.game.maxPlayers %}
+                                            <a class="btn btn-primary btnAddPlayer"
+                                                data-url="{{ path( 'app_add_user_into_game_room' ) }}"
+                                                title="Add Player"
+                                            >
+                                                <i class="fa-solid fa-user-plus"></i>
+                                            </a>&nbsp;
+                                        {% endif %}
+                                        
                                         <a class="btn btn-danger btnDeleteGameRoom"
                                             data-url="{{ path( 'app_delete_game_room', {'id': room.id} ) }}"
                                             title="{{ 'vs_application.template.items_index_row_action_delete' | trans( {},'VSApplicationBundle' ) }}"

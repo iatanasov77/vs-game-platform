@@ -87,3 +87,19 @@ app_clear_game_rooms:
 app_delete_game_room:
     path: /game-rooms/delete/{id}
     controller: App\Controller\GamePlatform\GameRoomsController::deleteGameRoom
+
+app_create_game_room:
+    path: /game-rooms/clear
+    controller: App\Controller\GamePlatform\GameRoomsController::createGameRoom
+
+app_join_game_room:
+    path: /game-rooms/clear
+    controller: App\Controller\GamePlatform\GameRoomsController::joinGameRoom
+
+app_leave_game_room:
+    path: /game-rooms/clear
+    controller: App\Controller\GamePlatform\GameRoomsController::leaveGameRoom
+
+app_add_user_into_game_room:
+    path: /game-rooms/clear
+    controller: App\Controller\GamePlatform\GameRoomsController::addUserIntoGameRoom

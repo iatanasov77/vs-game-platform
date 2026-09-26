@@ -141,4 +141,14 @@ class GamePlay implements ResourceInterface
         
         return $this;
     }
+    
+    public function getUsers(): array
+    {
+        $users = [];
+        foreach( $this->gamePlayers as $player ) {
+            $users[] = $player->getPlayer()->getUser();
+        }
+        
+        return $users;
+    }
 }

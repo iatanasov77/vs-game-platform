@@ -9,6 +9,9 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Vankosoft\ApplicationBundle\Component\Status;
 
+/**
+ *  Multiplayer Game Lobby Controller
+ */
 class GameRoomsController extends AbstractController
 {
     /** @var RepositoryInterface */
@@ -55,6 +58,38 @@ class GameRoomsController extends AbstractController
         return new JsonResponse([
             'status'    => Status::STATUS_OK,
             'message'   => 'Game Room Deleted !!!',
+        ]);
+    }
+    
+    public function createGameRoom( Request $request ): Response
+    {
+        return new JsonResponse([
+            'status'    => Status::STATUS_OK,
+            'message'   => 'Game Rooms Cleared !!!',
+        ]);
+    }
+    
+    public function joinGameRoom( Request $request ): Response
+    {
+        return new JsonResponse([
+            'status'    => Status::STATUS_OK,
+            'message'   => 'Game Rooms Cleared !!!',
+        ]);
+    }
+    
+    public function leaveGameRoom( Request $request ): Response
+    {
+        return new JsonResponse([
+            'status'    => Status::STATUS_OK,
+            'message'   => 'Game Rooms Cleared !!!',
+        ]);
+    }
+    
+    public function addUserIntoGameRoom( Request $request ): Response
+    {
+        return new JsonResponse([
+            'status'    => Status::STATUS_OK,
+            'message'   => 'Game Rooms Cleared !!!',
         ]);
     }
 }

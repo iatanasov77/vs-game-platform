@@ -88,9 +88,13 @@ app_delete_game_room:
     path: /game-rooms/delete/{id}
     controller: App\Controller\GamePlatform\GameRoomsController::deleteGameRoom
 
-app_create_game_room:
-    path: /game-rooms/clear
-    controller: App\Controller\GamePlatform\GameRoomsController::createGameRoom
+app_create_game_room_form:
+    path: /game-rooms/create-form
+    controller: App\Controller\GamePlatform\GameRoomsController::createGameRoomForm
+
+app_handle_game_room_form:
+    path: /game-rooms/create
+    controller: App\Controller\GamePlatform\GameRoomsController::handleGameRoomForm
 
 app_join_game_room:
     path: /game-rooms/clear

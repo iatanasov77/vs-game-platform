@@ -9,7 +9,7 @@
             
             <div class="flex-shrink-0">
                 <button id="CreateGameRoom" class="btn btn-block btn-primary btn-xl"
-                    data-url="{{ path( 'app_create_game_room' ) }}"
+                    data-url="{{ path( 'app_create_game_room_form' ) }}"
                 >
                     Create Game Room
                 </button>
@@ -32,6 +32,7 @@
                             <th scope="col">Id</th>
                             <th scope="col">Game</th>
                             <th scope="col">Players</th>
+                            <th scope="col">Status</th>
                             <th scope="col">Updated At</th>
                             <th scope="col">Action</th>
                         </tr>
@@ -43,6 +44,7 @@
                                 <td>{{ room.guid }}</td>
                                 <td>{{ room.game.title }}</td>
                                 <td>{{ room.gamePlayers | length }} / {{ room.game.maxPlayers }}</td>
+                                <td>{{ room.status }}</td>
                                 <td>{{ room.updatedAt | date( 'd M Y' ) }}</td>
                                 <td>
                                     <div class="btn-group">
@@ -91,6 +93,10 @@
     </div>
     
     {% include 'Layout/pagination_container.html.twig' with {'items': gameRooms} %}
+{% endblock %}
+
+{% block modals %}
+    {% include 'Modal/createGameRoom.html.twig' %}
 {% endblock %}
 
 {% block head_styles %}

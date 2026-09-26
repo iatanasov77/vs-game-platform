@@ -6,6 +6,33 @@ import { VsPath } from '@/js/includes/fos_js_routes.js';
 
 $( function()
 {
+    $( '#CreateGameRoom' ).on( 'click', function()
+    {
+        $.ajax({
+            type: "GET",
+            url: $( this ).attr( 'data-url' ),
+            success: function( response )
+            {
+                $( '#CreateGameRoomFormContainer' ).html( response );
+                
+                /** Bootstrap 5 Modal Toggle */
+                const myModal = new bootstrap.Modal( '#create-game-room-modal', {
+                    keyboard: false
+                });
+                myModal.show( $( '#create-game-room-modal' ).get( 0 ) );
+            },
+            error: function()
+            {
+                alert( "SYSTEM ERROR!!!" );
+            }
+        });
+    });
+    
+    $( '#btnSaveGameRoom' ).on( 'click', function ( e )
+    {
+        $( '#CreateGameRoomForm' ).submit();
+    });
+    
     $( '#ClearGameSessions' ).on( 'click', function()
     {
         

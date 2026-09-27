@@ -178,10 +178,6 @@ services:
         autowire: true
         arguments:
             - '@vsapp.repository.game_categories'
-            
-    App\Controller\Application\TestMercureController:
-        tags: ['controller.service_arguments']
-        autowire: true
         
     App\Controller\GamePlatform\AjaxController:
         tags: ['controller.service_arguments']

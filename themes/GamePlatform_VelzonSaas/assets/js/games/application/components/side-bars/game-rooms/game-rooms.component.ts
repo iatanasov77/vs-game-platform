@@ -51,19 +51,23 @@ export class GameRoomsComponent implements OnInit, OnDestroy
             return;
         }
         
-        this.eventSourceSubscription = this.eventSourceService.connectToServerSentEvents(
+        this.eventSourceSubscription = this.eventSourceService.connect(
             mercureEventSource,
             { withCredentials: false },
             ['GamePlayRoomUpdate']
-        ).subscribe({
-            next: data => {
-                let action: IMercureAction  = JSON.parse( data.data );
-                this.updateRooms( action );
-            },
-            error: error => {
-                console.log( error );
-            }
-        });
+        )
+        
+        if ( this.eventSourceSubscription ) {
+            this.eventSourceSubscription.subscribe({
+                next: ( data: any ) => {
+                    let action: IMercureAction  = JSON.parse( data.data );
+                    this.updateRooms( action );
+                },
+                error: ( error: any ) => {
+                    console.log( error );
+                }
+            });
+        }
     }
     
     ngOnDestroy(): void

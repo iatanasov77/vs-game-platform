@@ -642,7 +642,14 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
         this.appStateService.hideBusy();
         
         this.gamePlayService.exitBoardGame();
+        
         this.playAiQuestion = false;
+        this.dicesVisible = false;
+        this.rollButtonVisible = false;
+        this.acceptDoublingVisible = false;
+        this.sendVisible = false;
+        this.undoVisible = false;
+        
         this.lobbyButtonsVisibleChanged.emit( true );
         this.isStarted.emit( false );
         this.isPlayAi.emit( false );

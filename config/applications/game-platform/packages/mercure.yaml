@@ -3,6 +3,16 @@ mercure:
         default:
             url: '%env(MERCURE_URL)%'
             public_url: '%env(MERCURE_PUBLIC_URL)%'
+            protocol_version: '1.0'
+            
             jwt:
                 secret: '%env(MERCURE_JWT_SECRET)%'
                 publish: '*'
+                provider: App\Component\ServerSentEvent\MyTokenProvider
+                factory: Symfony\Component\Mercure\Jwt\WebTokenFactory
+                
+                # Define the required default claims here:
+                claims:
+                    iss: 'https://example.com'
+                    sub: 'my-service-subject'
+                    client_id: 'my-client-id'

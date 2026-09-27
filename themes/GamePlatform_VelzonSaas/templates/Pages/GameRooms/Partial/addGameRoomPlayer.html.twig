@@ -1,0 +1,30 @@
+{{ form_start( form, { 'attr': {'class': 'form-horizontal', 'id': 'AddGameRoomPlayerForm'} } ) }}
+    <div class="form-group">
+        {{ form_label(form.player, null, {
+            'label_attr': {'class': 'form-label'}
+            }) 
+        }}
+        
+        {{ form_widget(form.player, {'attr': {'class': 'form-select'}}) }}
+    </div>
+    
+    {% if gameType == 'board_game' %}
+        <div class="form-group">
+            {{ form_label(form.color, null, {
+                'label_attr': {'class': 'form-label'}
+                }) 
+            }}
+            
+            {{ form_widget(form.color, {'attr': {'class': 'form-select'}}) }}
+        </div>
+    {% else %}
+        <div class="form-group">
+            {{ form_label(form.position, null, {
+                'label_attr': {'class': 'form-label'}
+                }) 
+            }}
+            
+            {{ form_widget(form.position, {'attr': {'class': 'form-select'}}) }}
+        </div>
+    {% endif %}
+{{ form_end( form, {'render_rest': false} ) }}

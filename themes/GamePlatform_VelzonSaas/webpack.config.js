@@ -89,6 +89,9 @@ Encore
     .addEntry( 'js/contract-bridge', './themes/GamePlatform_VelzonSaas/assets/js/games/contract-bridge/index.js' )
     .addEntry( 'js/chess', './themes/GamePlatform_VelzonSaas/assets/js/games/chess/index.js' )
     .addEntry( 'js/backgammon', './themes/GamePlatform_VelzonSaas/assets/js/games/backgammon/index.js' )
+    
+    .addEntry( 'js/game-rooms', './themes/GamePlatform_VelzonSaas/assets/js/pages/game-rooms.js' )
+    .addEntry( 'js/debug-sse-page', './themes/GamePlatform_VelzonSaas/assets/js/games/debug-sse-page/index.js' )
 ;
 
 if ( Encore.isDev() ) {
@@ -104,6 +107,7 @@ Encore.configureDefinePlugin( ( options ) => {
     options.DEV_API_URL         = JSON.stringify( process.env.DEV_API_URL );
     options.PROD_BACKEND_URL    = JSON.stringify( process.env.PROD_BACKEND_URL );
     options.DEV_BACKEND_URL     = JSON.stringify( process.env.DEV_BACKEND_URL );
+    options.MERCURE_URL         = JSON.stringify( process.env.MERCURE_URL );
 });
 
 const config = Encore.getWebpackConfig();

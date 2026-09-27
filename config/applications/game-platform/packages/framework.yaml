@@ -33,6 +33,10 @@ framework:
         #########################################################################################################################
         cookie_lifetime: '%vs_users.cookie.lifetime%'
         gc_maxlifetime: '%vs_users.gc_maxlifetime%'
+    
+    http_client:
+        default_options:
+            verify_peer: false
         
 when@test:
     framework:

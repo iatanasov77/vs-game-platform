@@ -26,8 +26,12 @@ class MercureController extends AbstractController
     public function index( Request $request ): JsonResponse
     {
         $message    = $request->request->get( 'game_message' );
+        $responseData   = [
+            'status'    => Status::STATUS_OK,
+            'message'   => 'Update published',
+        ];
         
-        
+        return new JsonResponse( $responseData );
     }
     
     private function publish( GamePlay $gamePlay ): void
@@ -36,7 +40,7 @@ class MercureController extends AbstractController
             return;    
         }
         
-        $publishData    = json_encode([
+        $publishData    = \json_encode([
             'type'      => 'GamePlayRoomUpdate',
             'action'    => 'StartGame',
             'target'    => $gamePlay->getGameRoom(),

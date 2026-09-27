@@ -5,13 +5,14 @@ monolog:
         - console
         - websocket_game
         - websocket_chat
+        - mercure_game
     
     handlers:
         file_log:
             type: stream
             path: "%kernel.logs_dir%/%kernel.environment%.log"
             level: error
-            channels: ["!websocket_game", "!websocket_chat"]
+            channels: ["!websocket_game", "!websocket_chat", "!mercure_game"]
         websocket_game:
             type: stream
             path: '%kernel.logs_dir%/websocket_game.log' 
@@ -22,3 +23,8 @@ monolog:
             path: '%kernel.logs_dir%/websocket_chat.log' 
             level: info
             channels: ["websocket_chat"]
+        mercure_game:
+            type: stream
+            path: '%kernel.logs_dir%/mercure_game.log' 
+            level: info
+            channels: ["mercure_game"]

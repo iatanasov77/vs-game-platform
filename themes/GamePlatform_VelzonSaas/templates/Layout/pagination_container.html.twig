@@ -1,0 +1,17 @@
+{% if  items.pageCount > 1 %}
+    <div class="row g-0 text-center text-sm-start align-items-center mb-4">
+        <div class="col-sm-6">
+            <div>
+                <p class="mb-sm-0 text-muted">
+                    Showing 
+                    <span class="fw-semibold">{{ items.count }}</span> 
+                    of 
+                    <span class="fw-semibold">{{ items.getTotalItemCount }}</span> 
+                </p>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            {{ knp_pagination_render(items, 'Layout/pagination.html.twig') }}
+        </div>
+    </div>
+{% endif %}

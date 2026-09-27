@@ -1,0 +1,53 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+    <div id="TestSsseContainer"
+        data-locale="{{ app.request.locale }}"
+        
+        {# SSE URL
+         # =======
+         # You cannot use the mercure() helper and the setCookie() method at the same time
+         # (it would set the cookie twice on a single request). Choose either one method or the other.
+         # I prefer to set Cooie in the Controller.
+         # 
+        data-mercureEventSource="{{ mercure([
+            absolute_url( path( 'vs_api_test_mercure_send_to_test_subscribing_topic' ) ),
+            absolute_url( path( 'debug_sse_add_backgammon_ai_player', {'gameSlug': 'backgammon'} ) )
+        ]) | escape( 'html_attr' ) }}"
+        #}
+        
+        {# SSE Push Into Topics #}
+        data-mercureJwtSecret="{{ mercureJwtSecret }}"
+        data-addBackgammonAiPlayer="{{ path( 'debug_sse_add_backgammon_ai_player', {'gameSlug': 'backgammon'} ) }}"
+    >
+        <div class="mb-3" >
+            <a href="https://mercure-hub.game-platform.lh/.well-known/mercure/debug/" target="_blank">Mercure HUB Dashbord</a>
+        </div>
+        
+        <div class="card">
+            <div class="card-header align-items-center d-flex">
+                <h4 class="card-title mb-0 flex-grow-1">Tests</h4>
+                {#  
+                <div class="flex-shrink-0">
+                    <div class="form-check form-switch form-switch-right form-switch-md">
+                        <label for="default" class="form-label text-muted">Show Code</label>
+                        <input class="form-check-input code-switcher" type="checkbox" id="default">
+                    </div>
+                </div>
+                #}
+            </div><!-- end card header -->
+        
+            <div class="card-body">
+                <app-debug-sse-page></app-debug-sse-page>
+            </div><!-- end card-body -->
+        </div>
+        
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    
+    {{ encore_entry_script_tags( 'js/debug-sse-page', null, 'GameplatformVelzonsaasTheme' ) }}
+{% endblock %}

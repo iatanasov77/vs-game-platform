@@ -60,6 +60,7 @@ security:
         - { path: ^/translations/, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
         
         - { path: ^/cookie-consent-translations, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
-        #- { path: ^/, roles: [ROLE_SUPER_ADMIN, ROLE_APPLICATION_ADMIN, ROLE_TEST_VANKOSOFT_APPLICATION_ADMIN], requires_channel: '%env(SECURE_SCHEME)%' }
-        - { path: ^/, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
+        
+        - { path: ^/, roles: [ROLE_SUPER_ADMIN, ROLE_APPLICATION_ADMIN, ROLE_TEST_VANKOSOFT_APPLICATION_ADMIN], requires_channel: '%env(SECURE_SCHEME)%' }
+        #- { path: ^/, roles: PUBLIC_ACCESS, requires_channel: '%env(SECURE_SCHEME)%' }
 

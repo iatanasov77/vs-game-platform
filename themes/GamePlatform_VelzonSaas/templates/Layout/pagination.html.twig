@@ -1,0 +1,39 @@
+{% if pageCount > 1 %}
+    {% if previous is defined %}
+        {% set previousUrl = path( route, query | merge( {(pageParameterName): previous} ) ) %}
+        {% set previousActive = true %}
+    {% else %}
+        {% set previousUrl = 'javascript:void( 0 );' %}
+        {% set previousActive = false %}
+    {% endif %}
+    
+    {% if next is defined %}
+        {% set nextUrl = path( route, query | merge( {(pageParameterName): next} ) ) %}
+        {% set nextActive = true %}
+    {% else %}
+        {% set nextUrl = 'javascript:void( 0 );' %}
+        {% set nextActive = false %}
+    {% endif %}
+    
+    <ul class="pagination pagination-separated justify-content-center justify-content-sm-end mb-sm-0">
+        <li class="page-item {% if not previousActive %}disabled{% endif %}">
+            <a href="{{ previousUrl }}" class="page-link">
+                Previous
+            </a>
+        </li>
+        
+        {% for page in pagesInRange %}
+            {% if page != current %}
+                <li><a class="page-link" href="{{ path(route, query|merge({(pageParameterName): page})) }}" data-i="2" data-page="8">{{ page }}</a></li>
+            {% else %}
+                <li class="active"><a class="page-link" href="javascript:void(0);" data-i="1" data-page="8">{{ page }}</a></li>
+            {% endif %}
+        {% endfor %}
+        
+        <li class="page-item {% if not nextActive %}disabled{% endif %}">
+            <a href="{{ nextUrl }}" class="page-link">
+                Next
+            </a>
+        </li>
+    </ul>
+{% endif %}

@@ -2,6 +2,7 @@
 
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager as LiipImagineCacheManager;
 use Doctrine\Persistence\ManagerRegistry;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
@@ -30,6 +31,9 @@ final class GameManagerFactory
     
     /** @var EventDispatcherInterface */
     private $eventDispatcher;
+    
+    /** @var MessageBusInterface */
+    private $messageBus;
     
     /** @var ManagerRegistry */
     private $doctrine;
@@ -60,6 +64,7 @@ final class GameManagerFactory
         SerializerInterface $serializer,
         LiipImagineCacheManager $imagineCacheManager,
         EventDispatcherInterface $eventDispatcher,
+        MessageBusInterface $messageBus,
         ManagerRegistry $doctrine,
         GameRulesFactory $gameRulesFactory,
         RepositoryInterface $gameRepository,
@@ -73,6 +78,8 @@ final class GameManagerFactory
         $this->serializer               = $serializer;
         $this->imagineCacheManager      = $imagineCacheManager;
         $this->eventDispatcher          = $eventDispatcher;
+        $this->messageBus               = $messageBus;
+        
         $this->doctrine                 = $doctrine;
         $this->gameRulesFactory         = $gameRulesFactory;
         $this->gameRepository           = $gameRepository;
@@ -114,6 +121,7 @@ final class GameManagerFactory
             $this->serializer,
             $this->imagineCacheManager,
             $this->eventDispatcher,
+            $this->messageBus,
             $this->doctrine,
             $this->gameRulesFactory,
             $this->gameRepository,
@@ -136,6 +144,7 @@ final class GameManagerFactory
             $this->serializer,
             $this->imagineCacheManager,
             $this->eventDispatcher,
+            $this->messageBus,
             $this->doctrine,
             $this->gameRulesFactory,
             $this->gameRepository,
@@ -158,6 +167,7 @@ final class GameManagerFactory
             $this->serializer,
             $this->imagineCacheManager,
             $this->eventDispatcher,
+            $this->messageBus,
             $this->doctrine,
             $this->gameRulesFactory,
             $this->gameRepository,
@@ -180,6 +190,7 @@ final class GameManagerFactory
             $this->serializer,
             $this->imagineCacheManager,
             $this->eventDispatcher,
+            $this->messageBus,
             $this->doctrine,
             $this->gameRulesFactory,
             $this->gameRepository,
@@ -202,6 +213,7 @@ final class GameManagerFactory
             $this->serializer,
             $this->imagineCacheManager,
             $this->eventDispatcher,
+            $this->messageBus,
             $this->doctrine,
             $this->gameRulesFactory,
             $this->gameRepository,

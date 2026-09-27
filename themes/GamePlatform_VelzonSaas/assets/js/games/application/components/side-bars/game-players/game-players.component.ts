@@ -45,19 +45,23 @@ export class GamePlayersComponent implements OnInit, OnDestroy
             return;
         }
         
-        this.eventSourceSubscription = this.eventSourceService.connectToServerSentEvents(
+        this.eventSourceSubscription = this.eventSourceService.connect(
             mercureEventSource,
             { withCredentials: false },
             ['activeConnectionUpdate']
-        ).subscribe({
-            next: data => {
-                let action: IMercureAction  = JSON.parse( data.data );
-                this.updatePlayers( action );
-            },
-            error: error => {
-                console.log( error );
-            }
-        });
+        )
+        
+        if ( this.eventSourceSubscription ) {
+            this.eventSourceSubscription.subscribe({
+                next: ( data: any ) => {
+                    let action: IMercureAction  = JSON.parse( data.data );
+                    this.updatePlayers( action );
+                },
+                error: ( error: any ) => {
+                    console.log( error );
+                }
+            });
+        }
     }
     
     ngOnDestroy(): void

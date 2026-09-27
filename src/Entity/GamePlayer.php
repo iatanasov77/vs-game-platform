@@ -7,10 +7,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use App\Entity\UserManagement\User;
 
-/**
- * @Doctrine\Common\Annotations\Annotation\IgnoreAnnotation( "ORM\MappedSuperclass" )
- * @Doctrine\Common\Annotations\Annotation\IgnoreAnnotation("ORM\Column")
- */
 #[ORM\Entity]
 #[ORM\Table(name: "VSGP_GamePlayers")]
 class GamePlayer implements ResourceInterface

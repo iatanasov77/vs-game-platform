@@ -10,10 +10,6 @@ use Sylius\Component\Resource\Model\ToggleableTrait;
 use Vankosoft\CmsBundle\Model\FileInterface;
 use App\Entity\Application\Translation;
 
-/**
- * @Doctrine\Common\Annotations\Annotation\IgnoreAnnotation( "ORM\MappedSuperclass" )
- * @Doctrine\Common\Annotations\Annotation\IgnoreAnnotation("ORM\Column")
- */
 #[ORM\Entity]
 #[ORM\Table(name: "VSGP_Games")]
 #[Gedmo\TranslationEntity(class: Translation::class)]
@@ -65,6 +61,14 @@ class Game implements ResourceInterface
     /** @var Collection | GamePlay[] */
     #[ORM\OneToMany(targetEntity: GamePlay::class, mappedBy: "game", cascade: ["persist", "remove"], orphanRemoval: true)]
     private $gameSessions;
+    
+    /** @var int */
+    #[ORM\Column(name: "max_players", type: "integer", options: ["default" => 4], nullable: true)]
+    private $maxPlayers = 4;
+    
+    /** @var string */
+    #[ORM\Column(type: Types::ENUM, options: ['values' => ['board_game', 'card_game']], nullable: true)]
+    private $type;
     
     /** @var string */
     #[ORM\Column(type: Types::ENUM, options: ['values' => ['not_implemented', 'in_developement', 'in_developement_but', 'game_is_done'], 'default' => 'not_implemented'], nullable: true)]
@@ -175,6 +179,30 @@ class Game implements ResourceInterface
         if ( $this->gameSessions->contains( $gameSession ) ) {
             $this->gameSessions->removeElement( $gameSession );
         }
+        
+        return $this;
+    }
+    
+    public function getMaxPlayers()
+    {
+        return $this->maxPlayers;
+    }
+    
+    public function setMaxPlayers($maxPlayers)
+    {
+        $this->maxPlayers = $maxPlayers;
+        
+        return $this;
+    }
+    
+    public function getType()
+    {
+        return $this->type;
+    }
+    
+    public function setType($type)
+    {
+        $this->type = $type;
         
         return $this;
     }

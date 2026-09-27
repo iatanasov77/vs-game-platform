@@ -24,7 +24,22 @@ services:
     _defaults:
         autowire: true
         autoconfigure: true
-
+    
+    App\Component\ServerSentEvent\MyTokenProvider:
+        public: true
+        arguments:
+            - '@lexik_jwt_authentication.jwt_manager'
+            - '@vs_users.security_bridge'
+    
+    app_mercure_publisher:
+        class: App\Component\ServerSentEvent\MercurePublisher
+        public: true
+        arguments:
+            - '@app_mercure_logger'
+            - '@mercure.hub.default'
+            - '@Symfony\Component\Mercure\Discovery'
+            - '@Symfony\Component\Mercure\Authorization'
+    
     ##############################################################
     # Custom Loggers
     ##############################################################
@@ -36,6 +51,13 @@ services:
             - '%env(APP_ENV)%'
             - '%kernel.project_dir%'
             - '%env(json:WEBSOCKET_GAME_LOGGER_CONTEXTS)%'
+    
+    app_mercure_logger:
+        class: App\Component\MercureLogger
+        public: true
+        arguments:
+            - '@monolog.logger.mercure_game'
+            - '%env(APP_ENV)%'
     
     ##############################################################
     # Custom Serializer Normalizers
@@ -126,6 +148,7 @@ services:
             - '@serializer'
             - '@liip_imagine.cache.manager'
             - '@event_dispatcher'
+            - '@messenger.default_bus'
             - '@doctrine'
             - '@app_game_factory'
             - '@vsapp.repository.games'
@@ -153,6 +176,15 @@ services:
     ##############################################################
     # Game Controllers
     ##############################################################
+    App\Controller\GamePlatform\GameRoomsController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@doctrine'
+            - '@vsapp.repository.game_sessions'
+            - '@vsapp.factory.game_sessions'
+            - '@vsapp.factory.temp_players'
+    
     App\Controller\GamePlatform\InviteController:
         tags: ['controller.service_arguments']
         autowire: true

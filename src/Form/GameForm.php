@@ -53,6 +53,13 @@ class GameForm extends AbstractForm
                 'translation_domain'    => 'VSApplicationBundle',
             ])
             
+            ->add( 'type', ChoiceType::class, [
+                'label'                 => 'game_platform.form.game.game_type',
+                'placeholder'           => 'game_platform.form.game.game_type_placeholder',
+                'translation_domain'    => 'GamePlatform',
+                'choices'               => \array_flip( GamePlatform::GAME_TYPE ),
+            ])
+            
             ->add( 'status', ChoiceType::class, [
                 'label'                 => 'game_platform.form.game.game_status',
                 'translation_domain'    => 'GamePlatform',

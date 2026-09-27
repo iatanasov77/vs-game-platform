@@ -50,7 +50,7 @@
                                     <div class="btn-group">
                                         {% if app.user in room.users %}
                                             <a class="btn btn-primary btnLeaveGameRoom"
-                                                data-url="{{ path( 'app_leave_game_room' ) }}"
+                                                data-url="{{ path( 'app_leave_game_room', {'roomId': room.id} ) }}"
                                                 title="Leave Room"
                                             >
                                                 <i class="fa-solid fa-right-from-bracket"></i>
@@ -59,7 +59,7 @@
                                         
                                         {% if app.user not in room.users and room.gamePlayers | length < room.game.maxPlayers %}
                                             <a class="btn btn-primary btnJoinGameRoom"
-                                                data-url="{{ path( 'app_join_game_room' ) }}"
+                                                data-url="{{ path( 'app_join_game_room', {'roomId': room.id} ) }}"
                                                 title="Join Room"
                                             >
                                                 <i class="fa-solid fa-right-to-bracket"></i>
@@ -68,7 +68,7 @@
                                         
                                         {% if room.gamePlayers | length < room.game.maxPlayers %}
                                             <a class="btn btn-primary btnAddPlayer"
-                                                data-url="{{ path( 'app_add_user_into_game_room' ) }}"
+                                                data-url="{{ path( 'app_add_user_into_game_room_form', {'roomId': room.id} ) }}"
                                                 title="Add Player"
                                             >
                                                 <i class="fa-solid fa-user-plus"></i>
@@ -97,6 +97,7 @@
 
 {% block modals %}
     {% include 'Modal/createGameRoom.html.twig' %}
+    {% include 'Modal/addGameRoomPlayer.html.twig' %}
 {% endblock %}
 
 {% block head_styles %}

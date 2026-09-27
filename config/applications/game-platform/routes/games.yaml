@@ -97,13 +97,17 @@ app_handle_game_room_form:
     controller: App\Controller\GamePlatform\GameRoomsController::handleGameRoomForm
 
 app_join_game_room:
-    path: /game-rooms/clear
+    path: /game-rooms/{roomId}/join
     controller: App\Controller\GamePlatform\GameRoomsController::joinGameRoom
 
 app_leave_game_room:
-    path: /game-rooms/clear
+    path: /game-rooms/{roomId}/leave
     controller: App\Controller\GamePlatform\GameRoomsController::leaveGameRoom
 
-app_add_user_into_game_room:
-    path: /game-rooms/clear
-    controller: App\Controller\GamePlatform\GameRoomsController::addUserIntoGameRoom
+app_add_user_into_game_room_form:
+    path: /game-rooms/{roomId}/add-user-form
+    controller: App\Controller\GamePlatform\GameRoomsController::addUserIntoGameRoomForm
+
+app_handle_add_user_into_game_room_form:
+    path: /game-rooms/{roomId}/add-user
+    controller: App\Controller\GamePlatform\GameRoomsController::handleUserIntoGameRoomForm

@@ -60,6 +60,14 @@ game_platform:
         game_platform_settings_label: GamePlatform Settings
         game_platform_settings_placeholder: '-- Choose a GamePlatform Settings'
         
+        game_player_color_black: Black
+        game_player_color_white: White
+        
+        game_player_position_south: South
+        game_player_position_east: East
+        game_player_position_north: North
+        game_player_position_west: West
+        
         game_platform_settings:
             settings_key: Settings Key
             settings_key_help: Used to load different Settings in Different Application Environements.
@@ -89,21 +97,33 @@ game_platform:
         game:
             game_url: УРЛ на Играта
             parent_game: Parent Game
-            parent_game_placeholder: '-- Choose a Parent Game'
+            parent_game_placeholder: '-- Choose a Parent Game --'
             parent_game_help: Choose a Parent Game if this Game is a Game Variant
+            game_type: Game Type
+            game_type_placeholder: '-- Choose a Game Type --'
+            board_game: Board Game
+            card_game: Card Game
             game_status: Game Status
             not_implemented: Not Implemented
             in_developement: In Developement
             in_developement_but: In Developement But Play With Computer (AI) is Done
             game_is_done: Game is Done
             max_players: Max Players
-            
+        
         game_room:
             game: Game
             game_placeholder: '-- Choose a Game --'
             players: Players
             players_placeholder: '-- Select Players --'
-            
+        
+        game_room_player:
+            player: Player
+            player_placeholder: '-- Choose a Player --'
+            player_color: Player Color
+            player_color_placeholder: '-- Select Player Color --'
+            player_position: Player Position
+            player_position_placeholder: '-- Select Player Position --'
+        
         game_player:
             type: Player Type
             user: User

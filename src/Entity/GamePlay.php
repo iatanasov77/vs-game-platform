@@ -151,4 +151,15 @@ class GamePlay implements ResourceInterface
         
         return $users;
     }
+    
+    public function getTempPlayer( GamePlayer $player ): ?TempPlayer
+    {
+        foreach( $this->gamePlayers as $tempPlayer ) {
+            if ( $tempPlayer->getPlayer() == $player ) {
+                return $tempPlayer;
+            }
+        }
+        
+        return null;
+    }
 }

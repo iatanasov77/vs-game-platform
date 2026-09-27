@@ -38,6 +38,65 @@ $( function()
         
     });
     
+    $( '.btnJoinGameRoom' ).on( 'click', function()
+    {
+        $.ajax({
+            type: "GET",
+            url: $( this ).attr( 'data-url' ),
+            success: function( response )
+            {
+                // document.location = document.location;
+            },
+            error: function()
+            {
+                alert( "SYSTEM ERROR!!!" );
+            }
+        });
+    });
+    
+    $( '.btnLeaveGameRoom' ).on( 'click', function()
+    {
+        $.ajax({
+            type: "GET",
+            url: $( this ).attr( 'data-url' ),
+            success: function( response )
+            {
+                document.location = document.location;
+            },
+            error: function()
+            {
+                alert( "SYSTEM ERROR!!!" );
+            }
+        });
+    });
+    
+    $( '.btnAddPlayer' ).on( 'click', function()
+    {
+        $.ajax({
+            type: "GET",
+            url: $( this ).attr( 'data-url' ),
+            success: function( response )
+            {
+                $( '#AddGameRoomFormPlayerContainer' ).html( response );
+                
+                /** Bootstrap 5 Modal Toggle */
+                const myModal = new bootstrap.Modal( '#add-game-room-player-modal', {
+                    keyboard: false
+                });
+                myModal.show( $( '#add-game-room-player-modal' ).get( 0 ) );
+            },
+            error: function()
+            {
+                alert( "SYSTEM ERROR!!!" );
+            }
+        });
+    });
+    
+    $( '#btnSaveGameRoomPlayer' ).on( 'click', function ( e )
+    {
+        $( '#AddGameRoomPlayerForm' ).submit();
+    });
+    
     $( '.btnDeleteGameRoom' ).on( 'click', function()
     {
         $.ajax({

@@ -10,9 +10,13 @@ use Sylius\Component\Resource\Factory\FactoryInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Vankosoft\ApplicationBundle\Component\Status;
 
+use App\Component\GamePlatform;
 use App\Component\Type\PlayerColor;
+use App\Component\Type\PlayerPosition;
 use App\Component\Utils\Guid;
 use App\Form\GameRoomForm;
+use App\Form\GameRoomPlayerForm;
+use App\Entity\Game;
 use App\Entity\TempPlayer;
 
 /**
@@ -85,7 +89,6 @@ class GameRoomsController extends AbstractController
         $form   = $this->createForm( GameRoomForm::class, null, [
             'action' => $this->generateUrl( 'app_handle_game_room_form' ),
             'method' => 'POST'
-            
         ]);
         
         return $this->render( 'Pages/GameRooms/Partial/createGameRoom.html.twig', [
@@ -103,16 +106,18 @@ class GameRoomsController extends AbstractController
         $form->handleRequest( $request );
         if( $form->isSubmitted() && $form->isValid() ) {
             $formData = $form->getData();
+            $baseGame = $formData['game'];
             
-            $blackPlayer = $this->CreateTempPlayer();
+            $player = $this->getUser()->getPlayer();
+            $tempPlayer = $this->createTempPlayer( $baseGame, $player );
             
             $game = $this->gamePlayFactory->createNew();
-            $game->setGame( $formData['game'] );
+            $game->setGame( $baseGame );
             $game->setGuid( Guid::NewGuid() );
             
-            $blackPlayer->setGame( $game );
+            $tempPlayer->setGame( $game );
             
-            $game->addGamePlayer( $blackPlayer );
+            $game->addGamePlayer( $tempPlayer );
             
             $em = $this->doctrine->getManager();
             $em->persist( $game );
@@ -127,37 +132,102 @@ class GameRoomsController extends AbstractController
         ]);
     }
     
-    public function joinGameRoom( Request $request ): Response
+    public function joinGameRoom( $roomId, Request $request ): Response
     {
-        return new JsonResponse([
-            'status'    => Status::STATUS_OK,
-            'message'   => 'Game Rooms Cleared !!!',
-        ]);
-    }
-    
-    public function leaveGameRoom( Request $request ): Response
-    {
-        return new JsonResponse([
-            'status'    => Status::STATUS_OK,
-            'message'   => 'Game Rooms Cleared !!!',
-        ]);
-    }
-    
-    public function addUserIntoGameRoom( Request $request ): Response
-    {
-        return new JsonResponse([
-            'status'    => Status::STATUS_OK,
-            'message'   => 'Game Rooms Cleared !!!',
-        ]);
-    }
-    
-    private function CreateTempPlayer(): TempPlayer
-    {
+        $room   = $this->gamePlayRepository->find( $roomId );
         $player = $this->getUser()->getPlayer();
-        $playerPosition = PlayerColor::Black ;
         
+        $tempPlayer = $this->createTempPlayer( $room->getGame(), $player );
+        $room->addGamePlayer( $tempPlayer );
+        
+        $em = $this->doctrine->getManager();
+        $em->persist( $room );
+        $em->flush();
+        
+        return new JsonResponse([
+            'status'    => Status::STATUS_OK,
+            'message'   => 'Game Room Joined !!!',
+        ]);
+    }
+    
+    public function leaveGameRoom( $roomId, Request $request ): Response
+    {
+        $room   = $this->gamePlayRepository->find( $roomId );
+        $player = $this->getUser()->getPlayer();
+        
+        $tempPlayer = $room->getTempPlayer( $player );
+        $room->removeGamePlayer( $tempPlayer );
+        
+        $em = $this->doctrine->getManager();
+        $em->persist( $room );
+        $em->flush();
+        
+        return new JsonResponse([
+            'status'    => Status::STATUS_OK,
+            'message'   => 'Game Room Leaved !!!',
+        ]);
+    }
+    
+    public function addUserIntoGameRoomForm( $roomId, Request $request ): Response
+    {
+        $room       = $this->gamePlayRepository->find( $roomId );
+        $gameType   = $room->getGame()->getType();
+        
+        $form   = $this->createForm( GameRoomPlayerForm::class, null, [
+            'action'    => $this->generateUrl( 'app_handle_add_user_into_game_room_form', ['roomId' => $roomId] ),
+            'method'    => 'POST',
+            'gameType'  => $gameType,
+        ]);
+        
+        return $this->render( 'Pages/GameRooms/Partial/addGameRoomPlayer.html.twig', [
+            'form'      => $form,
+            'gameType'  => $gameType,
+        ]);
+    }
+    
+    public function handleUserIntoGameRoomForm( $roomId, Request $request ): Response
+    {
+        $room       = $this->gamePlayRepository->find( $roomId );
+        $gameType   = $room->getGame()->getType();
+        
+        $form   = $this->createForm( GameRoomPlayerForm::class, null, [
+            'action'    => $this->generateUrl( 'app_handle_add_user_into_game_room_form', ['roomId' => $roomId] ),
+            'method'    => 'POST',
+            'gameType'  => $gameType,
+        ]);
+        
+        $form->handleRequest( $request );
+        if( $form->isSubmitted() && $form->isValid() ) {
+            $formData = $form->getData();
+            $player = $formData['player'];
+            
+            $tempPlayer = $this->createTempPlayer( $room->getGame(), $player );
+            $tempPlayer->setGame( $room );
+            
+            $room->addGamePlayer( $tempPlayer );
+            
+            $em = $this->doctrine->getManager();
+            $em->persist( $room );
+            $em->flush();
+            
+            return $this->redirect( $this->generateUrl( 'app_game_rooms' ) );
+        }
+        
+        return new JsonResponse([
+            'status'    => Status::STATUS_ERROR,
+            'message'   => 'User NOT Added Into Game Room  !!!',
+        ]);
+    }
+    
+    private function createTempPlayer( Game $baseGame, $player ): TempPlayer
+    {
         $tempPlayer = $this->tempPlayersFactory->createNew();
-        $tempPlayer->setPosition( $playerPosition->toString() );
+        
+        if ( $baseGame == GamePlatform::GAME_TYPE_BOARD_GAME ) {
+            $tempPlayer->setColor( PlayerColor::Black->toString() );
+        } else {
+            $tempPlayer->setPosition( PlayerPosition::South->toString() );
+        }
         
         $tempPlayer->setGuid( Guid::NewGuid() );
         $tempPlayer->setPlayer( $player );

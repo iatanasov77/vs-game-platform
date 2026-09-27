@@ -67,6 +67,10 @@ class Game implements ResourceInterface
     private $maxPlayers = 4;
     
     /** @var string */
+    #[ORM\Column(type: Types::ENUM, options: ['values' => ['board_game', 'card_game']], nullable: true)]
+    private $type;
+    
+    /** @var string */
     #[ORM\Column(type: Types::ENUM, options: ['values' => ['not_implemented', 'in_developement', 'in_developement_but', 'game_is_done'], 'default' => 'not_implemented'], nullable: true)]
     private $status;
     
@@ -187,6 +191,18 @@ class Game implements ResourceInterface
     public function setMaxPlayers($maxPlayers)
     {
         $this->maxPlayers = $maxPlayers;
+        
+        return $this;
+    }
+    
+    public function getType()
+    {
+        return $this->type;
+    }
+    
+    public function setType($type)
+    {
+        $this->type = $type;
         
         return $this;
     }

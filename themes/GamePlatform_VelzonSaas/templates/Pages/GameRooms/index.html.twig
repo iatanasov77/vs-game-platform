@@ -25,7 +25,7 @@
             <div class="table-responsive">
                 
                 <!-- Striped Rows -->
-                <table class="table table-striped">
+                <table class="table table-striped game-rooms-table">
                     <thead>
                         <tr>
                             <th scope="col"></th>
@@ -43,7 +43,15 @@
                                 <th scope="row">{{ loop.index }}</th>
                                 <td>{{ room.guid }}</td>
                                 <td>{{ room.game.title }}</td>
-                                <td>{{ room.gamePlayers | length }} / {{ room.game.maxPlayers }}</td>
+                                <td>
+                                    <div class="mb-2">
+                                        {{ room.gamePlayers | length }} / {{ room.game.maxPlayers }}
+                                    </div>
+                                    
+                                    <div class="cell-players observers ">
+                                        {% include 'Pages/GameRooms/Partial/gamePlayers.html.twig' %}
+                                    </div>
+                                </td>
                                 <td>{{ room.status }}</td>
                                 <td>{{ room.updatedAt | date( 'd M Y' ) }}</td>
                                 <td>

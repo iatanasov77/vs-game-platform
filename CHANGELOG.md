@@ -1,3 +1,23 @@
+1.2.3	|	Release date: **27.09.2026**
+============================================
+* New Features:
+  - Remove Entity Annotations.
+  - Improve Exit Backgammon Game.
+  - Change Game Sessions Entity as Multiplayer Lobby.
+  - Add MessageBus argument into Game Managers.
+  - Add Mercure Message Handlers.
+  - Try to Use 'ngx-sse-client'
+  - Add a Page to Debug SSE.
+  - Add Debug SSE Page.
+  - Trying use Mercure Hub.
+  - Add Mercure HUB Url Into Angular Application Context.
+  - Create Many Mercure Components.
+  - Improve Debug SSE Page.
+  - Update Mercure Configs.
+  - Create a Page for Game Rooms in Frontend.
+  - Improve Page for Game Rooms in Frontend.
+
+
 1.2.2	|	Release date: **14.09.2026**
 ============================================
 * New Features:

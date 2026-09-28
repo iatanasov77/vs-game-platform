@@ -32,12 +32,15 @@ export class GameBaseComponent implements OnInit, OnDestroy
     
     userActivity: any;
     userInactive: Subject<any> = new Subject();
+    userInactivityTimeout: number; 
     
     constructor(
         protected authService: AuthService,
         protected soundService: SoundService,
         protected gameService: GameService,
     ) {
+        this.userInactivityTimeout = window.gamePlatformSettings.gamePlayerInactivityTimeout;
+        
         if( isDevMode() ) {
             this.developementClass  = 'developement';
         }
@@ -50,8 +53,8 @@ export class GameBaseComponent implements OnInit, OnDestroy
         
         this.setTimeout();
         this.userInactive.subscribe( () => {
-            // console.log('user has been inactive for 3s');
-            // alert( 'user has been inactive for 3s' );
+            // console.log( `user has been inactive for ${this.userInactivityTimeout / 1000}s` );
+            // alert( `user has been inactive for ${this.userInactivityTimeout / 1000}s` );
         });
     }
     
@@ -92,7 +95,7 @@ export class GameBaseComponent implements OnInit, OnDestroy
     
     setTimeout(): void
     {
-        this.userActivity = setTimeout( () => this.userInactive.next( undefined ), 3000 );
+        this.userActivity = setTimeout( () => this.userInactive.next( undefined ), this.userInactivityTimeout );
     }
     
     @HostListener( 'window:mousemove' )

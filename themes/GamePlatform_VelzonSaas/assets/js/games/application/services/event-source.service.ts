@@ -53,14 +53,14 @@ export class EventSourceService
     {
         const mercureEventSource  = $( '#GameContainer' ).attr( 'data-mercureEventSource' );
         const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
-        alert( `SSE Subscribe URL: ${mercureEventSource}` );
+        // alert( `SSE Subscribe URL: ${mercureEventSource}` );
         
         this.sseClient.stream(
             mercureEventSource,
             { keepAlive: true, reconnectionDelay: 1_000, responseType: 'event' },
             { headers }, 'POST'
         ).subscribe( ( event ) => {
-            alert( `SSE Subscribe Event: ${event.type}` );
+            // alert( `SSE Subscribe Event: ${event.type}` );
             
             if ( event.type === 'error' ) {
                 const errorEvent = event as ErrorEvent;
@@ -80,7 +80,7 @@ export class EventSourceService
     connect( url: string, options: EventSourceInit, eventNames: string[] = [] ): Observable<MessageEvent> | undefined
     {
         this.eventSource    = new EventSourcePolyfill( url, options );
-        alert( this.eventSource.url );
+        // alert( this.eventSource.url );
         
         return new Observable( ( subscriber: Subscriber<MessageEvent> ) => {
             if ( ! this.eventSource ) return;

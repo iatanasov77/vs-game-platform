@@ -31,6 +31,7 @@
                             <th scope="col"></th>
                             <th scope="col">Id</th>
                             <th scope="col">Game</th>
+                            <th scope="col">Players Addition</th>
                             <th scope="col">Players</th>
                             <th scope="col">Status</th>
                             <th scope="col">Updated At</th>
@@ -43,13 +44,10 @@
                                 <th scope="row">{{ loop.index }}</th>
                                 <td>{{ room.guid }}</td>
                                 <td>{{ room.game.title }}</td>
+                                <td>{{ room.gamePlayers | length }} / {{ room.game.maxPlayers }}</td>
                                 <td>
-                                    <div class="mb-2">
-                                        {{ room.gamePlayers | length }} / {{ room.game.maxPlayers }}
-                                    </div>
-                                    
-                                    <div class="cell-players observers ">
-                                        {% include 'Pages/GameRooms/Partial/gamePlayers.html.twig' %}
+                                    <div class="cell-players observers">
+                                        {% include 'Pages/GameRooms/Partial/gamePlayers.html.twig' with { 'gameTeams': gameRoomTeams[room.id]} %}
                                     </div>
                                 </td>
                                 <td>{{ room.status }}</td>

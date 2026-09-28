@@ -73,6 +73,8 @@ game_platform:
             settings_key_help: Used to load different Settings in Different Application Environements.
             game_settings: Game Settings
             timeout_between_players: Timeout between Players
+            game_player_inactivity_timeout: Game Player Inactivity Timeout
+            game_player_inactivity_timeout_help: In Mileseconds
             auto_open_card_game_auction_dialog: Auto Open CardGame Auction Dialog
             game_debugging: Game Debugging
             debug_game_sounds: Debug Game Sounds
@@ -130,4 +132,5 @@ game_platform:
             user_placeholder: '-- Attach an User --'
             rooms: Rooms
             rooms_placeholder: '-- Select Rooms --'
+            photo_url: Photo Url
     

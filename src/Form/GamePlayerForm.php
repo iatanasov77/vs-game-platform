@@ -48,6 +48,12 @@ class GamePlayerForm extends AbstractForm
                 'label'                 => 'vs_application.form.name',
                 'translation_domain'    => 'VSApplicationBundle',
             ])
+            
+            ->add( 'photoUrl', TextType::class, [
+                'label'                 => 'game_platform.form.game_player.photo_url',
+                'translation_domain'    => 'GamePlatform',
+                'required'              => false,
+            ])
         ;
     }
     

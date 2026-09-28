@@ -13,6 +13,7 @@ use Vankosoft\ApplicationBundle\Component\Status;
 use App\Component\GamePlatform;
 use App\Component\Type\PlayerColor;
 use App\Component\Type\PlayerPosition;
+use App\Component\Type\CardGameTeam;
 use App\Component\Utils\Guid;
 use App\Form\GameRoomForm;
 use App\Form\GameRoomPlayerForm;
@@ -58,7 +59,8 @@ class GameRoomsController extends AbstractController
         );
         
         return $this->render( 'Pages/GameRooms/index.html.twig', [
-            'gameRooms' => $rooms,
+            'gameRooms'     => $rooms,
+            'gameRoomTeams' => $this->createTeams( $rooms ),
         ]);
     }
     
@@ -235,5 +237,30 @@ class GameRoomsController extends AbstractController
         $player->addGamePlayer( $tempPlayer );
         
         return $tempPlayer;
+    }
+    
+    private function createTeams( $rooms ): array
+    {
+        $teams = [];
+        foreach ( $rooms as $room ) {
+            foreach ( $room->getGamePlayers() as $player ) {
+                if ( $player->getColor() ) {
+                    $teams[$room->getId()][$player->getColor()][] = $player;
+                }
+                
+                if ( $player->getPosition() ) {
+                    if (
+                        $player->getPosition() == PlayerPosition::North->toString() ||
+                        $player->getPosition() == PlayerPosition::South->toString()
+                    ) {
+                        $teams[$room->getId()][CardGameTeam::SouthNorth->toString()][] = $player;
+                    } else {
+                        $teams[$room->getId()][CardGameTeam::EastWest->toString()][] = $player;
+                    }
+                }
+            }
+        }
+        
+        return $teams;
     }
 }

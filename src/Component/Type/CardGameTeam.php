@@ -9,8 +9,8 @@ enum CardGameTeam: int
     public function toString(): string
     {
         return match( $this ) {
-            CardGameTeam::SouthNorth  => 'south',
-            CardGameTeam::EastWest    => 'east',
+            CardGameTeam::SouthNorth  => 'south_north',
+            CardGameTeam::EastWest    => 'east_west',
             CardGameTeam::Neither     => 'neither',
         };
     }

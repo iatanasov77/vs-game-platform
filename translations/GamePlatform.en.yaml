@@ -105,12 +105,14 @@ game_platform:
             game_type_placeholder: '-- Choose a Game Type --'
             board_game: Board Game
             card_game: Card Game
+            card_game_no_teams: Card Game with No Teams
             game_status: Game Status
             not_implemented: Not Implemented
             in_developement: In Developement
             in_developement_but: In Developement But Play With Computer (AI) is Done
             game_is_done: Game is Done
             max_players: Max Players
+            max_team_players: Max Team Players
             
         game_room:
             game: Game

@@ -80,9 +80,13 @@ app_game_rooms:
     path: /game-rooms
     controller: App\Controller\GamePlatform\GameRoomsController::index
 
-app_clear_game_rooms:
-    path: /game-rooms/clear
-    controller: App\Controller\GamePlatform\GameRoomsController::clearGameRooms
+app_clear_game_room_sessions_form:
+    path: /game-rooms/clear-room-sessions-form
+    controller: App\Controller\GamePlatform\GameRoomsController::clearGameRoomsForm
+
+app_clear_game_room_sessions_handle:
+    path: /game-rooms/clear-room-sessions-handle
+    controller: App\Controller\GamePlatform\GameRoomsController::clearGameRoomsHandle
 
 app_delete_game_room:
     path: /game-rooms/delete/{id}

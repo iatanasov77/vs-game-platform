@@ -37,7 +37,29 @@ $( function()
     
     $( '#ClearGameSessions' ).on( 'click', function()
     {
-        
+        $.ajax({
+            type: "GET",
+            url: $( this ).attr( 'data-url' ),
+            success: function( response )
+            {
+                $( '#ClearGameSessionsFormContainer' ).html( response );
+                
+                /** Bootstrap 5 Modal Toggle */
+                const myModal = new bootstrap.Modal( '#clear-game-sessions-modal', {
+                    keyboard: false
+                });
+                myModal.show( $( '#clear-game-sessions-modal' ).get( 0 ) );
+            },
+            error: function()
+            {
+                alert( "SYSTEM ERROR!!!" );
+            }
+        });
+    });
+    
+    $( '#btnClearGameSessions' ).on( 'click', function ( e )
+    {
+        $( '#ClearGameSessionsForm' ).submit();
     });
     
     $( '.btnJoinGameRoom' ).on( 'click', function()

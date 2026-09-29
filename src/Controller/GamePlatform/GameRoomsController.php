@@ -11,11 +11,12 @@ use Knp\Component\Pager\PaginatorInterface;
 use Vankosoft\ApplicationBundle\Component\Status;
 
 use App\Component\GamePlatform;
+use App\Component\GameTeam;
 use App\Component\Type\PlayerColor;
 use App\Component\Type\PlayerPosition;
-use App\Component\Type\CardGameTeam;
 use App\Component\Utils\Guid;
 use App\Form\GameRoomForm;
+use App\Form\ClearGameRoomForm;
 use App\Form\GameRoomPlayerForm;
 use App\Entity\Game;
 use App\Entity\TempPlayer;
@@ -29,6 +30,9 @@ class GameRoomsController extends AbstractController
     private $doctrine;
     
     /** @var RepositoryInterface */
+    private $gameRepository;
+    
+    /** @var RepositoryInterface */
     private $gamePlayRepository;
     
     /** @var FactoryInterface */
@@ -39,11 +43,13 @@ class GameRoomsController extends AbstractController
     
     public function __construct(
         ManagerRegistry $doctrine,
+        RepositoryInterface $gameRepository,
         RepositoryInterface $gamePlayRepository,
         FactoryInterface $gamePlayFactory,
         FactoryInterface $tempPlayersFactory
     ) {
         $this->doctrine             = $doctrine;
+        $this->gameRepository       = $gameRepository;
         $this->gamePlayRepository   = $gamePlayRepository;
         $this->gamePlayFactory      = $gamePlayFactory;
         $this->tempPlayersFactory   = $tempPlayersFactory;
@@ -64,11 +70,46 @@ class GameRoomsController extends AbstractController
         ]);
     }
     
-    public function clearGameRooms( Request $request ): Response
+    public function clearGameRoomsForm( Request $request ): Response
     {
+        $form   = $this->createForm( ClearGameRoomForm::class, null, [
+            'action' => $this->generateUrl( 'app_clear_game_room_sessions_handle' ),
+            'method' => 'POST'
+        ]);
+        
+        return $this->render( 'Pages/GameRooms/Partial/clearGameRoom.html.twig', [
+            'form' => $form,
+        ]);
+    }
+    
+    public function clearGameRoomsHandle( Request $request ): Response
+    {
+        $form   = $this->createForm( ClearGameRoomForm::class, null, [
+            'action' => $this->generateUrl( 'app_clear_game_room_sessions_handle' ),
+            'method' => 'POST'
+        ]);
+        
+        $form->handleRequest( $request );
+        if( $form->isSubmitted() && $form->isValid() ) {
+            $em         = $this->doctrine->getManager();
+            $formData   = $form->getData();
+            $baseGame   = $formData['game'];
+            
+            $rooms      = $baseGame ?
+                            $this->gamePlayRepository->findBy( ['game' => $baseGame] ) :
+                            $this->gamePlayRepository->findAll();
+            
+            foreach ( $rooms as $room ) {
+                $em->remove( $room );
+                $em->flush();
+            }
+            
+            return $this->redirect( $this->generateUrl( 'app_game_rooms' ) );
+        }
+        
         return new JsonResponse([
-            'status'    => Status::STATUS_OK,
-            'message'   => 'Game Rooms Cleared !!!',
+            'status'    => Status::STATUS_ERROR,
+            'message'   => 'Game Room Sessions NOT Cleared !!!',
         ]);
     }
     
@@ -243,22 +284,7 @@ class GameRoomsController extends AbstractController
     {
         $teams = [];
         foreach ( $rooms as $room ) {
-            foreach ( $room->getGamePlayers() as $player ) {
-                if ( $player->getColor() ) {
-                    $teams[$room->getId()][$player->getColor()][] = $player;
-                }
-                
-                if ( $player->getPosition() ) {
-                    if (
-                        $player->getPosition() == PlayerPosition::North->toString() ||
-                        $player->getPosition() == PlayerPosition::South->toString()
-                    ) {
-                        $teams[$room->getId()][CardGameTeam::SouthNorth->toString()][] = $player;
-                    } else {
-                        $teams[$room->getId()][CardGameTeam::EastWest->toString()][] = $player;
-                    }
-                }
-            }
+            $teams[$room->getId()] = GameTeam::CreateGameTeam( $room );
         }
         
         return $teams;

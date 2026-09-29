@@ -10,8 +10,12 @@
             {% endif %}
         {% endif %}
         
-        <div rel="0" class="dib">
+        <div rel="0" class="player-slot dib">
             <img class="tip" height="46" src="{{ photoUrl }}">
+        </div>
+        
+        <div rel="0" class="player-slot dib">
+            <i onclick="Socket.send([-64,5748648,0])" class="fa fa-sign-in fa-3x"></i>
         </div>
     {% endfor %}
     

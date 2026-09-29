@@ -17,12 +17,14 @@ final class GamePlatform
         self::GAME_STATUS_DONE                  => 'game_platform.form.game.game_is_done',
     ];
     
-    const GAME_TYPE_BOARD_GAME  = 'board_game';
-    const GAME_TYPE_CARD_GAME   = 'card_game';
+    const GAME_TYPE_BOARD_GAME          = 'board_game';
+    const GAME_TYPE_CARD_GAME           = 'card_game';
+    const GAME_TYPE_CARD_GAME_NO_TEAMS  = 'card_game_no_teams';
     
     const GAME_TYPE   = [
-        self::GAME_TYPE_BOARD_GAME  => 'game_platform.form.game.board_game',
-        self::GAME_TYPE_CARD_GAME   => 'game_platform.form.game.card_game',
+        self::GAME_TYPE_BOARD_GAME          => 'game_platform.form.game.board_game',
+        self::GAME_TYPE_CARD_GAME           => 'game_platform.form.game.card_game',
+        self::GAME_TYPE_CARD_GAME_NO_TEAMS  => 'game_platform.form.game.card_game_no_teams',
     ];
     
     const GAME_PLAYER_COLOR_BLACK   = 0;

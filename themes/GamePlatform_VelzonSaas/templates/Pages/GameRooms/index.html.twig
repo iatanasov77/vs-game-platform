@@ -14,7 +14,7 @@
                     Create Game Room
                 </button>
                 <button id="ClearGameSessions" class="btn btn-block btn-primary btn-xl"
-                    data-url="{{ path( 'app_clear_game_rooms' ) }}"
+                    data-url="{{ path( 'app_clear_game_room_sessions_form' ) }}"
                 >
                     Clear Game Sessions
                 </button>
@@ -103,6 +103,7 @@
 
 {% block modals %}
     {% include 'Modal/createGameRoom.html.twig' %}
+    {% include 'Modal/clearGameSessions.html.twig' %}
     {% include 'Modal/addGameRoomPlayer.html.twig' %}
 {% endblock %}
 

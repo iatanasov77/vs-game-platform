@@ -32,7 +32,7 @@ class GamePlayer implements ResourceInterface
     private $type;
     
     /** @var Collection | GamePlay[] */
-    #[ORM\OneToMany(targetEntity: GamePlay::class, mappedBy: "player", indexBy: "id", cascade: ["persist"])]
+    #[ORM\OneToMany(targetEntity: GamePlay::class, mappedBy: "owner", indexBy: "id", cascade: ["persist"])]
     private $gameSessions;
     
     /** @var Collection | TempPlayer[] */

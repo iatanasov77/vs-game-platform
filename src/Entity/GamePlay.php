@@ -49,7 +49,7 @@ class GamePlay implements ResourceInterface
     
     /** @var string */
     #[ORM\Column(type: Types::ENUM, options: ['values' => ['waiting', 'playing', 'full'], 'default' => 'waiting'], nullable: true)]
-    private $status;
+    private $status = 'waiting';
     
     public function __construct()
     {

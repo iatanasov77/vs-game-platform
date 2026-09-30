@@ -25,6 +25,7 @@ use App\Entity\GamePlayer;
 use App\Entity\TempPlayer;
 
 // Types
+use App\Component\GamePlatform;
 use App\Component\Type\CardGameTeam;
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\GameState;
@@ -84,6 +85,7 @@ abstract class CardGameManager extends AbstractGameManager
     public function StartGame(): void
     {
         $this->Game->ThinkStart = new \DateTime( 'now' );
+        $this->SetDbGameStatus( GamePlatform::GAME_ROOM_STATUS_PLAYING );
         
         $gameDto = Mapper::CardGameToDto( $this->Game );
         // $this->logger->log( 'Begin Start Game: ' . \print_r( $gameDto, true ), 'GameManager' );
@@ -604,6 +606,8 @@ abstract class CardGameManager extends AbstractGameManager
     {
         if ( $socket != null ) {
             $this->logger->log( "Closing client", 'ExitGame' );
+            $this->SetDbGameStatus( GamePlatform::GAME_ROOM_STATUS_WAITING );
+            
             $socket->close( Frame::CLOSE_NORMAL );
             
             // Dispose Websocket

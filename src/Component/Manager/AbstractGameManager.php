@@ -206,13 +206,36 @@ abstract class AbstractGameManager implements GameManagerInterface
         $this->eventDispatcher->dispatch( new GameEndedEvent( $this ), GameEndedEvent::NAME );
     }
     
+    public function SetDbGameStatus( string $status ): void
+    {
+        $game   = $this->gamePlayRepository->findOneBy(['guid' => $this->Game->Id]);
+        if ( $game ) {
+            $game->setStatus( $status );
+            
+            $em = $this->doctrine->getManager();
+            $em->persist( $game );
+            $em->flush();
+        }
+    }
+    
     public function RemoveDbGame(): void
     {
-        $game   = $this->gamePlayFactory->findOneBy(['guid' => $this->Game->Id]);
+        $game   = $this->gamePlayRepository->findOneBy(['guid' => $this->Game->Id]);
         if ( $game ) {
             $em = $this->doctrine->getManager();
-            $em->delete( $game );
+            $em->remove( $game );
             $em->flush();
+        }
+    }
+    
+    public function RemoveLeavedRooms( GamePlayer $player )
+    {
+        $em = $this->doctrine->getManager();
+        foreach( $player->getGameSessions() as $game ) {
+            if ( $game->getGuid() != $this->Game->Id ) {
+                $em->remove( $game );
+                $em->flush();
+            }
         }
     }
     

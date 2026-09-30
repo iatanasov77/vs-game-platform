@@ -50,6 +50,7 @@ class ContractBridgeGameManager extends CardGameManager
     public function ConnectAndListen( WebsocketClientInterface $webSocket, GamePlayer $dbUser, bool $playAi ): void
     {
         $this->logger->log( "Connecting Game Manager From Player: {$this->Game->CurrentPlayer->value}", 'GameManager' );
+        $this->RemoveLeavedRooms( $dbUser );
         
         if ( $this->Game->CurrentPlayer == PlayerPosition::South ) {
             $this->Clients->set( PlayerPosition::South->value, $webSocket );

@@ -44,6 +44,8 @@ class BridgeBeloteGameManager extends CardGameManager
     public function ConnectAndListen( WebsocketClientInterface $webSocket, GamePlayer $dbUser, bool $playAi ): void
     {
         $this->logger->log( "Connecting Game Manager ...", 'GameManager' );
+        $this->RemoveLeavedRooms( $dbUser );
+        
         if ( $this->Game->CurrentPlayer == PlayerPosition::South ) {
             $this->Clients->set( PlayerPosition::South->value, $webSocket );
             

@@ -23,6 +23,7 @@ use App\Entity\GamePlayer;
 use App\Entity\TempPlayer;
 
 // Types
+use App\Component\GamePlatform;
 use App\Component\Type\PlayerColor;
 use App\Component\Type\GameState;
 
@@ -44,6 +45,8 @@ final class ChessGameManager extends BoardGameManager
     public function ConnectAndListen( WebsocketClientInterface $webSocket, GamePlayer $dbUser, bool $playAi ): void
     {
         $this->logger->log( "Connecting Game Manager ...", 'GameManager' );
+        $this->RemoveLeavedRooms( $dbUser );
+        
         if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {
             $this->logger->log( "Connecting Black Player ...", 'GameManager' );
             $this->Clients->set( PlayerColor::Black->value, $webSocket );
@@ -99,6 +102,7 @@ final class ChessGameManager extends BoardGameManager
     public function StartGame(): void
     {
         $this->Game->ThinkStart = new \DateTime( 'now' );
+        $this->SetDbGameStatus( GamePlatform::GAME_ROOM_STATUS_PLAYING );
         
         $gameDto = Mapper::BoardGameToDto( $this->Game );
         // $this->logger->log( 'Begin Start Game: ' . \print_r( $gameDto, true ), 'GameManager' );

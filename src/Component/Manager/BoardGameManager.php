@@ -8,6 +8,7 @@ use App\Component\Rules\BoardGame\Score;
 use App\Component\Websocket\WebSocketState;
 
 // Types
+use App\Component\GamePlatform;
 use App\Component\Type\PlayerColor;
 use App\Component\Type\GameState;
 
@@ -214,6 +215,8 @@ abstract class BoardGameManager extends AbstractGameManager
     {
         if ( $socket != null ) {
             $this->logger->log( "Closing client", 'ExitGame' );
+            $this->SetDbGameStatus( GamePlatform::GAME_ROOM_STATUS_WAITING );
+            
             $socket->close( Frame::CLOSE_NORMAL );
             
             // Dispose Websocket

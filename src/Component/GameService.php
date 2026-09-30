@@ -132,19 +132,12 @@ final class GameService
             return $gameGuid;
         }
         
-        //todo: pair with someone equal ranking?
-        
         // Search any game, oldest first.
         $managers = $this->orderAllGames( $gameCode, AbstractGameManager::COLLECTION_ORDER_DESC )->filter(
             function( $entry ) {
                 return $entry->Clients->contains( null ) && $entry->SearchingOpponent;
             }
         );
-        
-        // Debug Found Games
-        foreach( $managers as $game ) {
-            $this->logger->log( "On Connect Found Game with ID: {$game->Game->Id}", 'GameService' );
-        }
         
         if ( $this->GameAlreadyStarted( $managers, $userId, $gameCode ) ) {
             $warning = "The user {$userId} has already started a game";

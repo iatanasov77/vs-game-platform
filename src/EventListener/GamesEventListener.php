@@ -54,9 +54,10 @@ final class GamesEventListener implements EventSubscriberInterface
     
     public function onGameStarted( GameStartedEvent $event ): void
     {
-        $this->logger->log( "GamesEventListener Game Started: {$event->getSender()->Game->Id}", 'GamesEventListener' );
+        $this->logger->log( "GamesEventListener Game Started !!!", 'GamesEventListener' );
+        
         $gamePlay   = $this->gamePlayRepository->findOneBy( ['guid' => $event->getSender()->Game->Id ] );
-        if ( ! $gamePlay ) {
+        if ( ! $gamePlay || ! $this->gamePlatformSettings->getRemoveLeavedGameSessionsForPlayer() ) {
             return;
         }
         

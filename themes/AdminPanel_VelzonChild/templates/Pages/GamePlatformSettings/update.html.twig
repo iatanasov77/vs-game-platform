@@ -62,6 +62,16 @@
                             <legend class="w-auto float-none ps-2 pe-2">{{ 'game_platform.form.game_platform_settings.game_settings' | trans( {},'GamePlatform' ) }}</legend>
                             
                             <div class="form-check form-check-secondary mb-3">
+                                <input type="checkbox" id="game_platform_settings_form_removeLeavedGameSessionsForPlayer" name="game_platform_settings_form[removeLeavedGameSessionsForPlayer]"
+                                    class="form-check-input"
+                                    {% if form.vars.value.removeLeavedGameSessionsForPlayer %}checked="checked"{% endif %}
+                                />
+                                <label class="form-check-label" for="game_platform_settings_form_removeLeavedGameSessionsForPlayer">
+                                    {{ 'game_platform.form.game_platform_settings.remove_leaved_game_sessions_for_player'|trans({}, 'GamePlatform') }}
+                                </label>
+                            </div>
+                            
+                            <div class="form-check form-check-secondary mb-3">
                                 <input type="checkbox" id="game_platform_settings_form_autoOpenCardGameAuctionDialog" name="game_platform_settings_form[autoOpenCardGameAuctionDialog]"
                                     class="form-check-input"
                                     {% if form.vars.value.autoOpenCardGameAuctionDialog %}checked="checked"{% endif %}

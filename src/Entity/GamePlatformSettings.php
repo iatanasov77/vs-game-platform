@@ -28,6 +28,10 @@ class GamePlatformSettings implements ResourceInterface
     private $gamePlayerInactivityTimeout = 3000;
     
     /** @var bool */
+    #[ORM\Column(name: "remove_leaved_game_sessions_for_player", type: "boolean", options: ["default" => 0], nullable: true)]
+    private $removeLeavedGameSessionsForPlayer = false;
+    
+    /** @var bool */
     #[ORM\Column(name: "auto_open_card_game_auction_dialog", type: "boolean", options: ["default" => 0], nullable: true)]
     private $autoOpenCardGameAuctionDialog = false;
     
@@ -96,6 +100,18 @@ class GamePlatformSettings implements ResourceInterface
     public function setGamePlayerInactivityTimeout($gamePlayerInactivityTimeout)
     {
         $this->gamePlayerInactivityTimeout  = $gamePlayerInactivityTimeout;
+        
+        return $this;
+    }
+    
+    public function getRemoveLeavedGameSessionsForPlayer()
+    {
+        return $this->removeLeavedGameSessionsForPlayer;
+    }
+    
+    public function setRemoveLeavedGameSessionsForPlayer($removeLeavedGameSessionsForPlayer)
+    {
+        $this->removeLeavedGameSessionsForPlayer  = $removeLeavedGameSessionsForPlayer;
         
         return $this;
     }

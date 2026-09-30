@@ -75,6 +75,7 @@ game_platform:
             timeout_between_players: Timeout between Players
             game_player_inactivity_timeout: Game Player Inactivity Timeout
             game_player_inactivity_timeout_help: In Mileseconds
+            remove_leaved_game_sessions_for_player: Remove Leaved Game Sessions for Player
             auto_open_card_game_auction_dialog: Auto Open CardGame Auction Dialog
             game_debugging: Game Debugging
             debug_game_sounds: Debug Game Sounds

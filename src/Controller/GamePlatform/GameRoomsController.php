@@ -272,7 +272,7 @@ class GameRoomsController extends AbstractController
     {
         $tempPlayer = $this->tempPlayersFactory->createNew();
         
-        if ( $baseGame == GamePlatform::GAME_TYPE_BOARD_GAME ) {
+        if ( $baseGame->getType() == GamePlatform::GAME_TYPE_BOARD_GAME ) {
             $tempPlayer->setColor( PlayerColor::Black->toString() );
         } else {
             $tempPlayer->setPosition( PlayerPosition::South->toString() );

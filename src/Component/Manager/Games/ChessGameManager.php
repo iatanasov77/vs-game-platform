@@ -95,7 +95,7 @@ final class ChessGameManager extends BoardGameManager
             $this->CreateDbGame();
             $this->StartGame();
             
-            //$this->dispatchGameEnded();
+            // $this->eventDispatcher->dispatch( new GameEndedEvent( $this ), GameEndedEvent::NAME );
         }
     }
     

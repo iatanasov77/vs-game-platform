@@ -88,7 +88,7 @@ class SvaraGameManager extends CardGameManager
             $this->CreateDbGame();
             $this->StartGame();
             
-            //$this->dispatchGameEnded();
+            // $this->eventDispatcher->dispatch( new GameEndedEvent( $this ), GameEndedEvent::NAME );
         }
     }
     

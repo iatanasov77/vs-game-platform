@@ -212,27 +212,6 @@ abstract class AbstractGameManager implements GameManagerInterface
         }
     }
     
-    public function RemoveDbGame(): void
-    {
-        $game   = $this->gamePlayRepository->findOneBy(['guid' => $this->Game->Id]);
-        if ( $game ) {
-            $em = $this->doctrine->getManager();
-            $em->remove( $game );
-            $em->flush();
-        }
-    }
-    
-    public function RemoveLeavedRooms( GamePlayer $player )
-    {
-        $em = $this->doctrine->getManager();
-        foreach( $player->getGameSessions() as $game ) {
-            if ( $game->getGuid() != $this->Game->Id ) {
-                $em->remove( $game );
-                $em->flush();
-            }
-        }
-    }
-    
     public function Send( ?WebsocketClientInterface $socket, object $obj ): void
     {
         //$this->logger->log( 'Game ' . print_r( $obj, true ), 'GameManager' );

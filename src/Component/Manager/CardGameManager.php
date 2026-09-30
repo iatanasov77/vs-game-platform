@@ -50,6 +50,8 @@ use App\Component\Dto\Actions\TrickEndedActionDto;
 use App\Component\Dto\Actions\RoundEndedActionDto;
 use App\Component\Dto\Actions\GameEndedActionDto;
 
+use App\EventListener\Event\GameStartedEvent;
+
 abstract class CardGameManager extends AbstractGameManager
 {
     public function Restore( int $playerPositionId, WebsocketClientInterface $socket ): void
@@ -84,6 +86,8 @@ abstract class CardGameManager extends AbstractGameManager
     
     public function StartGame(): void
     {
+        $this->eventDispatcher->dispatch( new GameStartedEvent( $this ), GameStartedEvent::NAME );
+        
         $this->Game->ThinkStart = new \DateTime( 'now' );
         $this->SetDbGameStatus( GamePlatform::GAME_ROOM_STATUS_PLAYING );
         

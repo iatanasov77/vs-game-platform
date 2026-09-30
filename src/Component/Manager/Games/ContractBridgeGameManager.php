@@ -39,6 +39,8 @@ use App\Component\Dto\Actions\PlayCardActionDto;
 use App\Component\Dto\Actions\DummyFaceupActionDto;
 use App\Component\Dto\Actions\RoundEndedActionDto;
 
+use App\EventListener\Event\GameStartedEvent;
+
 /**
  * ContractBridgeGame Engine in Phython: https://github.com/lorserker/ben
  * ContractBridgeGame in C#: https://github.com/PatrykkMar/Bridget
@@ -50,7 +52,6 @@ class ContractBridgeGameManager extends CardGameManager
     public function ConnectAndListen( WebsocketClientInterface $webSocket, GamePlayer $dbUser, bool $playAi ): void
     {
         $this->logger->log( "Connecting Game Manager From Player: {$this->Game->CurrentPlayer->value}", 'GameManager' );
-        $this->RemoveLeavedRooms( $dbUser );
         
         if ( $this->Game->CurrentPlayer == PlayerPosition::South ) {
             $this->Clients->set( PlayerPosition::South->value, $webSocket );

@@ -40,12 +40,13 @@ use App\Component\Dto\Actions\ChessOpponentMoveActionDto;
 use App\Component\Dto\Actions\ChessInvalidMoveMadeActionDto;
 use App\Component\Dto\Actions\DoublingActionDto;
 
+use App\EventListener\Event\GameStartedEvent;
+
 final class ChessGameManager extends BoardGameManager
 {
     public function ConnectAndListen( WebsocketClientInterface $webSocket, GamePlayer $dbUser, bool $playAi ): void
     {
         $this->logger->log( "Connecting Game Manager ...", 'GameManager' );
-        $this->RemoveLeavedRooms( $dbUser );
         
         if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {
             $this->logger->log( "Connecting Black Player ...", 'GameManager' );
@@ -101,6 +102,8 @@ final class ChessGameManager extends BoardGameManager
     
     public function StartGame(): void
     {
+        $this->eventDispatcher->dispatch( new GameStartedEvent( $this ), GameStartedEvent::NAME );
+        
         $this->Game->ThinkStart = new \DateTime( 'now' );
         $this->SetDbGameStatus( GamePlatform::GAME_ROOM_STATUS_PLAYING );
         

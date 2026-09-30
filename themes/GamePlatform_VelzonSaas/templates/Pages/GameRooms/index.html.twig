@@ -29,7 +29,8 @@
                     <thead>
                         <tr>
                             <th scope="col"></th>
-                            <th scope="col">Id</th>
+                            <th scope="col">Owner</th>
+                            <th scope="col">Guid</th>
                             <th scope="col">Game</th>
                             <th scope="col">Players Addition</th>
                             <th scope="col">Players</th>
@@ -42,51 +43,93 @@
                         {% for room in gameRooms %}
                             <tr>
                                 <th scope="row">{{ loop.index }}</th>
-                                <td>{{ room.guid }}</td>
+                                <td>{{ room.owner.name }}</td>
+                                <td>
+                                    <span
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="top"
+                                        data-bs-html="true"
+                                        title="<b>{{ room.guid }}</b>"
+                                    >
+                                        {{ room.guid | u.truncate( 15, ' ...' ) }}
+                                    </span>
+                                </td>
                                 <td>{{ room.game.title }}</td>
                                 <td>{{ room.gamePlayers | length }} / {{ room.game.maxPlayers }}</td>
                                 <td>
                                     <div class="cell-players observers">
-                                        {% include 'Pages/GameRooms/Partial/gamePlayers.html.twig' with { 'gameTeams': gameRoomTeams[room.id]} %}
+                                        {% for team in gameRoomTeams[room.id] %}
+                                            {% for player in team %}
+                                                <div rel="0" class="player-slot dib">
+                                                    {{ player.photoUrlImage | raw }}
+                                                </div>
+                                            {% endfor %}
+                                            
+                                            {% if not loop.last %}
+                                                <div class="dib vs">VS</div>
+                                            {% endif %}
+                                        {% endfor %}
                                     </div>
                                 </td>
                                 <td>{{ room.status }}</td>
                                 <td>{{ room.updatedAt | date( 'd M Y' ) }}</td>
                                 <td>
-                                    <div class="btn-group">
-                                        {% if app.user in room.users %}
-                                            <a class="btn btn-primary btnLeaveGameRoom"
-                                                data-url="{{ path( 'app_leave_game_room', {'roomId': room.id} ) }}"
-                                                title="Leave Room"
-                                            >
-                                                <i class="fa-solid fa-right-from-bracket"></i>
-                                            </a>&nbsp;
-                                        {% endif %}
-                                        
-                                        {% if app.user not in room.users and room.gamePlayers | length < room.game.maxPlayers %}
-                                            <a class="btn btn-primary btnJoinGameRoom"
-                                                data-url="{{ path( 'app_join_game_room', {'roomId': room.id} ) }}"
-                                                title="Join Room"
-                                            >
-                                                <i class="fa-solid fa-right-to-bracket"></i>
-                                            </a>&nbsp;
-                                        {% endif %}
-                                        
-                                        {% if room.gamePlayers | length < room.game.maxPlayers %}
-                                            <a class="btn btn-primary btnAddPlayer"
-                                                data-url="{{ path( 'app_add_user_into_game_room_form', {'roomId': room.id} ) }}"
-                                                title="Add Player"
-                                            >
-                                                <i class="fa-solid fa-user-plus"></i>
-                                            </a>&nbsp;
-                                        {% endif %}
-                                        
-                                        <a class="btn btn-danger btnDeleteGameRoom"
-                                            data-url="{{ path( 'app_delete_game_room', {'id': room.id} ) }}"
-                                            title="{{ 'vs_application.template.items_index_row_action_delete' | trans( {},'VSApplicationBundle' ) }}"
+                                    <div class="dropdown">
+                                        <a href="javascript:void(0);" class="btn btn-light btn-icon" id="dropdownMenuLink15"
+                                            data-bs-toggle="dropdown"
+                                            aria-expanded="true"
+                                            title="Show Actions"
                                         >
-                                            <i class="icon_close_alt2"></i>
+                                            <i class="ri-equalizer-fill"></i>
                                         </a>
+                                        
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuLink15">
+                                            {% if app.user in room.users %}
+                                                <li>
+                                                    <a class="dropdown-item btn btn-primary btnLeaveGameRoom"
+                                                        data-url="{{ path( 'app_leave_game_room', {'roomId': room.id} ) }}"
+                                                        title="Leave Room"
+                                                    >
+                                                        <i class="fa-solid fa-right-from-bracket me-2 align-middle text-muted"></i>
+                                                        Leave Room
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+                                            
+                                            {% if app.user not in room.users and room.gamePlayers | length < room.game.maxPlayers %}
+                                                <li>
+                                                    <a class="dropdown-item btn btn-primary btnJoinGameRoom"
+                                                        data-url="{{ path( 'app_join_game_room', {'roomId': room.id} ) }}"
+                                                        title="Join Room"
+                                                    >
+                                                        <i class="fa-solid fa-right-to-bracket me-2 align-middle text-muted"></i>
+                                                        Join Room
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+                                            
+                                            {% if room.gamePlayers | length < room.game.maxPlayers %}
+                                                <li>
+                                                    <a class="dropdown-item btn btn-primary btnAddPlayer"
+                                                        data-url="{{ path( 'app_add_user_into_game_room_form', {'roomId': room.id} ) }}"
+                                                        title="Add Player"
+                                                    >
+                                                        <i class="fa-solid fa-user-plus me-2 align-middle text-muted"></i>
+                                                        Add Player
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+                                            
+                                            <li>
+                                                <a class="dropdown-item btn btn-danger btnDeleteGameRoom"
+                                                    data-url="{{ path( 'app_delete_game_room', {'id': room.id} ) }}"
+                                                    title="{{ 'vs_application.template.items_index_row_action_delete' | trans( {},'VSApplicationBundle' ) }}"
+                                                >
+                                                    <i class="icon_close_alt2 me-2 align-middle text-muted"></i>
+                                                    {{ 'vs_application.template.items_index_row_action_delete' | trans( {},'VSApplicationBundle' ) }}
+                                                </a>
+                                            </li>
+                                        </ul>
                                     </div>
                                 </td>
                             </tr>

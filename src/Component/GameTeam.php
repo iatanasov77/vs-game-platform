@@ -1,19 +1,29 @@
 <?php namespace App\Component;
 
+use Liip\ImagineBundle\Imagine\Cache\CacheManager as LiipImagineCacheManager;
 use App\Component\Type\PlayerColor;
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\CardGameTeam;
 
 final class GameTeam
 {
-    public static function CreateGameTeam( $room ): array
+    /** @var LiipImagineCacheManager */
+    private $imagineCacheManager;
+    
+    public function __construct(
+        LiipImagineCacheManager $imagineCacheManager,
+    ) {
+        $this->imagineCacheManager = $imagineCacheManager;
+    }
+    
+    public function createGameTeam( $room ): array
     {
-        $team = self::CreateEmptyGameTeam( $room );
+        $team = $this->createEmptyGameTeam( $room );
         
         foreach ( $room->getGamePlayers() as $player ) {
             switch ( $room->getGame()->getType() ) {
                 case GamePlatform::GAME_TYPE_BOARD_GAME:
-                    $team[$player->getColor()][$player->getColor()] = $player;
+                    $team[$player->getColor()][$player->getColor()] = new GameTeamPlayer( $player, $this->imagineCacheManager );
                     
                     break;
                 case GamePlatform::GAME_TYPE_CARD_GAME:
@@ -21,14 +31,14 @@ final class GameTeam
                         $player->getPosition() == PlayerPosition::North->toString() ||
                         $player->getPosition() == PlayerPosition::South->toString()
                     ) {
-                        $team[CardGameTeam::SouthNorth->toString()][$player->getPosition()] = $player;
+                        $team[CardGameTeam::SouthNorth->toString()][$player->getPosition()] = new GameTeamPlayer( $player, $this->imagineCacheManager );
                     } else {
-                        $team[CardGameTeam::EastWest->toString()][$player->getPosition()] = $player;
+                        $team[CardGameTeam::EastWest->toString()][$player->getPosition()] = new GameTeamPlayer( $player, $this->imagineCacheManager );
                     }
                     
                     break;
                 case GamePlatform::GAME_TYPE_CARD_GAME_NO_TEAMS:
-                    $team[$player->getColor()][$player->getColor()] = $player;
+                    $team[$player->getColor()][$player->getColor()] = new GameTeamPlayer( $player, $this->imagineCacheManager );
                     
                     break;
                 default:
@@ -39,16 +49,16 @@ final class GameTeam
         return $team;   
     }
     
-    private static function CreateEmptyGameTeam( $room ): array
+    private function createEmptyGameTeam( $room ): array
     {
         switch ( $room->getGame()->getType() ) {
             case GamePlatform::GAME_TYPE_BOARD_GAME:
                 $team = [
                     PlayerColor::Black->toString()  => [
-                    
+                        PlayerColor::Black->toString() => new GameTeamPlayer(),
                     ],
                     PlayerColor::White->toString()  => [
-                    
+                        PlayerColor::White->toString() => new GameTeamPlayer(),
                     ],
                 ];
                 
@@ -56,17 +66,19 @@ final class GameTeam
             case GamePlatform::GAME_TYPE_CARD_GAME:
                 $team = [
                     CardGameTeam::SouthNorth->toString()  => [
-                    
+                        PlayerPosition::South->toString() => new GameTeamPlayer(),
+                        PlayerPosition::North->toString() => new GameTeamPlayer(),
                     ],
                     CardGameTeam::EastWest->toString()  => [
-                    
+                        PlayerPosition::East->toString() => new GameTeamPlayer(),
+                        PlayerPosition::West->toString() => new GameTeamPlayer(),
                     ],
                 ];
                 
                 break;
             case GamePlatform::GAME_TYPE_CARD_GAME_NO_TEAMS:
                 $team = [
-                
+                    new GameTeamPlayer(),
                 ];
                 
                 break;
@@ -77,7 +89,7 @@ final class GameTeam
         return $team;
     }
     
-    private static function CreateEmptyGameTeamPlayer( $room ): array
+    private function createEmptyGameTeamPlayer( $room ): array
     {
         
     }

@@ -8,6 +8,11 @@ import { VsPath } from '@/js/includes/fos_js_routes.js';
 
 $( function()
 {
+    var tooltipTriggerList = [].slice.call( document.querySelectorAll( '[data-bs-toggle="tooltip"]' ) );
+    var tooltipList = tooltipTriggerList.map( function ( tooltipTriggerEl ) {
+        return new bootstrap.Tooltip( tooltipTriggerEl );
+    });
+    
     $( '#CreateGameRoom' ).on( 'click', function()
     {
         $.ajax({

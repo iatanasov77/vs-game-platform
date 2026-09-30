@@ -60,19 +60,23 @@ abstract class BoardGameManager extends AbstractGameManager
     protected function CreateDbGame(): void
     {
         try {
-            $blackPlayer = $this->CreateTempPlayer( $this->Game->BlackPlayer->Id, PlayerColor::Black );
-            $whitePlayer = $this->CreateTempPlayer( $this->Game->WhitePlayer->Id, PlayerColor::White );
+            $blackPlayer = $this->playersRepository->find( $this->Game->BlackPlayer->Id );
+            $whitePlayer = $this->playersRepository->find( $this->Game->WhitePlayer->Id );
+            
+            $tempBlackPlayer = $this->CreateTempPlayer( $blackPlayer, PlayerColor::Black );
+            $tempWhitePlayer = $this->CreateTempPlayer( $whitePlayer, PlayerColor::White );
             
             $gameBase   = $this->gameRepository->findOneBy(['slug' => $this->GameCode]);
             $game       = $this->gamePlayFactory->createNew();
             $game->setGame( $gameBase );
+            $game->setOwner( $blackPlayer );
             $game->setGuid( $this->Game->Id );
             
-            $blackPlayer->setGame( $game );
-            $whitePlayer->setGame( $game );
+            $tempBlackPlayer->setGame( $game );
+            $tempWhitePlayer->setGame( $game );
             
-            $game->addGamePlayer( $blackPlayer );
-            $game->addGamePlayer( $whitePlayer );
+            $game->addGamePlayer( $tempBlackPlayer );
+            $game->addGamePlayer( $tempWhitePlayer );
             
             $em = $this->doctrine->getManager();
             $em->persist( $game );
@@ -221,10 +225,8 @@ abstract class BoardGameManager extends AbstractGameManager
         }
     }
     
-    protected function CreateTempPlayer( int $playerId, PlayerColor $playerPosition ): TempPlayer
+    protected function CreateTempPlayer( GamePlayer $player, PlayerColor $playerPosition ): TempPlayer
     {
-        $player = $this->playersRepository->find( $playerId );
-        
         if ( $this->Game->IsGoldGame && $player->getGold() < self::firstBet ) {
             throw new \RuntimeException( "Black player dont have enough gold" ); // Should be guarder earlier
         }

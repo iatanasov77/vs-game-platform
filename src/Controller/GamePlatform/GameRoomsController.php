@@ -29,6 +29,9 @@ class GameRoomsController extends AbstractController
     /** @var ManagerRegistry */
     private $doctrine;
     
+    /** @var GameTeam */
+    private $gameTeamService;
+    
     /** @var RepositoryInterface */
     private $gameRepository;
     
@@ -43,12 +46,14 @@ class GameRoomsController extends AbstractController
     
     public function __construct(
         ManagerRegistry $doctrine,
+        GameTeam $gameTeamService,
         RepositoryInterface $gameRepository,
         RepositoryInterface $gamePlayRepository,
         FactoryInterface $gamePlayFactory,
         FactoryInterface $tempPlayersFactory
     ) {
         $this->doctrine             = $doctrine;
+        $this->gameTeamService      = $gameTeamService;
         $this->gameRepository       = $gameRepository;
         $this->gamePlayRepository   = $gamePlayRepository;
         $this->gamePlayFactory      = $gamePlayFactory;
@@ -156,6 +161,7 @@ class GameRoomsController extends AbstractController
             
             $game = $this->gamePlayFactory->createNew();
             $game->setGame( $baseGame );
+            $game->setOwner( $player );
             $game->setGuid( Guid::NewGuid() );
             
             $tempPlayer->setGame( $game );
@@ -284,7 +290,7 @@ class GameRoomsController extends AbstractController
     {
         $teams = [];
         foreach ( $rooms as $room ) {
-            $teams[$room->getId()] = GameTeam::CreateGameTeam( $room );
+            $teams[$room->getId()] = $this->gameTeamService->createGameTeam( $room );
         }
         
         return $teams;

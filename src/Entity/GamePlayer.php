@@ -31,6 +31,10 @@ class GamePlayer implements ResourceInterface
     #[ORM\Column(type: Types::ENUM, options: ['values' => ['computer', 'user'], 'default' => 'user'], nullable: true)]
     private $type;
     
+    /** @var Collection | GamePlay[] */
+    #[ORM\OneToMany(targetEntity: GamePlay::class, mappedBy: "player", indexBy: "id", cascade: ["persist"])]
+    private $gameSessions;
+    
     /** @var Collection | TempPlayer[] */
     #[ORM\OneToMany(targetEntity: TempPlayer::class, mappedBy: "player", indexBy: "id", cascade: ["persist"])]
     private $gamePlayers;
@@ -65,6 +69,7 @@ class GamePlayer implements ResourceInterface
     
     public function __construct()
     {
+        $this->gameSessions = new ArrayCollection();
         $this->gamePlayers  = new ArrayCollection();
     }
     
@@ -105,6 +110,32 @@ class GamePlayer implements ResourceInterface
     public function setUser( User $user ): self
     {
         $this->user = $user;
+        
+        return $this;
+    }
+    
+    /**
+     * @return Collection|GamePlay[]
+     */
+    public function getGameSessions(): Collection
+    {
+        return $this->gameSessions;
+    }
+    
+    public function addGameSession( GamePlay $gameSession ): self
+    {
+        if ( ! $this->gameSessions->contains( $gameSession ) ) {
+            $this->gameSessions[] = $gameSession;
+        }
+        
+        return $this;
+    }
+    
+    public function removeGameSession( GamePlay $gameSession ): self
+    {
+        if ( $this->gameSessions->contains( $gameSession ) ) {
+            $this->gameSessions->removeElement( $gameSession );
+        }
         
         return $this;
     }

@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy, isDevMode } from '@angular/core';
-import { Observable, Subscription, map } from 'rxjs';
+import { Component, OnInit, OnDestroy, isDevMode, HostListener } from '@angular/core';
+import { Observable, Subscription, Subject } from 'rxjs';
 
 import { IAuth } from '@vankosoft/game-platform';
 import { IPlayer } from '@vankosoft/game-platform';
@@ -30,11 +30,17 @@ export class GameBaseComponent implements OnInit, OnDestroy
     developementClass: string   = '';
     currentPlayer: any;
     
+    userActivity: any;
+    userInactive: Subject<any> = new Subject();
+    userInactivityTimeout: number; 
+    
     constructor(
         protected authService: AuthService,
         protected soundService: SoundService,
         protected gameService: GameService,
     ) {
+        this.userInactivityTimeout = window.gamePlatformSettings.gamePlayerInactivityTimeout;
+        
         if( isDevMode() ) {
             this.developementClass  = 'developement';
         }
@@ -44,6 +50,12 @@ export class GameBaseComponent implements OnInit, OnDestroy
                 // alert( `Login By Signature Response: ${JSON.stringify( auth )}` );
             });
         }
+        
+        this.setTimeout();
+        this.userInactive.subscribe( () => {
+            // console.log( `user has been inactive for ${this.userInactivityTimeout / 1000}s` );
+            // alert( `user has been inactive for ${this.userInactivityTimeout / 1000}s` );
+        });
     }
     
     ngOnInit()
@@ -79,5 +91,17 @@ export class GameBaseComponent implements OnInit, OnDestroy
         if ( this.authSubs ) {
             this.authSubs.unsubscribe();
         }
+    }
+    
+    setTimeout(): void
+    {
+        this.userActivity = setTimeout( () => this.userInactive.next( undefined ), this.userInactivityTimeout );
+    }
+    
+    @HostListener( 'window:mousemove' )
+    refreshUserState()
+    {
+        clearTimeout( this.userActivity );
+        this.setTimeout();
     }
 }

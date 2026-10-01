@@ -10,7 +10,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 /**
  * GamePlay Entity
  * 
- * Games Played in the Room (Example: In Bridge Belote One game finished when a team reach 151 points in Sore)
+ * Games Played in the Room (Example: In Bridge Belote One game finished when a team reach 151 points in Score)
  */
 #[ORM\Entity]
 #[ORM\Table(name: "VSGP_GameSessions")]
@@ -21,6 +21,11 @@ class GamePlay implements ResourceInterface
     /** @var int */
     #[ORM\Id, ORM\Column(type: "integer"), ORM\GeneratedValue(strategy: "IDENTITY")]
     private $id;
+    
+    /** @var GamePlayer */
+    #[ORM\ManyToOne(targetEntity: GamePlayer::class, inversedBy: "gameSessions", cascade: ["persist"])]
+    #[ORM\JoinColumn(name: "owner_id", referencedColumnName: "id")]
+    private $owner;
     
     /** @var string */
     #[ORM\Column(type: "string", length: 40, nullable: true)]
@@ -44,7 +49,7 @@ class GamePlay implements ResourceInterface
     
     /** @var string */
     #[ORM\Column(type: Types::ENUM, options: ['values' => ['waiting', 'playing', 'full'], 'default' => 'waiting'], nullable: true)]
-    private $status;
+    private $status = 'waiting';
     
     public function __construct()
     {
@@ -54,6 +59,18 @@ class GamePlay implements ResourceInterface
     public function getId(): ?int
     {
         return $this->id;
+    }
+    
+    public function getOwner(): ?GamePlayer
+    {
+        return $this->owner;
+    }
+    
+    public function setOwner( GamePlayer $owner ): self
+    {
+        $this->owner = $owner;
+        
+        return $this;
     }
     
     public function getGuid(): ?string

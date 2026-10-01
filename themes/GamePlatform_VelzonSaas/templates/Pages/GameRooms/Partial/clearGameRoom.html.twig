@@ -1,0 +1,11 @@
+{{ form_start( form, { 'attr': {'class': 'form-horizontal', 'id': 'ClearGameSessionsForm'} } ) }}
+    <div class="form-group">
+        {{ form_label(form.game, null, {
+            'label_attr': {'class': 'form-label'}
+            }) 
+        }}
+        
+        {{ form_widget(form.game, {'attr': {'class': 'form-select'}}) }}
+        <p>If Not Select a Game All Game Session will be Removed.</p>
+    </div>
+{{ form_end( form, {'render_rest': false} ) }}

@@ -16,10 +16,10 @@ enum PlayerPosition: int
     public function toString(): string
     {
         return match( $this ) {
-            PlayerPosition::South => 'south',
-            PlayerPosition::East => 'east',
-            PlayerPosition::North => 'north',
-            PlayerPosition::West => 'west',
+            PlayerPosition::South   => 'south',
+            PlayerPosition::East    => 'east',
+            PlayerPosition::North   => 'north',
+            PlayerPosition::West    => 'west',
             PlayerPosition::Neither => 'neither',
         };
     }

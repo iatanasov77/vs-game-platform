@@ -12,9 +12,9 @@ enum PlayerColor: int
     public function toString(): string
     {
         return match( $this ) {
-            PlayerColor::Black => 'black',
-            PlayerColor::White => 'white',
-            PlayerColor::Neither => 'neither',
+            PlayerColor::Black      => 'black',
+            PlayerColor::White      => 'white',
+            PlayerColor::Neither    => 'neither',
         };
     }
 }

@@ -73,6 +73,9 @@ game_platform:
             settings_key_help: Used to load different Settings in Different Application Environements.
             game_settings: Game Settings
             timeout_between_players: Timeout between Players
+            game_player_inactivity_timeout: Game Player Inactivity Timeout
+            game_player_inactivity_timeout_help: In Mileseconds
+            remove_leaved_game_sessions_for_player: Remove Leaved Game Sessions for Player
             auto_open_card_game_auction_dialog: Auto Open CardGame Auction Dialog
             game_debugging: Game Debugging
             debug_game_sounds: Debug Game Sounds
@@ -103,12 +106,14 @@ game_platform:
             game_type_placeholder: '-- Choose a Game Type --'
             board_game: Board Game
             card_game: Card Game
+            card_game_no_teams: Card Game with No Teams
             game_status: Game Status
             not_implemented: Not Implemented
             in_developement: In Developement
             in_developement_but: In Developement But Play With Computer (AI) is Done
             game_is_done: Game is Done
             max_players: Max Players
+            max_team_players: Max Team Players
             
         game_room:
             game: Game
@@ -130,4 +135,5 @@ game_platform:
             user_placeholder: '-- Attach an User --'
             rooms: Rooms
             rooms_placeholder: '-- Select Rooms --'
+            photo_url: Photo Url
     

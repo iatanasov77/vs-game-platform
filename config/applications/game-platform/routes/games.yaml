@@ -74,35 +74,23 @@ backgammon:
     controller: App\Controller\Games\BackgammonController::index
 
 ###################################################################################
-# Game Rooms
+# Game Rooms Admin Actions
 ###################################################################################
 app_game_rooms:
     path: /game-rooms
     controller: App\Controller\GamePlatform\GameRoomsController::index
 
-app_clear_game_rooms:
-    path: /game-rooms/clear
-    controller: App\Controller\GamePlatform\GameRoomsController::clearGameRooms
+app_clear_game_room_sessions_form:
+    path: /game-rooms/clear-room-sessions-form
+    controller: App\Controller\GamePlatform\GameRoomsController::clearGameRoomsForm
+
+app_clear_game_room_sessions_handle:
+    path: /game-rooms/clear-room-sessions-handle
+    controller: App\Controller\GamePlatform\GameRoomsController::clearGameRoomsHandle
 
 app_delete_game_room:
     path: /game-rooms/delete/{id}
     controller: App\Controller\GamePlatform\GameRoomsController::deleteGameRoom
-
-app_create_game_room_form:
-    path: /game-rooms/create-form
-    controller: App\Controller\GamePlatform\GameRoomsController::createGameRoomForm
-
-app_handle_game_room_form:
-    path: /game-rooms/create
-    controller: App\Controller\GamePlatform\GameRoomsController::handleGameRoomForm
-
-app_join_game_room:
-    path: /game-rooms/{roomId}/join
-    controller: App\Controller\GamePlatform\GameRoomsController::joinGameRoom
-
-app_leave_game_room:
-    path: /game-rooms/{roomId}/leave
-    controller: App\Controller\GamePlatform\GameRoomsController::leaveGameRoom
 
 app_add_user_into_game_room_form:
     path: /game-rooms/{roomId}/add-user-form
@@ -111,3 +99,26 @@ app_add_user_into_game_room_form:
 app_handle_add_user_into_game_room_form:
     path: /game-rooms/{roomId}/add-user
     controller: App\Controller\GamePlatform\GameRoomsController::handleUserIntoGameRoomForm
+
+###################################################################################
+# Game Rooms User Actions
+###################################################################################
+app_create_game_room_form:
+    path: /game-room-create-form
+    controller: App\Controller\GamePlatform\GameRoomsController::createGameRoomForm
+
+app_handle_game_room_form:
+    path: /game-room-create
+    controller: App\Controller\GamePlatform\GameRoomsController::handleGameRoomForm
+
+app_join_game_room_in_position:
+    path: /game-room-join-position/{roomId}-{position}
+    controller: App\Controller\GamePlatform\GameRoomsController::joinGameRoomInPosition
+
+app_join_game_room:
+    path: /game-room-join/{roomId}
+    controller: App\Controller\GamePlatform\GameRoomsController::joinGameRoom
+
+app_leave_game_room:
+    path: /game-room-leave/{roomId}
+    controller: App\Controller\GamePlatform\GameRoomsController::leaveGameRoom

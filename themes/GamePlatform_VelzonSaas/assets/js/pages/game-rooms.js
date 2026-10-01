@@ -1,3 +1,5 @@
+require( '../../css/game-rooms.css' );
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // bin/game-platform fos:js-routing:dump --format=json --target=public/shared_assets/js/fos_js_routes_application.json
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -6,6 +8,11 @@ import { VsPath } from '@/js/includes/fos_js_routes.js';
 
 $( function()
 {
+    var tooltipTriggerList = [].slice.call( document.querySelectorAll( '[data-bs-toggle="tooltip"]' ) );
+    var tooltipList = tooltipTriggerList.map( function ( tooltipTriggerEl ) {
+        return new bootstrap.Tooltip( tooltipTriggerEl );
+    });
+    
     $( '#CreateGameRoom' ).on( 'click', function()
     {
         $.ajax({
@@ -35,7 +42,45 @@ $( function()
     
     $( '#ClearGameSessions' ).on( 'click', function()
     {
-        
+        $.ajax({
+            type: "GET",
+            url: $( this ).attr( 'data-url' ),
+            success: function( response )
+            {
+                $( '#ClearGameSessionsFormContainer' ).html( response );
+                
+                /** Bootstrap 5 Modal Toggle */
+                const myModal = new bootstrap.Modal( '#clear-game-sessions-modal', {
+                    keyboard: false
+                });
+                myModal.show( $( '#clear-game-sessions-modal' ).get( 0 ) );
+            },
+            error: function()
+            {
+                alert( "SYSTEM ERROR!!!" );
+            }
+        });
+    });
+    
+    $( '#btnClearGameSessions' ).on( 'click', function ( e )
+    {
+        $( '#ClearGameSessionsForm' ).submit();
+    });
+    
+    $( '.btnJoinRoomInPosition' ).on( 'click', function()
+    {
+        $.ajax({
+            type: "GET",
+            url: $( this ).attr( 'data-url' ),
+            success: function( response )
+            {
+                document.location = document.location;
+            },
+            error: function()
+            {
+                alert( "SYSTEM ERROR!!!" );
+            }
+        });
     });
     
     $( '.btnJoinGameRoom' ).on( 'click', function()
@@ -45,7 +90,7 @@ $( function()
             url: $( this ).attr( 'data-url' ),
             success: function( response )
             {
-                // document.location = document.location;
+                document.location = document.location;
             },
             error: function()
             {

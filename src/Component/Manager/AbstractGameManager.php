@@ -30,7 +30,6 @@ use App\Component\Type\PlayerColor;
 use App\Component\Type\GameState;
 
 use App\Entity\GamePlayer;
-use App\EventListener\Event\GameEndedEvent;
 
 /**
  * See Logs:        sudo tail -f /dev/shm/game-platform.lh/game-platform/log/websocket.log
@@ -201,17 +200,14 @@ abstract class AbstractGameManager implements GameManagerInterface
         }
     }
     
-    public function dispatchGameEnded(): void
+    public function SetDbGameStatus( string $status ): void
     {
-        $this->eventDispatcher->dispatch( new GameEndedEvent( $this ), GameEndedEvent::NAME );
-    }
-    
-    public function RemoveDbGame(): void
-    {
-        $game   = $this->gamePlayFactory->findOneBy(['guid' => $this->Game->Id]);
+        $game   = $this->gamePlayRepository->findOneBy(['guid' => $this->Game->Id]);
         if ( $game ) {
+            $game->setStatus( $status );
+            
             $em = $this->doctrine->getManager();
-            $em->delete( $game );
+            $em->persist( $game );
             $em->flush();
         }
     }

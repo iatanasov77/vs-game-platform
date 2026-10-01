@@ -39,11 +39,15 @@ use App\Component\Dto\Actions\PlayCardActionDto;
 use App\Component\Dto\Actions\AnnounceMadeActionDto;
 use App\Component\Dto\Actions\RoundEndedActionDto;
 
+use App\EventListener\Event\GameStartedEvent;
+
 class SvaraGameManager extends CardGameManager
 {
     public function ConnectAndListen( WebsocketClientInterface $webSocket, GamePlayer $dbUser, bool $playAi ): void
     {
         $this->logger->log( "Connecting Game Manager ...", 'GameManager' );
+        $this->eventDispatcher->dispatch( new GameStartedEvent( $this ), GameStartedEvent::NAME );
+        
         if ( $this->Game->CurrentPlayer == PlayerPosition::South ) {
             $this->Clients->set( PlayerPosition::South->value, $webSocket );
             
@@ -86,7 +90,7 @@ class SvaraGameManager extends CardGameManager
             $this->CreateDbGame();
             $this->StartGame();
             
-            //$this->dispatchGameEnded();
+            // $this->eventDispatcher->dispatch( new GameEndedEvent( $this ), GameEndedEvent::NAME );
         }
     }
     

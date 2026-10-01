@@ -34,8 +34,6 @@
         "vankosoft/catalog-bundle": "^2.7",
         "vankosoft/api-bundle": "^4.1",
         
-        "doctrine/dbal": "4.5.x-dev",
-        
         "cboden/ratchet": "0.4.x-dev",
         "react/react": "^1.4",
         "react/partial": "^3.0",

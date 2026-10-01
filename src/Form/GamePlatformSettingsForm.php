@@ -29,6 +29,16 @@ class GamePlatformSettingsForm extends AbstractForm
                 'translation_domain'    => 'GamePlatform',
             ])
             
+            ->add( 'gamePlayerInactivityTimeout', IntegerType::class, [
+                'label'                 => 'game_platform.form.game_platform_settings.game_player_inactivity_timeout',
+                'translation_domain'    => 'GamePlatform',
+            ])
+            
+            ->add( 'removeLeavedGameSessionsForPlayer', CheckboxType::class, [
+                'label'                 => 'game_platform.form.game_platform_settings.remove_leaved_game_sessions_for_player',
+                'translation_domain'    => 'GamePlatform',
+            ])
+            
             ->add( 'autoOpenCardGameAuctionDialog', CheckboxType::class, [
                 'label'                 => 'game_platform.form.game_platform_settings.auto_open_card_game_auction_dialog',
                 'translation_domain'    => 'GamePlatform',

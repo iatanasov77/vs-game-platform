@@ -60,14 +60,15 @@
                         
                         <fieldset class="border border-dark rounded p-3">
                             <legend class="w-auto float-none ps-2 pe-2">{{ 'game_platform.form.game_platform_settings.game_settings' | trans( {},'GamePlatform' ) }}</legend>
-                        
-                            <div class="form-group">
-                                {{ form_label(form.timeoutBetweenPlayers, null, {
-                                    'label_attr': {'class': 'form-label'}
-                                    }) 
-                                }}
-                                
-                                {{ form_widget(form.timeoutBetweenPlayers, {'attr': {'class': 'form-control'}}) }}
+                            
+                            <div class="form-check form-check-secondary mb-3">
+                                <input type="checkbox" id="game_platform_settings_form_removeLeavedGameSessionsForPlayer" name="game_platform_settings_form[removeLeavedGameSessionsForPlayer]"
+                                    class="form-check-input"
+                                    {% if form.vars.value.removeLeavedGameSessionsForPlayer %}checked="checked"{% endif %}
+                                />
+                                <label class="form-check-label" for="game_platform_settings_form_removeLeavedGameSessionsForPlayer">
+                                    {{ 'game_platform.form.game_platform_settings.remove_leaved_game_sessions_for_player'|trans({}, 'GamePlatform') }}
+                                </label>
                             </div>
                             
                             <div class="form-check form-check-secondary mb-3">
@@ -79,6 +80,26 @@
                                     {{ 'game_platform.form.game_platform_settings.auto_open_card_game_auction_dialog'|trans({}, 'GamePlatform') }}
                                 </label>
                             </div>
+                            
+                            <div class="form-group">
+                                {{ form_label(form.timeoutBetweenPlayers, null, {
+                                    'label_attr': {'class': 'form-label'}
+                                    }) 
+                                }}
+                                
+                                {{ form_widget(form.timeoutBetweenPlayers, {'attr': {'class': 'form-control'}}) }}
+                            </div>
+                            
+                            <div class="form-group">
+                                {{ form_label(form.gamePlayerInactivityTimeout, null, {
+                                    'label_attr': {'class': 'form-label'}
+                                    }) 
+                                }}
+                                
+                                {{ form_widget(form.gamePlayerInactivityTimeout, {'attr': {'class': 'form-control'}}) }}
+                                <p>{{ 'game_platform.form.game_platform_settings.game_player_inactivity_timeout_help'  | trans( {},'GamePlatform' ) }}</p>
+                            </div>
+                            
                         </fieldset>
                         
                 	</div>

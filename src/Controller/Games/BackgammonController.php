@@ -24,6 +24,7 @@ class BackgammonController extends GameController
             'apiVerifySiganature'   => $signature,
             
             'timeoutBetweenPlayers'         => $gamePlatformSettings->getTimeoutBetweenPlayers(),
+            'gamePlayerInactivityTimeout'   => $gamePlatformSettings->getGamePlayerInactivityTimeout(),
             'autoOpenCardGameAuctionDialog' => $gamePlatformSettings->getAutoOpenCardGameAuctionDialog(),
             
             'debugGameSounds'               => $gamePlatformSettings->getDebugGameSounds(),

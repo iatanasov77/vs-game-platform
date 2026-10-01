@@ -1,3 +1,17 @@
+1.2.4	|	Release date: **01.10.2026**
+============================================
+* New Features:
+  - Player Thumbnails in GameRooms Page.
+  - Improve Game Rooms Page.
+  - Add anOwner for Game Session and Improve Game Rooms Page.
+  - Remove Leaved Rooms by Player on New Game Connected..
+  - Refactoring of Games Managers.
+  - Remove Leaved Rooms by Player on New Game Connected From Event Listener.
+  - Add a Settings for Remove Leaved Rooms by Player.
+  - Add into Game Rooms to Joining into Position.
+  - Add Some Security Rules For Game Rooms Actions.
+
+
 1.2.3	|	Release date: **27.09.2026**
 ============================================
 * New Features:

@@ -11,10 +11,12 @@ use Knp\Component\Pager\PaginatorInterface;
 use Vankosoft\ApplicationBundle\Component\Status;
 
 use App\Component\GamePlatform;
+use App\Component\GameTeam;
 use App\Component\Type\PlayerColor;
 use App\Component\Type\PlayerPosition;
 use App\Component\Utils\Guid;
 use App\Form\GameRoomForm;
+use App\Form\ClearGameRoomForm;
 use App\Form\GameRoomPlayerForm;
 use App\Entity\Game;
 use App\Entity\TempPlayer;
@@ -27,6 +29,12 @@ class GameRoomsController extends AbstractController
     /** @var ManagerRegistry */
     private $doctrine;
     
+    /** @var GameTeam */
+    private $gameTeamService;
+    
+    /** @var RepositoryInterface */
+    private $gameRepository;
+    
     /** @var RepositoryInterface */
     private $gamePlayRepository;
     
@@ -38,11 +46,15 @@ class GameRoomsController extends AbstractController
     
     public function __construct(
         ManagerRegistry $doctrine,
+        GameTeam $gameTeamService,
+        RepositoryInterface $gameRepository,
         RepositoryInterface $gamePlayRepository,
         FactoryInterface $gamePlayFactory,
         FactoryInterface $tempPlayersFactory
     ) {
         $this->doctrine             = $doctrine;
+        $this->gameTeamService      = $gameTeamService;
+        $this->gameRepository       = $gameRepository;
         $this->gamePlayRepository   = $gamePlayRepository;
         $this->gamePlayFactory      = $gamePlayFactory;
         $this->tempPlayersFactory   = $tempPlayersFactory;
@@ -58,15 +70,51 @@ class GameRoomsController extends AbstractController
         );
         
         return $this->render( 'Pages/GameRooms/index.html.twig', [
-            'gameRooms' => $rooms,
+            'gameRooms'     => $rooms,
+            'gameRoomTeams' => $this->createTeams( $rooms ),
         ]);
     }
     
-    public function clearGameRooms( Request $request ): Response
+    public function clearGameRoomsForm( Request $request ): Response
     {
+        $form   = $this->createForm( ClearGameRoomForm::class, null, [
+            'action' => $this->generateUrl( 'app_clear_game_room_sessions_handle' ),
+            'method' => 'POST'
+        ]);
+        
+        return $this->render( 'Pages/GameRooms/Partial/clearGameRoom.html.twig', [
+            'form' => $form,
+        ]);
+    }
+    
+    public function clearGameRoomsHandle( Request $request ): Response
+    {
+        $form   = $this->createForm( ClearGameRoomForm::class, null, [
+            'action' => $this->generateUrl( 'app_clear_game_room_sessions_handle' ),
+            'method' => 'POST'
+        ]);
+        
+        $form->handleRequest( $request );
+        if( $form->isSubmitted() && $form->isValid() ) {
+            $em         = $this->doctrine->getManager();
+            $formData   = $form->getData();
+            $baseGame   = $formData['game'];
+            
+            $rooms      = $baseGame ?
+                            $this->gamePlayRepository->findBy( ['game' => $baseGame] ) :
+                            $this->gamePlayRepository->findAll();
+            
+            foreach ( $rooms as $room ) {
+                $em->remove( $room );
+                $em->flush();
+            }
+            
+            return $this->redirect( $this->generateUrl( 'app_game_rooms' ) );
+        }
+        
         return new JsonResponse([
-            'status'    => Status::STATUS_OK,
-            'message'   => 'Game Rooms Cleared !!!',
+            'status'    => Status::STATUS_ERROR,
+            'message'   => 'Game Room Sessions NOT Cleared !!!',
         ]);
     }
     
@@ -113,6 +161,7 @@ class GameRoomsController extends AbstractController
             
             $game = $this->gamePlayFactory->createNew();
             $game->setGame( $baseGame );
+            $game->setOwner( $player );
             $game->setGuid( Guid::NewGuid() );
             
             $tempPlayer->setGame( $game );
@@ -132,12 +181,32 @@ class GameRoomsController extends AbstractController
         ]);
     }
     
+    public function joinGameRoomInPosition( $roomId, $position, Request $request ): Response
+    {
+        $room   = $this->gamePlayRepository->find( $roomId );
+        $player = $this->getUser()->getPlayer();
+        
+        $tempPlayer = $this->createTempPlayer( $room->getGame(), $player, $position );
+        $tempPlayer->setGame( $room );
+        $room->addGamePlayer( $tempPlayer );
+        
+        $em = $this->doctrine->getManager();
+        $em->persist( $room );
+        $em->flush();
+        
+        return new JsonResponse([
+            'status'    => Status::STATUS_OK,
+            'message'   => 'Game Room Joined !!!',
+        ]);
+    }
+    
     public function joinGameRoom( $roomId, Request $request ): Response
     {
         $room   = $this->gamePlayRepository->find( $roomId );
         $player = $this->getUser()->getPlayer();
         
         $tempPlayer = $this->createTempPlayer( $room->getGame(), $player );
+        $tempPlayer->setGame( $room );
         $room->addGamePlayer( $tempPlayer );
         
         $em = $this->doctrine->getManager();
@@ -200,8 +269,9 @@ class GameRoomsController extends AbstractController
         if( $form->isSubmitted() && $form->isValid() ) {
             $formData = $form->getData();
             $player = $formData['player'];
+            $position = $room->getGame()->getType() == GamePlatform::GAME_TYPE_BOARD_GAME ? $formData['color'] : $formData['position'];
             
-            $tempPlayer = $this->createTempPlayer( $room->getGame(), $player );
+            $tempPlayer = $this->createTempPlayer( $room->getGame(), $player, $position );
             $tempPlayer->setGame( $room );
             
             $room->addGamePlayer( $tempPlayer );
@@ -219,15 +289,30 @@ class GameRoomsController extends AbstractController
         ]);
     }
     
-    private function createTempPlayer( Game $baseGame, $player ): TempPlayer
+    private function createTempPlayer( Game $baseGame, $player, $position = null ): TempPlayer
     {
         $tempPlayer = $this->tempPlayersFactory->createNew();
         
-        if ( $baseGame == GamePlatform::GAME_TYPE_BOARD_GAME ) {
-            $tempPlayer->setColor( PlayerColor::Black->toString() );
-        } else {
-            $tempPlayer->setPosition( PlayerPosition::South->toString() );
+        switch ( $baseGame->getType() ) {
+            case GamePlatform::GAME_TYPE_BOARD_GAME:
+                if ( ! $position ) {
+                    $position = PlayerColor::Black->toString();
+                }
+                $tempPlayer->setColor( $position );
+                
+                break;
+            case GamePlatform::GAME_TYPE_CARD_GAME:
+            case GamePlatform::GAME_TYPE_CARD_GAME_NO_TEAMS:
+                if ( ! $position ) {
+                    $position = PlayerPosition::South->toString();
+                }
+                $tempPlayer->setPosition( $position );
+                
+                break;
+            
         }
+        
+        $tempPlayer->setPosition( $position );
         
         $tempPlayer->setGuid( Guid::NewGuid() );
         $tempPlayer->setPlayer( $player );
@@ -235,5 +320,15 @@ class GameRoomsController extends AbstractController
         $player->addGamePlayer( $tempPlayer );
         
         return $tempPlayer;
+    }
+    
+    private function createTeams( $rooms ): array
+    {
+        $teams = [];
+        foreach ( $rooms as $room ) {
+            $teams[$room->getId()] = $this->gameTeamService->createGameTeam( $room );
+        }
+        
+        return $teams;
     }
 }

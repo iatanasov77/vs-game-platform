@@ -3,6 +3,7 @@
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -35,6 +36,8 @@ use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Websocket\WebSocketState;
 use App\Entity\GamePlayer;
 
+use App\EventListener\Event\GameEndedEvent;
+
 final class GameService
 {
     use GameHelper;
@@ -47,6 +50,9 @@ final class GameService
     
     /** @var SerializerInterface */
     private $serializer;
+    
+    /** @var EventDispatcherInterface */
+    private $eventDispatcher;
     
     /** @var RepositoryInterface */
     private $usersRepository;
@@ -63,12 +69,14 @@ final class GameService
     public function __construct(
         GameLogger $logger,
         SerializerInterface $serializer,
+        EventDispatcherInterface $eventDispatcher,
         RepositoryInterface $usersRepository,
         SecurityBridge $securityBridge,
         GameManagerFactory $managerFactory
     ) {
         $this->logger           = $logger;
         $this->serializer       = $serializer;
+        $this->eventDispatcher  = $eventDispatcher;
         $this->usersRepository  = $usersRepository;
         $this->securityBridge   = $securityBridge;
         $this->managerFactory   = $managerFactory;
@@ -132,19 +140,12 @@ final class GameService
             return $gameGuid;
         }
         
-        //todo: pair with someone equal ranking?
-        
         // Search any game, oldest first.
         $managers = $this->orderAllGames( $gameCode, AbstractGameManager::COLLECTION_ORDER_DESC )->filter(
             function( $entry ) {
                 return $entry->Clients->contains( null ) && $entry->SearchingOpponent;
             }
         );
-        
-        // Debug Found Games
-        foreach( $managers as $game ) {
-            $this->logger->log( "On Connect Found Game with ID: {$game->Game->Id}", 'GameService' );
-        }
         
         if ( $this->GameAlreadyStarted( $managers, $userId, $gameCode ) ) {
             $warning = "The user {$userId} has already started a game";
@@ -168,7 +169,7 @@ final class GameService
             $manager            = $this->managerFactory->createGameManager( $forGold, $gameCode, $gameVariant );
             
             //manager.Ended += Game_Ended;
-            $manager->dispatchGameEnded();
+            $this->eventDispatcher->dispatch( new GameEndedEvent( $manager ), GameEndedEvent::NAME );
             
             $manager->SearchingOpponent = ! $playAi;
             $gameGuid                   =  $manager->Game->Id;
@@ -264,7 +265,7 @@ final class GameService
             
         $manager = $this->managerFactory->createGameManager( true, $gameCode, $gameVariant );
         //$manager.Ended += Game_Ended;
-        $manager->dispatchGameEnded();
+        $this->eventDispatcher->dispatch( new GameEndedEvent( $manager ), GameEndedEvent::NAME );
         
         $manager->Inviter = $playerId;
         $manager->SearchingOpponent = false;

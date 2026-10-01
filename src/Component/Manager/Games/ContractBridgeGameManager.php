@@ -39,6 +39,8 @@ use App\Component\Dto\Actions\PlayCardActionDto;
 use App\Component\Dto\Actions\DummyFaceupActionDto;
 use App\Component\Dto\Actions\RoundEndedActionDto;
 
+use App\EventListener\Event\GameStartedEvent;
+
 /**
  * ContractBridgeGame Engine in Phython: https://github.com/lorserker/ben
  * ContractBridgeGame in C#: https://github.com/PatrykkMar/Bridget
@@ -111,7 +113,7 @@ class ContractBridgeGameManager extends CardGameManager
             $this->CreateDbGame();
             $this->StartGame();
             
-            //$this->dispatchGameEnded();
+            // $this->eventDispatcher->dispatch( new GameEndedEvent( $this ), GameEndedEvent::NAME );
         }
     }
     

@@ -124,6 +124,11 @@ class GameForm extends AbstractForm
                 'label'                 => 'game_platform.form.game.max_players',
                 'translation_domain'    => 'GamePlatform',
             ])
+            
+            ->add( 'maxTeamPlayers', IntegerType::class, [
+                'label'                 => 'game_platform.form.game.max_team_players',
+                'translation_domain'    => 'GamePlatform',
+            ])
         ;
     }
 

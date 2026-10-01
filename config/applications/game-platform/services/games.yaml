@@ -40,6 +40,13 @@ services:
             - '@Symfony\Component\Mercure\Discovery'
             - '@Symfony\Component\Mercure\Authorization'
     
+    app_game_team:
+        class: App\Component\GameTeam
+        public: true
+        arguments:
+            - '@router'
+            - '@liip_imagine.cache.manager'
+    
     ##############################################################
     # Custom Loggers
     ##############################################################
@@ -134,6 +141,7 @@ services:
         arguments:
             - '@app_game_logger'
             - '@serializer'
+            - '@event_dispatcher'
             - '@vs_users.repository.users'
             - '@vs_users.security_bridge'
             - '@app_game_manager_factory'
@@ -161,8 +169,11 @@ services:
     app_games_event_listener:
         class: App\EventListener\GamesEventListener
         arguments:
+            - '@doctrine'
+            - '@vs_application.context.application'
             - '@app_game_logger'
             - '@app_game_service'
+            - '@vsapp.repository.game_sessions'
     
     ##############################################################
     # Game Rules
@@ -181,6 +192,8 @@ services:
         autowire: true
         arguments:
             - '@doctrine'
+            - '@app_game_team'
+            - '@vsapp.repository.games'
             - '@vsapp.repository.game_sessions'
             - '@vsapp.factory.game_sessions'
             - '@vsapp.factory.temp_players'

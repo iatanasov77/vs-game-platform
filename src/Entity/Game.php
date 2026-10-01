@@ -66,8 +66,12 @@ class Game implements ResourceInterface
     #[ORM\Column(name: "max_players", type: "integer", options: ["default" => 4], nullable: true)]
     private $maxPlayers = 4;
     
+    /** @var int */
+    #[ORM\Column(name: "max_team_players", type: "integer", options: ["default" => 2], nullable: true)]
+    private $maxTeamPlayers = 2;
+    
     /** @var string */
-    #[ORM\Column(type: Types::ENUM, options: ['values' => ['board_game', 'card_game']], nullable: true)]
+    #[ORM\Column(type: Types::ENUM, options: ['values' => ['board_game', 'card_game', 'card_game_no_teams']], nullable: true)]
     private $type;
     
     /** @var string */
@@ -191,6 +195,18 @@ class Game implements ResourceInterface
     public function setMaxPlayers($maxPlayers)
     {
         $this->maxPlayers = $maxPlayers;
+        
+        return $this;
+    }
+    
+    public function getMaxTeamPlayers()
+    {
+        return $this->maxTeamPlayers;
+    }
+    
+    public function setMaxTeamPlayers($maxTeamPlayers)
+    {
+        $this->maxTeamPlayers = $maxTeamPlayers;
         
         return $this;
     }

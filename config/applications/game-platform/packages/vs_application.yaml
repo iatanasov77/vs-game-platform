@@ -130,7 +130,6 @@ vs_application:
                 route: app_game_rooms
                 attributes:
                     iconClass: "fas fa-gamepad"
-                    environements: ['dev', 'staging']
             
             debug_sse:
                 name: vs_application.menu.debug_sse

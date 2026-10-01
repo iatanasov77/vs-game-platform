@@ -25,6 +25,7 @@ use App\Entity\GamePlayer;
 use App\Entity\TempPlayer;
 
 // Types
+use App\Component\GamePlatform;
 use App\Component\Type\CardGameTeam;
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\GameState;
@@ -48,6 +49,8 @@ use App\Component\Dto\Actions\PlayingStartedActionDto;
 use App\Component\Dto\Actions\TrickEndedActionDto;
 use App\Component\Dto\Actions\RoundEndedActionDto;
 use App\Component\Dto\Actions\GameEndedActionDto;
+
+use App\EventListener\Event\GameStartedEvent;
 
 abstract class CardGameManager extends AbstractGameManager
 {
@@ -83,7 +86,10 @@ abstract class CardGameManager extends AbstractGameManager
     
     public function StartGame(): void
     {
+        $this->eventDispatcher->dispatch( new GameStartedEvent( $this ), GameStartedEvent::NAME );
+        
         $this->Game->ThinkStart = new \DateTime( 'now' );
+        $this->SetDbGameStatus( GamePlatform::GAME_ROOM_STATUS_PLAYING );
         
         $gameDto = Mapper::CardGameToDto( $this->Game );
         // $this->logger->log( 'Begin Start Game: ' . \print_r( $gameDto, true ), 'GameManager' );
@@ -251,26 +257,32 @@ abstract class CardGameManager extends AbstractGameManager
         try {
             $this->logger->log( "CreateDbGame !!!", 'GameManager' );
             
-            $southPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::South->value]->Id, PlayerPosition::South );
-            $eastPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::East->value]->Id, PlayerPosition::East );
-            $northPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::North->value]->Id, PlayerPosition::North );
-            $westPlayer = $this->CreateTempPlayer( $this->Game->Players[PlayerPosition::West->value]->Id, PlayerPosition::West );
+            $southPlayer = $this->playersRepository->find( $this->Game->Players[PlayerPosition::South->value]->Id );
+            $eastPlayer = $this->playersRepository->find( $this->Game->Players[PlayerPosition::East->value]->Id );
+            $northPlayer = $this->playersRepository->find( $this->Game->Players[PlayerPosition::North->value]->Id );
+            $westPlayer = $this->playersRepository->find( $this->Game->Players[PlayerPosition::West->value]->Id );
+            
+            $tempSouthPlayer = $this->CreateTempPlayer( $southPlayer, PlayerPosition::South );
+            $tempEastPlayer = $this->CreateTempPlayer( $eastPlayer, PlayerPosition::East );
+            $tempNorthPlayer = $this->CreateTempPlayer( $northPlayer, PlayerPosition::North );
+            $tempWestPlayer = $this->CreateTempPlayer( $westPlayer, PlayerPosition::West );
             
             // Create Game Session
             $gameBase   = $this->gameRepository->findOneBy(['slug' => $this->GameCode]);
             $game       = $this->gamePlayFactory->createNew();
             $game->setGame( $gameBase );
+            $game->setOwner( $southPlayer );
             $game->setGuid( $this->Game->Id );
             
-            $southPlayer->setGame( $game );
-            $eastPlayer->setGame( $game );
-            $northPlayer->setGame( $game );
-            $westPlayer->setGame( $game );
+            $tempSouthPlayer->setGame( $game );
+            $tempEastPlayer->setGame( $game );
+            $tempNorthPlayer->setGame( $game );
+            $tempWestPlayer->setGame( $game );
             
-            $game->addGamePlayer( $southPlayer );
-            $game->addGamePlayer( $eastPlayer );
-            $game->addGamePlayer( $northPlayer );
-            $game->addGamePlayer( $westPlayer );
+            $game->addGamePlayer( $tempSouthPlayer );
+            $game->addGamePlayer( $tempEastPlayer );
+            $game->addGamePlayer( $tempNorthPlayer );
+            $game->addGamePlayer( $tempWestPlayer );
             
             $em = $this->doctrine->getManager();
             $em->persist( $game );
@@ -598,6 +610,8 @@ abstract class CardGameManager extends AbstractGameManager
     {
         if ( $socket != null ) {
             $this->logger->log( "Closing client", 'ExitGame' );
+            $this->SetDbGameStatus( GamePlatform::GAME_ROOM_STATUS_WAITING );
+            
             $socket->close( Frame::CLOSE_NORMAL );
             
             // Dispose Websocket
@@ -679,10 +693,8 @@ abstract class CardGameManager extends AbstractGameManager
     
     abstract protected function RoundEndedAction(): RoundEndedActionDto;
     
-    private function CreateTempPlayer( int $playerId, PlayerPosition $playerPosition ): TempPlayer
+    private function CreateTempPlayer( GamePlayer $player, PlayerPosition $playerPosition ): TempPlayer
     {
-        $player = $this->playersRepository->find( $playerId );
-        
         if ( $this->Game->IsGoldGame && $player->getGold() < self::firstBet ) {
             throw new \RuntimeException( "Black player dont have enough gold" ); // Should be guarder earlier
         }

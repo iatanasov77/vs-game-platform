@@ -181,12 +181,32 @@ class GameRoomsController extends AbstractController
         ]);
     }
     
+    public function joinGameRoomInPosition( $roomId, $position, Request $request ): Response
+    {
+        $room   = $this->gamePlayRepository->find( $roomId );
+        $player = $this->getUser()->getPlayer();
+        
+        $tempPlayer = $this->createTempPlayer( $room->getGame(), $player, $position );
+        $tempPlayer->setGame( $room );
+        $room->addGamePlayer( $tempPlayer );
+        
+        $em = $this->doctrine->getManager();
+        $em->persist( $room );
+        $em->flush();
+        
+        return new JsonResponse([
+            'status'    => Status::STATUS_OK,
+            'message'   => 'Game Room Joined !!!',
+        ]);
+    }
+    
     public function joinGameRoom( $roomId, Request $request ): Response
     {
         $room   = $this->gamePlayRepository->find( $roomId );
         $player = $this->getUser()->getPlayer();
         
         $tempPlayer = $this->createTempPlayer( $room->getGame(), $player );
+        $tempPlayer->setGame( $room );
         $room->addGamePlayer( $tempPlayer );
         
         $em = $this->doctrine->getManager();
@@ -249,8 +269,9 @@ class GameRoomsController extends AbstractController
         if( $form->isSubmitted() && $form->isValid() ) {
             $formData = $form->getData();
             $player = $formData['player'];
+            $position = $room->getGame()->getType() == GamePlatform::GAME_TYPE_BOARD_GAME ? $formData['color'] : $formData['position'];
             
-            $tempPlayer = $this->createTempPlayer( $room->getGame(), $player );
+            $tempPlayer = $this->createTempPlayer( $room->getGame(), $player, $position );
             $tempPlayer->setGame( $room );
             
             $room->addGamePlayer( $tempPlayer );
@@ -268,15 +289,30 @@ class GameRoomsController extends AbstractController
         ]);
     }
     
-    private function createTempPlayer( Game $baseGame, $player ): TempPlayer
+    private function createTempPlayer( Game $baseGame, $player, $position = null ): TempPlayer
     {
         $tempPlayer = $this->tempPlayersFactory->createNew();
         
-        if ( $baseGame->getType() == GamePlatform::GAME_TYPE_BOARD_GAME ) {
-            $tempPlayer->setColor( PlayerColor::Black->toString() );
-        } else {
-            $tempPlayer->setPosition( PlayerPosition::South->toString() );
+        switch ( $baseGame->getType() ) {
+            case GamePlatform::GAME_TYPE_BOARD_GAME:
+                if ( ! $position ) {
+                    $position = PlayerColor::Black->toString();
+                }
+                $tempPlayer->setColor( $position );
+                
+                break;
+            case GamePlatform::GAME_TYPE_CARD_GAME:
+            case GamePlatform::GAME_TYPE_CARD_GAME_NO_TEAMS:
+                if ( ! $position ) {
+                    $position = PlayerPosition::South->toString();
+                }
+                $tempPlayer->setPosition( $position );
+                
+                break;
+            
         }
+        
+        $tempPlayer->setPosition( $position );
         
         $tempPlayer->setGuid( Guid::NewGuid() );
         $tempPlayer->setPlayer( $player );

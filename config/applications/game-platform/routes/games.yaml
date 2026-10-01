@@ -100,6 +100,10 @@ app_handle_game_room_form:
     path: /game-rooms/create
     controller: App\Controller\GamePlatform\GameRoomsController::handleGameRoomForm
 
+app_join_game_room_in_position:
+    path: /game-rooms/{roomId}/join/{position}
+    controller: App\Controller\GamePlatform\GameRoomsController::joinGameRoomInPosition
+
 app_join_game_room:
     path: /game-rooms/{roomId}/join
     controller: App\Controller\GamePlatform\GameRoomsController::joinGameRoom

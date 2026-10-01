@@ -67,6 +67,22 @@ $( function()
         $( '#ClearGameSessionsForm' ).submit();
     });
     
+    $( '.btnJoinRoomInPosition' ).on( 'click', function()
+    {
+        $.ajax({
+            type: "GET",
+            url: $( this ).attr( 'data-url' ),
+            success: function( response )
+            {
+                document.location = document.location;
+            },
+            error: function()
+            {
+                alert( "SYSTEM ERROR!!!" );
+            }
+        });
+    });
+    
     $( '.btnJoinGameRoom' ).on( 'click', function()
     {
         $.ajax({
@@ -74,7 +90,7 @@ $( function()
             url: $( this ).attr( 'data-url' ),
             success: function( response )
             {
-                // document.location = document.location;
+                document.location = document.location;
             },
             error: function()
             {

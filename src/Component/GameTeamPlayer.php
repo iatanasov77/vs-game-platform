@@ -5,25 +5,36 @@ use App\Entity\TempPlayer;
 
 final class GameTeamPlayer
 {
+    /** @var LiipImagineCacheManager */
+    private $imagineCacheManager;
+    
+    /* @var string */
     private $photoUrlImage;
     
-    public function __construct( ?TempPlayer $player = null, ?LiipImagineCacheManager $imagineCacheManager = null )
+    public function __construct(
+        string $joinUrl,
+        ?LiipImagineCacheManager $imagineCacheManager = null
+    ) {
+        $this->imagineCacheManager  = $imagineCacheManager;
+        $this->photoUrlImage        = "<i class=\"fa fa-sign-in fa-3x btnJoinRoomInPosition\" data-url=\"{$joinUrl}\"></i>";
+    }
+    
+    public function setPlayer( TempPlayer $player ): void
     {
-        if ( $player ) {
-            if ( $player->getPhotoUrl() ) {
-                $this->photoUrlImage = "<img class=\"tip\" height=\"46\" src=\"{$player->getPhotoUrl()}\">";
-            }
+        if ( $player->getPhotoUrl() ) {
+            $this->photoUrlImage = "<img class=\"tip\" height=\"46\" src=\"{$player->getPhotoUrl()}\">";
+        }
+        
+        if ( $player->getAvatarPath() ) {
+            $url = $this->imagineCacheManager->getBrowserPath(
+                $player->getAvatarPath(),
+                'users_crud_index_thumb',
+            );
             
-            if ( $player->getAvatarPath() ) {
-                $url = $imagineCacheManager->getBrowserPath(
-                    $player->getAvatarPath(),
-                    'users_crud_index_thumb',
-                );
-                
-                $this->photoUrlImage = "<img class=\"tip\" height=\"46\" src=\"{$url}\">";
-            }
+            $this->photoUrlImage = "<img class=\"tip\" height=\"46\" src=\"{$url}\">";
         } else {
-            $this->photoUrlImage = "<i class=\"fa fa-sign-in fa-3x btnJoinRoomInPosition\"></i>";
+            $photoUrl = "/build/gameplatform-velzonsaas-theme/images/game_player/locallogin.jpg";
+            $this->photoUrlImage = "<img class=\"tip\" height=\"46\" src=\"{$photoUrl}\">"; // Player Has NOT Avatar
         }
     }
     

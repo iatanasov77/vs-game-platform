@@ -4,7 +4,7 @@ use BitMask\EnumBitMask;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-use App\Component\GameLogger;
+use App\Component\Logger\GameLogger;
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\BidTrump;
 

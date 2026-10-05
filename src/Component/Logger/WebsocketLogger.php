@@ -1,8 +1,8 @@
-<?php namespace App\Component;
+<?php namespace App\Component\Logger;
 
 use Psr\Log\LoggerInterface;
 
-class MercureLogger
+class WebsocketLogger implements MyLoggerInterface
 {
     /** @var LoggerInterface */
     protected  $logger;
@@ -16,10 +16,10 @@ class MercureLogger
         $this->environement = $environement;
     }
     
-    public function log( string $logData ): void
+    public function log( string $logData, ?string $context = null ): void
     {
         if ( $this->environement == 'dev' ) {
-            $this->logger->info( \sprintf( "[Mercure HUB] %s", $logData ) );
+            $this->logger->info( \sprintf( "[Test Websocket] %s", $logData ) );
         }
     }
 }

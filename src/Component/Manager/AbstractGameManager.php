@@ -16,7 +16,7 @@ use React\Async;
 use Amp\DeferredCancellation;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 
-use App\Component\GameLogger;
+use App\Component\Logger\GameLogger;
 use App\Component\Rules\GameInterface;
 
 use App\Component\Rules\BoardGame\Game;

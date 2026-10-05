@@ -2,7 +2,7 @@
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Doctrine\Common\Collections\ArrayCollection;
-use App\Component\GameLogger;
+use App\Component\Logger\GameLogger;
 use App\Component\Utils\Guid;
 use App\Component\GameVariant;
 use App\Component\Type\PlayerColor;

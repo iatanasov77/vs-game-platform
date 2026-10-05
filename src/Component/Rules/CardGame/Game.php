@@ -6,7 +6,7 @@ use Doctrine\Common\Collections\Collection;
 use BitMask\EnumBitMask;
 
 use App\Component\Rules\GameInterface;
-use App\Component\GameLogger;
+use App\Component\Logger\GameLogger;
 use App\Component\GameVariant;
 use App\Component\PlayerPositions;
 use App\Component\Type\GameState;

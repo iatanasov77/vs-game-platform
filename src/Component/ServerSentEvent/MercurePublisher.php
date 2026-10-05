@@ -9,7 +9,7 @@ use Symfony\Component\Mercure\Update;
 use Symfony\Component\Mercure\Exception\RuntimeException as MercureRuntimeException;
 use Symfony\Component\Mercure\Exception\InvalidArgumentException as MercureInvalidArgumentException;
 
-use App\Component\MercureLogger;
+use App\Component\Logger\MercureLogger;
 
 /*
  * Manual: https://symfony.com/doc/current/mercure.html#programmatically-setting-the-cookie

@@ -4,7 +4,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Vankosoft\ApplicationBundle\Component\Context\ApplicationContextInterface;
-use App\Component\GameLogger;
+use App\Component\Logger\GameLogger;
 use App\Component\GameService;
 use App\Entity\GamePlatformSettings;
 

@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\BidTrump;
 
-use App\Component\GameLogger;
+use App\Component\Logger\GameLogger;
 use App\Component\Rules\CardGame\PlayerPositionExtensions;
 use App\Component\Rules\CardGame\Game;
 use App\Component\Rules\CardGame\Bid;

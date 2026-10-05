@@ -1,7 +1,7 @@
 <?php namespace App\Component\AI;
 
 use App\Component\GameVariant;
-use App\Component\GameLogger;
+use App\Component\Logger\GameLogger;
 use App\Component\Rules\GameInterface;
 
 // Game AI Engines

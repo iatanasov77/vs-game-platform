@@ -8,7 +8,7 @@ use SplObjectStorage as SplObjectStorageAlias;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 
-use App\Component\GameLogger;
+use App\Component\Logger\GameLogger;
 use App\Component\GameVariant;
 use App\Component\Websocket\WebsocketClientFactory;
 use App\Component\Websocket\WebSocketState;

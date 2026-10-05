@@ -4,7 +4,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
 
-use App\Component\MercureLogger;
+use App\Component\Logger\MercureLogger;
 use App\Component\ServerSentEvent\Message\AddAiPlayerMessage;
 
 #[AsMessageHandler]

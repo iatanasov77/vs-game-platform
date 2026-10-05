@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd /projects/VS_GamePlatform
+/usr/bin/php bin/game-platform vgp:websocket-swoole:game --host=$1 --port=$2

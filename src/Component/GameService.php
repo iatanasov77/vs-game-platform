@@ -12,6 +12,7 @@ use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use Ratchet\RFC6455\Messaging\Frame;
 use Vankosoft\UsersBundle\Security\SecurityBridge;
 
+use App\Component\Logger\GameLogger;
 use App\Component\Manager\GameManagerInterface;
 use App\Component\Manager\GameManagerFactory;
 use App\Component\Manager\AbstractGameManager;

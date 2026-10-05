@@ -1,8 +1,8 @@
-<?php namespace App\Component;
+<?php namespace App\Component\Logger;
 
 use Psr\Log\LoggerInterface;
 
-class GameLogger
+class GameLogger implements MyLoggerInterface
 {
     /** @var LoggerInterface */
     protected  $logger;
@@ -24,7 +24,7 @@ class GameLogger
         $this->logContexts  = $logContexts;
     }
     
-    public function log( string $logData, string $context ): void
+    public function log( string $logData, ?string $context = null ): void
     {
         if ( $this->environement == 'dev' && \in_array( $context, $this->logContexts ) ) {
             $this->logger->info( \sprintf( "[%s] %s", $context, $logData ) );

@@ -18,7 +18,7 @@ use Ratchet\MessageComponentInterface;
 use React\EventLoop\Factory as EventLoopFactory;
 use React\Socket\SocketServer;
 use App\Component\GameService;
-use App\Component\GameLogger;
+use App\Component\Logger\GameLogger;
 use App\Component\Websocket\Server\WebsocketGamesHandler;
 
 /**
@@ -105,6 +105,7 @@ final class WebsocketGameServer extends ContainerAwareCommand
     {
         $this
             ->setHelp( 'The <info>%command.name%</info> starts the GamePlatform WebSocket Game Server.' )
+            ->addArgument( 'host', InputArgument::REQUIRED, 'The host of the server you\'re starting' )
             ->addArgument( 'port', InputArgument::REQUIRED, 'The port of the server you\'re starting' );
     }
     
@@ -116,6 +117,7 @@ final class WebsocketGameServer extends ContainerAwareCommand
         \pcntl_signal( SIGTERM, array( $this, 'sigHandler' ) );
         \pcntl_signal( SIGHUP, array( $this, 'sigHandler' ) );
         
+        $host = $input->getArgument( 'host' );
         $port = $input->getArgument( 'port' );
         
         $this->gamesHandler = new WebsocketGamesHandler(
@@ -128,7 +130,7 @@ final class WebsocketGameServer extends ContainerAwareCommand
         );
         
         $loop           = EventLoopFactory::create();
-        $socketServer   = new SocketServer( '0.0.0.0:' . $port, [
+        $socketServer   = new SocketServer( "{$host}:{$port}", [
             'local_cert'        => $this->parrameters['sslCertificateCert'],
             'local_pk'          => $this->parrameters['sslCertificateKey'],
             'allow_self_signed' => true,

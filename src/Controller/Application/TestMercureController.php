@@ -12,7 +12,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Vankosoft\ApplicationBundle\Component\Status;
-use App\Component\MercureLogger;
+use App\Component\Logger\MercureLogger;
 use App\Component\Utils\Guid;
 use App\Component\ServerSentEvent\MercurePublisher;
 use App\Component\ServerSentEvent\Message\AddAiPlayerMessage;

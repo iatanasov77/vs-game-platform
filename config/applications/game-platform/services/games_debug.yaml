@@ -1,8 +1,14 @@
+parameters:
+    app_websocket_swoole_test_url: '%env(WEBSOCKET_SWOOLE_TEST_URL)%'
+
 services:
     _defaults:
         autowire: true
         autoconfigure: true
     
+    ##############################################################
+    # Debug Controllers
+    ##############################################################
     App\Controller\GamePlatform\DebugController:
         tags: ['controller.service_arguments']
         autowire: true
@@ -21,6 +27,9 @@ services:
             - '@vsapp.factory.game_sessions'
             - '@vsapp.factory.temp_players'
     
+    ##############################################################
+    # Debug Comonents
+    ##############################################################
     App\Component\ServerSentEvent\Handler\AddAiPlayerHandler:
         arguments:
             - '@app_mercure_logger'

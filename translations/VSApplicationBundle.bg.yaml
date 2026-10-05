@@ -16,6 +16,7 @@ vs_application:
         
         list_games: Игри
         game_rooms: Game Rooms
+        debug_websocket: Debug Websocket
         debug_sse: Debug SSE
         create_new_game: Създай Нова Игра
         edit_game: Радакция на Игра

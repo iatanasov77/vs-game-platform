@@ -16,6 +16,8 @@ yarn run dev
 ```
 sudo service websocket_game_platform_game restart
 sudo service websocket_game_platform_chat restart
+
+sudo service websocket_swoole_game_platform_game restart
 ```
 
 ## Check Websocket Connections
@@ -28,4 +30,6 @@ telsocket -url wss://game-platform.lh/wss2/chat/:8091
 ```
 sudo tail -f /dev/shm/game-platform.lh/game-platform/log/websocket_game.log
 sudo tail -f /dev/shm/game-platform.lh/game-platform/log/websocket_chat.log
+
+sudo tail -f /dev/shm/game-platform.lh/game-platform/log/test_websocket.log
 ```

@@ -1,3 +1,13 @@
+#############################################################################
+# Debug Websocket
+#############################################################################
+debug_websocket:
+    path: /games/debug-websocket
+    controller: App\Controller\GamePlatform\DebugController::debugWebsocket
+
+#############################################################################
+# Debug SSE
+#############################################################################
 debug_sse:
     path: /games/debug-sse
     controller: App\Controller\GamePlatform\DebugController::debugSse

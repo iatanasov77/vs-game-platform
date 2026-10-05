@@ -18,7 +18,7 @@ services:
         autoconfigure: true
     
     app_game_logger:
-        class: App\Component\GameLogger
+        class: App\Component\Logger\GameLogger
         public: true
         arguments:
             - '@monolog.logger.websocket_game'
@@ -27,7 +27,7 @@ services:
             - '%env(json:WEBSOCKET_GAME_LOGGER_CONTEXTS)%'
     
     app_mercure_logger:
-        class: App\Component\MercureLogger
+        class: App\Component\Logger\MercureLogger
         public: true
         arguments:
             - '@monolog.logger.mercure_game'

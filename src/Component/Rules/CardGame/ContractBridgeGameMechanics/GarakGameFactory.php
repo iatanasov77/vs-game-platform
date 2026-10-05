@@ -5,7 +5,7 @@ use Garak\Bridge\Hand;
 use Garak\Bridge\Side;
 use Garak\Bridge\Table;
 
-use App\Component\GameLogger;
+use App\Component\Logger\GameLogger;
 use App\Component\Type\PlayerPosition;
 use App\Component\Rules\CardGame\Game;
 use App\Component\Type\ContractBridgeCardType;

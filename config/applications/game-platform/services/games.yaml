@@ -66,13 +66,6 @@ services:
             - '@monolog.logger.mercure_game'
             - '%env(APP_ENV)%'
     
-    app_websocket_logger:
-        class: App\Component\Logger\WebsocketLogger
-        public: true
-        arguments:
-            - '@monolog.logger.test_websocket'
-            - '%env(APP_ENV)%'
-    
     ##############################################################
     # Custom Serializer Normalizers
     ##############################################################

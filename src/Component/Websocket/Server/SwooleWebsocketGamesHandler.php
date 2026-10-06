@@ -1,4 +1,4 @@
-<?php namespace App\Component\WebsocketSwoole\Websocket;
+<?php namespace App\Component\Websocket\Server;
 
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -9,22 +9,21 @@ use Swoole\Http\Request;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server as WebsocketServer;
 
-use App\Component\Logger\MyLoggerInterface;
+use Vankosoft\WebsocketBundle\Websocket\WebSocketState;
+use Vankosoft\WebsocketBundle\Websocket\Server\ServerHandler;
+use Vankosoft\ApplicationBundle\Component\MyLoggerInterface;
+
 use App\Component\GameVariant;
 use App\Component\Websocket\WebsocketClientFactory;
-use App\Component\Websocket\WebSocketState;
 use App\Component\GameService;
 use App\Component\Type\PlayerColor;
 use App\Component\Type\PlayerPosition;
 
-class ServerHandler implements ServerHandlerInterface
+use App\Component\Dto\Actions\TestMessageActionDto;
+use App\Component\Dto\TestMessageDto;
+
+class SwooleWebsocketGamesHandler extends ServerHandler
 {
-    /** @var MyLoggerInterface */
-    private $logger;
-    
-    /** @var SerializerInterface */
-    private $serializer;
-    
     /** @var RepositoryInterface */
     private $usersRepository;
     
@@ -52,20 +51,18 @@ class ServerHandler implements ServerHandlerInterface
     /** @var array */
     private $cardGamePlayers;
     
-    /** @var bool */
-    private $logExceptionTrace;
-    
     public function __construct(
         MyLoggerInterface $logger,
         SerializerInterface $serializer,
+        bool $logExceptionTrace,
         RepositoryInterface $usersRepository,
         WebsocketClientFactory $wsClientFactory,
-        GameService $gameService,
-        bool $logExceptionTrace
+        GameService $gameService
     ) {
-        $this->logger           = $logger;
-        $this->serializer       = $serializer;
+        parent::__construct( $logger, $serializer, $logExceptionTrace );
+        
         $this->usersRepository  = $usersRepository;
+        
         $this->wsClientFactory  = $wsClientFactory;
         $this->gameService      = $gameService;
         
@@ -84,8 +81,6 @@ class ServerHandler implements ServerHandlerInterface
             PlayerPosition::East->value,
             PlayerPosition::West->value
         ];
-        
-        $this->logExceptionTrace    = $logExceptionTrace;
     }
     
     public function onOpen( WebsocketServer $server, Request $request ): void
@@ -95,7 +90,16 @@ class ServerHandler implements ServerHandlerInterface
     
     public function onMessage( WebsocketServer $server, Frame $frame ): void
     {
-        $this->logger->log( "Swoole Server Call Subscriber onMessage !!!" );
+        $this->logger->log( "Swoole Server Call Subscriber onMessage: {$frame->data}" );
+        
+        $messageDto = new TestMessageDto();
+        $messageDto->message = 'Respond of Test Websocket Swool Message !!!';
+        
+        $action = new TestMessageActionDto();
+        $action->message = $messageDto;
+        $json   = $this->serializer->serialize( $action, JsonEncoder::FORMAT );
+        
+        $server->push( $frame->fd, $json );
     }
     
     public function onClose( WebsocketServer $server, int $fd ): void

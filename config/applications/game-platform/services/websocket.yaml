@@ -1,0 +1,17 @@
+parameters:
+    vs_websocket.document_root: "%kernel.project_dir%/public/game-platform"
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+    
+    vs_websocket_server_handler:
+        class: App\Component\Websocket\Server\SwooleWebsocketGamesHandler
+        arguments:
+            - '@vs_websocket_logger'
+            - '@serializer'
+            - "%vs_websocket.exeption_trace%"
+            - '@vs_users.repository.users'
+            - '@app_websocket_client_factory'
+            - '@app_game_service'

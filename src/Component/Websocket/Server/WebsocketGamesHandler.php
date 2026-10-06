@@ -2,16 +2,17 @@
 
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
-
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use SplObjectStorage as SplObjectStorageAlias;
+
+use Vankosoft\WebsocketBundle\Websocket\WebSocketState;
+
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 
 use App\Component\Logger\GameLogger;
 use App\Component\GameVariant;
 use App\Component\Websocket\WebsocketClientFactory;
-use App\Component\Websocket\WebSocketState;
 use App\Component\GameService;
 use App\Component\Type\PlayerColor;
 use App\Component\Type\PlayerPosition;

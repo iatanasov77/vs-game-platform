@@ -1,5 +1,6 @@
 <?php namespace App\Component\Logger;
 
+use Vankosoft\ApplicationBundle\Component\MyLoggerInterface;
 use Psr\Log\LoggerInterface;
 
 class MercureLogger implements MyLoggerInterface

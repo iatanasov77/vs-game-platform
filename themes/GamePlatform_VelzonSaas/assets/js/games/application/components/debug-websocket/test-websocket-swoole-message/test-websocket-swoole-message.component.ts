@@ -1,6 +1,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
 
 import { TestSwooleService } from '../../../services/websocket/test-swoole.service'
+import { TestMessageDto } from '@vankosoft/game-platform';
 
 import templateString from './test-websocket-swoole-message.component.html';
 import styleString from './test-websocket-swoole-message.component.scss';
@@ -24,10 +25,9 @@ export class TestWebsocketSwooleMessageComponent implements OnInit
     
     testWebsocketSwoolMessage(): void
     {
-        /*  
-        this.wsService.sendToTestMultiplayerLobby().subscribe( ( message ) => {
-            alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
-        });
-        */
+        let message: TestMessageDto = {
+            message: 'Test Websocket Swool Message !!!'
+        };
+        this.wsService.sendTestMessage( message );
     }
 }

@@ -5,20 +5,22 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
+use Vankosoft\WebsocketBundle\Websocket\WebSocketState;
+
 use React\Async;
 use React\EventLoop\Loop;
 use React\EventLoop\TimerInterface;
 use Amp\DeferredCancellation;
 
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
+use Vankosoft\WebsocketBundle\Websocket\Client\WebsocketClientInterface;
+
 use App\Component\Manager\BoardGameManager;
-use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Rules\BoardGame\Game;
 use App\Component\Rules\BoardGame\Player;
 use App\Component\Rules\BoardGame\ChessMove;
 use App\Component\AI\EngineFactory as AiEngineFactory;
 use App\Component\Utils\Guid;
-use App\Component\Websocket\WebSocketState;
 use App\Entity\GamePlayer;
 use App\Entity\TempPlayer;
 

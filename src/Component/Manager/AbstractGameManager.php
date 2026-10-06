@@ -16,14 +16,15 @@ use React\Async;
 use Amp\DeferredCancellation;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 
+use Vankosoft\WebsocketBundle\Websocket\WebSocketState;
+use Vankosoft\WebsocketBundle\Websocket\Client\WebsocketClientInterface;
+
 use App\Component\Logger\GameLogger;
 use App\Component\Rules\GameInterface;
 
 use App\Component\Rules\BoardGame\Game;
 use App\Component\AI\AiEngineInterface;
 use App\Component\Rules\GameFactory;
-use App\Component\Websocket\Client\WebsocketClientInterface;
-use App\Component\Websocket\WebSocketState;
 
 // Types
 use App\Component\Type\PlayerColor;

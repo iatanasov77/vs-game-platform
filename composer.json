@@ -34,7 +34,7 @@
         "vankosoft/catalog-bundle": "^2.7",
         "vankosoft/api-bundle": "^4.1",
         
-        "swoole-bundle/swoole-bundle": "^0.35",
+        "vankosoft/websocket-bundle": "^1.1",
         
         "cboden/ratchet": "0.4.x-dev",
         "react/react": "^1.4",

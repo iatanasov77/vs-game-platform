@@ -12,6 +12,9 @@ use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use Ratchet\RFC6455\Messaging\Frame;
 use Vankosoft\UsersBundle\Security\SecurityBridge;
 
+use Vankosoft\WebsocketBundle\Websocket\WebSocketState;
+use Vankosoft\WebsocketBundle\Websocket\Client\WebsocketClientInterface;
+
 use App\Component\Logger\GameLogger;
 use App\Component\Manager\GameManagerInterface;
 use App\Component\Manager\GameManagerFactory;
@@ -33,8 +36,6 @@ use App\Component\Rules\BoardGame\Helper as GameHelper;
 use App\Component\Type\GameState;
 use App\Component\Type\PlayerColor;
 use App\Component\Type\PlayerPosition;
-use App\Component\Websocket\Client\WebsocketClientInterface;
-use App\Component\Websocket\WebSocketState;
 use App\Entity\GamePlayer;
 
 use App\EventListener\Event\GameEndedEvent;

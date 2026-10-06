@@ -3,6 +3,8 @@
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
+
+use Vankosoft\WebsocketBundle\Websocket\Client\AbstractWebsocketClient;
 use Ratchet\ConnectionInterface;
 
 final class WebsocketRatchetConnectionClient extends AbstractWebsocketClient

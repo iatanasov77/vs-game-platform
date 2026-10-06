@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
 
 // Action Interfaces
-import { ActionDto } from '@vankosoft/game-platform';
-import { ActionNames } from '@vankosoft/game-platform';
-import { TestMessageActionDto } from '@vankosoft/game-platform';
+import {
+    ActionDto,
+    ActionNames,
+    TestMessageActionDto,
+    TestMessageDto
+} from '@vankosoft/game-platform';
 
 declare global {
     interface Window {
@@ -61,7 +64,7 @@ export class TestSwooleService
         switch ( action.actionName ) {
             case ActionNames.testMessage: {
                 const dto = JSON.parse( message.data ) as TestMessageActionDto;
-                alert( `Test Message ${dto.message.message}` );
+                alert( `Test Message: ${dto.message.message}` );
                 
                 break;
             }
@@ -80,5 +83,21 @@ export class TestSwooleService
     {
         //alert( event.code );
         console.log( 'Close', { event } );
+    }
+    
+    sendMessage( message: string ): void
+    {
+        if ( this.socket && this.socket.readyState === this.socket.OPEN ) {
+            this.socket.send( message );
+        }
+    }
+    
+    sendTestMessage( messageDto: TestMessageDto ): void
+    {
+        const action: TestMessageActionDto = {
+            actionName: ActionNames.testMessage,
+            message: messageDto
+        };
+        this.sendMessage( JSON.stringify( action ) );
     }
 }

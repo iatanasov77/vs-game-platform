@@ -1,6 +1,7 @@
 <?php namespace App\Component\Websocket;
 
 use Symfony\Component\Serializer\SerializerInterface;
+
 use App\Component\Websocket\Client\WebsocketServerClient;
 use App\Component\Websocket\Client\WebsocketThruwayClient;
 use App\Component\Websocket\Client\WebsocketRatchetConnectionClient;

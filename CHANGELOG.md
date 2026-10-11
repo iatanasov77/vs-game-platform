@@ -1,3 +1,15 @@
+1.2.5	|	Release date: **11.10.2026**
+============================================
+* New Features:
+  - Remove Uneeded ZMQ Services.
+  - Refactoring Doctrine Migrations.
+  - Change Game Loby Buttons.
+  - Create a Websocket Server with Swoole PHP Extension.
+  - Move Websocket Components into Websocket Bundle.
+  - Create a Test for Ratchet Websocket Services.
+  - Improve Frontend Angular Services.
+
+
 1.2.4	|	Release date: **01.10.2026**
 ============================================
 * New Features:

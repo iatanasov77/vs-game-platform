@@ -22,9 +22,6 @@ class WebsocketMessageHandler extends RatchetServerHandler
     /** @var GameService */
     private $gameService;
     
-    /** @var int */
-    private $connectionSequenceId = 0;
-    
     /** @var array */
     private $names;
     

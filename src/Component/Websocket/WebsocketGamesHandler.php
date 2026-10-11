@@ -36,9 +36,6 @@ final class WebsocketGamesHandler extends RatchetServerHandler
     /** @var RepositoryInterface */
     private $usersRepository;
     
-    /** @var int */
-    private $connectionSequenceId = 0;
-    
     /** @var array */
     private $names;
     

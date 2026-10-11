@@ -2,8 +2,6 @@
 
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Psr\Log\LoggerInterface;
-
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Ratchet\ConnectionInterface;
 
@@ -16,22 +14,13 @@ use Vankosoft\WebsocketBundle\Websocket\Server\RatchetServerHandler;
  * Manual:  https://stackoverflow.com/questions/64292868/how-to-send-a-message-to-specific-websocket-clients-with-symfony-ratchet
  *          https://stackoverflow.com/questions/30953610/how-to-send-messages-to-particular-users-ratchet-php-websocket
  */
-class WebsocketMessageHandler implements RatchetServerHandler
+class WebsocketMessageHandler extends RatchetServerHandler
 {
-    /** @var string */
-    private $environement;
-    
-    /** @var SerializerInterface */
-    private $serializer;
-    
-    /** @var LoggerInterface */
-    private $logger;
-    
     /** @var RepositoryInterface */
     private $usersRepository;
     
-    /** @var \SplObjectStorage */
-    private $clients;
+    /** @var GameService */
+    private $gameService;
     
     /** @var int */
     private $connectionSequenceId = 0;
@@ -39,19 +28,26 @@ class WebsocketMessageHandler implements RatchetServerHandler
     /** @var array */
     private $names;
     
+    /** @var array */
+    private $games;
+    
     public function __construct(
-        string $environement,
+        GameLogger $logger,
         SerializerInterface $serializer,
-        LoggerInterface $logger,
-        RepositoryInterface $usersRepository
-    ) {
-        $this->environement     = $environement;
-        $this->serializer       = $serializer;
-        $this->logger           = $logger;
-        $this->usersRepository  = $usersRepository;
+        bool $logExceptionTrace,
+        string $websocketUrl,
+        WebsocketClientFactory $wsClientFactory,
         
-        $this->clients  = new \SplObjectStorage();
+        RepositoryInterface $usersRepository,
+        GameService $gameService
+    ) {
+        parent::__construct( $logger, $serializer, $logExceptionTrace, $websocketUrl, $wsClientFactory );
+        
+        $this->usersRepository      = $usersRepository;
+        $this->gameService          = $gameService;
+        
         $this->names    = [];
+        $this->games    = [];
     }
     
     public function onOpen( ConnectionInterface $conn )

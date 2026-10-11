@@ -3,7 +3,6 @@
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
-use SplObjectStorage as SplObjectStorageAlias;
 use Ratchet\ConnectionInterface;
 
 use Vankosoft\WebsocketBundle\Websocket\WebsocketClientFactory;
@@ -31,29 +30,11 @@ use App\Component\Dto\Actions\ActionNames;
  */
 final class WebsocketGamesHandler extends RatchetServerHandler
 {
-    /** @var GameLogger */
-    private $logger;
-    
-    /** @var SerializerInterface */
-    private $serializer;
-    
-    /** @var bool */
-    private $logExceptionTrace;
-    
-    /** @var string */
-    private $websocketUrl;
-    
-    /** @var WebsocketClientFactory */
-    private $wsClientFactory;
-    
     /** @var GameService */
     private $gameService;
     
     /** @var RepositoryInterface */
     private $usersRepository;
-    
-    /** @var \SplObjectStorage */
-    private $clients;
     
     /** @var int */
     private $connectionSequenceId = 0;
@@ -80,16 +61,11 @@ final class WebsocketGamesHandler extends RatchetServerHandler
         RepositoryInterface $usersRepository,
         GameService $gameService
     ) {
-        $this->logger               = $logger;
-        $this->serializer           = $serializer;
-        $this->logExceptionTrace    = $logExceptionTrace;
-        $this->websocketUrl         = $websocketUrl;
-        $this->wsClientFactory      = $wsClientFactory;
+        parent::__construct( $logger, $serializer, $logExceptionTrace, $websocketUrl, $wsClientFactory );
         
         $this->usersRepository      = $usersRepository;
         $this->gameService          = $gameService;
         
-        $this->clients  = new SplObjectStorageAlias();
         $this->names    = [];
         $this->games    = [];
         

@@ -3,7 +3,6 @@
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
-use SplObjectStorage as SplObjectStorageAlias;
 
 use Swoole\Http\Request;
 use Swoole\WebSocket\Frame;
@@ -24,9 +23,6 @@ final class TestWebsocketSwooleHandler extends SwooleServerHandler
     
     /** @var GameService */
     private $gameService;
-    
-    /** @var \SplObjectStorage */
-    private $clients;
     
     /** @var int */
     private $connectionSequenceId = 0;
@@ -52,7 +48,6 @@ final class TestWebsocketSwooleHandler extends SwooleServerHandler
     ) {
         parent::__construct( $logger, $serializer, $logExceptionTrace, $websocketUrl, $wsClientFactory );
         
-        $this->clients  = new SplObjectStorageAlias();
         $this->names    = [];
         $this->games    = [];
     }

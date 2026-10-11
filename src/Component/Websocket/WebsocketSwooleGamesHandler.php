@@ -3,7 +3,6 @@
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
-use SplObjectStorage as SplObjectStorageAlias;
 
 use Swoole\Http\Request;
 use Swoole\WebSocket\Frame;
@@ -29,9 +28,6 @@ final class WebsocketSwooleGamesHandler extends SwooleServerHandler
     
     /** @var GameService */
     private $gameService;
-    
-    /** @var \SplObjectStorage */
-    private $clients;
     
     /** @var int */
     private $connectionSequenceId = 0;
@@ -63,7 +59,6 @@ final class WebsocketSwooleGamesHandler extends SwooleServerHandler
         $this->usersRepository  = $usersRepository;
         $this->gameService      = $gameService;
         
-        $this->clients  = new SplObjectStorageAlias();
         $this->names    = [];
         $this->games    = [];
         

@@ -6,7 +6,8 @@ use Psr\Log\LoggerInterface;
 
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Ratchet\ConnectionInterface;
-use Ratchet\MessageComponentInterface;
+
+use Vankosoft\WebsocketBundle\Websocket\Server\RatchetServerHandler;
 
 /**
  * See Logs:        sudo tail -f /var/log/websocket/game-patform-server.log
@@ -15,7 +16,7 @@ use Ratchet\MessageComponentInterface;
  * Manual:  https://stackoverflow.com/questions/64292868/how-to-send-a-message-to-specific-websocket-clients-with-symfony-ratchet
  *          https://stackoverflow.com/questions/30953610/how-to-send-messages-to-particular-users-ratchet-php-websocket
  */
-class WebsocketMessageHandler implements MessageComponentInterface
+class WebsocketMessageHandler implements RatchetServerHandler
 {
     /** @var string */
     private $environement;

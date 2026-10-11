@@ -9,7 +9,8 @@ class DebugController extends AbstractController
     public function debugWebsocket( Request $request ): Response
     {
         $gameSettings = [
-            'socketSwooleTestUrl' => $this->getParameter( 'app_websocket_swoole_test_url' ),
+            'socketRatchetTestUrl'  => $this->getParameter( 'vs_websocket_ratchet_url' ),
+            'socketSwooleTestUrl'   => $this->getParameter( 'vs_websocket_swoole_url' ),
         ];
         
         return $this->render( 'Pages/GamesDebug/debug-websocket.html.twig', [

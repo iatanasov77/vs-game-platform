@@ -1,5 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 
+import { TestRatchetService } from '../../../services/websocket/test-ratchet.service'
 import { TestSwooleService } from '../../../services/websocket/test-swoole.service'
 import { TestMessageDto } from '@vankosoft/game-platform';
 
@@ -15,19 +16,29 @@ import styleString from './test-websocket-swoole-message.component.scss';
 export class TestWebsocketSwooleMessageComponent implements OnInit
 {
     constructor(
-        @Inject( TestSwooleService ) private wsService: TestSwooleService,
+        @Inject( TestRatchetService ) private wsRatchetService: TestRatchetService,
+        @Inject( TestSwooleService ) private wsSwooleService: TestSwooleService,
     ) { }
     
     ngOnInit(): void
     {
-        this.wsService.connect();
+        this.wsRatchetService.connect();
+        this.wsSwooleService.connect();
     }
     
-    testWebsocketSwoolMessage(): void
+    testWebsocketRatchetMessage(): void
     {
         let message: TestMessageDto = {
-            message: 'Test Websocket Swool Message !!!'
+            message: 'Test Websocket Ratchet Message !!!'
         };
-        this.wsService.sendTestMessage( message );
+        this.wsRatchetService.sendTestMessage( message );
+    }
+    
+    testWebsocketSwooleMessage(): void
+    {
+        let message: TestMessageDto = {
+            message: 'Test Websocket Swoole Message !!!'
+        };
+        this.wsSwooleService.sendTestMessage( message );
     }
 }

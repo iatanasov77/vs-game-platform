@@ -2,7 +2,6 @@
 
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Sylius\Component\Resource\Repository\RepositoryInterface;
 
 use Swoole\Http\Request;
 use Swoole\WebSocket\Frame;
@@ -18,12 +17,6 @@ use App\Component\Dto\TestMessageDto;
 
 final class TestWebsocketSwooleHandler extends SwooleServerHandler
 {
-    /** @var RepositoryInterface */
-    private $usersRepository;
-    
-    /** @var GameService */
-    private $gameService;
-    
     /** @var int */
     private $connectionSequenceId = 0;
     
@@ -32,12 +25,6 @@ final class TestWebsocketSwooleHandler extends SwooleServerHandler
     
     /** @var array */
     private $games;
-    
-    /** @var array */
-    private $boardGamePlayers;
-    
-    /** @var array */
-    private $cardGamePlayers;
     
     public function __construct(
         MyLoggerInterface $logger,
@@ -72,13 +59,11 @@ final class TestWebsocketSwooleHandler extends SwooleServerHandler
         $this->logger->log( "New message from ({$frame->fd}): {$frame->data}", 'GameServer' );
         
         $messageDto = new TestMessageDto();
-        $messageDto->message = 'Respond of Test Websocket Swool Message !!!';
+        $messageDto->message = 'Respond of Test Websocket Swoole Message !!!';
         
         $action = new TestMessageActionDto();
         $action->message = $messageDto;
-        // $json   = $this->serializer->serialize( $action, JsonEncoder::FORMAT );
         
-        // $server->push( $frame->fd, $json );
         if ( $this->clients->contains( $server ) ) {
             $connectionSequenceId =  $this->clients->offsetGet( $server );
             $this->games[$connectionSequenceId]->send( $action );

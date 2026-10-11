@@ -1,17 +1,59 @@
 parameters:
     vs_websocket.document_root: "%kernel.project_dir%/public/game-platform"
+    
+    app_websocket_chat_url: '%env(WEBSOCKET_CHAT_URL)%'
+    app_websocket_game_url: '%env(WEBSOCKET_GAME_URL)%'
 
 services:
     _defaults:
         autowire: true
         autoconfigure: true
     
-    vs_websocket_server_handler:
-        class: App\Component\Websocket\Server\SwooleWebsocketGamesHandler
+    vs_websocket_swoole_chats_server_handler:
+        class: App\Component\Websocket\WebsocketSwooleChatsHandler
+        public: true
         arguments:
             - '@vs_websocket_logger'
             - '@serializer'
-            - "%vs_websocket.exeption_trace%"
+            - '%vs_websocket.exeption_trace%'
+            - '%app_websocket_game_url%'
+            - '@vs_websocket_client_factory'
             - '@vs_users.repository.users'
-            - '@app_websocket_client_factory'
             - '@app_game_service'
+    
+    vs_websocket_swoole_games_server_handler:
+        class: App\Component\Websocket\WebsockeSwooletGamesHandler
+        public: true
+        arguments:
+            - '@vs_websocket_logger'
+            - '@serializer'
+            - '%vs_websocket.exeption_trace%'
+            - '%app_websocket_game_url%'
+            - '@vs_websocket_client_factory'
+            - '@vs_users.repository.users'
+            - '@app_game_service'
+    
+    vs_websocket_chats_handler:
+        class: App\Component\Websocket\WebsocketMessageHandler
+        public: true
+        arguments:
+            - '@app_game_logger'
+            - '@serializer'
+            - '%vs_websocket.exeption_trace%'
+            - '%app_websocket_chat_url%'
+            - '@vs_websocket_client_factory'
+            - '@vs_users.repository.users'
+            - '@app_game_service'
+    
+    vs_websocket_games_handler:
+        class: App\Component\Websocket\WebsocketGamesHandler
+        public: true
+        arguments:
+            - '@app_game_logger'
+            - '@serializer'
+            - '%vs_websocket.exeption_trace%'
+            - '%app_websocket_game_url%'
+            - '@vs_websocket_client_factory'
+            - '@vs_users.repository.users'
+            - '@app_game_service'
+            

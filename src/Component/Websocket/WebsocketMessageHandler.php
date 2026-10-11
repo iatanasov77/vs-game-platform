@@ -1,4 +1,4 @@
-<?php namespace App\Component\Websocket\Server;
+<?php namespace App\Component\Websocket;
 
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -59,7 +59,7 @@ class WebsocketMessageHandler implements MessageComponentInterface
         $this->connectionSequenceId++;
         
         // Store the new connection to send messages to later
-        $this->clients->attach( $conn, $this->connectionSequenceId );
+        $this->clients->offsetSet( $conn, $this->connectionSequenceId );
         
         $this->names[$this->connectionSequenceId] = "Guest {$this->connectionSequenceId}";
     }

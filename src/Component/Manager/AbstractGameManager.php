@@ -132,6 +132,8 @@ abstract class AbstractGameManager implements GameManagerInterface
         LiipImagineCacheManager $imagineCacheManager,
         EventDispatcherInterface $eventDispatcher,
         MessageBusInterface $messageBus,
+        
+        
         ManagerRegistry $doctrine,
         GameFactory $gameRulesFactory,
         RepositoryInterface $gameRepository,

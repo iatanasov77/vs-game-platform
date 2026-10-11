@@ -1,18 +1,17 @@
-<?php namespace App\Component\Websocket\Server;
+<?php namespace App\Component\Websocket;
 
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use SplObjectStorage as SplObjectStorageAlias;
-
-use Vankosoft\WebsocketBundle\Websocket\WebSocketState;
-
 use Ratchet\ConnectionInterface;
-use Ratchet\MessageComponentInterface;
+
+use Vankosoft\WebsocketBundle\Websocket\WebsocketClientFactory;
+use Vankosoft\WebsocketBundle\Websocket\WebSocketState;
+use Vankosoft\WebsocketBundle\Websocket\Server\RatchetServerHandler;
 
 use App\Component\Logger\GameLogger;
 use App\Component\GameVariant;
-use App\Component\Websocket\WebsocketClientFactory;
 use App\Component\GameService;
 use App\Component\Type\PlayerColor;
 use App\Component\Type\PlayerPosition;
@@ -30,7 +29,7 @@ use App\Component\Dto\Actions\ActionNames;
  * Manual:  https://stackoverflow.com/questions/64292868/how-to-send-a-message-to-specific-websocket-clients-with-symfony-ratchet
  *          https://stackoverflow.com/questions/30953610/how-to-send-messages-to-particular-users-ratchet-php-websocket
  */
-final class WebsocketGamesHandler implements MessageComponentInterface
+final class WebsocketGamesHandler extends RatchetServerHandler
 {
     /** @var GameLogger */
     private $logger;
@@ -38,14 +37,20 @@ final class WebsocketGamesHandler implements MessageComponentInterface
     /** @var SerializerInterface */
     private $serializer;
     
-    /** @var RepositoryInterface */
-    private $usersRepository;
+    /** @var bool */
+    private $logExceptionTrace;
+    
+    /** @var string */
+    private $websocketUrl;
     
     /** @var WebsocketClientFactory */
     private $wsClientFactory;
     
     /** @var GameService */
     private $gameService;
+    
+    /** @var RepositoryInterface */
+    private $usersRepository;
     
     /** @var \SplObjectStorage */
     private $clients;
@@ -65,22 +70,24 @@ final class WebsocketGamesHandler implements MessageComponentInterface
     /** @var array */
     private $cardGamePlayers;
     
-    /** @var bool */
-    private $logExceptionTrace;
-    
     public function __construct(
         GameLogger $logger,
         SerializerInterface $serializer,
-        RepositoryInterface $usersRepository,
+        bool $logExceptionTrace,
+        string $websocketUrl,
         WebsocketClientFactory $wsClientFactory,
-        GameService $gameService,
-        bool $logExceptionTrace
+        
+        RepositoryInterface $usersRepository,
+        GameService $gameService
     ) {
-        $this->logger           = $logger;
-        $this->serializer       = $serializer;
-        $this->usersRepository  = $usersRepository;
-        $this->wsClientFactory  = $wsClientFactory;
-        $this->gameService      = $gameService;
+        $this->logger               = $logger;
+        $this->serializer           = $serializer;
+        $this->logExceptionTrace    = $logExceptionTrace;
+        $this->websocketUrl         = $websocketUrl;
+        $this->wsClientFactory      = $wsClientFactory;
+        
+        $this->usersRepository      = $usersRepository;
+        $this->gameService          = $gameService;
         
         $this->clients  = new SplObjectStorageAlias();
         $this->names    = [];
@@ -97,8 +104,6 @@ final class WebsocketGamesHandler implements MessageComponentInterface
             PlayerPosition::East->value,
             PlayerPosition::West->value
         ];
-        
-        $this->logExceptionTrace    = $logExceptionTrace;
     }
     
     public function onOpen( ConnectionInterface $conn )
@@ -107,7 +112,7 @@ final class WebsocketGamesHandler implements MessageComponentInterface
         $this->connectionSequenceId++;
         
         // Store the new connection to send messages to later
-        $this->clients->attach( $conn, $this->connectionSequenceId );
+        $this->clients->offsetSet( $conn, $this->connectionSequenceId );
         
         // default nickname
         $this->names[$this->connectionSequenceId] = "Guest {$this->connectionSequenceId}";
@@ -236,7 +241,7 @@ final class WebsocketGamesHandler implements MessageComponentInterface
                 return;
             }
             
-            $webSocket  = $this->wsClientFactory->createRatchetConnectionClient( $conn );
+            $webSocket  = $this->wsClientFactory->createClient( WebsocketClientFactory::RATCHET_CLIENT, $this->websocketUrl, $conn );
             $webSocket->State   = WebSocketState::Open;
             
             $userId     = $user->getId();

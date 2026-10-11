@@ -43,71 +43,6 @@ export class BackgammonService extends AbstractGameService
         super( injector );
     }
     
-    connect( gameId: string, playAi: boolean, forGold: boolean ): void
-    {
-        //alert( 'Called Websocket Connect !!!' );
-        if ( this.socket ) {
-            this.socket.close();
-        }
-        
-        const currentUrlparams = new URLSearchParams( window.location.search );
-        let variant = currentUrlparams.get( 'variant' );
-        if ( variant == null ) {
-            variant = GameVariant.BACKGAMMON_NORMAL;
-        }
-        
-        let gameCookie  = this.cookieService.get( Keys.gameIdKey );
-        let b64Cookie;
-        if ( gameCookie ) {
-            b64Cookie   = window.btoa( gameCookie );
-        }
-        
-        this.url        = window.gamePlatformSettings.socketGameUrl;
-        
-        const user      = this.appState.user.getValue();
-        const userId    = user ? user.id : '';
-        const tree      = this.router.createUrlTree([], {
-            queryParams: {
-                token: window.gamePlatformSettings.apiVerifySiganature,
-                gameCode: window.gamePlatformSettings.gameSlug,
-                gameVariant: variant,
-                gameCookie: b64Cookie,
-                
-                userId: userId,
-                gameId: gameId,
-                playAi: playAi,
-                forGold: forGold
-            }
-        });
-        const url = this.url + this.serializer.serialize( tree );
-        
-        //alert( url );
-        this.socket = new WebSocket( url );
-        this.socket.onmessage   = this.onMessage.bind( this );
-        this.socket.onerror     = this.onError.bind( this );
-        this.socket.onopen      = this.onOpen.bind( this );
-        this.socket.onclose     = this.onClose.bind( this );
-    }
-    
-    onOpen(): void
-    {
-        // console.log('Open', { event });
-        const now = new Date();
-        const ping = now.getTime() - this.connectTime.getTime();
-        
-        //console.log( 'User in State', this.appState.user );
-        if ( this.appState.user.getValue() ) {
-            this.statusMessageService.setWaitingForConnect();
-        } else {
-            this.statusMessageService.setNotLoggedIn();
-            this.appState.hideBusy();
-        }
-        
-        this.appState.myConnection.setValue( { connected: true, pingMs: ping } );
-        this.appState.boardGame.clearValue();
-        this.appState.dices.clearValue();
-    }
-    
     // Messages received from server.
     onMessage( message: MessageEvent<string> ): void
     {
@@ -313,6 +248,17 @@ export class BackgammonService extends AbstractGameService
             default:
                 throw new Error( `Action not implemented ${action.actionName}` );
         }
+    }
+    
+    initState(): void
+    {
+        // console.log('Open', { event });
+        const now = new Date();
+        const ping = now.getTime() - this.connectTime.getTime();
+        
+        this.appState.myConnection.setValue( { connected: true, pingMs: ping } );
+        this.appState.boardGame.clearValue();
+        this.appState.dices.clearValue();
     }
     
     override resetGame(): void

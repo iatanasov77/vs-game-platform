@@ -79,24 +79,69 @@ export abstract class AbstractGameService
         this.gameService = injector.get( GameService );
     }
     
-    selectGameRoomFromCookie( rooms: IGameRoom[] ): void
+    abstract initState(): void;
+    abstract onMessage( message: MessageEvent<string> ): void;
+    
+    connect( gameId: string, playAi: boolean, forGold: boolean ): void
     {
-        //console.log( 'Rooms in Game State: ', rooms );
-        let gameCookie  = this.cookieService.get( Keys.gameIdKey );
-        if ( gameCookie ) {
-            let gameCookieDto   = JSON.parse( gameCookie ) as GameCookieDto;
-            //alert( 'Game ID: ' + gameCookieDto.id );
-            
-            let gameRoom    = rooms.find( ( item: any ) => item?.name === gameCookieDto.id );
-            if ( gameRoom && ! gameCookieDto.roomSelected ) {
-                // alert( 'Game Room Found From Cookie.' );
-                // this.store.dispatch( selectGameRoom( { game: gameRoom.game, room: gameRoom } ) );
-            }
+        //alert( 'Called Websocket Connect !!!' );
+        if ( this.socket ) {
+            this.socket.close();
         }
+        
+        let gameCookie  = this.cookieService.get( Keys.gameIdKey );
+        let b64Cookie;
+        if ( gameCookie ) {
+            b64Cookie   = window.btoa( gameCookie );
+        }
+        
+        this.url        = window.gamePlatformSettings.socketGameUrl;
+        
+        const user      = this.appState.user.getValue();
+        const userId    = user ? user.id : '';
+        
+        var queryParams: any = {
+            token: window.gamePlatformSettings.apiVerifySiganature,
+            gameCode: window.gamePlatformSettings.gameSlug,
+            gameCookie: b64Cookie,
+            
+            userId: userId,
+            gameId: gameId,
+            playAi: playAi,
+            forGold: forGold
+        };
+        
+        const currentUrlparams = new URLSearchParams( window.location.search );
+        const variant = currentUrlparams.get( 'variant' );
+        // alert( `Game Variant: ${variant}` );
+        
+        if ( variant ) {
+            queryParams.gameVariant = variant;
+        }
+        
+        const tree  = this.router.createUrlTree([], { queryParams: queryParams } );
+        const url   = this.url + this.serializer.serialize( tree );
+        
+        //alert( url );
+        this.socket = new WebSocket( url );
+        this.socket.onmessage   = this.onMessage.bind( this );
+        this.socket.onerror     = this.onError.bind( this );
+        this.socket.onopen      = this.onOpen.bind( this );
+        this.socket.onclose     = this.onClose.bind( this );
     }
     
-    abstract connect( gameId: string, playAi: boolean, forGold: boolean ): void;
-    abstract onOpen(): void;
+    onOpen(): void
+    {
+        //console.log( 'User in State', this.appState.user );
+        if ( this.appState.user.getValue() ) {
+            this.statusMessageService.setWaitingForConnect();
+        } else {
+            this.statusMessageService.setNotLoggedIn();
+            this.appState.hideBusy();
+        }
+        
+        this.initState();
+    }
     
     onError( event: Event ): void
     {
@@ -117,8 +162,6 @@ export abstract class AbstractGameService
         this.appState.myConnection.setValue( { ...cnn, connected: false } );
         //this.statusMessageService.setMyConnectionLost( event.reason );
     }
-    
-    abstract onMessage( message: MessageEvent<string> ): void;
     
     startTimer(): void
     {
@@ -146,6 +189,22 @@ export abstract class AbstractGameService
                 }
             }
         }, 250 );
+    }
+    
+    selectGameRoomFromCookie( rooms: IGameRoom[] ): void
+    {
+        //console.log( 'Rooms in Game State: ', rooms );
+        let gameCookie  = this.cookieService.get( Keys.gameIdKey );
+        if ( gameCookie ) {
+            let gameCookieDto   = JSON.parse( gameCookie ) as GameCookieDto;
+            //alert( 'Game ID: ' + gameCookieDto.id );
+            
+            let gameRoom    = rooms.find( ( item: any ) => item?.name === gameCookieDto.id );
+            if ( gameRoom && ! gameCookieDto.roomSelected ) {
+                // alert( 'Game Room Found From Cookie.' );
+                // this.store.dispatch( selectGameRoom( { game: gameRoom.game, room: gameRoom } ) );
+            }
+        }
     }
       
     sendMessage( message: string ): void

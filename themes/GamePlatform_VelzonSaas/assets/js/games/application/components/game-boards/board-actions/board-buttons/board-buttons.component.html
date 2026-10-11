@@ -3,16 +3,10 @@
         {{ 'dialogs.login' | translate }}
     </button>
     
-    <!--
-     -- Backgammon Lobby Buttons
-    -->
     <ng-container *ngIf="lobbyButtonsVisible">
         <button *ngIf="isLoggedIn && ! acceptInviteVisible" (click)="playGame()" class="default-button">
-            {{ 'game_board.play_game' | translate }}
-        </button>
-        
-        <button *ngIf="isLoggedIn && ! acceptInviteVisible" (click)="inviteFriendClick()" class="default-button">
-            {{ 'game_board.invite_friend' | translate }}
+            <!-- {{ 'game_board.play_game' | translate }} -->
+            {{ 'game_board.start_game' | translate }}
         </button>
         
         <button *ngIf="isLoggedIn && acceptInviteVisible" (click)="startInvitedGame(inviteId)" class="default-button">
@@ -21,11 +15,12 @@
     </ng-container>
     
     <ng-container *ngIf="! lobbyButtonsVisible">
-        <!--
-         -- Card Games Buttons
-        -->
         <button *ngIf="playWithComputerVisible" (click)="playWithComputer()" class="default-button">
             {{ 'game_board.play_with_computer' | translate }}
+        </button>
+        
+        <button *ngIf="isLoggedIn && ! acceptInviteVisible" (click)="inviteFriendClick()" class="default-button">
+            {{ 'game_board.invite_friend' | translate }}
         </button>
         
         <button (click)="newRound()" *ngIf="newRoundVisible" class="default-button">

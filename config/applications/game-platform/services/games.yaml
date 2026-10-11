@@ -1,7 +1,4 @@
 parameters:
-    app_websocket_chat_url: '%env(WEBSOCKET_CHAT_URL)%'
-    app_websocket_game_url: '%env(WEBSOCKET_GAME_URL)%'
-    
     ###########################################################
     # If need to have Exception Trace In Log
     # Set this ENV Variable in .env File With Value True
@@ -51,7 +48,7 @@ services:
     # Custom Loggers
     ##############################################################
     app_game_logger:
-        class: App\Component\GameLogger
+        class: App\Component\Logger\GameLogger
         public: true
         arguments:
             - '@monolog.logger.websocket_game'
@@ -60,7 +57,7 @@ services:
             - '%env(json:WEBSOCKET_GAME_LOGGER_CONTEXTS)%'
     
     app_mercure_logger:
-        class: App\Component\MercureLogger
+        class: App\Component\Logger\MercureLogger
         public: true
         arguments:
             - '@monolog.logger.mercure_game'
@@ -93,47 +90,6 @@ services:
     ##############################################################
     # Websocket Servers
     ##############################################################
-    app_websocket_chat_command:
-        class: App\Component\Websocket\WebsocketChatServer
-        arguments:
-            - '@service_container'
-            - '@doctrine'
-            - '@validator'
-            - '%env(APP_ENV)%'
-            - '@serializer'
-            - '@monolog.logger.websocket_chat'
-            - {
-                sslCertificateKey: '%env(SSL_CERTIFICATE_KEY)%',
-                sslCertificateCert: '%env(SSL_CERTIFICATE_CERT)%'
-            }
-        tags:
-            - 'console.command'
-    
-    app_websocket_game_command:
-        class: App\Component\Websocket\WebsocketGameServer
-        arguments:
-            - '@service_container'
-            - '@doctrine'
-            - '@validator'
-            - '@app_game_service'
-            - '@app_game_logger'
-            - '@serializer'
-            - {
-                sslCertificateKey: '%env(SSL_CERTIFICATE_KEY)%',
-                sslCertificateCert: '%env(SSL_CERTIFICATE_CERT)%',
-                logExceptionTrace: '%env(bool:WEBSOCKET_EXCEPTION_TRACE)%'
-            }
-        tags:
-            - 'console.command'
-            
-    app_websocket_client_factory:
-        class: App\Component\Websocket\WebsocketClientFactory
-        public: true
-        arguments:
-            - '@serializer'
-            - '%app_websocket_chat_url%'
-            - '%app_websocket_game_url%'
-            
     app_game_service:
         class: App\Component\GameService
         public: true

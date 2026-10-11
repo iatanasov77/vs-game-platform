@@ -46,68 +46,6 @@ export class CardGameService extends AbstractGameService
         super( injector );
     }
     
-    connect( gameId: string, playAi: boolean, forGold: boolean ): void
-    {
-        //alert( 'Called Websocket Connect !!!' );
-        if ( this.socket ) {
-            this.socket.close();
-        }
-        
-        const currentUrlparams = new URLSearchParams( window.location.search );
-        
-        let gameCookie  = this.cookieService.get( Keys.gameIdKey );
-        let b64Cookie;
-        if ( gameCookie ) {
-            b64Cookie   = window.btoa( gameCookie );
-        }
-        
-        this.url        = window.gamePlatformSettings.socketGameUrl;
-        
-        const user      = this.appState.user.getValue();
-        const userId    = user ? user.id : '';
-        const tree      = this.router.createUrlTree( [], {
-            queryParams: {
-                token: window.gamePlatformSettings.apiVerifySiganature,
-                gameCode: window.gamePlatformSettings.gameSlug,
-                gameCookie: b64Cookie,
-                
-                userId: userId,
-                gameId: gameId,
-                playAi: playAi,
-                forGold: forGold
-            }
-        });
-        const url = this.url + this.serializer.serialize( tree );
-        // alert( `WebSocket URL: ${url}` );
-        
-        this.socket = new WebSocket( url );
-        this.socket.onmessage   = this.onMessage.bind( this );
-        this.socket.onerror     = this.onError.bind( this );
-        this.socket.onopen      = this.onOpen.bind( this );
-        this.socket.onclose     = this.onClose.bind( this );
-        
-        this.queryParamsService.playAi.setValue( playAi );
-    }
-    
-    onOpen(): void
-    {
-        // console.log('Open', { event });
-        const now = new Date();
-        const ping = now.getTime() - this.connectTime.getTime();
-        
-        //console.log( 'User in State', this.appState.user );
-        if ( this.appState.user.getValue() ) {
-            this.statusMessageService.setWaitingForConnect();
-            //this.statusMessageService.setNotGameStarted();
-        } else {
-            this.statusMessageService.setNotLoggedIn();
-            this.appState.hideBusy();
-        }
-        
-        this.appState.myConnection.setValue( { connected: true, pingMs: ping } );
-        this.appState.cardGame.clearValue();
-    }
-    
     // Messages received from server.
     onMessage( message: MessageEvent<string> ): void
     {
@@ -368,6 +306,16 @@ export class CardGameService extends AbstractGameService
             default:
                 throw new Error( `Action not implemented ${action.actionName}` );
         }
+    }
+    
+    initState(): void
+    {
+        // console.log('Open', { event });
+        const now = new Date();
+        const ping = now.getTime() - this.connectTime.getTime();
+        
+        this.appState.myConnection.setValue( { connected: true, pingMs: ping } );
+        this.appState.cardGame.clearValue();
     }
     
     doBid( bid: BidDto ): void

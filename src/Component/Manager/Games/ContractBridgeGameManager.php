@@ -14,8 +14,8 @@ use React\EventLoop\TimerInterface;
 use Amp\DeferredCancellation;
 
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
+use Vankosoft\WebsocketBundle\Websocket\Client\WebsocketClientInterface;
 use App\Component\Manager\CardGameManager;
-use App\Component\Websocket\Client\WebsocketClientInterface;
 
 use App\Component\Rules\CardGame\ContractBridgeCard as Card;
 use App\Component\Rules\CardGame\Bid;

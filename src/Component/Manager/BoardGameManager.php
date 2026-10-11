@@ -2,10 +2,11 @@
 
 use Doctrine\DBAL\Exception\DriverException;
 
+use Vankosoft\WebsocketBundle\Websocket\WebSocketState;
+use Vankosoft\WebsocketBundle\Websocket\Client\WebsocketClientInterface;
 use Ratchet\RFC6455\Messaging\Frame;
-use App\Component\Websocket\Client\WebsocketClientInterface;
+
 use App\Component\Rules\BoardGame\Score;
-use App\Component\Websocket\WebSocketState;
 
 // Types
 use App\Component\GamePlatform;

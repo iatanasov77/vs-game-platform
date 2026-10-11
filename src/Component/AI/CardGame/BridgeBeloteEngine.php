@@ -8,7 +8,7 @@ use App\Component\Type\BidTrump;
 use App\Component\Type\AnnounceType;
 use App\Component\Type\BridgeBeloteCardType as CardType;
 use App\Component\Type\CardSuit;
-use App\Component\GameLogger;
+use App\Component\Logger\GameLogger;
 use App\Component\Type\PlayerPosition;
 use App\Component\Rules\CardGame\Game;
 use App\Component\Rules\CardGame\BridgeBeloteGameMechanics\ValidCardsService;

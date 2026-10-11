@@ -1,11 +1,11 @@
 <?php namespace App\Component\Manager\Websocket;
 
+use Vankosoft\WebsocketBundle\Websocket\Client\WebsocketClientInterface;
 use App\Component\Utils\Guid;
 use App\Component\Type\PlayerColor;
 use App\Component\Dto\GameCookieDto;
 use App\Component\AI\EngineFactory as AiEngineFactory;
 use App\Component\Manager\BoardGameManager;
-use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Rules\BoardGame\Player;
 use App\Entity\GamePlayer;
 

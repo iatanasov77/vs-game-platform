@@ -3,7 +3,7 @@
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use App\Component\AI\AiEngineInterface;
-use App\Component\GameLogger;
+use App\Component\Logger\GameLogger;
 use App\Component\Type\PlayerColor;
 use App\Component\Rules\BoardGame\Game;
 use App\Component\Rules\BoardGame\Move;

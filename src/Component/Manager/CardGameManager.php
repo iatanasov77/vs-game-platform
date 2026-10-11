@@ -5,11 +5,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Exception\DriverException;
 
+use Vankosoft\WebsocketBundle\Websocket\WebsocketState;
+use Vankosoft\WebsocketBundle\Websocket\Client\WebsocketClientInterface;
+
 use React\Async;
 use Ratchet\RFC6455\Messaging\Frame;
 
 use App\Component\GameVariant;
-use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Component\Rules\CardGame\Game;
 use App\Component\Rules\CardGame\Deck;
 use App\Component\Rules\CardGame\Bid;

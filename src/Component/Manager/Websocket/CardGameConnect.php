@@ -1,10 +1,10 @@
 <?php namespace App\Component\Manager\Websocket;
 
+use Vankosoft\WebsocketBundle\Websocket\Client\WebsocketClientInterface;
 use App\Component\Utils\Guid;
 use App\Component\Type\PlayerPosition;
 use App\Component\Dto\GameCookieDto;
 use App\Component\Manager\CardGameManager;
-use App\Component\Websocket\Client\WebsocketClientInterface;
 use App\Entity\GamePlayer;
 
 trait CardGameConnect

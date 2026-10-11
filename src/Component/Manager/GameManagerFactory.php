@@ -9,7 +9,7 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use App\Component\GameVariant;
-use App\Component\GameLogger;
+use App\Component\Logger\GameLogger;
 use App\Component\Rules\GameFactory as GameRulesFactory;
 
 use App\Component\Manager\Games\BackgammonGameManager;

@@ -26,10 +26,6 @@ vs_api_mercure_game_message:
     path: /api/game-message
     controller: App\Controller\Api\MercureController::index
 
-vs_api_zmq_publish_message:
-    path: /api/zmq-message
-    controller: App\Controller\Api\ZmqPublishController::publish
-
 vs_api_backgamon_editor_game_string:
     path: /api/backgamon/editor/gamestring
     controller: App\Controller\Api\BackgammonEditorController::gameString

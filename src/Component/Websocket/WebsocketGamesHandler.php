@@ -1,0 +1,272 @@
+<?php namespace App\Component\Websocket;
+
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Sylius\Component\Resource\Repository\RepositoryInterface;
+use Ratchet\ConnectionInterface;
+
+use Vankosoft\WebsocketBundle\Websocket\WebsocketClientFactory;
+use Vankosoft\WebsocketBundle\Websocket\WebSocketState;
+use Vankosoft\WebsocketBundle\Websocket\Server\RatchetServerHandler;
+
+use App\Component\Logger\GameLogger;
+use App\Component\GameVariant;
+use App\Component\GameService;
+use App\Component\Type\PlayerColor;
+use App\Component\Type\PlayerPosition;
+
+use App\Component\Dto\Actions\ActionDto;
+use App\Component\Dto\Actions\ActionNames;
+
+/**
+ * See Logs:        sudo tail -f /var/log/websocket/game-patform-game.log
+ *                  sudo tail -f /dev/shm/game-platform.lh/game-platform/log/dev.log | grep MyDebug
+ * 
+ * Start Service:   sudo service websocket_game_platform_game restart
+ *                  sudo /projects/VS_GamePlatform/bin/websocket_server_game 8092
+ *
+ * Manual:  https://stackoverflow.com/questions/64292868/how-to-send-a-message-to-specific-websocket-clients-with-symfony-ratchet
+ *          https://stackoverflow.com/questions/30953610/how-to-send-messages-to-particular-users-ratchet-php-websocket
+ */
+final class WebsocketGamesHandler extends RatchetServerHandler
+{
+    /** @var GameService */
+    private $gameService;
+    
+    /** @var RepositoryInterface */
+    private $usersRepository;
+    
+    /** @var int */
+    private $connectionSequenceId = 0;
+    
+    /** @var array */
+    private $names;
+    
+    /** @var array */
+    private $games;
+    
+    /** @var array */
+    private $boardGamePlayers;
+    
+    /** @var array */
+    private $cardGamePlayers;
+    
+    public function __construct(
+        GameLogger $logger,
+        SerializerInterface $serializer,
+        bool $logExceptionTrace,
+        string $websocketUrl,
+        WebsocketClientFactory $wsClientFactory,
+        
+        RepositoryInterface $usersRepository,
+        GameService $gameService
+    ) {
+        parent::__construct( $logger, $serializer, $logExceptionTrace, $websocketUrl, $wsClientFactory );
+        
+        $this->usersRepository      = $usersRepository;
+        $this->gameService          = $gameService;
+        
+        $this->names    = [];
+        $this->games    = [];
+        
+        $this->boardGamePlayers = [
+            PlayerColor::Black->value,
+            PlayerColor::White->value
+        ];
+        
+        $this->cardGamePlayers = [
+            PlayerPosition::South->value,
+            PlayerPosition::North->value,
+            PlayerPosition::East->value,
+            PlayerPosition::West->value
+        ];
+    }
+    
+    public function onOpen( ConnectionInterface $conn )
+    {
+        $this->logger->log( "New connection ({$conn->resourceId})" . date( 'Y/m/d h:i:sa' ), 'GameServer' );
+        $this->connectionSequenceId++;
+        
+        // Store the new connection to send messages to later
+        $this->clients->offsetSet( $conn, $this->connectionSequenceId );
+        
+        // default nickname
+        $this->names[$this->connectionSequenceId] = "Guest {$this->connectionSequenceId}";
+        $this->ConnectGame( $conn );
+        
+        // broadcast new user
+        //$this->onMessage( $conn, "New Connection: " . $this->connectionSequenceId );
+    }
+    
+    public function onMessage( ConnectionInterface $from, $msg )
+    {
+        $this->logger->log( "New message from ({$from->resourceId}): " . $msg, 'GameServer' );
+        //$this->debugGameManager( $from->resourceId );
+        
+        if ( ! isset( $this->games[$from->resourceId] ) ) {
+            $this->logger->log( "Not Existing Game {$from->resourceId} in WebsocketGamesHandler !!!", 'GameServer' );
+            return;
+        }
+        
+        $gameManager    = $this->gameService->getGameManager( $this->games[$from->resourceId] );
+        if ( ! $gameManager ) {
+            $this->logger->log( "Not Existing Game Manager {$this->games[$from->resourceId]} in WebsocketGamesHandler !!!", 'GameServer' );
+            return;
+        }
+        
+        $socket         = $gameManager->getClient( $from->resourceId );
+        if ( ! $socket ) {
+            $this->logger->log( "Not Existing Client {$from->resourceId} in WebsocketGamesHandler !!!", 'GameServer' );
+            return;
+        }
+        
+        $action         = $this->serializer->deserialize( $msg, ActionDto::class, JsonEncoder::FORMAT );
+        $this->logger->log( "Recieved Action: " . $action->actionName, 'GameServer' );
+        
+        try {
+            $otherPlayers = [];
+            $otherClients = [];
+            switch ( $gameManager->GameCode ) {
+                case GameVariant::BACKGAMMON_CODE:
+                case GameVariant::CHESS_CODE:
+                    $otherPlayers = $this->boardGamePlayers;
+                    break;
+            }
+            
+            if ( ( $key = \array_search( $gameManager->Game->CurrentPlayer->value, $otherPlayers ) ) !== false ) {
+                unset( $otherPlayers[$key] );
+            }
+            
+            foreach ( $otherPlayers as $player ) {
+                $otherClients[] = $gameManager->Clients->get( $player );
+            }
+            
+            $gameManager->DoAction( ActionNames::from( $action->actionName ), $msg, $socket, $otherClients );
+        } catch ( \Exception $e ) {
+            $this->logger->log( "Game Manager Do Action Error: '{$e->getMessage()}' in file {$e->getFile()} at line {$e->getLine()}", 'GameServer' );
+            if ( $this->logExceptionTrace ) {
+                $this->logger->log( "Exception Trace: {$e->getTraceAsString()}", 'GameServer' );
+            }
+        }
+    }
+    
+    public function onClose( ConnectionInterface $conn )
+    {
+        // The connection is closed, remove it, as we can no longer send it messages
+        $this->logger->log( "Connection {$conn->resourceId} has disconnected", 'GameServer' );
+        
+        $gameManager    = $this->gameService->getGameManager( $this->games[$conn->resourceId] );
+        $socket         = $gameManager->getClient( $conn->resourceId );
+        if ( ! $socket ) {
+            return;
+        }
+        $socket->State  = WebSocketState::Closed;
+        
+        /** @var int $sequenceId */
+        $sequenceId = $this->clients[$conn];
+        $this->clients->detach( $conn );
+        
+        // cleanup
+        unset( $this->names[$sequenceId] );
+    }
+    
+    public function onError( ConnectionInterface $conn, \Exception $e )
+    {
+        $this->logger->log( "An error has occurred: {$e->getMessage()}", 'GameServer' );
+        if ( $this->logExceptionTrace ) {
+            $this->logger->log( "Exception Trace: {$e->getTraceAsString()}", 'GameServer' );
+        }
+        
+        $conn->close();
+    }
+    
+    public function serverWasTerminated()
+    {
+        $this->logger->log( "WebSocket Server Was Terminated", 'GameServer' );
+        foreach ( $this->clients as $value ) {
+            $connection = $this->clients->current(); // current object
+            $assocKey = $this->clients->getInfo(); // return, if exists, associated with cur. obj. data; else NULL
+            
+            //$this->logger->log( "Connection: " . \print_r( $connection, true ), 'GameServer' );
+            //$this->logger->log( "Connection Info: " . \print_r( $assocKey, true ), 'GameServer' );
+        }
+    }
+    
+    private function ConnectGame( ConnectionInterface &$conn ): void
+    {
+        $this->logger->log( "Connect Game Request.", 'GameServer' );
+        
+        try {
+            $queryString        = $conn->httpRequest->getUri()->getQuery();
+            $queryParameters    = [];
+            
+            \parse_str( $queryString, $queryParameters );
+            $this->logger->log( "API Verify Signature: ". $queryParameters['token'], 'GameServer' );
+            
+            $verifyToken    = isset( $queryParameters['token'] ) ? $queryParameters['token'] : null;
+            $user           = $this->usersRepository->findOneBy( ['apiVerifySiganature' => $verifyToken ] );
+            if ( ! $user ) {
+                $this->logger->log( "User Not Found When Connecting Game.", 'GameServer' );
+                return;
+            }
+            
+            $gameCode   = isset( $queryParameters['gameCode'] ) ? $queryParameters['gameCode'] : null;
+            $gameVariant    = isset( $queryParameters['gameVariant'] ) ? $queryParameters['gameVariant'] : null;
+            if ( ! $gameCode ) {
+                $this->logger->log( "Game Code Missing When Connecting Game.", 'GameServer' );
+                return;
+            }
+            
+            $webSocket  = $this->wsClientFactory->createClient( WebsocketClientFactory::RATCHET_CLIENT, $this->websocketUrl, $conn );
+            $webSocket->State   = WebSocketState::Open;
+            
+            $userId     = $user->getId();
+            $gameId     = isset( $queryParameters['gameId'] ) ? $queryParameters['gameId'] : null;
+            $playAi     = isset( $queryParameters['playAi'] ) ? $queryParameters['playAi'] : "false";
+            $forGold    = isset( $queryParameters['forGold'] ) ? $queryParameters['forGold'] : "true";
+            $gameCookie = isset( $queryParameters['gameCookie'] ) ? $queryParameters['gameCookie'] : null;
+            
+            if ( $gameCookie ) {
+                $gameCookie = \base64_decode( $gameCookie );
+                $this->logger->log( "Game Cookie: ". $gameCookie, 'GameServer' );
+            }
+            
+            $this->logger->log( "Game Code: ". $gameCode, 'GameServer' );
+            //$this->logger->log( "Game Id: ". $gameId, 'GameServer' );
+            //$this->logger->log( "Play AI: ". $playAi, 'GameServer' );
+            
+            $gameGuid   = null;
+        
+            $gameGuid   = $this->gameService->Connect(
+                $webSocket,
+                $gameCode,
+                $gameVariant,
+                $userId,
+                $gameId,
+                $playAi === 'true',
+                $forGold === 'true',
+                $gameCookie
+            );
+        } catch ( \Exception $exc ) {
+            $this->logger->log( "Connect Game Error: {$exc->getMessage()} in file {$exc->getFile()} at line {$exc->getLine()}", 'GameServer' );
+            if ( $this->logExceptionTrace ) {
+                $this->logger->log( "Exception Trace: {$exc->getTraceAsString()}", 'GameServer' );
+            }
+            
+            //await context.Response.WriteAsync(exc.Message, CancellationToken.None);
+            //context.Response.StatusCode = 400;
+            
+            return;
+        }
+        
+        //$this->logger->log( "Game GUID: ". $gameGuid, 'GameServer' );
+        if ( $gameGuid ) {
+            $this->games[$conn->resourceId]  = $gameGuid;
+        }
+    }
+    
+    private function debugGameManager( int $resourceId ): void
+    {
+        $this->logger->log( 'Game Manager Found: ' . isset( $this->games[$resourceId] ), 'GameServer' );
+    }
+}

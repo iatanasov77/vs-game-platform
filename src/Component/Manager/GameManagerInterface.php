@@ -1,7 +1,8 @@
 <?php namespace App\Component\Manager;
 
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
-use App\Component\Websocket\Client\WebsocketClientInterface;
+use Vankosoft\WebsocketBundle\Websocket\Client\WebsocketClientInterface;
+
 use App\Component\Dto\Actions\ActionNames;
 use App\Entity\GamePlayer;
 

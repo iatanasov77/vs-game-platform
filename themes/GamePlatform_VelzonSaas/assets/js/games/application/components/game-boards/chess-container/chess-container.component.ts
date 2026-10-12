@@ -124,6 +124,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
     resignVisible = false;
     sendVisible = false;
     undoVisible = false;
+    inviteFriendVisible = false;
     
     isRoomSelected: boolean = false;
     hasRooms: boolean       = false;
@@ -190,6 +191,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
     ngAfterViewInit(): void
     {
         this.playAiQuestion = false;
+        this.inviteFriendVisible = false;
         this.lokalStake = 0;
     
         if ( ! this.lobbyButtonsVisible && ! this.playAiFlag ) {
@@ -268,6 +270,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
                 clearTimeout( this.startedHandle );
                 this.started = true;
                 this.playAiQuestion = false;
+                this.inviteFriendVisible = false;
                 this.lobbyButtonsVisibleChanged.emit( false );
                 this.isStarted.emit( true );
                 
@@ -326,6 +329,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
                 //alert( this.appStateService.user );
                 if ( this.appStateService.user?.getValue() ) {
                     this.playAiQuestion = true;
+                    this.inviteFriendVisible = true;
                 } else {
                     this.appStateService.hideBusy();
                 }
@@ -390,6 +394,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
         
         this.gamePlayService.exitBoardGame();
         this.playAiQuestion = false;
+        this.inviteFriendVisible = false;
         this.lobbyButtonsVisibleChanged.emit( true );
         this.isStarted.emit( false );
         this.isPlayAi.emit( false );
@@ -451,6 +456,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
     async playAi()
     {
         this.playAiQuestion = false;
+        this.inviteFriendVisible = false;
         this.wsService.exitGame();
         
         while ( this.appStateService.myConnection.getValue().connected ) {
@@ -465,6 +471,7 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
     {
         this.sound.playBlues();
         this.playAiQuestion = false;
+        this.inviteFriendVisible = false;
     }
     
     openRequirementsDialog(): void

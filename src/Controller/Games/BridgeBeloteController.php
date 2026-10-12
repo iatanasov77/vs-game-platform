@@ -19,9 +19,13 @@ class BridgeBeloteController extends GameController
         $gamePlatformSettings   = $this->applicationContext->getApplication()->getGamePlatformApplication()->getSettings();
         $gameSettings           = [
             'gameSlug'              => $gameSlug,
+            'apiVerifySiganature'   => $signature,
+            
+            'useWebsocketSwoole'    => $gamePlatformSettings->getUseWebsocketSwoole(),
             'socketChatUrl'         => $this->getParameter( 'app_websocket_chat_url' ),
             'socketGameUrl'         => $this->getParameter( 'app_websocket_game_url' ),
-            'apiVerifySiganature'   => $signature,
+            'socketSwooleChatUrl'   => $this->getParameter( 'app_websocket_swoole_chat_url' ),
+            'socketSwooleGameUrl'   => $this->getParameter( 'app_websocket_swoole_game_url' ),
             
             'timeoutBetweenPlayers'         => $gamePlatformSettings->getTimeoutBetweenPlayers(),
             'gamePlayerInactivityTimeout'   => $gamePlatformSettings->getGamePlayerInactivityTimeout(),

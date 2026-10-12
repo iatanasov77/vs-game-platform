@@ -1,0 +1,7 @@
+vs_websocket:
+    document_root: '/public/game-platform'
+    exeption_trace: '%env(bool:WEBSOCKET_EXCEPTION_TRACE)%'
+    
+    logger:
+        channel: 'test_websocket'
+        path: '%kernel.logs_dir%/test_websocket.log'

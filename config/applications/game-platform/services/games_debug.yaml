@@ -1,6 +1,6 @@
 parameters:
-    vs_websocket_ratchet_url: '%env(WEBSOCKET_RATCHET_TEST_URL)%'
-    vs_websocket_swoole_url: '%env(WEBSOCKET_SWOOLE_TEST_URL)%'
+    vs_websocket_ratchet_test_url: '%env(WEBSOCKET_RATCHET_TEST_URL)%'
+    vs_websocket_swoole_test_url: '%env(WEBSOCKET_SWOOLE_TEST_URL)%'
 
 services:
     _defaults:
@@ -17,7 +17,7 @@ services:
             - '@vs_websocket_logger'
             - '@serializer'
             - '%vs_websocket.exeption_trace%'
-            - '%vs_websocket_ratchet_url%'
+            - '%vs_websocket_ratchet_test_url%'
             - '@vs_websocket_client_factory'
     
     vs_websocket_swoole_server_handler_test:
@@ -27,7 +27,7 @@ services:
             - '@vs_websocket_logger'
             - '@serializer'
             - '%vs_websocket.exeption_trace%'
-            - '%vs_websocket_swoole_url%'
+            - '%vs_websocket_swoole_test_url%'
             - '@vs_websocket_client_factory'
     
     ##############################################################

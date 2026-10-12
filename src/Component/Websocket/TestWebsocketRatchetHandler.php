@@ -16,9 +16,6 @@ use App\Component\Dto\TestMessageDto;
 
 final class TestWebsocketRatchetHandler extends RatchetServerHandler
 {
-    /** @var int */
-    private $connectionSequenceId = 0;
-    
     /** @var array */
     private $names;
     

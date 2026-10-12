@@ -35,6 +35,7 @@ export class ChatService implements OnDestroy
         const user = this.appState.user.getValue();
         
         return `${window.gamePlatformSettings.socketChatUrl}?userId=${user.id}`;
+        // return `${window.gamePlatformSettings.socketSwooleChatUrl}?userId=${user.id}`;
     }
     
     onOpen( event: Event ): void

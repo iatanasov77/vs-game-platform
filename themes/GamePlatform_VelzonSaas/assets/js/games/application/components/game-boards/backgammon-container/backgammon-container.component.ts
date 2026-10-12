@@ -147,10 +147,11 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
     acceptDoublingVisible = false;
     requestDoublingVisible = false;
     requestHintVisible = false;
+    inviteFriendVisible = false;
+    
     dicesDto: DiceDto[] | undefined;
     
     gameStarted: boolean = false;
-    
     isRoomSelected: boolean = false;
     hasRooms: boolean       = false;
     
@@ -253,6 +254,7 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
     ngAfterViewInit(): void
     {
         this.playAiQuestion = false;
+        this.inviteFriendVisible = false;
         this.lokalStake = 0;
     
         if ( ! this.lobbyButtonsVisible && ! this.playAiFlag && ! this.editing ) {
@@ -308,6 +310,7 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
                 //alert( this.appStateService.user );
                 if ( this.appStateService.user?.getValue() ) {
                     this.playAiQuestion = true;
+                    this.inviteFriendVisible = true;
                 } else {
                     this.appStateService.hideBusy();
                 }
@@ -375,6 +378,7 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
                 clearTimeout( this.startedHandle );
                 this.started = true;
                 this.playAiQuestion = false;
+                this.inviteFriendVisible = false;
                 this.isStarted.emit( true );
                 this.lobbyButtonsVisibleChanged.emit( false );
             }
@@ -644,6 +648,7 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
         this.gamePlayService.exitBoardGame();
         
         this.playAiQuestion = false;
+        this.inviteFriendVisible = false;
         this.dicesVisible = false;
         this.rollButtonVisible = false;
         this.acceptDoublingVisible = false;
@@ -685,6 +690,7 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
     async playAi()
     {
         this.playAiQuestion = false;
+        this.inviteFriendVisible = false;
         this.wsService.exitGame();
         
         while ( this.appStateService.myConnection.getValue().connected ) {
@@ -699,6 +705,7 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
     {
         this.sound.playBlues();
         this.playAiQuestion = false;
+        this.inviteFriendVisible = false;
     }
     
     openRequirementsDialog(): void

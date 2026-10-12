@@ -34,6 +34,11 @@ class GamePlatformSettingsForm extends AbstractForm
                 'translation_domain'    => 'GamePlatform',
             ])
             
+            ->add( 'useWebsocketSwoole', CheckboxType::class, [
+                'label'                 => 'game_platform.form.game_platform_settings.use_websocket_swoole',
+                'translation_domain'    => 'GamePlatform',
+            ])
+            
             ->add( 'removeLeavedGameSessionsForPlayer', CheckboxType::class, [
                 'label'                 => 'game_platform.form.game_platform_settings.remove_leaved_game_sessions_for_player',
                 'translation_domain'    => 'GamePlatform',

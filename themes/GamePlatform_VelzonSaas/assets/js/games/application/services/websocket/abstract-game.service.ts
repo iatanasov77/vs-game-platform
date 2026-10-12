@@ -95,7 +95,9 @@ export abstract class AbstractGameService
             b64Cookie   = window.btoa( gameCookie );
         }
         
-        this.url        = window.gamePlatformSettings.socketGameUrl;
+        this.url        = window.gamePlatformSettings.useWebsocketSwoole ?
+                            window.gamePlatformSettings.socketSwooleGameUrl :
+                            window.gamePlatformSettings.socketGameUrl;
         
         const user      = this.appState.user.getValue();
         const userId    = user ? user.id : '';
@@ -122,7 +124,7 @@ export abstract class AbstractGameService
         const tree  = this.router.createUrlTree([], { queryParams: queryParams } );
         const url   = this.url + this.serializer.serialize( tree );
         
-        //alert( url );
+        // alert( url );
         this.socket = new WebSocket( url );
         this.socket.onmessage   = this.onMessage.bind( this );
         this.socket.onerror     = this.onError.bind( this );

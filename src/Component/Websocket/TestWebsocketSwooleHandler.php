@@ -17,9 +17,6 @@ use App\Component\Dto\TestMessageDto;
 
 final class TestWebsocketSwooleHandler extends SwooleServerHandler
 {
-    /** @var int */
-    private $connectionSequenceId = 0;
-    
     /** @var array */
     private $names;
     

@@ -1,3 +1,12 @@
+2.0.0	|	Release date: **12.10.2026**
+============================================
+* New Features:
+  - Move Some Property of Websocket Handlers into Base Class.
+  - Refactoring Websocket Urls.
+  - Add a Game Container Flag 'inviteFriendVisible'
+  - Add a GamePlatform Setting to Use Websocket Swoole Server.
+
+
 1.2.5	|	Release date: **11.10.2026**
 ============================================
 * New Features:

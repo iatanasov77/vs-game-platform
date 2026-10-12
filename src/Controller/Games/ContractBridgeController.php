@@ -18,6 +18,7 @@ class ContractBridgeController extends GameController
             'gameSlug'              => $gameSlug,
             'apiVerifySiganature'   => $signature,
             
+            'useWebsocketSwoole'    => $gamePlatformSettings->getUseWebsocketSwoole(),
             'socketChatUrl'         => $this->getParameter( 'app_websocket_chat_url' ),
             'socketGameUrl'         => $this->getParameter( 'app_websocket_game_url' ),
             'socketSwooleChatUrl'   => $this->getParameter( 'app_websocket_swoole_chat_url' ),

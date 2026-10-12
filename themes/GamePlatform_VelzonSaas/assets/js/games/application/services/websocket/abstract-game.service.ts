@@ -95,8 +95,9 @@ export abstract class AbstractGameService
             b64Cookie   = window.btoa( gameCookie );
         }
         
-        this.url        = window.gamePlatformSettings.socketGameUrl;
-        // this.url        = window.gamePlatformSettings.socketSwooleGameUrl;
+        this.url        = window.gamePlatformSettings.useWebsocketSwoole ?
+                            window.gamePlatformSettings.socketSwooleGameUrl :
+                            window.gamePlatformSettings.socketGameUrl;
         
         const user      = this.appState.user.getValue();
         const userId    = user ? user.id : '';

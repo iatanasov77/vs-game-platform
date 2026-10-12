@@ -28,6 +28,10 @@ class GamePlatformSettings implements ResourceInterface
     private $gamePlayerInactivityTimeout = 3000;
     
     /** @var bool */
+    #[ORM\Column(name: "use_websocket_swoole", type: "boolean", options: ["default" => 0], nullable: true)]
+    private $useWebsocketSwoole = false;
+    
+    /** @var bool */
     #[ORM\Column(name: "remove_leaved_game_sessions_for_player", type: "boolean", options: ["default" => 0], nullable: true)]
     private $removeLeavedGameSessionsForPlayer = false;
     
@@ -100,6 +104,18 @@ class GamePlatformSettings implements ResourceInterface
     public function setGamePlayerInactivityTimeout($gamePlayerInactivityTimeout)
     {
         $this->gamePlayerInactivityTimeout  = $gamePlayerInactivityTimeout;
+        
+        return $this;
+    }
+    
+    public function getUseWebsocketSwoole()
+    {
+        return $this->useWebsocketSwoole;
+    }
+    
+    public function setUseWebsocketSwoole($useWebsocketSwoole)
+    {
+        $this->useWebsocketSwoole  = $useWebsocketSwoole;
         
         return $this;
     }

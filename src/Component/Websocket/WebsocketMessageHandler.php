@@ -49,7 +49,7 @@ class WebsocketMessageHandler extends RatchetServerHandler
     
     public function onOpen( ConnectionInterface $conn )
     {
-        $this->log( "New connection ({$conn->resourceId})" . date( 'Y/m/d h:i:sa' ) );
+        $this->log( "New Ratchet connection ({$conn->resourceId})" . date( 'Y/m/d h:i:sa' ) );
         $this->connectionSequenceId++;
         
         // Store the new connection to send messages to later

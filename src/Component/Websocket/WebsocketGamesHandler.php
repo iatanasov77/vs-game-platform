@@ -81,7 +81,7 @@ final class WebsocketGamesHandler extends RatchetServerHandler
     
     public function onOpen( ConnectionInterface $conn )
     {
-        $this->logger->log( "New connection ({$conn->resourceId})" . date( 'Y/m/d h:i:sa' ), 'GameServer' );
+        $this->logger->log( "New Ratchet connection ({$conn->resourceId})" . date( 'Y/m/d h:i:sa' ), 'GameServer' );
         $this->connectionSequenceId++;
         
         // Store the new connection to send messages to later

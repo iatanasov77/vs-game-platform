@@ -65,7 +65,7 @@ class WebsocketMessagePublisher implements WampServerInterface
     public function onOpen( ConnectionInterface $conn )
     {
         $this->log( " \n" );
-        $this->log( "New connection ({$conn->resourceId})" . date( 'Y/m/d h:i:sa' ) );
+        $this->log( "New Ratchet connection ({$conn->resourceId})" . date( 'Y/m/d h:i:sa' ) );
         $this->log( " \n" );
     }
     

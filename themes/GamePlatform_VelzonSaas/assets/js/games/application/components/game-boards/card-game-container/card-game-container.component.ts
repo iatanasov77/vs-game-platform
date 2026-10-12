@@ -132,6 +132,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     
     rotateVisible = false;
     flipVisible = false;
+    inviteFriendVisible = false;
     
     gameBiddingVisible = false;
     gameContractVisible = false;
@@ -236,6 +237,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     ngAfterViewInit(): void
     {
         this.playAiQuestion = false;
+        this.inviteFriendVisible = false;
     
         if ( ! this.lobbyButtonsVisible && ! this.playAiFlag ) {
             this.waitForOpponent();
@@ -324,6 +326,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
                 //alert( this.appStateService.user );
                 if ( this.appStateService.user?.getValue() ) {
                     this.playAiQuestion = true;
+                    this.inviteFriendVisible = true;
                 } else {
                     this.appStateService.hideBusy();
                 }
@@ -438,6 +441,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         
         this.gamePlayService.exitCardGame();
         this.playAiQuestion = false;
+        this.inviteFriendVisible = false;
         this.gameBiddingVisible = false;
         this.gameContractVisible = false;
         
@@ -487,6 +491,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     {
         // alert( 'Card Game playAi() Called !!!' );
         this.playAiQuestion = false;
+        this.inviteFriendVisible = false;
         this.wsService.exitGame();
         
         while ( this.appStateService.myConnection.getValue().connected ) {
@@ -504,6 +509,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     {
         this.sound.playBlues();
         this.playAiQuestion = false;
+        this.inviteFriendVisible = false;
     }
     
     openRequirementsDialog(): void
@@ -638,6 +644,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
                 this.gameBiddingVisible = true;
             
                 this.playAiQuestion = false;
+                this.inviteFriendVisible = false;
                 this.lobbyButtonsVisibleChanged.emit( false );
                 this.isStarted.emit( true );
                 

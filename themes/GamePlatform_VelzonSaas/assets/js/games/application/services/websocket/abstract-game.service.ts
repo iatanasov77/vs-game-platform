@@ -123,7 +123,7 @@ export abstract class AbstractGameService
         const tree  = this.router.createUrlTree([], { queryParams: queryParams } );
         const url   = this.url + this.serializer.serialize( tree );
         
-        //alert( url );
+        // alert( url );
         this.socket = new WebSocket( url );
         this.socket.onmessage   = this.onMessage.bind( this );
         this.socket.onerror     = this.onError.bind( this );

@@ -19,7 +19,7 @@
             {{ 'game_board.play_with_computer' | translate }}
         </button>
         
-        <button *ngIf="isLoggedIn && ! acceptInviteVisible" (click)="inviteFriendClick()" class="default-button">
+        <button *ngIf="inviteFriendVisible" (click)="inviteFriendClick()" class="default-button">
             {{ 'game_board.invite_friend' | translate }}
         </button>
         

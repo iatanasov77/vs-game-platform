@@ -29,6 +29,7 @@ export class BoardButtonsComponent implements OnInit, OnChanges
     @Input() openAuctionDialogVisible = false;
     @Input() rotateVisible = false;
     @Input() flipVisible = false;
+    @Input() inviteFriendVisible = false;
     
     @Input() playWithComputerVisible = false;
     @Input() clearGameSessionsVisible = false;
@@ -108,6 +109,9 @@ export class BoardButtonsComponent implements OnInit, OnChanges
                     break;
                 case 'openAuctionDialogVisible':
                     this.openAuctionDialogVisible = changedProp.currentValue;
+                    break;
+                case 'inviteFriendVisible':
+                    this.inviteFriendVisible = changedProp.currentValue;
                     break;
             }
         }

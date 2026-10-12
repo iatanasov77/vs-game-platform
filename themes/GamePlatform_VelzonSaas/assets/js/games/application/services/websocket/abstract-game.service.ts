@@ -96,6 +96,7 @@ export abstract class AbstractGameService
         }
         
         this.url        = window.gamePlatformSettings.socketGameUrl;
+        // this.url        = window.gamePlatformSettings.socketSwooleGameUrl;
         
         const user      = this.appState.user.getValue();
         const userId    = user ? user.id : '';

@@ -7,9 +7,9 @@ use Doctrine\DBAL\Exception\DriverException;
 
 use Vankosoft\WebsocketBundle\Websocket\WebsocketState;
 use Vankosoft\WebsocketBundle\Websocket\Client\WebsocketClientInterface;
+use Vankosoft\WebsocketBundle\Websocket\Message\Frame;
 
 use React\Async;
-use Ratchet\RFC6455\Messaging\Frame;
 
 use App\Component\GameVariant;
 use App\Component\Rules\CardGame\Game;
@@ -249,6 +249,8 @@ abstract class CardGameManager extends AbstractGameManager
 //             $winner = $this->Clients->get( PlayerColor::Black->value ) == $otherSocket ? PlayerColor::Black : PlayerColor::White;
 //             $this->Resign( $winner );
         } else if ( $actionName == ActionNames::exitGame ) {
+            $this->logger->log( 'exitGame action recieved from GameManager.', 'GameManager' );
+            
             $this->Game->CurrentContract = null;
             $this->CloseConnections( $socket );
         }

@@ -258,6 +258,7 @@ final class BackgammonGameManager extends BoardGameManager
             $this->Resign( $winner );
         } else if ( $actionName == ActionNames::exitGame ) {
             $this->logger->log( 'exitGame action recieved from GameManager.', 'GameManager' );
+            
             $this->CloseConnections( $socket );
         }
         

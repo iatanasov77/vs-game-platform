@@ -16,7 +16,7 @@ services:
         class: App\Component\Websocket\WebsocketSwooleChatsHandler
         public: true
         arguments:
-            - '@vs_websocket_logger'
+            - '@app_game_logger'
             - '@serializer'
             - '%vs_websocket.exeption_trace%'
             - '%app_websocket_swoole_chat_url%'
@@ -25,10 +25,10 @@ services:
             - '@app_game_service'
     
     vs_websocket_swoole_games_server_handler:
-        class: App\Component\Websocket\WebsockeSwooletGamesHandler
+        class: App\Component\Websocket\WebsocketSwooleGamesHandler
         public: true
         arguments:
-            - '@vs_websocket_logger'
+            - '@app_game_logger'
             - '@serializer'
             - '%vs_websocket.exeption_trace%'
             - '%app_websocket_swoole_game_url%'

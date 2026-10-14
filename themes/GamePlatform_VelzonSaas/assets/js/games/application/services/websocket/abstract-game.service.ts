@@ -156,7 +156,7 @@ export abstract class AbstractGameService
     
     onClose( event: CloseEvent ): void
     {
-        //alert( event.code );
+        alert( `Close Event Code: ${event.code}` );
         console.log( 'Close', { event } );
         
         // Set Status Message

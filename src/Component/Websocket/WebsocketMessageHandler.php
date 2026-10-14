@@ -3,8 +3,9 @@
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
-use Ratchet\ConnectionInterface;
 
+use Vankosoft\WebsocketBundle\Websocket\Connection\RatchetConnectionInterface;
+use Vankosoft\WebsocketBundle\Websocket\Message\Frame;
 use Vankosoft\WebsocketBundle\Websocket\Server\RatchetServerHandler;
 
 /**
@@ -47,7 +48,7 @@ class WebsocketMessageHandler extends RatchetServerHandler
         $this->games    = [];
     }
     
-    public function onOpen( ConnectionInterface $conn )
+    public function onOpen( $conn )
     {
         $this->log( "New Ratchet connection ({$conn->resourceId})" . date( 'Y/m/d h:i:sa' ) );
         $this->connectionSequenceId++;
@@ -58,7 +59,7 @@ class WebsocketMessageHandler extends RatchetServerHandler
         $this->names[$this->connectionSequenceId] = "Guest {$this->connectionSequenceId}";
     }
     
-    public function onMessage( ConnectionInterface $from, $msg )
+    public function onMessage( $from, $msg )
     {
         /** @var int $sequenceId */
         $sequenceId = $this->clients[$from];
@@ -106,7 +107,7 @@ class WebsocketMessageHandler extends RatchetServerHandler
         }
     }
     
-    public function onClose( ConnectionInterface $conn )
+    public function onClose( $conn )
     {
         // The connection is closed, remove it, as we can no longer send it messages
         $this->log( "Connection {$conn->resourceId} has disconnected" );
@@ -119,10 +120,10 @@ class WebsocketMessageHandler extends RatchetServerHandler
         unset( $this->names[$sequenceId] );
     }
     
-    public function onError( ConnectionInterface $conn, \Exception $e )
+    public function onError( $conn, \Exception $e )
     {
         $this->log( "An error has occurred: {$e->getMessage()}\n" );
-        $conn->close();
+        $conn->close( Frame::CLOSE_SRV_ERR );
     }
     
     private function log( $logData ): void

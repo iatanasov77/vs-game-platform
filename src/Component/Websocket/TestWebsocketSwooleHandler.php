@@ -45,7 +45,7 @@ final class TestWebsocketSwooleHandler extends SwooleServerHandler
         $this->clients->offsetSet( $server, $this->connectionSequenceId );
         
         $webSocket  = $this->wsClientFactory->createClient( WebsocketClientFactory::SWOOLE_CLIENT, $this->websocketUrl, $server );
-        $webSocket->setClientId( $request->fd );
+        $webSocket->setClientId( $this->connectionSequenceId );
         $webSocket->State   = WebSocketState::Open;
         
         $this->games[$this->connectionSequenceId] = $webSocket;

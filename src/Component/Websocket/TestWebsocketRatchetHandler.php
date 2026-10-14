@@ -3,9 +3,7 @@
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 
-use Ratchet\MessageComponentInterface;
-use Ratchet\ConnectionInterface;
-
+use Vankosoft\WebsocketBundle\Websocket\Connection\RatchetConnectionInterface;
 use Vankosoft\WebsocketBundle\Websocket\WebsocketClientFactory;
 use Vankosoft\WebsocketBundle\Websocket\WebSocketState;
 use Vankosoft\WebsocketBundle\Websocket\Server\RatchetServerHandler;
@@ -35,7 +33,7 @@ final class TestWebsocketRatchetHandler extends RatchetServerHandler
         $this->games    = [];
     }
     
-    public function onOpen( ConnectionInterface $conn ): void
+    public function onOpen( $conn ): void
     {
         $this->logger->log( "Ratchet Server Open Connection: {$conn->resourceId}", 'GameServer' );
         $this->connectionSequenceId++;
@@ -50,7 +48,7 @@ final class TestWebsocketRatchetHandler extends RatchetServerHandler
         $this->games[$this->connectionSequenceId] = $webSocket;
     }
     
-    public function onMessage( ConnectionInterface $from, $msg ): void
+    public function onMessage( $from, $msg ): void
     {
         $this->logger->log( "New message from ({$from->resourceId}): {$msg}", 'GameServer' );
         
@@ -68,7 +66,7 @@ final class TestWebsocketRatchetHandler extends RatchetServerHandler
         }
     }
     
-    public function onClose( ConnectionInterface $conn ): void
+    public function onClose( $conn ): void
     {
         $this->logger->log( "Ratchet Server Close Connection: {$conn->resourceId}" );
     }

@@ -4,7 +4,8 @@ use Doctrine\DBAL\Exception\DriverException;
 
 use Vankosoft\WebsocketBundle\Websocket\WebSocketState;
 use Vankosoft\WebsocketBundle\Websocket\Client\WebsocketClientInterface;
-use Ratchet\RFC6455\Messaging\Frame;
+use Vankosoft\WebsocketBundle\Websocket\Client\WebsocketSwooleClient;
+use Vankosoft\WebsocketBundle\Websocket\Message\Frame;
 
 use App\Component\Rules\BoardGame\Score;
 
@@ -219,6 +220,11 @@ abstract class BoardGameManager extends AbstractGameManager
             $this->SetDbGameStatus( GamePlatform::GAME_ROOM_STATUS_WAITING );
             
             $socket->close( Frame::CLOSE_NORMAL );
+            
+            // FOR DEBUGGING
+            if ( $socket instanceof WebsocketSwooleClient ) {
+                return;
+            }
             
             // Dispose Websocket
             if ( $socket == $this->Clients->get( PlayerColor::Black->value ) ) {

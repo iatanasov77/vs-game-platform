@@ -5,7 +5,6 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Ratchet\RFC6455\Messaging\Frame;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -18,6 +17,7 @@ use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 
 use Vankosoft\WebsocketBundle\Websocket\WebSocketState;
 use Vankosoft\WebsocketBundle\Websocket\Client\WebsocketClientInterface;
+use Vankosoft\WebsocketBundle\Websocket\Message\Frame;
 
 use App\Component\Logger\GameLogger;
 use App\Component\Rules\GameInterface;
@@ -133,7 +133,6 @@ abstract class AbstractGameManager implements GameManagerInterface
         EventDispatcherInterface $eventDispatcher,
         MessageBusInterface $messageBus,
         
-        
         ManagerRegistry $doctrine,
         GameFactory $gameRulesFactory,
         RepositoryInterface $gameRepository,
@@ -179,13 +178,18 @@ abstract class AbstractGameManager implements GameManagerInterface
     public function getClient( $clientId ): ?WebsocketClientInterface
     {
         foreach ( $this->Clients as $client ) {
-            if ( $client && $client->getClientId() == $clientId ) {
+            if ( ! $client ) {
+                continue;
+            }
+            
+            $this->logger->log( "GameManager Has Client With ID: {$clientId}", 'GameManager' );
+            if ( $client->getClientId() == $clientId ) {
                 $this->logger->log( 'Websocket Client Found !!!', 'GameManager' );
                 return $client;
             }
         }
         
-        $this->logger->log( 'GameManager Websocket Client Not Found !!!', 'GameManager' );
+        $this->logger->log( "GameManager Websocket Client With ID {$clientId} Not Found !!!", 'GameManager' );
         return null;
     }
     

@@ -25,7 +25,7 @@ export class TestWebsocketSwooleComponent implements OnInit
     
     testWebsocketSwooleMessage(): void
     {
-        alert( 'Test Websocket Swoole Message Clicked !!!' );
+        // alert( 'Test Websocket Swoole Message Clicked !!!' );
         
         let message: TestMessageDto = {
             message: 'Test Websocket Swoole Message !!!'

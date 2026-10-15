@@ -25,7 +25,7 @@ export class TestWebsocketRatchetComponent implements OnInit
     
     testWebsocketRatchetMessage(): void
     {
-        alert( 'Test Websocket Ratchet Message Clicked !!!' );
+        // alert( 'Test Websocket Ratchet Message Clicked !!!' );
         
         let message: TestMessageDto = {
             message: 'Test Websocket Ratchet Message !!!'

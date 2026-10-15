@@ -96,6 +96,8 @@ export class TestRatchetService
     
     sendTestMessage( messageDto: TestMessageDto ): void
     {
+        // alert( 'sendTestMessage' );
+        
         const action: TestMessageActionDto = {
             actionName: ActionNames.testMessage,
             message: messageDto

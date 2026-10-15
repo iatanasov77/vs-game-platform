@@ -30,7 +30,8 @@ export class TestRatchetService
     
     connect(): void
     {
-        //alert( 'Called Websocket Connect !!!' );
+        // alert( 'Called Websocket Ratchet Connect !!!' );
+        
         if ( this.socket ) {
             this.socket.close();
         }

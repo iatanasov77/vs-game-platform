@@ -1,17 +1,20 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { TestWebsocketSwooleMessageComponent } from './test-websocket-swoole-message/test-websocket-swoole-message.component';
+import { TestWebsocketRatchetComponent } from './test-websocket-ratchet/test-websocket-ratchet.component';
+import { TestWebsocketSwooleComponent } from './test-websocket-swoole/test-websocket-swoole.component';
 
 @NgModule({
     declarations: [
-        TestWebsocketSwooleMessageComponent
+        TestWebsocketRatchetComponent,
+        TestWebsocketSwooleComponent,
     ],
     imports: [
         CommonModule
     ],
     exports: [
-        TestWebsocketSwooleMessageComponent
+        TestWebsocketRatchetComponent,
+        TestWebsocketSwooleComponent,
     ]
 })
 export class DebugWebsocketModule { }

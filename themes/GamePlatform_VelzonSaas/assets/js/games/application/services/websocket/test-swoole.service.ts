@@ -30,7 +30,8 @@ export class TestSwooleService
     
     connect(): void
     {
-        //alert( 'Called Websocket Connect !!!' );
+        // alert( 'Called Websocket Swoole Connect !!!' );
+        
         if ( this.socket ) {
             this.socket.close();
         }

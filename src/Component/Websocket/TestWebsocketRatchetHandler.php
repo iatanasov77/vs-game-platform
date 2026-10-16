@@ -15,9 +15,6 @@ use App\Component\Dto\TestMessageDto;
 final class TestWebsocketRatchetHandler extends RatchetServerHandler
 {
     /** @var array */
-    private $names;
-    
-    /** @var array */
     private $games;
     
     public function __construct(
@@ -29,7 +26,6 @@ final class TestWebsocketRatchetHandler extends RatchetServerHandler
     ) {
         parent::__construct( $logger, $serializer, $logExceptionTrace, $websocketUrl, $wsClientFactory );
         
-        $this->names    = [];
         $this->games    = [];
     }
     

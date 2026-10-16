@@ -56,6 +56,8 @@ export class TestSwooleService
     
     onMessage( message: MessageEvent<string> ): void
     {
+        alert( `Recieved Message: ${message.data}` );
+        
         if ( ! message.data.length  ) {
             return;
         }
@@ -66,6 +68,18 @@ export class TestSwooleService
             case ActionNames.testMessage: {
                 const dto = JSON.parse( message.data ) as TestMessageActionDto;
                 alert( `Test Message: ${dto.message.message}` );
+                
+                break;
+            }
+            
+            case ActionNames.openSwooleConnection: {
+                // This action is only sent to server.
+                
+                break;
+            }
+            
+            case ActionNames.serverWasTerminated: {
+                // this.cookieService.deleteAll( Keys.gameIdKey );
                 
                 break;
             }
@@ -83,7 +97,7 @@ export class TestSwooleService
     
     onClose( event: CloseEvent ): void
     {
-        //alert( event.code );
+        alert( event.code );
         console.log( 'Close', { event } );
     }
     

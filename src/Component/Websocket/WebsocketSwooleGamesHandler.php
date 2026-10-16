@@ -146,7 +146,6 @@ final class WebsocketSwooleGamesHandler extends SwooleServerHandler
                 $otherClients[] = $gameManager->Clients->get( $player );
             }
             
-            $socket->setFrame( $frame );
             $gameManager->DoAction( ActionNames::from( $action->actionName ), $frame->data, $socket, $otherClients );
         } catch ( \Exception $e ) {
             $this->logger->log( "Game Manager Do Action Error: '{$e->getMessage()}' in file {$e->getFile()} at line {$e->getLine()}", 'GameServer' );

@@ -39,6 +39,7 @@ enum ActionNames: int
     case chessOpponentMove  = 30;
     case chessInvalidMoveMade   = 31;
     
-    case serverWasTerminated    = 32;
-    case testMessage            = 33;
+    case openSwooleConnection   = 32;
+    case serverWasTerminated    = 33;
+    case testMessage            = 34;
 }

@@ -5,7 +5,8 @@ import {
     ActionDto,
     ActionNames,
     TestMessageActionDto,
-    TestMessageDto
+    TestMessageDto,
+    TestReopenConnectionActionDto
 } from '@vankosoft/game-platform';
 
 declare global {
@@ -72,6 +73,13 @@ export class TestSwooleService
                 break;
             }
             
+            case ActionNames.testReopenConnection: {
+                const dto = JSON.parse( message.data ) as TestReopenConnectionActionDto;
+                alert( `Test ReopenConnection Message !!!` );
+                
+                break;
+            }
+            
             case ActionNames.openSwooleConnection: {
                 // This action is only sent to server.
                 
@@ -97,7 +105,7 @@ export class TestSwooleService
     
     onClose( event: CloseEvent ): void
     {
-        alert( event.code );
+        alert( `CloseEvent: ${event.code}` );
         console.log( 'Close', { event } );
     }
     
@@ -116,6 +124,17 @@ export class TestSwooleService
             actionName: ActionNames.testMessage,
             message: messageDto
         };
+        this.sendMessage( JSON.stringify( action ) );
+    }
+    
+    sendReopenConnectionMessage(): void
+    {
+        // alert( 'sendReopenConnectionMessage' );
+        
+        const action: TestReopenConnectionActionDto = {
+            actionName: ActionNames.testReopenConnection
+        };
+        
         this.sendMessage( JSON.stringify( action ) );
     }
 }

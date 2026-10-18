@@ -32,4 +32,11 @@ export class TestWebsocketSwooleComponent implements OnInit
         };
         this.wsSwooleService.sendTestMessage( message );
     }
+    
+    testWebsocketSwooleReopen(): void
+    {
+        // alert( 'Test Websocket Swoole Message Clicked !!!' );
+        
+        this.wsSwooleService.sendReopenConnectionMessage();
+    }
 }

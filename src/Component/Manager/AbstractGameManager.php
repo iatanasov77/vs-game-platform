@@ -91,6 +91,9 @@ abstract class AbstractGameManager implements GameManagerInterface
     /** @var bool */
     protected $EndGameOnTotalThinkTimeElapse;
     
+    /** @var AmpDeferredCancellation */
+    protected $moveTimeOut;
+    
     /** @var GameInterface */
     public $Game;
     

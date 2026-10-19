@@ -3,8 +3,6 @@
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-use Amp\DeferredCancellation;
-
 use App\Component\Type\PlayerColor;
 use App\Component\Rules\BoardGame\Game;
 use App\Component\Rules\BoardGame\ChessSide;
@@ -24,10 +22,10 @@ class ChessEngine extends Engine
     /** @var int */
     private $TotalMovesAnalyzed;	// Total no. of moves analzyed by the player
     
-    /** @var DeferredCancellation */
+    /** @var AmpDeferredCancellation */
     private $moveTimeOutMoves;
     
-    /** @var DeferredCancellation */
+    /** @var AmpDeferredCancellation */
     private $moveTimeOutDepth;
     
     protected function _GenerateMovesSequence( Collection &$sequences, Collection &$moves, int $diceIndex, Game $game ): void
@@ -139,7 +137,7 @@ class ChessEngine extends Engine
                     $alpha = $move->Score;
                 }
                 
-                $this->moveTimeOutMoves = new DeferredCancellation();
+                $this->setReactTimeTickDepthTimeOut();
                 $this->TimeTickMoves( $ThinkStartTime );
                 if ( $this->moveTimeOutMoves->isCancelled() ) {
                     $this->logger->log( "Total Moves Loop Breaked !!!", 'EnginMoves' );
@@ -147,7 +145,7 @@ class ChessEngine extends Engine
                 }
             }
             
-            $this->moveTimeOutDepth = new DeferredCancellation();
+            $this->setReactTimeTickDepthTimeOut();
             $this->TimeTickDepth( $ThinkStartTime );
             if ( $this->moveTimeOutDepth->isCancelled() ) {
                 $this->logger->log( "Depth Loop Breaked !!!", 'EnginMoves' );

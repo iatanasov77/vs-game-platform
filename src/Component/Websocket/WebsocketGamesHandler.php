@@ -3,10 +3,11 @@
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
-use Ratchet\ConnectionInterface;
 
+use Ratchet\ConnectionInterface;
 use Vankosoft\WebsocketBundle\Websocket\WebsocketClientFactory;
 use Vankosoft\WebsocketBundle\Websocket\WebSocketState;
+use Vankosoft\WebsocketBundle\Websocket\Message\Frame;
 use Vankosoft\WebsocketBundle\Websocket\Server\RatchetServerHandler;
 
 use App\Component\Logger\GameLogger;
@@ -79,7 +80,7 @@ final class WebsocketGamesHandler extends RatchetServerHandler
         ];
     }
     
-    public function onOpen( ConnectionInterface $conn )
+    public function onOpen( ConnectionInterface $conn ): void
     {
         $this->logger->log( "New Ratchet connection ({$conn->resourceId})" . date( 'Y/m/d h:i:sa' ), 'GameServer' );
         $this->connectionSequenceId++;
@@ -95,7 +96,7 @@ final class WebsocketGamesHandler extends RatchetServerHandler
         //$this->onMessage( $conn, "New Connection: " . $this->connectionSequenceId );
     }
     
-    public function onMessage( ConnectionInterface $from, $msg )
+    public function onMessage( ConnectionInterface $from, $msg ): void
     {
         $this->logger->log( "New message from ({$from->resourceId}): " . $msg, 'GameServer' );
         //$this->debugGameManager( $from->resourceId );
@@ -147,10 +148,10 @@ final class WebsocketGamesHandler extends RatchetServerHandler
         }
     }
     
-    public function onClose( ConnectionInterface $conn )
+    public function onClose( ConnectionInterface $conn ): void
     {
         // The connection is closed, remove it, as we can no longer send it messages
-        $this->logger->log( "Connection {$conn->resourceId} has disconnected", 'GameServer' );
+        $this->logger->log( "Ratchet Connection {$conn->resourceId} has disconnected", 'GameServer' );
         
         $gameManager    = $this->gameService->getGameManager( $this->games[$conn->resourceId] );
         $socket         = $gameManager->getClient( $conn->resourceId );
@@ -167,17 +168,17 @@ final class WebsocketGamesHandler extends RatchetServerHandler
         unset( $this->names[$sequenceId] );
     }
     
-    public function onError( ConnectionInterface $conn, \Exception $e )
+    public function onError( ConnectionInterface $conn, \Exception $e ): void
     {
         $this->logger->log( "An error has occurred: {$e->getMessage()}", 'GameServer' );
         if ( $this->logExceptionTrace ) {
             $this->logger->log( "Exception Trace: {$e->getTraceAsString()}", 'GameServer' );
         }
         
-        $conn->close();
+        $conn->close( Frame::CLOSE_SRV_ERR );
     }
     
-    public function serverWasTerminated()
+    public function serverWasTerminated(): void
     {
         $this->logger->log( "WebSocket Server Was Terminated", 'GameServer' );
         foreach ( $this->clients as $value ) {
@@ -256,7 +257,7 @@ final class WebsocketGamesHandler extends RatchetServerHandler
             return;
         }
         
-        //$this->logger->log( "Game GUID: ". $gameGuid, 'GameServer' );
+        // $this->logger->log( "Ratchet Connect Game: KEY: {$request->fd} GUID: {$gameGuid}", 'GameServer' );
         if ( $gameGuid ) {
             $this->games[$conn->resourceId]  = $gameGuid;
         }

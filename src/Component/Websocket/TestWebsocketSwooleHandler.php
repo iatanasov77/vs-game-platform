@@ -3,26 +3,28 @@
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 
+use Swoole\Table;
 use Swoole\Http\Request;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server as WebsocketServer;
 
 use Vankosoft\WebsocketBundle\Websocket\WebsocketClientFactory;
 use Vankosoft\WebsocketBundle\Websocket\WebSocketState;
+use Vankosoft\WebsocketBundle\Websocket\Client\WebsocketClientInterface;
 use Vankosoft\WebsocketBundle\Websocket\Server\SwooleServerHandler;
+use Vankosoft\WebsocketBundle\Websocket\Message\Frame as VsMessageFrame;
 use Vankosoft\ApplicationBundle\Component\MyLoggerInterface;
 
+// DTO Actions
+use App\Component\Dto\Mapper;
+use App\Component\Dto\Actions\ActionNames;
+use App\Component\Dto\Actions\ActionDto;
+use App\Component\Dto\Actions\OpenSwooleConnectionActionDto;
 use App\Component\Dto\Actions\TestMessageActionDto;
 use App\Component\Dto\TestMessageDto;
 
 final class TestWebsocketSwooleHandler extends SwooleServerHandler
 {
-    /** @var array */
-    private $names;
-    
-    /** @var array */
-    private $games;
-    
     public function __construct(
         MyLoggerInterface $logger,
         SerializerInterface $serializer,
@@ -31,9 +33,6 @@ final class TestWebsocketSwooleHandler extends SwooleServerHandler
         WebsocketClientFactory $wsClientFactory
     ) {
         parent::__construct( $logger, $serializer, $logExceptionTrace, $websocketUrl, $wsClientFactory );
-        
-        $this->names    = [];
-        $this->games    = [];
     }
     
     public function onOpen( WebsocketServer $server, Request $request ): void
@@ -44,33 +43,50 @@ final class TestWebsocketSwooleHandler extends SwooleServerHandler
         // Store the new connection to send messages to later
         $this->clients->offsetSet( $server, $this->connectionSequenceId );
         
-        $webSocket  = $this->wsClientFactory->createClient( WebsocketClientFactory::SWOOLE_CLIENT, $this->websocketUrl, $server );
-        $webSocket->setClientId( $request->fd );
-        $webSocket->State   = WebSocketState::Open;
+        $this->socket   = $this->wsClientFactory->createClient( WebsocketClientFactory::SWOOLE_CLIENT, $this->websocketUrl, $server );
+        $this->socket->setClientId( $this->connectionSequenceId );
+        $this->socket->State   = WebSocketState::Open;
         
-        $this->games[$this->connectionSequenceId] = $webSocket;
+        $action = new OpenSwooleConnectionActionDto();
+        $action->type = 'welcome';
+        $action->fd = $request->fd;
+        
+        $this->socket->send( $action );
     }
     
     public function onMessage( WebsocketServer $server, Frame $frame ): void
     {
         $this->logger->log( "New message from ({$frame->fd}): {$frame->data}", 'GameServer' );
         
-        $messageDto = new TestMessageDto();
-        $messageDto->message = 'Respond of Test Websocket Swoole Message !!!';
+        $action         = $this->serializer->deserialize( $frame->data, ActionDto::class, JsonEncoder::FORMAT );
+        $this->logger->log( "Recieved Action: " . $action->actionName, 'GameServer' );
         
-        $action = new TestMessageActionDto();
-        $action->message = $messageDto;
-        
-        if ( $this->clients->contains( $server ) ) {
-            $connectionSequenceId =  $this->clients->offsetGet( $server );
-            $this->games[$connectionSequenceId]->send( $action );
+        $actionName = ActionNames::from( $action->actionName );
+        if ( $actionName == ActionNames::testMessage ) {
+            $messageDto = new TestMessageDto();
+            $messageDto->message = "Respond of Test Websocket Swoole Message: {$frame->data}";
             
-            $this->logger->log( "New message Sent To: ({$frame->fd})", 'GameServer' );
+            $action = new TestMessageActionDto();
+            $action->message = $messageDto;
+            
+            $this->socket->send( $action );
+            
+        } else if ( $actionName == ActionNames::testReopenConnection ) {
+            $messageDto = new TestMessageDto();
+            $messageDto->message = "Respond of Test Reopen Swoole Connection Message: {$frame->data}";
+            
+            $action = new TestMessageActionDto();
+            $action->message = $messageDto;
+            
+            $this->socket->send( $action );
+            $this->socket->close( VsMessageFrame::CLOSE_NORMAL );
         }
     }
     
     public function onClose( WebsocketServer $server, int $fd ): void
     {
         $this->logger->log( "Swoole Server Close Connection: {$fd}" );
+        
+        $this->connections->del( $fd );
     }
 }

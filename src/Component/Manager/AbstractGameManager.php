@@ -5,7 +5,6 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Ratchet\RFC6455\Messaging\Frame;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,11 +12,12 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager as LiipImagineCacheManager;
 use React\Async;
-use Amp\DeferredCancellation;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 
 use Vankosoft\WebsocketBundle\Websocket\WebSocketState;
 use Vankosoft\WebsocketBundle\Websocket\Client\WebsocketClientInterface;
+use Vankosoft\WebsocketBundle\Websocket\Connection\ReactFunctions;
+use Vankosoft\WebsocketBundle\Websocket\Message\Frame;
 
 use App\Component\Logger\GameLogger;
 use App\Component\Rules\GameInterface;
@@ -37,6 +37,8 @@ use App\Entity\GamePlayer;
  */
 abstract class AbstractGameManager implements GameManagerInterface
 {
+    use ReactFunctions;
+    
     /** @const string */
     const COLLECTION_ORDER_ASC  = 'ASC';
     
@@ -86,13 +88,6 @@ abstract class AbstractGameManager implements GameManagerInterface
     /** @var FactoryInterface */
     protected $tempPlayersFactory;
     
-    /**
-     * CancellationTokenSource has been renamed to DeferredCancellation in AMPHP Version 3.0.0
-     * 
-     * @var DeferredCancellation
-     */
-    protected $moveTimeOut;
-    
     /** @var bool */
     protected $EndGameOnTotalThinkTimeElapse;
     
@@ -132,7 +127,6 @@ abstract class AbstractGameManager implements GameManagerInterface
         LiipImagineCacheManager $imagineCacheManager,
         EventDispatcherInterface $eventDispatcher,
         MessageBusInterface $messageBus,
-        
         
         ManagerRegistry $doctrine,
         GameFactory $gameRulesFactory,
@@ -179,13 +173,18 @@ abstract class AbstractGameManager implements GameManagerInterface
     public function getClient( $clientId ): ?WebsocketClientInterface
     {
         foreach ( $this->Clients as $client ) {
-            if ( $client && $client->getClientId() == $clientId ) {
+            if ( ! $client ) {
+                continue;
+            }
+            
+            $this->logger->log( "GameManager Has Client With ID: {$clientId}", 'GameManager' );
+            if ( $client->getClientId() == $clientId ) {
                 $this->logger->log( 'Websocket Client Found !!!', 'GameManager' );
                 return $client;
             }
         }
         
-        $this->logger->log( 'GameManager Websocket Client Not Found !!!', 'GameManager' );
+        $this->logger->log( "GameManager Websocket Client With ID {$clientId} Not Found !!!", 'GameManager' );
         return null;
     }
     
@@ -265,21 +264,6 @@ abstract class AbstractGameManager implements GameManagerInterface
         }
     }
     
-    protected function TimeTick(): void
-    {
-        if ( ! $this->moveTimeOut->isCancelled() ) {
-            $ellapsed = ( new \DateTime( 'now' ) )->getTimestamp() - $this->Game->ThinkStart->getTimestamp();
-            if ( $ellapsed > Game::TotalThinkTime ) {
-                $CurrentPlayerColor = $this->Game->CurrentPlayer == PlayerColor::Black ? 'Black' : 'White';
-                $this->logger->log( "The time run out for {$CurrentPlayerColor}", 'GameManager' );
-                
-                $this->moveTimeOut->cancel();
-                $winner = $this->Game->CurrentPlayer == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
-                $this->EndGame( $winner );
-            }
-        }
-    }
-    
     protected function IsAi( ?string $guid ): bool
     {
         return $guid == GamePlayer::AiUser;
@@ -289,6 +273,10 @@ abstract class AbstractGameManager implements GameManagerInterface
     {
         return false;
     }
+    
+    abstract protected function ConnectAiOpponent( WebsocketClientInterface $socket ): void;
+    
+    abstract protected function TimeTick(): void;
     
     abstract protected function CreateDbGame(): void;
     

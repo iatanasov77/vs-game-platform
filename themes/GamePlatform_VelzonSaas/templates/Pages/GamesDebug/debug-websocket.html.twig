@@ -20,24 +20,7 @@
         data-mercureJwtSecret="{{ mercureJwtSecret }}"
         data-addBackgammonAiPlayer="{{ path( 'debug_sse_add_backgammon_ai_player', {'gameSlug': 'backgammon'} ) }}"
     >
-        <div class="card">
-            <div class="card-header align-items-center d-flex">
-                <h4 class="card-title mb-0 flex-grow-1">Tests</h4>
-                {#  
-                <div class="flex-shrink-0">
-                    <div class="form-check form-switch form-switch-right form-switch-md">
-                        <label for="default" class="form-label text-muted">Show Code</label>
-                        <input class="form-check-input code-switcher" type="checkbox" id="default">
-                    </div>
-                </div>
-                #}
-            </div><!-- end card header -->
-        
-            <div class="card-body">
-                <app-debug-websocket-page></app-debug-websocket-page>
-            </div><!-- end card-body -->
-        </div>
-        
+        <app-debug-websocket-page></app-debug-websocket-page>
     </div>
 
 {% endblock %}

@@ -3,9 +3,14 @@
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
-use Ratchet\ConnectionInterface;
 
+use Ratchet\ConnectionInterface;
+use Vankosoft\WebsocketBundle\Websocket\WebsocketClientFactory;
+use Vankosoft\WebsocketBundle\Websocket\Message\Frame;
 use Vankosoft\WebsocketBundle\Websocket\Server\RatchetServerHandler;
+
+use App\Component\Logger\GameLogger;
+use App\Component\GameService;
 
 /**
  * See Logs:        sudo tail -f /var/log/websocket/game-patform-server.log
@@ -14,7 +19,7 @@ use Vankosoft\WebsocketBundle\Websocket\Server\RatchetServerHandler;
  * Manual:  https://stackoverflow.com/questions/64292868/how-to-send-a-message-to-specific-websocket-clients-with-symfony-ratchet
  *          https://stackoverflow.com/questions/30953610/how-to-send-messages-to-particular-users-ratchet-php-websocket
  */
-class WebsocketMessageHandler extends RatchetServerHandler
+final class WebsocketMessageHandler extends RatchetServerHandler
 {
     /** @var RepositoryInterface */
     private $usersRepository;
@@ -47,7 +52,7 @@ class WebsocketMessageHandler extends RatchetServerHandler
         $this->games    = [];
     }
     
-    public function onOpen( ConnectionInterface $conn )
+    public function onOpen( ConnectionInterface $conn ): void
     {
         $this->log( "New Ratchet connection ({$conn->resourceId})" . date( 'Y/m/d h:i:sa' ) );
         $this->connectionSequenceId++;
@@ -58,7 +63,7 @@ class WebsocketMessageHandler extends RatchetServerHandler
         $this->names[$this->connectionSequenceId] = "Guest {$this->connectionSequenceId}";
     }
     
-    public function onMessage( ConnectionInterface $from, $msg )
+    public function onMessage( ConnectionInterface $from, $msg ): void
     {
         /** @var int $sequenceId */
         $sequenceId = $this->clients[$from];
@@ -106,7 +111,7 @@ class WebsocketMessageHandler extends RatchetServerHandler
         }
     }
     
-    public function onClose( ConnectionInterface $conn )
+    public function onClose( ConnectionInterface $conn ): void
     {
         // The connection is closed, remove it, as we can no longer send it messages
         $this->log( "Connection {$conn->resourceId} has disconnected" );
@@ -119,10 +124,10 @@ class WebsocketMessageHandler extends RatchetServerHandler
         unset( $this->names[$sequenceId] );
     }
     
-    public function onError( ConnectionInterface $conn, \Exception $e )
+    public function onError( ConnectionInterface $conn, \Exception $e ): void
     {
         $this->log( "An error has occurred: {$e->getMessage()}\n" );
-        $conn->close();
+        $conn->close( Frame::CLOSE_SRV_ERR );
     }
     
     private function log( $logData ): void

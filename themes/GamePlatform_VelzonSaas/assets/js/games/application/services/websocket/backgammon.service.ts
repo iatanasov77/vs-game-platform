@@ -239,6 +239,11 @@ export class BackgammonService extends AbstractGameService
                 
                 break;
             }
+            case ActionNames.openSwooleConnection: {
+                // This action is only sent to server.
+                
+                break;
+            }
             case ActionNames.serverWasTerminated: {
                 this.cookieService.deleteAll( Keys.gameIdKey );
                 

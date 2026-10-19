@@ -9,11 +9,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
-use Ratchet\RFC6455\Messaging\Frame;
 use Vankosoft\UsersBundle\Security\SecurityBridge;
 
 use Vankosoft\WebsocketBundle\Websocket\WebSocketState;
 use Vankosoft\WebsocketBundle\Websocket\Client\WebsocketClientInterface;
+use Vankosoft\WebsocketBundle\Websocket\Message\Frame;
 
 use App\Component\Logger\GameLogger;
 use App\Component\Manager\GameManagerInterface;
@@ -167,14 +167,14 @@ final class GameService
         
         $manager = $managers->first();
         if ( $manager == null || $playAi ) {
-            $this->logger->log( "Possibly Play AI !!!", 'GameService' );
-            $manager            = $this->managerFactory->createGameManager( $forGold, $gameCode, $gameVariant );
+            $this->logger->log( "Possibly Play AI for Game: {$gameCode} Variant: {$gameVariant}", 'GameService' );
+            $manager = $this->managerFactory->createGameManager( $forGold, $gameCode, $gameVariant );
             
             //manager.Ended += Game_Ended;
             $this->eventDispatcher->dispatch( new GameEndedEvent( $manager ), GameEndedEvent::NAME );
             
             $manager->SearchingOpponent = ! $playAi;
-            $gameGuid                   =  $manager->Game->Id;
+            $gameGuid =  $manager->Game->Id;
             
             $this->AllGames->set( $gameGuid, $manager );
             $this->logger->log( "Added a new game and waiting for opponent. Game id {$gameGuid}", 'GameService' );

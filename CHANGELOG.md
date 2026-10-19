@@ -1,3 +1,14 @@
+2.0.1	|	Release date: **19.10.2026**
+============================================
+* New Features:
+  - Move Ratchet Dpendency into Vankosoft Websocket Bundle.
+  - Update Ratchet Websocket Server Handlers About Changes of Interface.
+  - Refactoring of Debug Websocket Page.
+  - Send Websocket Messages to Swoole Websocket Connections.
+  - Test Swoole Websocket Client Close Action.
+  - Move React and Amp into Websocket Bundle.
+
+
 2.0.0	|	Release date: **12.10.2026**
 ============================================
 * New Features:

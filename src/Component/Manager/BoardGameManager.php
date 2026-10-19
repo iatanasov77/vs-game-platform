@@ -4,7 +4,8 @@ use Doctrine\DBAL\Exception\DriverException;
 
 use Vankosoft\WebsocketBundle\Websocket\WebSocketState;
 use Vankosoft\WebsocketBundle\Websocket\Client\WebsocketClientInterface;
-use Ratchet\RFC6455\Messaging\Frame;
+use Vankosoft\WebsocketBundle\Websocket\Client\WebsocketSwooleClient;
+use Vankosoft\WebsocketBundle\Websocket\Message\Frame;
 
 use App\Component\Rules\BoardGame\Score;
 
@@ -56,6 +57,27 @@ abstract class BoardGameManager extends AbstractGameManager
             $this->Send( $otherSocket, $restoreAction );
         } else {
             $this->logger->log( "Failed to send restore to other client", 'GameManager' );
+        }
+    }
+    
+    protected function ConnectAiOpponent( WebsocketClientInterface $socket ): void
+    {
+        $this->logger->log( "GameManager CurrentPlayer: White", 'GameManager' );
+        $this->EnginMoves( $this->Clients->get( PlayerColor::Black->value ) );
+    }
+    
+    protected function TimeTick(): void
+    {
+        if ( ! $this->moveTimeOut->isCancelled() ) {
+            $ellapsed = ( new \DateTime( 'now' ) )->getTimestamp() - $this->Game->ThinkStart->getTimestamp();
+            if ( $ellapsed > Game::TotalThinkTime ) {
+                $CurrentPlayerColor = $this->Game->CurrentPlayer == PlayerColor::Black ? 'Black' : 'White';
+                $this->logger->log( "The time run out for {$CurrentPlayerColor}", 'GameManager' );
+                
+                $this->moveTimeOut->cancel();
+                $winner = $this->Game->CurrentPlayer == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
+                $this->EndGame( $winner );
+            }
         }
     }
     
@@ -219,6 +241,11 @@ abstract class BoardGameManager extends AbstractGameManager
             $this->SetDbGameStatus( GamePlatform::GAME_ROOM_STATUS_WAITING );
             
             $socket->close( Frame::CLOSE_NORMAL );
+            
+            // FOR DEBUGGING
+            if ( $socket instanceof WebsocketSwooleClient ) {
+                return;
+            }
             
             // Dispose Websocket
             if ( $socket == $this->Clients->get( PlayerColor::Black->value ) ) {

@@ -5,3 +5,7 @@ vs_websocket:
     logger:
         channel: 'test_websocket'
         path: '%kernel.logs_dir%/test_websocket.log'
+    
+    swoole:
+        worker_num_calc: false
+        worker_num: 1

@@ -3,9 +3,7 @@
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 
-use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
-
 use Vankosoft\WebsocketBundle\Websocket\WebsocketClientFactory;
 use Vankosoft\WebsocketBundle\Websocket\WebSocketState;
 use Vankosoft\WebsocketBundle\Websocket\Server\RatchetServerHandler;
@@ -16,9 +14,6 @@ use App\Component\Dto\TestMessageDto;
 
 final class TestWebsocketRatchetHandler extends RatchetServerHandler
 {
-    /** @var array */
-    private $names;
-    
     /** @var array */
     private $games;
     
@@ -31,7 +26,6 @@ final class TestWebsocketRatchetHandler extends RatchetServerHandler
     ) {
         parent::__construct( $logger, $serializer, $logExceptionTrace, $websocketUrl, $wsClientFactory );
         
-        $this->names    = [];
         $this->games    = [];
     }
     

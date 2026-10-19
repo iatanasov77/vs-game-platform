@@ -5,11 +5,6 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-use React\Async;
-use React\EventLoop\Loop;
-use React\EventLoop\TimerInterface;
-use Amp\DeferredCancellation;
-
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use Vankosoft\WebsocketBundle\Websocket\Client\WebsocketClientInterface;
 
@@ -71,11 +66,7 @@ final class BackgammonGameManager extends BoardGameManager
                 $this->StartGame();
                 
                 if ( $this->Game->CurrentPlayer == PlayerColor::White ) {
-                    $promise = Async\async( function () {
-                        $this->logger->log( "GameManager CurrentPlayer: White", 'GameManager' );
-                        $this->EnginMoves( $this->Clients->get( PlayerColor::Black->value ) );
-                    })();
-                    \React\Async\await( $promise );
+                    $this->setReactConnectAiOpponent( $webSocket );
                 }
             }
         } else {
@@ -143,19 +134,7 @@ final class BackgammonGameManager extends BoardGameManager
             $this->Send( $this->Clients->get( PlayerColor::White->value ), $rollAction );
         }
         
-        $this->moveTimeOut = new DeferredCancellation();
-        if ( $this->EndGameOnTotalThinkTimeElapse ) {
-            Async\async( function () {
-                $loop = Loop::get();
-                $loop->addPeriodicTimer( 0.5, function ( TimerInterface $timer ) use ( $loop ) {
-                    if ( ! $this->moveTimeOut->isCancelled() ) {
-                        $this->TimeTick();
-                    } else {
-                        $loop->cancelTimer( $timer );
-                    }
-                });
-            })();
-        }
+        $this->setReactMoveTimeOut();
     }
     
     public function DoAction(
@@ -179,10 +158,7 @@ final class BackgammonGameManager extends BoardGameManager
             }
             
             $this->DoMoves( $action );
-            $promise = Async\async( function () use ( $action, $socket ) {
-                $this->NewTurn( $socket );
-            })();
-            Async\await( $promise );
+            $this->setReactNewTurn( $socket );
             
         } else if ( $actionName == ActionNames::opponentMove ) {
             $action = $this->serializer->deserialize( $actionText, OpponentMoveActionDto::class, JsonEncoder::FORMAT );
@@ -258,6 +234,7 @@ final class BackgammonGameManager extends BoardGameManager
             $this->Resign( $winner );
         } else if ( $actionName == ActionNames::exitGame ) {
             $this->logger->log( 'exitGame action recieved from GameManager.', 'GameManager' );
+            
             $this->CloseConnections( $socket );
         }
         
@@ -439,16 +416,43 @@ final class BackgammonGameManager extends BoardGameManager
         //$this->logger->log( "Black Player Points Left: " . $this->Game->BlackPlayer->PointsLeft, 'EndGame' );
     }
     
+    protected function sendRolledAction( WebsocketClientInterface $client ): void
+    {
+        $sleepMileseconds   = \rand( 700, 1200 );
+        $this->ReactAsyncDelay( $sleepMileseconds / 1000 );
+        
+        $action = new RolledActionDto();
+        $this->Send( $client, $action );
+    }
+    
+    protected function sendEngineMove( WebsocketClientInterface $client, $move, &$noMoves ): void
+    {
+        $sleepMileseconds   = \rand( 700, 1200 );
+        $this->ReactAsyncDelay( $sleepMileseconds / 1000 );
+        
+        $moveDto = Mapper::MoveToDto( $move );
+        $moveDto->animate = true;
+        $dto = new OpponentMoveActionDto();
+        $dto->move = $moveDto;
+        
+        $hit = $this->Game->MakeMove( $move );
+        if ( $hit ) {
+            $this->logger->log( "Has a Hit at BlackNumber Point: " . $move->To->BlackNumber, 'EnginMoves' );
+        }
+        
+        if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {
+            $this->Game->BlackPlayer->FirstMoveMade = true;
+        } else {
+            $this->Game->WhitePlayer->FirstMoveMade = true;
+        }
+        
+        $noMoves = false;
+        $this->Send( $client, $dto );
+    }
+    
     protected function EnginMoves( WebsocketClientInterface $client ): void
     {
-        $promise = Async\async( function () use ( $client ) {
-            $sleepMileseconds   = \rand( 700, 1200 );
-            Async\delay( $sleepMileseconds / 1000 );
-            
-            $action = new RolledActionDto();
-            $this->Send( $client, $action );
-        })();
-        Async\await( $promise );
+        $this->setEngineRolledAction( $client );
         
         $moves = $this->Engine->GetBestMoves();
         //$this->logger->log( print_r( $moves->toArray(), true ), 'EnginMoves' );
@@ -461,44 +465,15 @@ final class BackgammonGameManager extends BoardGameManager
                 continue;
             }
             
-            $promise = Async\async( function () use ( $client, $move, &$noMoves ) {
-                $sleepMileseconds   = \rand( 700, 1200 );
-                Async\delay( $sleepMileseconds / 1000 );
-                
-                $moveDto = Mapper::MoveToDto( $move );
-                $moveDto->animate = true;
-                $dto = new OpponentMoveActionDto();
-                $dto->move = $moveDto;
-                
-                $hit = $this->Game->MakeMove( $move );
-                if ( $hit ) {
-                    $this->logger->log( "Has a Hit at BlackNumber Point: " . $move->To->BlackNumber, 'EnginMoves' );
-                }
-                
-                if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {
-                    $this->Game->BlackPlayer->FirstMoveMade = true;
-                } else {
-                    $this->Game->WhitePlayer->FirstMoveMade = true;
-                }
-                
-                $noMoves = false;
-                $this->Send( $client, $dto );
-            })();
-            Async\await( $promise );
+            $this->setEngineMove( $client, $move, $noMoves );
         }
         $this->logger->log( "Points After EnginMoves: " . \print_r( $this->Game->Points->toArray(), true ), 'EnginMoves' );
         
         if ( $noMoves ) {
-            $promise = Async\async( function () {
-                Async\delay( 2.5 );
-            })();
-            Async\await( $promise );
+            $this->ReactAsyncDelayAwait( 2.5 );
         }
         
-        $promise = Async\async( function () use ( $client ) {
-            $this->NewTurn( $client );
-        })();
-        Async\await( $promise );
+        $this->setReactNewTurn( $client );
     }
     
     protected function SendWinner( PlayerColor $color, ?array $newScore ): void

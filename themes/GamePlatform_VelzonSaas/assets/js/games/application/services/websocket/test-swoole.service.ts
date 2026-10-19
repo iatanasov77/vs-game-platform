@@ -5,7 +5,8 @@ import {
     ActionDto,
     ActionNames,
     TestMessageActionDto,
-    TestMessageDto
+    TestMessageDto,
+    TestReopenConnectionActionDto
 } from '@vankosoft/game-platform';
 
 declare global {
@@ -30,7 +31,8 @@ export class TestSwooleService
     
     connect(): void
     {
-        //alert( 'Called Websocket Connect !!!' );
+        // alert( 'Called Websocket Swoole Connect !!!' );
+        
         if ( this.socket ) {
             this.socket.close();
         }
@@ -55,6 +57,8 @@ export class TestSwooleService
     
     onMessage( message: MessageEvent<string> ): void
     {
+        alert( `Recieved Message: ${message.data}` );
+        
         if ( ! message.data.length  ) {
             return;
         }
@@ -65,6 +69,25 @@ export class TestSwooleService
             case ActionNames.testMessage: {
                 const dto = JSON.parse( message.data ) as TestMessageActionDto;
                 alert( `Test Message: ${dto.message.message}` );
+                
+                break;
+            }
+            
+            case ActionNames.testReopenConnection: {
+                const dto = JSON.parse( message.data ) as TestReopenConnectionActionDto;
+                alert( `Test ReopenConnection Message !!!` );
+                
+                break;
+            }
+            
+            case ActionNames.openSwooleConnection: {
+                // This action is only sent to server.
+                
+                break;
+            }
+            
+            case ActionNames.serverWasTerminated: {
+                // this.cookieService.deleteAll( Keys.gameIdKey );
                 
                 break;
             }
@@ -82,7 +105,7 @@ export class TestSwooleService
     
     onClose( event: CloseEvent ): void
     {
-        //alert( event.code );
+        alert( `CloseEvent: ${event.code}` );
         console.log( 'Close', { event } );
     }
     
@@ -95,10 +118,23 @@ export class TestSwooleService
     
     sendTestMessage( messageDto: TestMessageDto ): void
     {
+        // alert( 'sendTestMessage' );
+        
         const action: TestMessageActionDto = {
             actionName: ActionNames.testMessage,
             message: messageDto
         };
+        this.sendMessage( JSON.stringify( action ) );
+    }
+    
+    sendReopenConnectionMessage(): void
+    {
+        // alert( 'sendReopenConnectionMessage' );
+        
+        const action: TestReopenConnectionActionDto = {
+            actionName: ActionNames.testReopenConnection
+        };
+        
         this.sendMessage( JSON.stringify( action ) );
     }
 }

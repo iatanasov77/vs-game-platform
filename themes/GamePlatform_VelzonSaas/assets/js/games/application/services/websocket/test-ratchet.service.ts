@@ -30,7 +30,8 @@ export class TestRatchetService
     
     connect(): void
     {
-        //alert( 'Called Websocket Connect !!!' );
+        // alert( 'Called Websocket Ratchet Connect !!!' );
+        
         if ( this.socket ) {
             this.socket.close();
         }
@@ -95,6 +96,8 @@ export class TestRatchetService
     
     sendTestMessage( messageDto: TestMessageDto ): void
     {
+        // alert( 'sendTestMessage' );
+        
         const action: TestMessageActionDto = {
             actionName: ActionNames.testMessage,
             message: messageDto

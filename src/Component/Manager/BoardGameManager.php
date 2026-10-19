@@ -60,6 +60,27 @@ abstract class BoardGameManager extends AbstractGameManager
         }
     }
     
+    protected function ConnectAiOpponent( WebsocketClientInterface $socket ): void
+    {
+        $this->logger->log( "GameManager CurrentPlayer: White", 'GameManager' );
+        $this->EnginMoves( $this->Clients->get( PlayerColor::Black->value ) );
+    }
+    
+    protected function TimeTick(): void
+    {
+        if ( ! $this->moveTimeOut->isCancelled() ) {
+            $ellapsed = ( new \DateTime( 'now' ) )->getTimestamp() - $this->Game->ThinkStart->getTimestamp();
+            if ( $ellapsed > Game::TotalThinkTime ) {
+                $CurrentPlayerColor = $this->Game->CurrentPlayer == PlayerColor::Black ? 'Black' : 'White';
+                $this->logger->log( "The time run out for {$CurrentPlayerColor}", 'GameManager' );
+                
+                $this->moveTimeOut->cancel();
+                $winner = $this->Game->CurrentPlayer == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
+                $this->EndGame( $winner );
+            }
+        }
+    }
+    
     protected function CreateDbGame(): void
     {
         try {

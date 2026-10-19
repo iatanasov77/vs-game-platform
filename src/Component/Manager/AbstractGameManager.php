@@ -12,11 +12,11 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager as LiipImagineCacheManager;
 use React\Async;
-use Amp\DeferredCancellation;
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 
 use Vankosoft\WebsocketBundle\Websocket\WebSocketState;
 use Vankosoft\WebsocketBundle\Websocket\Client\WebsocketClientInterface;
+use Vankosoft\WebsocketBundle\Websocket\Connection\ReactFunctions;
 use Vankosoft\WebsocketBundle\Websocket\Message\Frame;
 
 use App\Component\Logger\GameLogger;
@@ -37,6 +37,8 @@ use App\Entity\GamePlayer;
  */
 abstract class AbstractGameManager implements GameManagerInterface
 {
+    use ReactFunctions;
+    
     /** @const string */
     const COLLECTION_ORDER_ASC  = 'ASC';
     
@@ -85,13 +87,6 @@ abstract class AbstractGameManager implements GameManagerInterface
     
     /** @var FactoryInterface */
     protected $tempPlayersFactory;
-    
-    /**
-     * CancellationTokenSource has been renamed to DeferredCancellation in AMPHP Version 3.0.0
-     * 
-     * @var DeferredCancellation
-     */
-    protected $moveTimeOut;
     
     /** @var bool */
     protected $EndGameOnTotalThinkTimeElapse;
@@ -269,21 +264,6 @@ abstract class AbstractGameManager implements GameManagerInterface
         }
     }
     
-    protected function TimeTick(): void
-    {
-        if ( ! $this->moveTimeOut->isCancelled() ) {
-            $ellapsed = ( new \DateTime( 'now' ) )->getTimestamp() - $this->Game->ThinkStart->getTimestamp();
-            if ( $ellapsed > Game::TotalThinkTime ) {
-                $CurrentPlayerColor = $this->Game->CurrentPlayer == PlayerColor::Black ? 'Black' : 'White';
-                $this->logger->log( "The time run out for {$CurrentPlayerColor}", 'GameManager' );
-                
-                $this->moveTimeOut->cancel();
-                $winner = $this->Game->CurrentPlayer == PlayerColor::Black ? PlayerColor::White : PlayerColor::Black;
-                $this->EndGame( $winner );
-            }
-        }
-    }
-    
     protected function IsAi( ?string $guid ): bool
     {
         return $guid == GamePlayer::AiUser;
@@ -293,6 +273,10 @@ abstract class AbstractGameManager implements GameManagerInterface
     {
         return false;
     }
+    
+    abstract protected function ConnectAiOpponent( WebsocketClientInterface $socket ): void;
+    
+    abstract protected function TimeTick(): void;
     
     abstract protected function CreateDbGame(): void;
     

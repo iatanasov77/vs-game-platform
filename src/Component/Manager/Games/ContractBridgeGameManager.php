@@ -8,11 +8,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-use React\Async;
-use React\EventLoop\Loop;
-use React\EventLoop\TimerInterface;
-use Amp\DeferredCancellation;
-
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use Vankosoft\WebsocketBundle\Websocket\Client\WebsocketClientInterface;
 use App\Component\Manager\CardGameManager;
@@ -76,11 +71,7 @@ class ContractBridgeGameManager extends CardGameManager
                 $this->StartGame();
                 
                 if ( $this->Game->CurrentPlayer != PlayerPosition::South ) {
-                    $promise = \React\Async\async( function () {
-                        $this->logger->log( "GameManager CurrentPlayer: Computer", 'GameManager' );
-                        $this->EnginBids( $this->Clients->get( PlayerPosition::South->value ) );
-                    })();
-                    \React\Async\await( $promise );
+                    $this->ReactAsync( [$this, 'EnginBids'], $this->Clients->get( PlayerPosition::South->value ) );
                 }
             }
         } else if( $this->Game->CurrentPlayer == PlayerPosition::East ) {
@@ -138,23 +129,6 @@ class ContractBridgeGameManager extends CardGameManager
         return $this->IsAi( $DummyPlayer->Guid );
     }
     
-    protected function DummyFaceupAction(): void
-    {
-        $DummyPlayer = PlayerPositionExtensions::GetTeammate( $this->Game->CurrentContract->Player );
-        
-        $this->Game->DummyPlayer    = $DummyPlayer;
-        $this->Game->DummyOwner     = $this->Game->CurrentContract->Player;
-        
-        $action = new DummyFaceupActionDto();
-        $action->DummyPlayer    = $DummyPlayer;
-        $action->Player         = $this->Game->CurrentContract->Player;
-        
-        $this->Send( $this->Clients->get( PlayerPosition::South->value ), $action );
-        $this->Send( $this->Clients->get( PlayerPosition::East->value ), $action );
-        $this->Send( $this->Clients->get( PlayerPosition::North->value ), $action );
-        $this->Send( $this->Clients->get( PlayerPosition::West->value ), $action );
-    }
-    
     protected function ContinuePlay(): bool
     {
         $tricksWinner   = $this->Game->PlayRound();
@@ -176,11 +150,7 @@ class ContractBridgeGameManager extends CardGameManager
                 if ( $this->Game->PlayState == GameState::playing && $this->IsDummy() ) {
                     $socket = $this->Clients->first();
                     $this->EnginPlayCard( $socket );
-                    
-                    $promise = Async\async( function () use ( $socket ) {
-                        $this->NewTurn( $socket );
-                    })();
-                    Async\await( $promise );
+                    $this->setReactNewTurn( $socket );
                 }
             }
         }
@@ -230,25 +200,24 @@ class ContractBridgeGameManager extends CardGameManager
         $this->Game->AddTrickAction( $trickAction );
     }
     
+    protected function EnginPlayCardAsync( WebsocketClientInterface $client, $playCardAction ): void
+    {
+        $sleepMileseconds   = \rand( 700, 1200 );
+        $this->ReactAsyncDelay( $sleepMileseconds / 1000 );
+        
+        if ( $this->IsDummy() && ! $this->Game->DummyPlayer ) {
+            $this->DummyFaceupAction();
+        } else {
+            $this->OpponentPlayCardAction( $playCardAction, $client );
+        }
+    }
+    
     protected function EnginPlayCard( WebsocketClientInterface $client ): void
     {
         $playCardAction = $this->Engine->PlayCard();
         $this->logger->log( "EnginPlayCard: {$playCardAction->Card->Type->value}", 'GameManager' );
         
-        $promise = Async\async( function () use ( $client, $playCardAction ) {
-            $sleepMileseconds   = \rand( 700, 1200 );
-            Async\delay( $sleepMileseconds / 1000 );
-            
-            if ( $this->IsDummy() && $this->Game->DummyPlayer == PlayerPosition::Neither ) {
-                $this->DummyFaceupAction();
-                $this->Game->DummyFaceup = true;
-            }
-            
-            if ( ! $this->Game->DummyFaceup  || $this->IsDummyOwnerAi() ) {
-                $this->OpponentPlayCardAction( $playCardAction, $client );
-            }
-        })();
-        Async\await( $promise );
+        $this->setEnginePlayCard( $client, $playCardAction );
     }
     
     protected function GetWinner(): ?CardGameTeam

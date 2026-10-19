@@ -7,11 +7,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 use Vankosoft\WebsocketBundle\Websocket\WebSocketState;
 
-use React\Async;
-use React\EventLoop\Loop;
-use React\EventLoop\TimerInterface;
-use Amp\DeferredCancellation;
-
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use Vankosoft\WebsocketBundle\Websocket\Client\WebsocketClientInterface;
 
@@ -75,15 +70,12 @@ final class ChessGameManager extends BoardGameManager
                 $this->StartGame();
                 
                 if ( $this->Game->CurrentPlayer == PlayerColor::White ) {
-                    $promise = Async\async( function () {
-                        $this->logger->log( "GameManager CurrentPlayer: White", 'GameManager' );
-                        
-                        $move = $this->Engine->GetBestMove();
-                        //$this->logger->log( 'Engine Best Move: ' . print_r( $move, true ), 'EnginMoves' );
-                        
-                        $this->EnginMoves( $this->Clients->get( PlayerColor::Black->value ), $move );
-                    })();
-                    \React\Async\await( $promise );
+                    $this->logger->log( "GameManager CurrentPlayer: White", 'GameManager' );
+                    
+                    $move = $this->Engine->GetBestMove();
+                    //$this->logger->log( 'Engine Best Move: ' . print_r( $move, true ), 'EnginMoves' );
+                    
+                    $this->EnginMoves( $this->Clients->get( PlayerColor::Black->value ), $move );
                 }
             }
         } else {
@@ -143,19 +135,7 @@ final class ChessGameManager extends BoardGameManager
             $this->Send( $this->Clients->get( PlayerColor::White->value ), $chessGameStartedActionDto );
         }
         
-        $this->moveTimeOut = new DeferredCancellation();
-        if ( $this->EndGameOnTotalThinkTimeElapse ) {
-            Async\async( function () {
-                $loop = Loop::get();
-                $loop->addPeriodicTimer( 0.5, function ( TimerInterface $timer ) use ( $loop ) {
-                    if ( ! $this->moveTimeOut->isCancelled() ) {
-                        $this->TimeTick();
-                    } else {
-                        $loop->cancelTimer( $timer );
-                    }
-                });
-            })();
-        }
+        $this->setReactMoveTimeOut();
     }
     
     public function DoAction(
@@ -182,10 +162,7 @@ final class ChessGameManager extends BoardGameManager
             }
             
             $this->DoMove( $action );
-            $promise = Async\async( function () use ( $action, $socket ) {
-                $this->NewTurn( $socket );
-            })();
-            Async\await( $promise );
+            $this->setReactNewTurn( $socket );
             
         } else if ( $actionName == ActionNames::chessOpponentMove ) {
             $action = $this->serializer->deserialize( $actionText, ChessOpponentMoveActionDto::class, JsonEncoder::FORMAT );
@@ -338,38 +315,36 @@ final class ChessGameManager extends BoardGameManager
         $this->Game->MakeMove( $move );
     }
     
+    protected function sendEngineMove( WebsocketClientInterface $client, ?ChessMove $move ): void
+    {
+        $sleepMileseconds   = \rand( 700, 1200 );
+        $this->ReactAsyncDelay( $sleepMileseconds / 1000 );
+        
+        $dto = new ChessOpponentMoveActionDto();
+        if ( $move ) {
+            $this->Game->MakeMove( $move );
+            $moveDto = Mapper::ChessMoveToDto( $move );
+            $moveDto->animate = true;
+            
+            $dto->move = $moveDto;
+        }
+        
+        $dto->game = Mapper::BoardGameToDto( $this->Game );
+        $dto->moveTimer = Game::ClientCountDown;
+        $dto->myColor = $this->Game->CurrentPlayer;
+        
+        if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {
+            $this->Game->BlackPlayer->FirstMoveMade = true;
+        } else {
+            $this->Game->WhitePlayer->FirstMoveMade = true;
+        }
+        
+        $this->Send( $client, $dto );
+    }
+    
     protected function EnginMoves( WebsocketClientInterface $client, ?ChessMove $move ): void
     {
-        $promise = Async\async( function () use ( $client, $move ) {
-            $sleepMileseconds   = \rand( 700, 1200 );
-            Async\delay( $sleepMileseconds / 1000 );
-            
-            $dto = new ChessOpponentMoveActionDto();
-            if ( $move ) {
-                $this->Game->MakeMove( $move );
-                $moveDto = Mapper::ChessMoveToDto( $move );
-                $moveDto->animate = true;
-                
-                $dto->move = $moveDto;
-            }
-            
-            $dto->game = Mapper::BoardGameToDto( $this->Game );
-            $dto->moveTimer = Game::ClientCountDown;
-            $dto->myColor = $this->Game->CurrentPlayer;
-            
-            if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {
-                $this->Game->BlackPlayer->FirstMoveMade = true;
-            } else {
-                $this->Game->WhitePlayer->FirstMoveMade = true;
-            }
-            
-            $this->Send( $client, $dto );
-        })();
-        Async\await( $promise );
-        
-        $promise = Async\async( function () use ( $client ) {
-            $this->NewTurn( $client );
-        })();
-        Async\await( $promise );
+        $this->setChessEngineMove( $client, $move );
+        $this->setReactNewTurn( $client );
     }
 }

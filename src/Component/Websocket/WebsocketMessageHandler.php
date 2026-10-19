@@ -5,8 +5,12 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 
 use Ratchet\ConnectionInterface;
+use Vankosoft\WebsocketBundle\Websocket\WebsocketClientFactory;
 use Vankosoft\WebsocketBundle\Websocket\Message\Frame;
 use Vankosoft\WebsocketBundle\Websocket\Server\RatchetServerHandler;
+
+use App\Component\Logger\GameLogger;
+use App\Component\GameService;
 
 /**
  * See Logs:        sudo tail -f /var/log/websocket/game-patform-server.log
@@ -15,7 +19,7 @@ use Vankosoft\WebsocketBundle\Websocket\Server\RatchetServerHandler;
  * Manual:  https://stackoverflow.com/questions/64292868/how-to-send-a-message-to-specific-websocket-clients-with-symfony-ratchet
  *          https://stackoverflow.com/questions/30953610/how-to-send-messages-to-particular-users-ratchet-php-websocket
  */
-class WebsocketMessageHandler extends RatchetServerHandler
+final class WebsocketMessageHandler extends RatchetServerHandler
 {
     /** @var RepositoryInterface */
     private $usersRepository;

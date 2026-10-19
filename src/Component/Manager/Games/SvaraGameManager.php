@@ -8,11 +8,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-use React\Async;
-use React\EventLoop\Loop;
-use React\EventLoop\TimerInterface;
-use Amp\DeferredCancellation;
-
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use Vankosoft\WebsocketBundle\Websocket\Client\WebsocketClientInterface;
 use App\Component\Manager\CardGameManager;
@@ -71,11 +66,7 @@ class SvaraGameManager extends CardGameManager
                 $this->StartGame();
                 
                 if ( $this->Game->CurrentPlayer != PlayerPosition::South ) {
-                    $promise = \React\Async\async( function () {
-                        $this->logger->log( "GameManager CurrentPlayer: Computer", 'GameManager' );
-                        $this->EnginBids( $this->Clients->get( PlayerPosition::South->value ) );
-                    })();
-                    \React\Async\await( $promise );
+                    $this->ReactAsync( [$this, 'EnginBids'], $this->Clients->get( PlayerPosition::South->value ) );
                 }
             }
         } else {
@@ -113,11 +104,7 @@ class SvaraGameManager extends CardGameManager
             if ( $this->Game->PlayState != GameState::roundEnded && $this->AisTurn() ) {
                 $socket = $this->Clients->first();
                 $this->EnginPlayCard( $socket );
-                
-                $promise = Async\async( function () use ( $socket ) {
-                    $this->NewTurn( $socket );
-                })();
-                Async\await( $promise );
+                $this->setReactNewTurn( $socket );
             }
         }
         

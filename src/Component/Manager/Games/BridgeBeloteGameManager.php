@@ -8,11 +8,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-use React\Async;
-use React\EventLoop\Loop;
-use React\EventLoop\TimerInterface;
-use Amp\DeferredCancellation;
-
 use Vankosoft\UsersBundle\Model\Interfaces\UserInterface;
 use Vankosoft\WebsocketBundle\Websocket\Client\WebsocketClientInterface;
 use App\Component\Manager\CardGameManager;
@@ -70,11 +65,7 @@ class BridgeBeloteGameManager extends CardGameManager
                 $this->StartGame();
                 
                 if ( $this->Game->CurrentPlayer != PlayerPosition::South ) {
-                    $promise = \React\Async\async( function () {
-                        $this->logger->log( "GameManager CurrentPlayer: Computer", 'GameManager' );
-                        $this->EnginBids( $this->Clients->get( PlayerPosition::South->value ) );
-                    })();
-                    \React\Async\await( $promise );
+                    $this->ReactAsync( [$this, 'EnginBids'], $this->Clients->get( PlayerPosition::South->value ) );
                 }
             }
         } else if( $this->Game->CurrentPlayer == PlayerPosition::East ) {
@@ -131,10 +122,7 @@ class BridgeBeloteGameManager extends CardGameManager
                 $socket = $this->Clients->first();
                 $this->EnginPlayCard( $socket );
                 
-                $promise = Async\async( function () use ( $socket ) {
-                    $this->NewTurn( $socket );
-                })();
-                Async\await( $promise );
+                $this->setReactNewTurn( $socket );
             }
         }
         
@@ -203,6 +191,18 @@ class BridgeBeloteGameManager extends CardGameManager
         $this->Game->AddTrickAction( $trickAction );
     }
     
+    protected function EnginPlayCardAsync( WebsocketClientInterface $client, $playCardAction ): void
+    {
+        $sleepMileseconds   = \rand( 700, 1200 );
+        $this->ReactAsyncDelay( $sleepMileseconds / 1000 );
+        
+        if ( $this->IsDummy() && ! $this->Game->DummyPlayer ) {
+            $this->DummyFaceupAction();
+        } else {
+            $this->OpponentPlayCardAction( $playCardAction, $client );
+        }
+    }
+    
     protected function EnginPlayCard( WebsocketClientInterface $client ): void
     {
         $playCardAction = $this->Engine->PlayCard();
@@ -233,18 +233,7 @@ class BridgeBeloteGameManager extends CardGameManager
             }
         }
         
-        $promise = Async\async( function () use ( $client, $playCardAction ) {
-            $sleepMileseconds   = \rand( 700, 1200 );
-            Async\delay( $sleepMileseconds / 1000 );
-            
-            if ( $this->IsDummy() && ! $this->Game->DummyPlayer ) {
-                $this->DummyFaceupAction();
-            } else {
-                $this->OpponentPlayCardAction( $playCardAction, $client );
-            }
-            
-        })();
-        Async\await( $promise );
+        $this->setEnginePlayCard( $client, $playCardAction );
     }
     
     protected function GetWinner(): ?CardGameTeam

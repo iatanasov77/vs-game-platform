@@ -1,9 +1,11 @@
-import { Injectable, Inject } from '@angular/core';
+import { Injectable, Inject, NgZone } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
-import { Observable, map } from 'rxjs';
+import { Observable, Subscriber, map } from 'rxjs';
+
+import { Topic, MessageData } from '@vankosoft/game-platform';
 
 import { AuthService } from './auth.service';
-import { User, Topic, MessageData } from './debug-sse/models';
+import { User } from './debug-sse/models';
 
 import { AppConstants } from "../constants";
 const { context } = require( '../context' );
@@ -27,6 +29,7 @@ export class EventSourceServiceNew
     private eventSource: null | EventSource;
     
     constructor(
+        @Inject( NgZone ) private zone: NgZone,
         @Inject( HttpClient ) private httpClient: HttpClient,
         @Inject( AuthService ) private authService: AuthService,
     ) {
@@ -34,17 +37,17 @@ export class EventSourceServiceNew
         this.eventSource    = null;
     }
 
-    createEventSource( user: User, topic: Topic ): Observable<MessageData>
+    createEventSource(topic: Topic ): Observable<MessageData>
     {
         // const sseUrl        = $( '#TestSsseContainer' ).attr( 'data-mercureEventSource' );
         // const eventSource   = new EventSource( sseUrl, { withCredentials: true } );
         // alert( `Event Source Url: ${sseUrl}` );
         
-        const topicUri = topic.getTopic( user );
+        const topicUri = topic.getTopic();
         const eventSource   = new EventSource( `${context.mercureHost}?match=${topicUri}` );
         
         return new Observable( observer => {
-            eventSource.onmessage = event => {
+            eventSource.onmessage = ( event: any ) => {
                 alert( `Mercure Recieve Message: ${event.data}` );
                 
                 const messageData: MessageData = JSON.parse( event.data );
@@ -59,12 +62,10 @@ export class EventSourceServiceNew
         url.searchParams.append( "match", "https://example.com/books/1" );
         
         const es = new EventSource( url );
-        es.onmessage = ( event ) => {
-            /*  
-            const li = document.createElement( "li" );
-            li.textContent = event.data;
-            document.getElementById("log").prepend( li );
-            */
+        es.onmessage = ( event: any ) => {
+//             const li = document.createElement( "li" );
+//             li.textContent = event.data;
+//             document.getElementById("log").prepend( li );
         };
     }
    

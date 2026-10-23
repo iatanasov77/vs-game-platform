@@ -1,23 +1,22 @@
+import { Topic } from '@vankosoft/game-platform';
+
 export interface User
 {
     name: string;
     id: string;
 }
 
-export interface Topic
-{
-    getTopic( user: User ): string;
-}
-
 export class PaymentTopic implements Topic
 {
-    getTopic( user: User ): string {
-        return 'https://topics.domain.com/' + user.id + '/payments';
+    url: string;
+    
+    constructor( url: string )
+    {
+        this.url = url;
     }
-}
-
-export interface MessageData
-{
-    status: string;
-    message: string;
+    
+    getTopic(): string
+    {
+        return this.url;
+    }
 }

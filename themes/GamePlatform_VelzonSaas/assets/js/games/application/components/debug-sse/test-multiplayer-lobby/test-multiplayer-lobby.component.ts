@@ -1,6 +1,8 @@
 import { Component, OnInit, Inject } from '@angular/core';
 
-import { User, PaymentTopic, MessageData } from '../../../services/debug-sse/models';
+import { MessageData } from '@vankosoft/game-platform';
+
+import { User, PaymentTopic } from '../../../services/debug-sse/models';
 import { EventSourceServiceNew } from '../../../services/event-source.service-new'
 
 import templateString from './test-multiplayer-lobby.component.html';
@@ -27,8 +29,8 @@ export class TestMultiplayerLobby implements OnInit
             name: 'Jose'
         };
         
-        const topic = new PaymentTopic();
-        this.sseService.createEventSource( user, topic ).subscribe (
+        const topic = new PaymentTopic( `https://topics.domain.com/${user.id}/payments` );
+        this.sseService.createEventSource( topic ).subscribe (
             ( e: MessageData ) => {
                 console.log( 'Message received: ' + e.message );
                 alert( `Message received: ${e.message}` );

@@ -6,6 +6,9 @@ import { SseClient } from 'ngx-sse-client';
 const EventSource: any = window["EventSource"];
 import { EventSourcePolyfill } from "event-source-polyfill";
 
+import { AppConstants } from "../constants";
+const { context } = require( '../context' );
+
 import { AuthService } from './auth.service';
 
 declare var $: any;

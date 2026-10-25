@@ -3,7 +3,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { MessageData } from '@vankosoft/game-platform';
 
 import { User, PaymentTopic } from '../../../services/debug-sse/models';
-import { EventSourceServiceNew } from '../../../services/event-source.service-new'
+import { EventSourceServiceTest } from '../../../services/event-source.service-test'
 
 import templateString from './test-multiplayer-lobby.component.html';
 import styleString from './test-multiplayer-lobby.component.scss';
@@ -18,7 +18,7 @@ import styleString from './test-multiplayer-lobby.component.scss';
 export class TestMultiplayerLobby implements OnInit
 {
     constructor(
-        @Inject( EventSourceServiceNew ) private sseService: EventSourceServiceNew,
+        @Inject( EventSourceServiceTest ) private sseService: EventSourceServiceTest,
     ) { }
     
     ngOnInit(): void

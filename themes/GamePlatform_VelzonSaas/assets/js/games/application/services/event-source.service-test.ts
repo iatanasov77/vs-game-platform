@@ -23,7 +23,7 @@ declare var $: any;
 @Injectable({
     providedIn: 'root'
 })
-export class EventSourceServiceNew
+export class EventSourceServiceTest
 {
     private url: string;
     private eventSource: null | EventSource;

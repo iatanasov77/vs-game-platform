@@ -3,7 +3,7 @@ import { Component, OnInit, Inject, NgZone } from '@angular/core';
 import { MessageData } from '@vankosoft/game-platform';
 
 import { User, PaymentTopic } from '../../../services/debug-sse/models';
-import { EventSourceServiceNew } from '../../../services/event-source.service-new'
+import { EventSourceServiceTest } from '../../../services/event-source.service-test'
 
 import templateString from './test-subscribing.component.html';
 import styleString from './test-subscribing.component.scss';
@@ -18,7 +18,7 @@ import styleString from './test-subscribing.component.scss';
 export class TestSubscribingComponent implements OnInit
 {
     constructor(
-        @Inject( EventSourceServiceNew ) private sseService: EventSourceServiceNew,
+        @Inject( EventSourceServiceTest ) private sseService: EventSourceServiceTest,
         @Inject( NgZone ) private zone: NgZone,
     ) { }
     

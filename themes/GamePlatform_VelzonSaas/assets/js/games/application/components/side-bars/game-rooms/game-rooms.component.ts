@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy, Inject, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { GameService } from '../../../services/game.service'
 import { EventSourceService } from '../../../services/event-source.service';
-// import { EventSourceServiceNew } from '../../../services/event-source.service-new'
 
 import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
@@ -41,7 +40,6 @@ export class GameRoomsComponent implements OnInit, OnDestroy
         @Inject( TranslateService ) private translate: TranslateService,
         @Inject( GameService ) private gameService: GameService,
         @Inject( EventSourceService ) private eventSourceService: EventSourceService,
-        // @Inject( EventSourceServiceNew ) private eventSourceService: EventSourceServiceNew,
         @Inject( Store ) private store: Store,
         @Inject( Actions ) private actions$: Actions
     ) { }

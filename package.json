@@ -76,7 +76,7 @@
         "moment": "^2.29.1",
         "move-js": "^0.5",
         "ngx-chess-board": "2.2.3",
-        "ngx-cookie-service": "^21.1",
+        "ngx-cookie-service": "^20.0",
         "ngx-sse-client": "^20.0",
         "node-waves": "^0.7",
         "particles.js": "^2.0",

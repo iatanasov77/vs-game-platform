@@ -23,7 +23,8 @@
   },
   "angularCompilerOptions": {
       "strictTemplates": true,
-      "preserveWhitespaces": true
+      "preserveWhitespaces": true,
+      "typeCheckHostBindings": false
   },
   "files": [
     "polyfills.ts",

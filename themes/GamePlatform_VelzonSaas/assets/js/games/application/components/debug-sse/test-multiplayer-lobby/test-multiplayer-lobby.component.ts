@@ -9,6 +9,7 @@ import templateString from './test-multiplayer-lobby.component.html';
 import styleString from './test-multiplayer-lobby.component.scss';
 
 @Component({
+    standalone: false,
     selector: 'app-test-multiplayer-lobby',
     
     template: templateString || 'Template Not Loaded !!!',

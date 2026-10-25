@@ -22,6 +22,7 @@ declare global {
 }
 
 @Component({
+    standalone: false,
     selector: 'game-rooms',
     
     template: templateString || 'Template Not Loaded !!!',

@@ -6,6 +6,7 @@ import { IGameRoom } from '@vankosoft/game-platform';
 import templateString from './select-game-room-dialog.component.html';
 
 @Component({
+    standalone: false,
     selector: 'select-game-room-dialog',
     template:  templateString || 'Template Not Loaded !!!',
     styleUrls: []

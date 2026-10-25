@@ -48,6 +48,7 @@ import cssGameString from './backgammon-board.component.scss';
 import templateString from './backgammon-board.component.html';
 
 @Component({
+    standalone: false,
     selector: 'app-backgammon-board',
     
     template: templateString || 'Template Not Loaded !!!',

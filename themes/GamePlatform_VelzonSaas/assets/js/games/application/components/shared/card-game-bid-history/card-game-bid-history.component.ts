@@ -20,6 +20,7 @@ import cssString from './card-game-bid-history.component.scss';
 import templateString from './card-game-bid-history.component.html';
 
 @Component({
+    standalone: false,
     selector: 'card-game-bid-history',
     
     template: templateString || 'Template Not Loaded !!!',

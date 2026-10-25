@@ -7,6 +7,7 @@ import templateString from './dices.component.html';
 import styleString from './dices.component.scss';
 
 @Component({
+    standalone: false,
     selector: 'app-dices',
     
     template: templateString || 'Template Not Loaded !!!',

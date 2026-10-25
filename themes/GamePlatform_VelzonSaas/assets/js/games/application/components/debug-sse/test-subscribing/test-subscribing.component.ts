@@ -9,6 +9,7 @@ import templateString from './test-subscribing.component.html';
 import styleString from './test-subscribing.component.scss';
 
 @Component({
+    standalone: false,
     selector: 'app-test-subscribing',
     
     template: templateString || 'Template Not Loaded !!!',

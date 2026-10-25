@@ -13,6 +13,7 @@ import cssString from './bridge-belote-statistics.component.scss'
 declare var $: any;
 
 @Component({
+    standalone: false,
     selector: 'bridge-belote-statistics',
     
     template: templateString || 'Template Not Loaded !!!',

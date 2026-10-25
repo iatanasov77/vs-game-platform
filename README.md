@@ -8,7 +8,7 @@ php bin/console doctrine:migrations:migrate
 
 ## Build Frontend
 ```
-yarn install --no-bin-links
+yarn install --no-bin-links --ignore-scripts
 yarn run dev
 ```
 

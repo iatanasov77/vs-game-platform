@@ -11,6 +11,7 @@ import cssGameString from './debug-sse-page.component.scss'
 import templateString from './debug-sse-page.component.html'
 
 @Component({
+    standalone: false,
     selector: 'app-debug-sse-page',
     
     template: templateString || 'Template Not Loaded !!!',

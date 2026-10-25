@@ -17,6 +17,7 @@ import templateString from './contract-bridge.component.html'
 declare var $: any;
 
 @Component({
+    standalone: false,
     selector: 'app-contract-bridge',
     
     template: templateString || 'Template Not Loaded !!!',

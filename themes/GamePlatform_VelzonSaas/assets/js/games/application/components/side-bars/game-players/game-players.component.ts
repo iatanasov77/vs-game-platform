@@ -17,6 +17,7 @@ import cssString from './game-players.component.scss'
 declare var $: any;
 
 @Component({
+    standalone: false,
     selector: 'game-players',
     
     template: templateString || 'Template Not Loaded !!!',

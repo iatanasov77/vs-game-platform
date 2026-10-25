@@ -8,6 +8,7 @@ import cssString from './busy.component.scss';
 import templateString from './busy.component.html';
 
 @Component({
+    standalone: false,
     selector: 'app-busy',
     
     template: templateString || 'Template Not Loaded !!!',

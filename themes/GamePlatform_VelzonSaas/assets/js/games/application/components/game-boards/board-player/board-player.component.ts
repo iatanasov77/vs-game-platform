@@ -6,6 +6,7 @@ import cssString from './board-player.component.scss';
 import templateString from './board-player.component.html';
 
 @Component({
+    standalone: false,
     selector: 'app-board-player',
     template: templateString || 'Template Not Loaded !!!',
     styles: [

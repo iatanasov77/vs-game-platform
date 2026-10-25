@@ -5,6 +5,7 @@ import cssString from './backgammon-board-buttons.component.scss';
 import templateString from './backgammon-board-buttons.component.html';
 
 @Component({
+    standalone: false,
     selector: 'backgammon-board-buttons',
     
     template: templateString || 'Template Not Loaded !!!',

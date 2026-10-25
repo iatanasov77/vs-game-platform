@@ -6,6 +6,7 @@ import cssString from './button.component.scss';
 import templateString from './button.component.html';
 
 @Component({
+    standalone: false,
     selector: 'app-button',
     template: templateString || 'Template Not Loaded !!!',
     styles: [

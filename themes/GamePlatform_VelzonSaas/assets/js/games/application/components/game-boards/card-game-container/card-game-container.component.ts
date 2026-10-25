@@ -69,6 +69,7 @@ declare global {
 const {context} = require( '../../../context' );
 
 @Component({
+    standalone: false,
     selector: 'card-game-container',
     
     template: templateString || 'Template Not Loaded !!!',

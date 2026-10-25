@@ -12,6 +12,7 @@ import cssString from './play-ai-question.component.scss';
 import templateString from './play-ai-question.component.html';
 
 @Component({
+    standalone: false,
     selector: 'app-play-ai-question',
     changeDetection: ChangeDetectionStrategy.OnPush,
     

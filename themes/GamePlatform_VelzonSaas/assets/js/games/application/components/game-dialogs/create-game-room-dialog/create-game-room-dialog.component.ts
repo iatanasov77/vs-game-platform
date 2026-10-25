@@ -7,6 +7,7 @@ import { IPlayer } from '@vankosoft/game-platform';
 import templateString from './create-game-room-dialog.component.html';
 
 @Component({
+    standalone: false,
     selector: 'create-game-room-dialog',
     template:  templateString || 'Template Not Loaded !!!',
     styleUrls: []

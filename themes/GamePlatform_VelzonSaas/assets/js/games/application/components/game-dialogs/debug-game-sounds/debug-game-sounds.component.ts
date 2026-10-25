@@ -4,6 +4,7 @@ import { SoundService } from '../../../services/sound.service';
 import templateString from './debug-game-sounds.component.html';
 
 @Component({
+    standalone: false,
     selector: 'debug-game-sounds',
     template:  templateString || 'Template Not Loaded !!!',
     styleUrls: []

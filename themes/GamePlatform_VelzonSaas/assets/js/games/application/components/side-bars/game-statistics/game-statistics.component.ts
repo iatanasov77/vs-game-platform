@@ -7,6 +7,7 @@ import cssString from './game-statistics.component.scss'
 declare var $: any;
 
 @Component({
+    standalone: false,
     selector: 'game-statistics',
     
     template: templateString || 'Template Not Loaded !!!',

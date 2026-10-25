@@ -16,6 +16,7 @@ import styleString from './bridge-belote-contract.component.scss'
 declare var $: any;
 
 @Component({
+    standalone: false,
     selector: 'bridge-belote-contract',
     
     template: templateString || 'Template Not Loaded !!!',

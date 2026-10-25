@@ -7,6 +7,7 @@ import templateString from './test-websocket-swoole.component.html';
 import styleString from './test-websocket-swoole.component.scss';
 
 @Component({
+    standalone: false,
     selector: 'app-test-websocket-swoole',
     
     template: templateString || 'Template Not Loaded !!!',

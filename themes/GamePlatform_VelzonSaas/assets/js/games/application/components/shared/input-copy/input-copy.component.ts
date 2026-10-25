@@ -10,6 +10,7 @@ import cssString from './input-copy.component.scss';
 import templateString from './input-copy.component.html';
 
 @Component({
+    standalone: false,
     selector: 'app-input-copy',
     template: templateString || 'Template Not Loaded !!!',
     styles: [cssString || 'Game CSS Not Loaded !!!']

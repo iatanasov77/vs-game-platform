@@ -13,6 +13,7 @@ import cssString from './contract-bridge-statistics.component.scss'
 declare var $: any;
 
 @Component({
+    standalone: false,
     selector: 'contract-bridge-statistics',
     
     template: templateString || 'Template Not Loaded !!!',

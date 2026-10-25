@@ -14,6 +14,7 @@ import { IMercureAction } from '@vankosoft/game-platform';
 import templateString from './game-rooms.component.html'
 import cssString from './game-rooms.component.scss'
 
+const { context } = require( '../../../context' );
 declare var $: any;
 declare global {
     interface Window {
@@ -48,29 +49,7 @@ export class GameRoomsComponent implements OnInit, OnDestroy
     ngOnInit(): void
     {
         this.loadGameRooms();
-        
-        let mercureEventSource  = $( '#GameContainer' ).attr( 'data-mercureEventSource' );
-        if( ! mercureEventSource ) {
-            return;
-        }
-        
-        this.eventSourceSubscription = this.eventSourceService.connect(
-            mercureEventSource,
-            { withCredentials: false },
-            ['GamePlayRoomUpdate']
-        )
-        
-        if ( this.eventSourceSubscription ) {
-            this.eventSourceSubscription.subscribe({
-                next: ( data: any ) => {
-                    let action: IMercureAction  = JSON.parse( data.data );
-                    this.updateRooms( action );
-                },
-                error: ( error: any ) => {
-                    console.log( error );
-                }
-            });
-        }
+        this.subscribeToMercureTopic();
     }
     
     ngOnDestroy(): void
@@ -98,5 +77,33 @@ export class GameRoomsComponent implements OnInit, OnDestroy
             this.showSpinner    = false;
             this.gameRooms      = rooms;
         });
+    }
+    
+    subscribeToMercureTopic(): void
+    {
+        const topicUri = `${context.backendURL}/${window.gamePlatformSettings.gameSlug}`;
+        
+        this.eventSourceService.ngxSseClientStream( topicUri );
+        
+        /*
+        const mercureEventSource: string = '';
+        this.eventSourceSubscription = this.eventSourceService.nativeSseClientStream(
+            topicUri,
+            { withCredentials: false },
+            ['GamePlayRoomUpdate']
+        )
+        
+        if ( this.eventSourceSubscription ) {
+            this.eventSourceSubscription.subscribe({
+                next: ( data: any ) => {
+                    let action: IMercureAction  = JSON.parse( data.data );
+                    this.updateRooms( action );
+                },
+                error: ( error: any ) => {
+                    console.log( error );
+                }
+            });
+        }
+        */
     }
 }

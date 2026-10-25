@@ -37,7 +37,7 @@ export class EventSourceServiceNew
         this.eventSource    = null;
     }
 
-    createEventSource(topic: Topic ): Observable<MessageData>
+    createEventSource( topic: Topic ): Observable<MessageData>
     {
         // const sseUrl        = $( '#TestSsseContainer' ).attr( 'data-mercureEventSource' );
         // const eventSource   = new EventSource( sseUrl, { withCredentials: true } );

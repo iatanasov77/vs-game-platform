@@ -81,11 +81,11 @@ export class GameRoomsComponent implements OnInit, OnDestroy
     {
         const topicUri = `${context.backendURL}/${window.gamePlatformSettings.gameSlug}`;
         
-        this.eventSourceService.ngxSseClientStream( topicUri );
+        this.eventSourceService.createNgxSseClientStream( topicUri );
         
         /*
         const mercureEventSource: string = '';
-        this.eventSourceSubscription = this.eventSourceService.nativeSseClientStream(
+        this.eventSourceSubscription = this.eventSourceService.createNativeSseClientStream(
             topicUri,
             { withCredentials: false },
             ['GamePlayRoomUpdate']

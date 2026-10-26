@@ -26,6 +26,10 @@ vs_api_mercure_game_message:
     path: /api/game-message
     controller: App\Controller\Api\MercureController::index
 
+vs_api_generate_mercure_token:
+    path: /api/generate-mercure-token/{factory}
+    controller: App\Controller\Api\GenerateMercureTokenController::index
+
 vs_api_backgamon_editor_game_string:
     path: /api/backgamon/editor/gamestring
     controller: App\Controller\Api\BackgammonEditorController::gameString

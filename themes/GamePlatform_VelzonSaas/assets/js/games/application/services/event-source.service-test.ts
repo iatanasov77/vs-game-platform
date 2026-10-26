@@ -2,6 +2,7 @@ import { Injectable, Inject, NgZone } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { Observable, Subscriber, map } from 'rxjs';
 
+import { SseClient } from 'ngx-sse-client';
 import { Topic, MessageData } from '@vankosoft/game-platform';
 
 import { AuthService } from './auth.service';
@@ -9,6 +10,8 @@ import { User } from './debug-sse/models';
 
 import { AppConstants } from "../constants";
 const { context } = require( '../context' );
+
+import { Buffer } from 'buffer';
 
 declare var $: any;
 
@@ -30,6 +33,7 @@ export class EventSourceServiceTest
     
     constructor(
         @Inject( NgZone ) private zone: NgZone,
+        @Inject( SseClient ) private sseClient: SseClient,
         @Inject( HttpClient ) private httpClient: HttpClient,
         @Inject( AuthService ) private authService: AuthService,
     ) {
@@ -37,7 +41,7 @@ export class EventSourceServiceTest
         this.eventSource    = null;
     }
 
-    createEventSource( topic: Topic ): Observable<MessageData>
+    createNativeSseClientStream( topic: Topic ): Observable<MessageData>
     {
         // const sseUrl        = $( '#TestSsseContainer' ).attr( 'data-mercureEventSource' );
         // const eventSource   = new EventSource( sseUrl, { withCredentials: true } );
@@ -56,57 +60,90 @@ export class EventSourceServiceTest
         });
     }
     
-    connect(): void
+    createNgxSseClientStream( topicUri: string ): void
     {
-        const url = new URL( context.mercureHost );
-        url.searchParams.append( "match", "https://example.com/books/1" );
+        // alert( topicUri );
+        const hub       = `${context.mercureHost}?match=${topicUri}`;
+        const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
         
-        const es = new EventSource( url );
-        es.onmessage = ( event: any ) => {
-//             const li = document.createElement( "li" );
-//             li.textContent = event.data;
-//             document.getElementById("log").prepend( li );
-        };
-    }
-   
-    sendToTestSubscribingTopic(): Observable<MessageData>
-    {
-        const mercureJwtSecret  = $( '#TestSsseContainer' ).attr( 'data-mercureJwtSecret' );
-        const headers           = ( new HttpHeaders() ).set( "Authorization", `${mercureJwtSecret}` );
+        let options = { keepAlive: true, reconnectionDelay: 1000, responseType: 'event' } as const;
+        let requestOptions = { headers } as const;
+        let method = 'POST';
         
-        var url                 = `${this.url}/test-mercure/send-to-test-subscribing-topic`;
-        alert( `sendToTestSubscribingTopic URL: ${url}` );
-        
-        return this.httpClient.get<MessageData>( url, {headers} ).pipe(
-            map( ( response: any ) => this.mapMessageData( response ) )
-        );
-    }
-    
-    sendToTestMultiplayerLobby(): Observable<MessageData>
-    {
-        const mercureJwtSecret  = $( '#TestSsseContainer' ).attr( 'data-mercureJwtSecret' );
-        const headers           = ( new HttpHeaders() ).set( "Authorization", `${mercureJwtSecret}` );
-        
-        var url                 = `${this.url}/test-mercure/send-to-test-subscribing-topic`;
-        alert( `sendToTestMultiplayerLobby URL: ${url}` );
-        
-        return this.httpClient.get<MessageData>( url, {headers} ).pipe(
-            map( ( response: any ) => this.mapMessageData( response ) )
-        );
-    }
-    
-    private mapMessageData( response: any )
-    {
-        alert( `MessageData: ${response}` );
-        if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
-            let message: MessageData = {
-                status: response.status,
-                message: response.message,
-            };
+        // this.sseClient.stream( hub, options, requestOptions, method ).subscribe( ( event ) => {
+        this.sseClient.stream( hub, options ).subscribe( ( event: any ) => {
+            // alert( `SSE Subscribe Event: ${event.type}` );
             
-            return message;
+            if ( event.type === 'error' ) {
+                const errorEvent = event as ErrorEvent;
+                
+                // alert( errorEvent.message );
+                console.error( errorEvent.error, errorEvent.message );
+            } else {
+                const messageEvent = event as MessageEvent;
+                
+                // alert( messageEvent.data );
+                console.info( `SSE request with type "${messageEvent.type}" and data "${messageEvent.data}"` );
+            }
+        });
+    }
+    
+    /**
+     * Debug JWT issuer
+     * =================
+     * https://oneuptime.com/blog/post/2026-01-24-fix-issuer-invalid-jwt-errors/view
+     */
+    debugJWTIssuer( token: string, expectedIssuer: string ): boolean
+    {
+        // Decode without verification for debugging
+        const parts = token.split( '.' );
+        if ( parts.length !== 3 ) {
+            console.error( 'Invalid JWT format' );
+            return false;
         }
         
-        return response.message;
+        const payload = JSON.parse(
+            Buffer.from( parts[1], 'base64url' ).toString( 'utf8' )
+        );
+        
+        console.log('=== JWT Issuer Debug ===');
+        console.log('Token issuer (iss):', payload.iss);
+        console.log('Expected issuer:', expectedIssuer);
+        
+        // Check if issuer exists
+        if (!payload.iss) {
+            console.error('Problem: Token has no issuer claim');
+            return false;
+        }
+        
+        // Detailed comparison
+        const tokenIss = payload.iss;
+        const expected = expectedIssuer;
+        
+        console.log('\nComparison:');
+        console.log('  Exact match:', tokenIss === expected);
+        console.log('  Token length:', tokenIss.length);
+        console.log('  Expected length:', expected.length);
+        console.log('  Case match:', tokenIss.toLowerCase() === expected.toLowerCase());
+        
+        // Check for common issues
+        if (tokenIss.replace(/\/$/, '') === expected.replace(/\/$/, '')) {
+            console.log('  Issue: Trailing slash mismatch');
+        }
+        
+        if (tokenIss.replace(/^https?:\/\//, '') === expected.replace(/^https?:\/\//, '')) {
+            console.log('  Issue: Protocol mismatch (http vs https)');
+        }
+        
+        // Check for URL encoding issues
+        const decodedToken = decodeURIComponent(tokenIss);
+        const decodedExpected = decodeURIComponent(expected);
+        if (decodedToken !== tokenIss || decodedExpected !== expected) {
+            console.log('  Note: URL encoding present');
+            console.log('  Decoded token iss:', decodedToken);
+            console.log('  Decoded expected:', decodedExpected);
+        }
+        
+        return tokenIss === expected;
     }
 }

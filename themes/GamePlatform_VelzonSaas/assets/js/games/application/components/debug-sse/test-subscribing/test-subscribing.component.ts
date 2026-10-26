@@ -1,12 +1,23 @@
-import { Component, OnInit, Inject, NgZone } from '@angular/core';
+import { Component, OnInit, Inject, Input, NgZone } from '@angular/core';
 
 import { MessageData } from '@vankosoft/game-platform';
 
-import { User, PaymentTopic } from '../../../services/debug-sse/models';
+import { AuthService } from '../../../services/auth.service';
 import { EventSourceServiceTest } from '../../../services/event-source.service-test'
+
+import { MercureJwt, User, PaymentTopic } from '../../../services/debug-sse/models';
+import { FrontendPublisherService } from '../../../services/debug-sse/frontend-publisher.service'
+import { BackendPublisherService } from '../../../services/debug-sse/backend-publisher.service'
 
 import templateString from './test-subscribing.component.html';
 import styleString from './test-subscribing.component.scss';
+
+const { context } = require( '../../../context' );
+declare global {
+    interface Window {
+        gamePlatformSettings: any;
+    }
+}
 
 @Component({
     standalone: false,
@@ -17,34 +28,47 @@ import styleString from './test-subscribing.component.scss';
 })
 export class TestSubscribingComponent implements OnInit
 {
+    @Input() isLoggedIn: boolean = false;
+    
+    topicUri: string;
+    
     constructor(
+        @Inject( AuthService ) private authService: AuthService,
         @Inject( EventSourceServiceTest ) private sseService: EventSourceServiceTest,
+        @Inject( FrontendPublisherService ) private frontendPublisher: FrontendPublisherService,
+        @Inject( BackendPublisherService ) private backendPublisher: BackendPublisherService,
         @Inject( NgZone ) private zone: NgZone,
-    ) { }
+    ) { 
+        this.topicUri = `${context.backendURL}/test-subscribing/subscribe`;
+    }
     
     ngOnInit(): void
     {
-        // this.sseService.connect();
-        /*  */
-        const user: User = {
-            id: '65PRG6RD0C87KAQV8RS8H5HHBR',
-            name: 'Jose'
-        };
-        
-        const topic = new PaymentTopic( `https://topics.domain.com/${user.id}/payments` );
-        this.sseService.createEventSource( topic ).subscribe (
-            ( e: MessageData ) => {
-                console.log( 'Message received: ' + e.message );
-                alert( `Message received: ${e.message}` );
-            }
-        );
-        
+        this.subscribeToMercureTopic();
+    }
+    
+    subscribeToMercureTopic(): void
+    {
+        this.sseService.createNgxSseClientStream( this.topicUri );
+    }
+    
+    debugJWTIssuer(): void
+    {
+        this.authService.generateMercureToken().subscribe( ( jwt: MercureJwt ) => {
+            let valid = this.sseService.debugJWTIssuer( jwt.token, `${context.mercureHost}` );
+            alert( `Valid Issuer: ${valid}` );
+        });
     }
     
     testSubscribing(): void
     {
-        this.sseService.sendToTestSubscribingTopic().subscribe( ( message ) => {
-            alert( `Test Subscribing Component Response: ${JSON.stringify( message )}` );
+        this.authService.generateMercureToken().subscribe( ( jwt: MercureJwt ) => {
+            // alert( `MercureToken: ${JSON.stringify( jwt )}` );
+            alert( `MercureToken: ${jwt.token}` );
+            
+            this.frontendPublisher.sendToTestSubscribingTopic( this.topicUri, jwt.token ).then( ( data ) => {
+                alert( `Test Subscribing Component Response: ${data}` );
+            });
         });
     }
 }

@@ -103,6 +103,12 @@ services:
             - '@doctrine'
             - '@mercure.hub.default'
     
+    App\Controller\Api\GenerateMercureTokenController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@mercure.hub.default.jwt.factory'
+    
     App\Controller\Api\AccountController:
         tags: ['controller.service_arguments']
         autowire: true

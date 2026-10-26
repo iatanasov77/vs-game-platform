@@ -48,7 +48,7 @@ export class EventSourceService
         this.eventSource    = null;
     }
     
-    nativeSseClientStream( topicUri: string, options: EventSourceInit, eventNames: string[] = [] ): Observable<MessageEvent> | undefined
+    createNativeSseClientStream( topicUri: string, options: EventSourceInit, eventNames: string[] = [] ): Observable<MessageEvent> | undefined
     {
         const hub           = `${context.mercureHost}?match=${topicUri}`;
         this.eventSource    = new EventSourcePolyfill( hub, options );
@@ -77,7 +77,7 @@ export class EventSourceService
      * Try to Use 'ngx-sse-client'
      * https://www.npmjs.com/package/ngx-sse-client
      */
-    ngxSseClientStream( topicUri: string ): void
+    createNgxSseClientStream( topicUri: string ): void
     {
         // alert( topicUri );
         const hub       = `${context.mercureHost}?match=${topicUri}`;

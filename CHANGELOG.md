@@ -1,3 +1,17 @@
+2.0.2	|	Release date: **27.10.2026**
+============================================
+* New Features:
+  - Fix Game Factory
+  - Move Instantiating DeferredCancellation in Vankosoft  Websocket Bundle
+  - Remove a Composer Requirement.
+  - Remove Some Frontend Services Alerts.
+  - Fix Mercure HUB Config.
+  - Some Refactoring of SSE Services.
+  - Update to Angular 20
+  - Improve Event Source Service.
+  - Create Debug Window in Angular Application to Use when debugging large Strings.
+
+
 2.0.1	|	Release date: **19.10.2026**
 ============================================
 * New Features:

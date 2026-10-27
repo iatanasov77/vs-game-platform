@@ -1,7 +1,19 @@
-<div>
-    <a href="javascript:void( 0 );"
-        (click)="testSubscribing()"
-    >
-        Test Subscribing
-    </a>
+<div *ngIf="isLoggedIn">
+    <div class="mb-3">
+        <a href="javascript:void( 0 );"
+            (click)="testSubscribing()"
+        >
+            Test Subscribing
+        </a>
+    </div>
+    
+    <!--
+    <div class="mb-3">
+        <a href="javascript:void( 0 );"
+            (click)="openDebugWindow()"
+        >
+            Open Debug Window
+        </a>
+    </div>
+    -->
 </div>

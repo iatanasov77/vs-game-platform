@@ -18,6 +18,7 @@ import cssString from './error-handler.component.scss';
 import templateString from './error-handler.component.html';
 
 @Component({
+    standalone: false,
     selector: 'app-error-handler',
     template: templateString || 'Template Not Loaded !!!',
     styles: [

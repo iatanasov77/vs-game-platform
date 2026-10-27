@@ -20,8 +20,13 @@ class DebugController extends AbstractController
     
     public function debugSse( Request $request ): Response
     {
+        $signature  = $this->getUser() ? $this->getUser()->getApiVerifySiganature() : '';
+        $gameSettings           = [
+            'apiVerifySiganature' => $signature,
+        ];
+        
         return $this->render( 'Pages/GamesDebug/debug-sse.html.twig', [
-            
+            'gameSettings'  => $gameSettings,
         ]);
     }
 }

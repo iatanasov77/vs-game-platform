@@ -57,7 +57,7 @@ export class TestSwooleService
     
     onMessage( message: MessageEvent<string> ): void
     {
-        alert( `Recieved Message: ${message.data}` );
+        // alert( `Recieved Message: ${message.data}` );
         
         if ( ! message.data.length  ) {
             return;
@@ -105,7 +105,7 @@ export class TestSwooleService
     
     onClose( event: CloseEvent ): void
     {
-        alert( `CloseEvent: ${event.code}` );
+        // alert( `CloseEvent: ${event.code}` );
         console.log( 'Close', { event } );
     }
     

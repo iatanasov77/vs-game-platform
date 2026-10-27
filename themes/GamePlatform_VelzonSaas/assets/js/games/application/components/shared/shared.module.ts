@@ -13,6 +13,7 @@ import { ButtonComponent } from './button/button.component';
 import { InputCopyComponent } from './input-copy/input-copy.component';
 import { CardGameBidHistoryComponent } from './card-game-bid-history/card-game-bid-history.component';
 import { CardGameMyPlayerCardsComponent } from './card-game-my-player-cards/card-game-my-player-cards.component';
+import { DebugWindowComponent } from './debug-window/debug-window.component';
 
 @NgModule({
     declarations: [
@@ -23,7 +24,8 @@ import { CardGameMyPlayerCardsComponent } from './card-game-my-player-cards/card
         ButtonComponent,
         InputCopyComponent,
         CardGameBidHistoryComponent,
-        CardGameMyPlayerCardsComponent
+        CardGameMyPlayerCardsComponent,
+        DebugWindowComponent
     ],
     imports: [
         CommonModule,
@@ -40,7 +42,8 @@ import { CardGameMyPlayerCardsComponent } from './card-game-my-player-cards/card
         ButtonComponent,
         InputCopyComponent,
         CardGameBidHistoryComponent,
-        CardGameMyPlayerCardsComponent
+        CardGameMyPlayerCardsComponent,
+        DebugWindowComponent
     ]
 })
 export class SharedModule { }

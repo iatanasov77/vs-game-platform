@@ -20,6 +20,7 @@ import cssString from './create-invite-game-dialog.component.scss';
 import templateString from './create-invite-game-dialog.component.html';
 
 @Component({
+    standalone: false,
     selector: 'app-invite',
     template: templateString || 'Template Not Loaded !!!',
     styles: [cssString || 'Game CSS Not Loaded !!!'],

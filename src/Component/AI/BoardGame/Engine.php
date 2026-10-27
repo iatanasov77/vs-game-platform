@@ -2,6 +2,8 @@
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Vankosoft\WebsocketBundle\Websocket\Connection\ReactFunctions;
+
 use App\Component\AI\AiEngineInterface;
 use App\Component\Logger\GameLogger;
 use App\Component\Type\PlayerColor;
@@ -12,6 +14,7 @@ use App\Component\Manager\AbstractGameManager;
 
 abstract class Engine implements AiEngineInterface
 {
+    use ReactFunctions;
     use GameHelper;
     
     /** @var GameLogger */

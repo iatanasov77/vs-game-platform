@@ -7,6 +7,7 @@ import cssString from './board-buttons.component.scss';
 import templateString from './board-buttons.component.html';
 
 @Component({
+    standalone: false,
     selector: 'app-board-buttons',
     
     template: templateString || 'Template Not Loaded !!!',

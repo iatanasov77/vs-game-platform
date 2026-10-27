@@ -16,6 +16,7 @@ import cssGameString from './svara.component.scss'
 import templateString from './svara.component.html'
 
 @Component({
+    standalone: false,
     selector: 'app-svara',
     
     template: templateString || 'Template Not Loaded !!!',

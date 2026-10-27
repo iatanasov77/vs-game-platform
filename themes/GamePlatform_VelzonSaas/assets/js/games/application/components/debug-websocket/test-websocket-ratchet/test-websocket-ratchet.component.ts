@@ -7,6 +7,7 @@ import templateString from './test-websocket-ratchet.component.html';
 import styleString from './test-websocket-ratchet.component.scss';
 
 @Component({
+    standalone: false,
     selector: 'app-test-websocket-ratchet',
     
     template: templateString || 'Template Not Loaded !!!',

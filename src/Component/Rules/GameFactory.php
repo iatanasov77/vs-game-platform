@@ -63,8 +63,12 @@ final class GameFactory
         $this->Created          = new \DateTime( 'now' );
     }
     
-    private function createBackgammonGame( string $gameCode, string $gameVariant, bool $ForGold ): GameInterface
+    private function createBackgammonGame( string $gameCode, ?string $gameVariant, bool $ForGold ): GameInterface
     {
+        if ( ! $gameVariant ) {
+            $gameVariant = GameVariant::BACKGAMMON_NORMAL;
+        }
+        
         switch ( $gameVariant ) {
             case GameVariant::BACKGAMMON_NORMAL:
                 return $this->createBackgammonNormalGame( $gameCode, $ForGold );

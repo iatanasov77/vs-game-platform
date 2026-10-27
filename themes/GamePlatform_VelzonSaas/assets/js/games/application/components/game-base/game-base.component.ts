@@ -15,6 +15,7 @@ declare global {
 }
 
 @Component({
+    standalone: false,
     selector: 'app-game',
     
     template: ``,

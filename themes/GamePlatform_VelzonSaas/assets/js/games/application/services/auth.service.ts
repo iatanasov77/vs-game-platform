@@ -11,6 +11,7 @@ import { IAuth } from '@vankosoft/game-platform';
 import { ISignedUrlResponse } from '@vankosoft/game-platform';
 import { IToggleSoundMuteResponse } from '@vankosoft/game-platform';
 
+import { CookieService } from 'ngx-cookie-service';
 import { LocalStorageService } from './local-storage.service';
 import { SoundService } from './sound.service';
 import { StatusMessageService } from './status-message.service';
@@ -18,6 +19,8 @@ import { AppStateService } from '../state/app-state.service';
 import { Busy } from '../state/busy';
 import { Keys } from '@vankosoft/game-platform';
 import { UserDto } from '@vankosoft/game-platform';
+
+import { MercureJwt } from './debug-sse/models';
 
 /**
  * Manual: https://blog.jscrambler.com/working-with-angular-local-storage/
@@ -30,7 +33,6 @@ import { UserDto } from '@vankosoft/game-platform';
 export class AuthService
 {
     url: string;
-    authKey = "auth";
     
     loggedIn: boolean;
     loggedIn$: BehaviorSubject<boolean>;
@@ -42,6 +44,7 @@ export class AuthService
         @Inject( TranslateService ) private trans: TranslateService,
         @Inject( SoundService ) private sound: SoundService,
         @Inject( LocalStorageService ) private localStorageService: LocalStorageService,
+        @Inject( CookieService ) private cookieService: CookieService,
     ) {
         this.url        = `${context.apiURL}`;
         
@@ -95,9 +98,38 @@ export class AuthService
      */
     getApiToken(): string
     {
-        let auth        = this.getAuth();
+        let auth = this.getAuth();
         
         return auth ? auth.apiToken : '';
+    }
+    
+    /*
+     * Auth is not set in local storage for api subdomain,
+     * and sometimes is needed
+     */
+    getApiTokenFromCookie(): string
+    {
+        let authCookie  = this.cookieService.get( Keys.authKey );
+        if ( authCookie ) {
+            let auth   = JSON.parse( authCookie ) as IAuth;
+            return auth.apiToken;
+        }
+        
+        return '';
+    }
+    
+    generateMercureToken(): Observable<MercureJwt>
+    {
+        // var apiToken    = this.getApiTokenFromCookie();
+        var apiToken    = this.getApiToken();
+        
+        const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + apiToken );
+        var url         = `${this.url}/generate-mercure-token`;
+        
+        // Gets or creates the user in backgammon database.
+        return this.httpClient.get( url, {headers} ).pipe(
+            map( ( response: any ) => this.mapMercureJwt( response ) )
+        );
     }
     
     loginBySignature( apiVerifySiganature: string ): Observable<IAuth>
@@ -145,7 +177,7 @@ export class AuthService
     
     public createAuth( auth: IAuth )
     {
-        this.localStorageService.setItem( this.authKey, auth );
+        this.localStorageService.setItem( Keys.authKey, auth );
         
         this.loggedIn   = auth && auth.apiToken ? true : false;
         this.loggedIn$.next( this.loggedIn );
@@ -153,7 +185,7 @@ export class AuthService
     
     public getAuth(): IAuth | null
     {
-        let auth    = this.localStorageService.getItem<IAuth>( this.authKey );
+        let auth    = this.localStorageService.getItem<IAuth>( Keys.authKey );
         
         if ( auth && this.checkTokenExpired( auth ) ) {
             auth    = null;
@@ -168,7 +200,7 @@ export class AuthService
         this.signOut();
         this.statusMessageService.setNotLoggedIn();
         
-        this.localStorageService.removeItem( this.authKey );
+        this.localStorageService.removeItem( Keys.authKey );
         
         this.loggedIn   = false;
         if ( ! this.loggedIn$ ) {
@@ -252,5 +284,19 @@ export class AuthService
             }),
             take( 1 )
         ).subscribe();
+    }
+    
+    private mapMercureJwt( response: any ): any
+    {
+        //console.log( 'GamePlay Response: ', response );
+        if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
+            let jwt: MercureJwt = {
+                token: response.data.token,
+            };
+            
+            return jwt;
+        }
+        
+        return response.message;
     }
 }

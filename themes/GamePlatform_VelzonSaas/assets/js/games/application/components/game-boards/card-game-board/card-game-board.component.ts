@@ -67,6 +67,7 @@ declare global {
 }
 
 @Component({
+    standalone: false,
     selector: 'card-game-board',
     
     template: templateString || 'Template Not Loaded !!!',

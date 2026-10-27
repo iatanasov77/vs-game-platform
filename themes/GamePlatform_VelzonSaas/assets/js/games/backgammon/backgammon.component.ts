@@ -19,6 +19,7 @@ import cssGameString from './backgammon.component.scss'
 import templateString from './backgammon.component.html'
 
 @Component({
+    standalone: false,
     selector: 'app-backgammon',
     
     template: templateString || 'Template Not Loaded !!!',

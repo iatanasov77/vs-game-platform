@@ -66,6 +66,7 @@ declare global {
 }
 
 @Component({
+    standalone: false,
     selector: 'app-chess-container',
     
     template: templateString || 'Template Not Loaded !!!',

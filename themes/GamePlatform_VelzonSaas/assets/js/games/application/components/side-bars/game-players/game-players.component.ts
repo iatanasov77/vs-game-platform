@@ -13,9 +13,16 @@ import { IMercureAction } from '@vankosoft/game-platform';
 import templateString from './game-players.component.html'
 import cssString from './game-players.component.scss'
 
+const { context } = require( '../../../context' );
 declare var $: any;
+declare global {
+    interface Window {
+        gamePlatformSettings: any
+    }
+}
 
 @Component({
+    standalone: false,
     selector: 'game-players',
     
     template: templateString || 'Template Not Loaded !!!',
@@ -39,29 +46,7 @@ export class GamePlayersComponent implements OnInit, OnDestroy
     ngOnInit(): void
     {
         this.loadPlayers();
-        
-        let mercureEventSource  = $( '#GameContainer' ).attr( 'data-mercureEventSource' );
-        if( ! mercureEventSource ) {
-            return;
-        }
-        
-        this.eventSourceSubscription = this.eventSourceService.connect(
-            mercureEventSource,
-            { withCredentials: false },
-            ['activeConnectionUpdate']
-        )
-        
-        if ( this.eventSourceSubscription ) {
-            this.eventSourceSubscription.subscribe({
-                next: ( data: any ) => {
-                    let action: IMercureAction  = JSON.parse( data.data );
-                    this.updatePlayers( action );
-                },
-                error: ( error: any ) => {
-                    console.log( error );
-                }
-            });
-        }
+        this.subscribeToMercureTopic();
     }
     
     ngOnDestroy(): void
@@ -87,5 +72,33 @@ export class GamePlayersComponent implements OnInit, OnDestroy
             this.showSpinner    = false;
             this.players  = players;
         });
+    }
+    
+    subscribeToMercureTopic(): void
+    {
+        const topicUri = `${context.backendURL}/${window.gamePlatformSettings.gameSlug}`;
+        
+        this.eventSourceService.createNgxSseClientStream( topicUri );
+        
+        /*  
+        const mercureEventSource: string = '';
+        this.eventSourceSubscription = this.eventSourceService.createNativeSseClientStream(
+            topicUri,
+            { withCredentials: false },
+            ['activeConnectionUpdate']
+        )
+        
+        if ( this.eventSourceSubscription ) {
+            this.eventSourceSubscription.subscribe({
+                next: ( data: any ) => {
+                    let action: IMercureAction  = JSON.parse( data.data );
+                    this.updatePlayers( action );
+                },
+                error: ( error: any ) => {
+                    console.log( error );
+                }
+            });
+        }
+        */
     }
 }

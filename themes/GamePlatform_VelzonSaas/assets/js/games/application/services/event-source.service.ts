@@ -6,6 +6,9 @@ import { SseClient } from 'ngx-sse-client';
 const EventSource: any = window["EventSource"];
 import { EventSourcePolyfill } from "event-source-polyfill";
 
+import { AppConstants } from "../constants";
+const { context } = require( '../context' );
+
 import { AuthService } from './auth.service';
 
 declare var $: any;
@@ -43,43 +46,12 @@ export class EventSourceService
         @Inject( AuthService ) private authService: AuthService,
     ) {
         this.eventSource    = null;
-        // this.sseClientStream();
     }
     
-    /*  
-     * Try to Use 'ngx-sse-client'
-     */
-    sseClientStream(): void
+    createNativeSseClientStream( topicUri: string, options: EventSourceInit, eventNames: string[] = [] ): Observable<MessageEvent> | undefined
     {
-        const mercureEventSource  = $( '#GameContainer' ).attr( 'data-mercureEventSource' );
-        const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
-        // alert( `SSE Subscribe URL: ${mercureEventSource}` );
-        
-        this.sseClient.stream(
-            mercureEventSource,
-            { keepAlive: true, reconnectionDelay: 1_000, responseType: 'event' },
-            { headers }, 'POST'
-        ).subscribe( ( event ) => {
-            // alert( `SSE Subscribe Event: ${event.type}` );
-            
-            if ( event.type === 'error' ) {
-                const errorEvent = event as ErrorEvent;
-                console.error( errorEvent.error, errorEvent.message );
-            } else {
-              const messageEvent = event as MessageEvent;
-              console.info( `SSE request with type "${messageEvent.type}" and data "${messageEvent.data}"` );
-            }
-        });
-    }
-    
-    /**
-     * Method for establishing connection and subscribing to events from SSE
-     *
-     * @param eventNames - all event names except error (listens by default) you want to listen to
-     */
-    connect( url: string, options: EventSourceInit, eventNames: string[] = [] ): Observable<MessageEvent> | undefined
-    {
-        this.eventSource    = new EventSourcePolyfill( url, options );
+        const hub           = `${context.mercureHost}?match=${topicUri}`;
+        this.eventSource    = new EventSourcePolyfill( hub, options );
         // alert( this.eventSource.url );
         
         return new Observable( ( subscriber: Subscriber<MessageEvent> ) => {
@@ -98,6 +70,38 @@ export class EventSourceService
                     this.zone.run( () => subscriber.next( data ) );
                 });
             });
+        });
+    }
+    
+    /*  
+     * Try to Use 'ngx-sse-client'
+     * https://www.npmjs.com/package/ngx-sse-client
+     */
+    createNgxSseClientStream( topicUri: string ): void
+    {
+        // alert( topicUri );
+        const hub       = `${context.mercureHost}?match=${topicUri}`;
+        const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
+        
+        let options = { keepAlive: true, reconnectionDelay: 1000, responseType: 'event' } as const;
+        let requestOptions = { headers } as const;
+        let method = 'POST';
+        
+        // this.sseClient.stream( hub, options, requestOptions, method ).subscribe( ( event ) => {
+        this.sseClient.stream( hub, options ).subscribe( ( event ) => {
+            // alert( `SSE Subscribe Event: ${event.type}` );
+            
+            if ( event.type === 'error' ) {
+                const errorEvent = event as ErrorEvent;
+                
+                alert( errorEvent.message );
+                console.error( errorEvent.error, errorEvent.message );
+            } else {
+                const messageEvent = event as MessageEvent;
+                
+                alert( messageEvent.data );
+                console.info( `SSE request with type "${messageEvent.type}" and data "${messageEvent.data}"` );
+            }
         });
     }
     

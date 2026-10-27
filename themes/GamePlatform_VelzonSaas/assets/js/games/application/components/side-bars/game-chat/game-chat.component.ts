@@ -19,6 +19,7 @@ import templateString from './game-chat.component.html'
 import cssString from './game-chat.component.scss'
 
 @Component({
+    standalone: false,
     selector: 'game-chat',
     template: templateString || 'Template Not Loaded !!!',
     styles: [cssString || 'CSS Not Loaded !!!']

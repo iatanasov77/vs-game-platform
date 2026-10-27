@@ -11,6 +11,7 @@ mercure:
                 
                 # Define the required default claims here:
                 claims:
-                    iss: 'https://example.com'
+                    aud: 'http://mercure-hub.game-platform.lh/.well-known/mercure'
+                    iss: 'https://localhost'
                     sub: 'my-service-subject'
-                    client_id: 'my-client-id'
+                    client_id: 'https://localhost'

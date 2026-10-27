@@ -11,6 +11,7 @@ import cssGameString from './debug-websocket-page.component.scss'
 import templateString from './debug-websocket-page.component.html'
 
 @Component({
+    standalone: false,
     selector: 'app-debug-websocket-page',
     
     template: templateString || 'Template Not Loaded !!!',

@@ -10,6 +10,7 @@ import templateString from './user-login-dialog.component.html';
 declare var $: any;
 
 @Component({
+    standalone: false,
     selector: 'app-user-login-dialog',
     template:  templateString || 'Template Not Loaded !!!',
     styles: [cssString || 'Game CSS Not Loaded !!!'],

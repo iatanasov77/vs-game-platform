@@ -72,6 +72,7 @@ declare global {
  * Play Original Game: https://backgammon.azurewebsites.net/
  */
 @Component({
+    standalone: false,
     selector: 'app-backgammon-container',
     
     template: templateString || 'Template Not Loaded !!!',

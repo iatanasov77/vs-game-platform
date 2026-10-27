@@ -7,6 +7,7 @@ import templateString from './requirements-dialog.component.html'
 declare var $: any;
 
 @Component({
+    standalone: false,
     selector: 'app-user-not-loggedin',
     template:  templateString || 'Template Not Loaded !!!',
     styleUrls: []
@@ -42,7 +43,7 @@ export class RequirementsDialogComponent
             url: '/ajax/create-player-for-user/' + auth.id,
             success: function( response: any )
             {
-                document.location = document.location;
+                // document.location = document.location;
             },
             error: function()
             {

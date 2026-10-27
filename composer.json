@@ -34,10 +34,8 @@
         "vankosoft/catalog-bundle": "^2.7",
         "vankosoft/api-bundle": "^4.1",
         
-        "vankosoft/websocket-bundle": "dev-develop",
-        
+        "vankosoft/websocket-bundle": "^1.3",
         "react/react": "^1.4",
-        "react/partial": "^3.0",
         "amphp/amp": "^3.1",
         
         "yaroslavche/bitmask": "^3.2",

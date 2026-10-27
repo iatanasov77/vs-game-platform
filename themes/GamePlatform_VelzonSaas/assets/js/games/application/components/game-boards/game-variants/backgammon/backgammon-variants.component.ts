@@ -12,6 +12,7 @@ declare global {
 }
 
 @Component({
+    standalone: false,
     selector: 'app-backgammon-variants',
     
     template: templateString || 'Template Not Loaded !!!',

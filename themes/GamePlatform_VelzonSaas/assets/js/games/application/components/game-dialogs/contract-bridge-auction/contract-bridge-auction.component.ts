@@ -24,6 +24,7 @@ import cssString from './contract-bridge-auction.component.scss';
 import templateString from './contract-bridge-auction.component.html';
 
 @Component({
+    standalone: false,
     selector: 'app-contract-bridge-auction',
     changeDetection: ChangeDetectionStrategy.OnPush,
     

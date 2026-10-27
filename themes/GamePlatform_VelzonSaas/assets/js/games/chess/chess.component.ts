@@ -20,6 +20,7 @@ import templateString from './chess.component.html'
  * Chess Board Manual: https://www.npmjs.com/package/ngx-chess-board/v/2.2.3?activeTab=readme
  */
 @Component({
+    standalone: false,
     selector: 'app-chess',
     
     template: templateString || 'Template Not Loaded !!!',

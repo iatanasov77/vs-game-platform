@@ -16,6 +16,7 @@ import cssGameString from './bridge-belote.component.scss'
 import templateString from './bridge-belote.component.html'
 
 @Component({
+    standalone: false,
     selector: 'app-bridge-belote',
     
     template: templateString || 'Template Not Loaded !!!',

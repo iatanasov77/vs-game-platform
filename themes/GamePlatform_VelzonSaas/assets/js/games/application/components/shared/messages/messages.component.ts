@@ -28,6 +28,7 @@ declare global {
 }
 
 @Component({
+    standalone: false,
     selector: 'app-messages',
     
     template: templateString || 'Template Not Loaded !!!',

@@ -4,14 +4,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
+use Symfony\Component\Mercure\Jwt\WebTokenFactory;
 use Symfony\Component\Mercure\Jwt\TokenFactoryInterface;
-use Firebase\JWT\JWT;
+use Symfony\Component\Mercure\Jwt\Grant;
 use Vankosoft\ApplicationBundle\Component\Status;
-
-use App\Component\ServerSentEvent\JwtToken;
 
 /**
  * Manual: https://stackoverflow.com/a/62532899/12693473
+ * 
+ * Debug JWT Tokens: https://www.jwt.io/
  */
 class GenerateMercureTokenController extends AbstractController
 {
@@ -23,18 +24,9 @@ class GenerateMercureTokenController extends AbstractController
         $this->jwtFactory = $jwtFactory;
     }
     
-    public function index( $factory, Request $request ): JsonResponse
+    public function index( Request $request ): JsonResponse
     {
-        switch ( $factory ) {
-            case JwtToken::FactorySymfonyMercure:
-                $jwt = $this->generateWithSymfonyMercure();
-                break;
-            case JwtToken::FactoryFirebaseJwt:
-                $jwt = $this->generateWithFirebaseJwt();
-                break;
-            default:
-                throw new \RuntimeException( 'Undefined WebToken Factory !!!' );
-        }
+        $jwt = $this->generateWithSymfonyMercure();
         
         $response = [
             'status' => Status::STATUS_OK,
@@ -49,7 +41,10 @@ class GenerateMercureTokenController extends AbstractController
     private function generateWithSymfonyMercure(): string
     {
         return $this->jwtFactory->create(
-            [],
+            [
+                new Grant( [Grant::ACTION_PUBLISH], ['*'] ),
+                new Grant( [Grant::ACTION_SUBSCRIBE], ['*'] ),
+            ],
             [
                 'aud'       => 'http://mercure-hub.game-platform.lh/.well-known/mercure',
                 'iss'       => 'https://localhost',
@@ -57,18 +52,5 @@ class GenerateMercureTokenController extends AbstractController
                 'sub'       => 'my-service-subject',
             ]
         );
-    }
-    
-    private function generateWithFirebaseJwt(): string
-    {
-        $key = $this->getParameter( 'vsapp.mercure_jwt_secret' );
-        $payload = [
-            'mercure' => [
-                'publish' => ['*'],
-            ],
-        ];
-        $jwt = JWT::encode( $payload, $key, 'HS256' ); // holds valid jwt now
-        
-        return $jwt;
     }
 }

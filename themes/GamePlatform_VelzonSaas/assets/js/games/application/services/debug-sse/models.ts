@@ -1,11 +1,5 @@
 import { Topic } from '@vankosoft/game-platform';
 
-export class JwtToken
-{
-    static FactorySymfonyMercure    = 'simfony_mercure';
-    static FactoryFirebaseJwt       = 'firebase_jwt';
-}
-
 export interface MercureJwt
 {
     token: string;

@@ -1,5 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { Keys } from '@vankosoft/game-platform';
 import { CookieService } from 'ngx-cookie-service';
@@ -9,6 +10,8 @@ import { AuthService } from '../application/services/auth.service';
 import { AppStateService } from '../application/state/app-state.service';
 
 import { ErrorReportDto } from '@vankosoft/game-platform';
+
+import { DebugWindowComponent } from '../application/components/shared/debug-window/debug-window.component';
 
 import cssGameString from './debug-sse-page.component.scss'
 import templateString from './debug-sse-page.component.html'
@@ -40,6 +43,7 @@ export class DebugSsePageComponent implements OnInit
         @Inject( AppStateService ) private appState: AppStateService,
         @Inject( AuthService ) private authService: AuthService,
         @Inject( CookieService ) private cookieService: CookieService,
+        @Inject( NgbModal ) private ngbModal: NgbModal,
     ) {
         this.errors$ = this.appState.errors.observe();
         
@@ -71,5 +75,15 @@ export class DebugSsePageComponent implements OnInit
     saveErrorReport( errorDto: ErrorReportDto ): void
     {
         this.errorReportService.saveErrorReport( errorDto );
+    }
+    
+    openDebugWindowDialog( debugText: string ): void
+    {
+        const modalRef = this.ngbModal.open( DebugWindowComponent, { size: 'xl' } );
+        modalRef.componentInstance.debugText = debugText;
+        
+        modalRef.componentInstance.closeModal.subscribe( () => {
+            modalRef.dismiss();
+        });
     }
 }

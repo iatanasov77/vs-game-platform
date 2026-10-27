@@ -20,7 +20,7 @@ import { Busy } from '../state/busy';
 import { Keys } from '@vankosoft/game-platform';
 import { UserDto } from '@vankosoft/game-platform';
 
-import { JwtToken, MercureJwt } from './debug-sse/models';
+import { MercureJwt } from './debug-sse/models';
 
 /**
  * Manual: https://blog.jscrambler.com/working-with-angular-local-storage/
@@ -124,8 +124,7 @@ export class AuthService
         var apiToken    = this.getApiToken();
         
         const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + apiToken );
-        var url         = `${this.url}/generate-mercure-token/${JwtToken.FactorySymfonyMercure}`;
-        // var url         = `${this.url}/generate-mercure-token/${JwtToken.FactoryFirebaseJwt}`;
+        var url         = `${this.url}/generate-mercure-token`;
         
         // Gets or creates the user in backgammon database.
         return this.httpClient.get( url, {headers} ).pipe(

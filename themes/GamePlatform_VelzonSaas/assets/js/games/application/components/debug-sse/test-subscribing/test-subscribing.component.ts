@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, Input, NgZone } from '@angular/core';
+import { Component, OnInit, Inject, Input, Output, EventEmitter, NgZone } from '@angular/core';
 
 import { MessageData } from '@vankosoft/game-platform';
 
@@ -29,6 +29,7 @@ declare global {
 export class TestSubscribingComponent implements OnInit
 {
     @Input() isLoggedIn: boolean = false;
+    @Output() onOpenDebugWindow = new EventEmitter<string>();
     
     topicUri: string;
     
@@ -64,11 +65,17 @@ export class TestSubscribingComponent implements OnInit
     {
         this.authService.generateMercureToken().subscribe( ( jwt: MercureJwt ) => {
             // alert( `MercureToken: ${JSON.stringify( jwt )}` );
-            alert( `MercureToken: ${jwt.token}` );
+            this.openDebugWindow( jwt.token );
             
             this.frontendPublisher.sendToTestSubscribingTopic( this.topicUri, jwt.token ).then( ( data ) => {
                 alert( `Test Subscribing Component Response: ${data}` );
             });
         });
+    }
+    
+    openDebugWindow( debugText: string ): void
+    {
+        // debugText = 'Test Debug Window';
+        this.onOpenDebugWindow.emit( debugText );
     }
 }

@@ -1,13 +1,27 @@
 <div *ngIf="isLoggedIn">
-    <a href="javascript:void( 0 );"
-        (click)="debugJWTIssuer()"
-    >
-        Debug JWT Issuer
-    </a>
-    <br />
-    <a href="javascript:void( 0 );"
-        (click)="testSubscribing()"
-    >
-        Test Subscribing
-    </a>
+    <div class="mb-3">
+        <a href="javascript:void( 0 );"
+            (click)="debugJWTIssuer()"
+        >
+            Debug JWT Issuer
+        </a>
+    </div>
+    
+    <div class="mb-3">
+        <a href="javascript:void( 0 );"
+            (click)="testSubscribing()"
+        >
+            Test Subscribing
+        </a>
+    </div>
+    
+    <!--
+    <div class="mb-3">
+        <a href="javascript:void( 0 );"
+            (click)="openDebugWindow()"
+        >
+            Open Debug Window
+        </a>
+    </div>
+    -->
 </div>

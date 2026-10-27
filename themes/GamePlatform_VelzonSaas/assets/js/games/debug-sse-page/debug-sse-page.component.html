@@ -16,6 +16,7 @@
             <div class="col-12">
                 <app-test-subscribing
                     [isLoggedIn]="isLoggedIn"
+                    (onOpenDebugWindow)="openDebugWindowDialog($event)"
                 ></app-test-subscribing>
             </div>
         </div>

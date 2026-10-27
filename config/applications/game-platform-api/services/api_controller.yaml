@@ -119,3 +119,9 @@ services:
             - '@vsapp.factory.game_sessions'
             - '@mercure.hub.default'
             - '@liip_imagine.cache.manager'
+    
+    App\Controller\Api\TestMercurePublishController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@mercure.hub.default'

@@ -1,4 +1,4 @@
-import { Injectable, Inject, NgZone } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { Observable, Subscriber, map } from 'rxjs';
 
@@ -18,15 +18,12 @@ declare var $: any;
 export class FrontendPublisherService
 {
     private url: string;
-    private eventSource: null | EventSource;
     
     constructor(
-        @Inject( NgZone ) private zone: NgZone,
         @Inject( HttpClient ) private httpClient: HttpClient,
         @Inject( AuthService ) private authService: AuthService,
     ) {
-        this.url            = `${context.backendURL}`;
-        this.eventSource    = null;
+        this.url = `${context.backendURL}`;
     }
     
     /**

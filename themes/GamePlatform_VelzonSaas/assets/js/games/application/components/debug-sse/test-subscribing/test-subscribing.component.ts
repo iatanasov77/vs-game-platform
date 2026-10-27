@@ -65,6 +65,16 @@ export class TestSubscribingComponent implements OnInit
         });
     }
     
+    sendTestMessage(): void
+    {
+        this.backendPublisher.sendTestMessage( this.topicUri ).subscribe (
+            ( e: MessageData ) => {
+                console.log( 'Message received: ' + e.message );
+                alert( `Message received: ${JSON.stringify( e )}` );
+            }
+        );
+    }
+    
     openDebugWindow( debugText: string ): void
     {
         // debugText = 'Test Debug Window';

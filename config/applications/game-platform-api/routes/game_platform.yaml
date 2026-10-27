@@ -51,3 +51,7 @@ vs_api_start_game:
 vs_api_finish_game:
     path: /api/finish-game/{gamePlayId}
     controller: App\Controller\Api\Games\FinishGameController::finishGameAction
+
+vs_api_test_mercure_test_message:
+    path: /api/test-mercure/test-message
+    controller: App\Controller\Api\TestMercurePublishController::sendTestMessageAction

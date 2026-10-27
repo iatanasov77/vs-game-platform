@@ -41,16 +41,18 @@ export class TestUserPaymentComponent implements OnInit
             id: '65PRG6RD0C87KAQV8RS8H5HHBR',
             name: 'Jose'
         };
-        
         const topic = new PaymentTopic( `https://topics.domain.com/${user.id}/payments` );
+        
+        /*  
         this.sseService.createNativeSseClientStream( topic ).subscribe (
             ( e: MessageData ) => {
                 console.log( 'Message received: ' + e.message );
                 alert( `Message received: ${e.message}` );
             }
         );
+        */
         
-        // this.eventSourceService.createNgxSseClientStream( topic.getTopic() );
+        this.sseService.createNgxSseClientStream( topic.getTopic() );
     }
     
     testUserPayment(): void

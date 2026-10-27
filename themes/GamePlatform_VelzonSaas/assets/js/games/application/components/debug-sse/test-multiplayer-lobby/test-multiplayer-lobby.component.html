@@ -1,7 +1,29 @@
 <div *ngIf="isLoggedIn">
-    <a href="javascript:void( 0 );"
-        (click)="testMultiplayerLobby()"
-    >
-        Test Multiplayer Lobby
-    </a>
+    <div class="mb-3">
+        <a href="javascript:void( 0 );"
+            (click)="testMultiplayerLobby()"
+        >Test Multiplayer Lobby</a>
+        <span class="ms-2">( Sending with Frontend )</span>
+    </div>
+    
+    <div class="mb-3">
+        <a href="javascript:void( 0 );"
+            (click)="createLobby()"
+        >Create Lobby</a>
+        <span class="ms-2">( Sending with Backend )</span>
+    </div>
+    
+    <div class="mb-3">
+        <a href="javascript:void( 0 );"
+            (click)="joinLobby()"
+        >Join Lobby</a>
+        <span class="ms-2">( Sending with Backend )</span>
+    </div>
+    
+    <div class="mb-3">
+        <a href="javascript:void( 0 );"
+            (click)="exitLobby()"
+        >Exit Lobby</a>
+        <span class="ms-2">( Sending with Backend )</span>
+    </div>
 </div>

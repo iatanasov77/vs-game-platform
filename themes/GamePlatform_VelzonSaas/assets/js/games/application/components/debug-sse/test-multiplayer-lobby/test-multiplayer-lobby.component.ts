@@ -23,11 +23,15 @@ export class TestMultiplayerLobby implements OnInit
 {
     @Input() isLoggedIn: boolean = false;
     
+    topicUri: string;
+    
     constructor(
         @Inject( EventSourceServiceTest ) private sseService: EventSourceServiceTest,
         @Inject( FrontendPublisherService ) private frontendPublisher: FrontendPublisherService,
         @Inject( BackendPublisherService ) private backendPublisher: BackendPublisherService,
-    ) { }
+    ) {
+        this.topicUri = `${context.backendURL}/test-subscribing/subscribe`;
+    }
     
     ngOnInit(): void
     {
@@ -36,12 +40,37 @@ export class TestMultiplayerLobby implements OnInit
     
     subscribeToMercureTopic(): void
     {
-        const topicUri = `${context.backendURL}/test-multiplayer-lobby/game-rooms`;
-        
-        this.sseService.createNgxSseClientStream( topicUri );
+        this.sseService.createNgxSseClientStream( this.topicUri );
     }
     
     testMultiplayerLobby(): void
+    {
+        /*  
+        this.frontendPublisher.sendToTestMultiplayerLobby().subscribe( ( message ) => {
+            alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
+        });
+        */
+    }
+    
+    createLobby(): void
+    {
+        /*  
+        this.frontendPublisher.sendToTestMultiplayerLobby().subscribe( ( message ) => {
+            alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
+        });
+        */
+    }
+    
+    joinLobby(): void
+    {
+        /*  
+        this.frontendPublisher.sendToTestMultiplayerLobby().subscribe( ( message ) => {
+            alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
+        });
+        */
+    }
+    
+    exitLobby(): void
     {
         /*  
         this.frontendPublisher.sendToTestMultiplayerLobby().subscribe( ( message ) => {

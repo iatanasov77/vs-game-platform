@@ -1,7 +1,6 @@
 <div>
     <a href="javascript:void( 0 );"
         (click)="testWebsocketRatchetMessage()"
-    >
-        Test Message
-    </a>
+    >Test Message</a>
+    <span *ngIf="! ratchetServerExixts" class="ms-2">Ratchet Server NOT Active</span>
 </div>

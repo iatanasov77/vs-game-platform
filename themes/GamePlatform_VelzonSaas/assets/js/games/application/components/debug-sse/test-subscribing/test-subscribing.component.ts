@@ -53,14 +53,6 @@ export class TestSubscribingComponent implements OnInit
         this.sseService.createNgxSseClientStream( this.topicUri );
     }
     
-    debugJWTIssuer(): void
-    {
-        this.authService.generateMercureToken().subscribe( ( jwt: MercureJwt ) => {
-            let valid = this.sseService.debugJWTIssuer( jwt.token, `${context.mercureHost}` );
-            alert( `Valid Issuer: ${valid}` );
-        });
-    }
-    
     testSubscribing(): void
     {
         this.authService.generateMercureToken().subscribe( ( jwt: MercureJwt ) => {
@@ -68,7 +60,7 @@ export class TestSubscribingComponent implements OnInit
             this.openDebugWindow( jwt.token );
             
             this.frontendPublisher.sendToTestSubscribingTopic( this.topicUri, jwt.token ).then( ( data ) => {
-                alert( `Test Subscribing Component Response: ${data}` );
+                alert( `Publish to Test Subscribing Component. Response: ${JSON.stringify( data )}` );
             });
         });
     }

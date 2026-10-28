@@ -32,6 +32,26 @@ export class BackendPublisherService
         );
     }
     
+    sendToTestMultiplayerLobby( topic: string ): Observable<MessageData>
+    {
+        const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
+        const url = `${this.url}/test-mercure/test-message`;
+        
+        return this.httpClient.post<MessageData>( url, { topic : topic }, {headers} ).pipe(
+            map( ( response: any ) => this.mapMessageData( response ) )
+        );
+    }
+    
+    createMultiplayerLobby( topic: string ): Observable<MessageData>
+    {
+        const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
+        const url = `${this.url}/test-mercure/test-message`;
+        
+        return this.httpClient.post<MessageData>( url, { topic : topic }, {headers} ).pipe(
+            map( ( response: any ) => this.mapMessageData( response ) )
+        );
+    }
+    
     private mapMessageData( response: any )
     {
         alert( `MessageData: ${JSON.stringify( response )}` );

@@ -41,6 +41,7 @@
             <div class="col-12">
                 <app-test-multiplayer-lobby
                     [isLoggedIn]="isLoggedIn"
+                    (onOpenDebugWindow)="openDebugWindowDialog($event)"
                 ></app-test-multiplayer-lobby>
             </div>
         </div>
@@ -66,6 +67,28 @@
                 <app-test-user-payment
                     [isLoggedIn]="isLoggedIn"
                 ></app-test-user-payment>
+            </div>
+        </div>
+    </div><!-- end card-body -->
+</div>
+
+<div class="card">
+    <div class="card-header align-items-center d-flex">
+        <h4 class="card-title mb-0 flex-grow-1">Game Rooms</h4>
+        <!--
+        <div class="flex-shrink-0">
+            <div class="form-check form-switch form-switch-right form-switch-md">
+                <label for="default" class="form-label text-muted">Show Code</label>
+                <input class="form-check-input code-switcher" type="checkbox" id="default">
+            </div>
+        </div>
+        -->
+    </div><!-- end card header -->
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12">
+                <game-rooms-table></game-rooms-table>
             </div>
         </div>
     </div><!-- end card-body -->

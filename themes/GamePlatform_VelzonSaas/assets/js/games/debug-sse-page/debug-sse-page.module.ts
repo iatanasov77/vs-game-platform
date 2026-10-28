@@ -13,6 +13,7 @@ import { StoreModule } from '@ngrx/store';
 import { loginReducer } from '../application/+store/login.reducers';
 
 import { GlobalErrorService } from '../application/services/global-error-service';
+import { SharedModule } from '../application/components/shared/shared.module';
 import { DebugSsePageComponent } from './debug-sse-page.component';
 import { DebugSseModule } from '../application/components/debug-sse/debug-sse.module';
 
@@ -39,6 +40,7 @@ export function HttpLoaderFactory( http: HttpClient ) {
                 deps: [HttpClient]
             }
         }),
+        SharedModule,
         
         DebugSseModule,
         

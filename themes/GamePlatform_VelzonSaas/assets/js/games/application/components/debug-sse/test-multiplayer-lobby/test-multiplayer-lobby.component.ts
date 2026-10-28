@@ -1,8 +1,9 @@
-import { Component, OnInit, Inject, Input  } from '@angular/core';
+import { Component, OnInit, Inject, Input, Output, EventEmitter  } from '@angular/core';
 
 import { MessageData } from '@vankosoft/game-platform';
 
-import { User, PaymentTopic } from '../../../services/debug-sse/models';
+import { MercureJwt, User, PaymentTopic } from '../../../services/debug-sse/models';
+import { AuthService } from '../../../services/auth.service';
 import { EventSourceServiceTest } from '../../../services/event-source.service-test'
 import { FrontendPublisherService } from '../../../services/debug-sse/frontend-publisher.service'
 import { BackendPublisherService } from '../../../services/debug-sse/backend-publisher.service'
@@ -22,15 +23,17 @@ const { context } = require( '../../../context' );
 export class TestMultiplayerLobby implements OnInit
 {
     @Input() isLoggedIn: boolean = false;
+    @Output() onOpenDebugWindow = new EventEmitter<string>();
     
     topicUri: string;
     
     constructor(
+        @Inject( AuthService ) private authService: AuthService,
         @Inject( EventSourceServiceTest ) private sseService: EventSourceServiceTest,
         @Inject( FrontendPublisherService ) private frontendPublisher: FrontendPublisherService,
         @Inject( BackendPublisherService ) private backendPublisher: BackendPublisherService,
     ) {
-        this.topicUri = `${context.backendURL}/test-subscribing/subscribe`;
+        this.topicUri = `${context.backendURL}/test-multiplayer-lobby/subscribe`;
     }
     
     ngOnInit(): void
@@ -45,26 +48,27 @@ export class TestMultiplayerLobby implements OnInit
     
     testMultiplayerLobby(): void
     {
-        /*  
-        this.frontendPublisher.sendToTestMultiplayerLobby().subscribe( ( message ) => {
-            alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
+        this.authService.generateMercureToken().subscribe( ( jwt: MercureJwt ) => {
+            // alert( `MercureToken: ${JSON.stringify( jwt )}` );
+            this.openDebugWindow( jwt.token );
+            
+            this.frontendPublisher.sendToTestSubscribingTopic( this.topicUri, jwt.token ).then( ( message ) => {
+                alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
+            });
         });
-        */
     }
     
     createLobby(): void
     {
-        /*  
-        this.frontendPublisher.sendToTestMultiplayerLobby().subscribe( ( message ) => {
+        this.backendPublisher.sendToTestMultiplayerLobby().subscribe( ( message ) => {
             alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
         });
-        */
     }
     
     joinLobby(): void
     {
         /*  
-        this.frontendPublisher.sendToTestMultiplayerLobby().subscribe( ( message ) => {
+        this.backendPublisher.sendToTestMultiplayerLobby().subscribe( ( message ) => {
             alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
         });
         */
@@ -73,9 +77,15 @@ export class TestMultiplayerLobby implements OnInit
     exitLobby(): void
     {
         /*  
-        this.frontendPublisher.sendToTestMultiplayerLobby().subscribe( ( message ) => {
+        this.backendPublisher.sendToTestMultiplayerLobby().subscribe( ( message ) => {
             alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
         });
         */
+    }
+    
+    openDebugWindow( debugText: string ): void
+    {
+        // debugText = 'Test Debug Window';
+        this.onOpenDebugWindow.emit( debugText );
     }
 }

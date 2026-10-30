@@ -155,13 +155,17 @@ export class BackgammonService extends AbstractGameService
                     lastDoubler: this.appState.myColor.getValue(),
                     currentPlayer: this.appState.myColor.getValue(),
                     stake: game.stake * 2,
-                    whitePlayer: {
-                        ...game.whitePlayer,
-                        gold: game.whitePlayer.gold - game.stake / 2
-                    },
-                    blackPlayer: {
-                        ...game.blackPlayer,
-                        gold: game.blackPlayer.gold - game.stake / 2
+                    
+                    players: {
+                        [PlayerColor.white]: {
+                            ...game.players[PlayerColor.white],
+                            gold: game.players[PlayerColor.white].gold - game.stake / 2
+                        },
+                        
+                        [PlayerColor.black]: {
+                            ...game.players[PlayerColor.black],
+                            gold: game.players[PlayerColor.black].gold - game.stake / 2
+                        }
                     }
                 });
                 this.sound.playCoin();
@@ -326,9 +330,9 @@ export class BackgammonService extends AbstractGameService
         gameClone.points[from].checkers.splice( index, 1 );
         
         if ( move.color == PlayerColor.black ) {
-            gameClone.blackPlayer.pointsLeft -= move.to - move.from;
+            gameClone.players[PlayerColor.black].pointsLeft -= move.to - move.from;
         } else {
-            gameClone.whitePlayer.pointsLeft -= move.to - move.from;
+            gameClone.players[PlayerColor.white].pointsLeft -= move.to - move.from;
         }
         // hitting opponent checker
         const hit = gameClone.points[to].checkers.find(
@@ -348,9 +352,9 @@ export class BackgammonService extends AbstractGameService
             gameClone.points[barIdx].checkers.push( hit );
             
             if ( move.color == PlayerColor.black ) {
-                gameClone.whitePlayer.pointsLeft += 25 - move.to;
+                gameClone.players[PlayerColor.white].pointsLeft += 25 - move.to;
             } else {
-                gameClone.blackPlayer.pointsLeft += 25 - move.to;
+                gameClone.players[PlayerColor.black].pointsLeft += 25 - move.to;
             }
         }
         
@@ -458,14 +462,18 @@ export class BackgammonService extends AbstractGameService
             goldMultiplier: game.goldMultiplier * 2,
             lastDoubler: this.appState.getOtherPlayer(),
             currentPlayer: this.appState.getOtherPlayer(),
-            whitePlayer: {
-                ...game.whitePlayer,
-                gold: game.whitePlayer.gold - game.stake / 2
+            
+            players: {
+                [PlayerColor.white]: {
+                    ...game.players[PlayerColor.white],
+                    gold: game.players[PlayerColor.white].gold - game.stake / 2
+                },
+                [PlayerColor.black]: {
+                    ...game.players[PlayerColor.black],
+                    gold: game.players[PlayerColor.black].gold - game.stake / 2
+                }
             },
-            blackPlayer: {
-                ...game.blackPlayer,
-                gold: game.blackPlayer.gold - game.stake / 2
-            },
+            
             stake: game.stake * 2
         });
         

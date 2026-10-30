@@ -45,9 +45,9 @@ export class EditorService
         gameClone.points[from].checkers.splice( index, 1 );
         
         if ( move.color == PlayerColor.black ) {
-            gameClone.blackPlayer.pointsLeft -= move.to - move.from;
+            gameClone.players[PlayerColor.black].pointsLeft -= move.to - move.from;
         } else {
-            gameClone.whitePlayer.pointsLeft -= move.from - move.to;
+            gameClone.players[PlayerColor.white].pointsLeft -= move.from - move.to;
         }
         
         //push checker to new point
@@ -61,24 +61,28 @@ export class EditorService
         const game: BoardGameDto = {
             id: '15f126cb-e84d-4fe7-9782-8767109eed49',
             gameCode: 'backgammon',
-            blackPlayer: {
-                name: 'Guest',
-                playerColor: 0,
-                pointsLeft: 167,
-                photoUrl: '',
-                elo: 1200,
-                gold: 0,
-                isAi: false
+            
+            players: {
+                [PlayerColor.black]: {
+                    name: 'Guest',
+                    playerColor: 0,
+                    pointsLeft: 167,
+                    photoUrl: '',
+                    elo: 1200,
+                    gold: 0,
+                    isAi: false
+                },
+                [PlayerColor.white]: {
+                    name: 'Guest',
+                    playerColor: 1,
+                    pointsLeft: 167,
+                    photoUrl: '',
+                    elo: 1383,
+                    gold: 0,
+                    isAi: false
+                }
             },
-            whitePlayer: {
-                name: 'Guest',
-                playerColor: 1,
-                pointsLeft: 167,
-                photoUrl: '',
-                elo: 1383,
-                gold: 0,
-                isAi: false
-            },
+            
             currentPlayer: 0,
             winner: 2,
             playState: 0,

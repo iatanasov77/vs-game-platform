@@ -28,6 +28,9 @@ abstract class Game implements GameInterface
     /** @var string */
     public $GameCode;
     
+    /** @var array | Player[] */
+    public array $Players;
+    
     /** @var Player */
     public $BlackPlayer;
     
@@ -81,7 +84,7 @@ abstract class Game implements GameInterface
                 }
             );
             foreach ( $blackCheckers as $ckr ) {
-                $game->BlackPlayer->PointsLeft += 25 - $point->BlackNumber;
+                $game->Players[PlayerColor::Black->value]->PointsLeft += 25 - $point->BlackNumber;
             }
             
             $whiteCheckers  = $point->Checkers->filter(
@@ -90,7 +93,7 @@ abstract class Game implements GameInterface
                 }
             );
             foreach ( $whiteCheckers as $ckr ) {
-                $game->WhitePlayer->PointsLeft += 25 - $point->WhiteNumber;
+                $game->Players[PlayerColor::White->value]->PointsLeft += 25 - $point->WhiteNumber;
             }
         }
     }
@@ -176,7 +179,7 @@ abstract class Game implements GameInterface
     
     public function ReallyStarted(): bool
     {
-        return $this->BlackPlayer->FirstMoveMade && $this->WhitePlayer->FirstMoveMade;
+        return $this->Players[PlayerColor::Black->value]->FirstMoveMade && $this->Players[PlayerColor::White->value]->FirstMoveMade;
     }
     
     protected function ClearMoves( Collection &$moves ): void

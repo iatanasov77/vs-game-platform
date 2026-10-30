@@ -144,8 +144,8 @@ abstract class Engine implements AiEngineInterface
         $otherScore = $this->Evaluate( $oponent, $this->EngineGame );
         
         $oppPips = $this->EngineGame->CurrentPlayer == PlayerColor::White ?
-                    $this->EngineGame->BlackPlayer->PointsLeft :
-                    $this->EngineGame->WhitePlayer->PointsLeft;
+                    $this->EngineGame->Players[PlayerColor::Black->value]->PointsLeft :
+                    $this->EngineGame->Players[PlayerColor::White->value]->PointsLeft;
         
         $k = ( $myScore - $otherScore ) / $oppPips;
         
@@ -210,9 +210,9 @@ abstract class Engine implements AiEngineInterface
     {
         if ( $myColor == PlayerColor::White ) {
             // Higher score for white when few checkers and black has many checkers left
-            return $game->BlackPlayer->PointsLeft - $game->WhitePlayer->PointsLeft;
+            return $game->Players[PlayerColor::Black->value]->PointsLeft - $game->Players[PlayerColor::White->value]->PointsLeft;
         } else {
-            return $game->WhitePlayer->PointsLeft - $game->BlackPlayer->PointsLeft;
+            return $game->Players[PlayerColor::White->value]->PointsLeft - $game->Players[PlayerColor::Black->value]->PointsLeft;
         }
     }
 

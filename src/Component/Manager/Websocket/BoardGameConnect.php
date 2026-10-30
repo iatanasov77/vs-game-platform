@@ -72,8 +72,8 @@ trait BoardGameConnect
     {
         // Guest vs guest must be allowed. When guest games are enabled.
         if (
-            $manager->Game->BlackPlayer->Id == $userId ||
-            $manager->Game->WhitePlayer->Id == $userId &&
+            $manager->Game->Players[PlayerColor::Black->value]->Id == $userId ||
+            $manager->Game->Players[PlayerColor::White->value]->Id == $userId &&
             $userId != Guid::Empty()
         ) {
             $this->logger->log( "Game Already Started", 'GameService' );

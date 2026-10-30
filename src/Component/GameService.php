@@ -160,7 +160,7 @@ final class GameService
         if ( $isGuest ) {
             $managers = $managers->filter(
                 function( $entry ) {
-                    return $entry->Game->BlackPlayer->Id != Guid::Empty() || $entry->Game->WhitePlayer->Id != Guid::Empty();
+                    return $entry->Game->Players[PlayerColor::Black->value]->Id != Guid::Empty() || $entry->Game->Players[PlayerColor::White->value]->Id != Guid::Empty();
                 }
             );
         }

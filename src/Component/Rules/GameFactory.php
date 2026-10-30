@@ -93,13 +93,13 @@ final class GameFactory
         $game->Roll         = new ArrayCollection();
         $game->ValidMoves   = new ArrayCollection();
         
-        $game->BlackPlayer = new BoardGamePlayer();
-        $game->BlackPlayer->PlayerColor = PlayerColor::Black;
-        $game->BlackPlayer->Name = "Guest";
+        $game->Players[PlayerColor::Black->value] = new BoardGamePlayer();
+        $game->Players[PlayerColor::Black->value]->PlayerColor = PlayerColor::Black;
+        $game->Players[PlayerColor::Black->value]->Name = "Guest";
         
-        $game->WhitePlayer = new BoardGamePlayer();
-        $game->WhitePlayer->PlayerColor = PlayerColor::White;
-        $game->WhitePlayer->Name = "Guest";
+        $game->Players[PlayerColor::White->value] = new BoardGamePlayer();
+        $game->Players[PlayerColor::White->value]->PlayerColor = PlayerColor::White;
+        $game->Players[PlayerColor::White->value]->Name = "Guest";
         
         $game->Created = new \DateTime( 'now' );
         
@@ -138,13 +138,13 @@ final class GameFactory
         $game->Roll         = new ArrayCollection();
         $game->ValidMoves   = new ArrayCollection();
         
-        $game->BlackPlayer = new BoardGamePlayer();
-        $game->BlackPlayer->PlayerColor = PlayerColor::Black;
-        $game->BlackPlayer->Name = "Guest";
+        $game->Players[PlayerColor::Black->value] = new BoardGamePlayer();
+        $game->Players[PlayerColor::Black->value]->PlayerColor = PlayerColor::Black;
+        $game->Players[PlayerColor::Black->value]->Name = "Guest";
         
-        $game->WhitePlayer = new BoardGamePlayer();
-        $game->WhitePlayer->PlayerColor = PlayerColor::White;
-        $game->WhitePlayer->Name = "Guest";
+        $game->Players[PlayerColor::White->value] = new BoardGamePlayer();
+        $game->Players[PlayerColor::White->value]->PlayerColor = PlayerColor::White;
+        $game->Players[PlayerColor::White->value]->Name = "Guest";
         
         $game->Created = new \DateTime( 'now' );
         
@@ -183,13 +183,13 @@ final class GameFactory
         $game->Roll         = new ArrayCollection();
         $game->ValidMoves   = new ArrayCollection();
         
-        $game->BlackPlayer = new BoardGamePlayer();
-        $game->BlackPlayer->PlayerColor = PlayerColor::Black;
-        $game->BlackPlayer->Name = "Guest";
+        $game->Players[PlayerColor::Black->value] = new BoardGamePlayer();
+        $game->Players[PlayerColor::Black->value]->PlayerColor = PlayerColor::Black;
+        $game->Players[PlayerColor::Black->value]->Name = "Guest";
         
-        $game->WhitePlayer = new BoardGamePlayer();
-        $game->WhitePlayer->PlayerColor = PlayerColor::White;
-        $game->WhitePlayer->Name = "Guest";
+        $game->Players[PlayerColor::White->value] = new BoardGamePlayer();
+        $game->Players[PlayerColor::White->value]->PlayerColor = PlayerColor::White;
+        $game->Players[PlayerColor::White->value]->Name = "Guest";
         
         $game->Created = new \DateTime( 'now' );
         
@@ -226,13 +226,13 @@ final class GameFactory
         $game->GameCode     = $gameCode;
         //$game->ValidMoves   = new ArrayCollection();
         
-        $game->BlackPlayer = new BoardGamePlayer();
-        $game->BlackPlayer->PlayerColor = PlayerColor::Black;
-        $game->BlackPlayer->Name = "Guest";
+        $game->Players[PlayerColor::Black->value] = new BoardGamePlayer();
+        $game->Players[PlayerColor::Black->value]->PlayerColor = PlayerColor::Black;
+        $game->Players[PlayerColor::Black->value]->Name = "Guest";
         
-        $game->WhitePlayer = new BoardGamePlayer();
-        $game->WhitePlayer->PlayerColor = PlayerColor::White;
-        $game->WhitePlayer->Name = "Guest";
+        $game->Players[PlayerColor::White->value] = new BoardGamePlayer();
+        $game->Players[PlayerColor::White->value]->PlayerColor = PlayerColor::White;
+        $game->Players[PlayerColor::White->value]->Name = "Guest";
         
         $game->Created = new \DateTime( 'now' );
         

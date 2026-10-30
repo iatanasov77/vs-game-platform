@@ -49,7 +49,7 @@ final class ChessGameManager extends BoardGameManager
             $this->logger->log( "Connecting Black Player ...", 'GameManager' );
             $this->Clients->set( PlayerColor::Black->value, $webSocket );
             
-            $this->InitializePlayer( $dbUser, false, $this->Game->BlackPlayer );
+            $this->InitializePlayer( $dbUser, false, $this->Game->Players[PlayerColor::Black->value] );
             if ( $this->Game->IsGoldGame ) {
                 $this->Game->Stake = self::firstBet * 2;
             }
@@ -58,7 +58,7 @@ final class ChessGameManager extends BoardGameManager
                 $this->logger->log( "Play AI is TRUE !!!", 'GameManager' );
                 
                 $aiUser = $this->playersRepository->findOneBy( ['guid' => GamePlayer::AiUser] );
-                $this->InitializePlayer( $aiUser, true, $this->Game->WhitePlayer );
+                $this->InitializePlayer( $aiUser, true, $this->Game->Players[PlayerColor::White->value] );
                 
                 $this->Engine = AiEngineFactory::CreateAiEngine(
                     $this->GameCode,
@@ -85,7 +85,7 @@ final class ChessGameManager extends BoardGameManager
             }
             $this->Clients->set( PlayerColor::White->value, $webSocket );
             
-            $this->InitializePlayer( $dbUser, false, $this->Game->WhitePlayer );
+            $this->InitializePlayer( $dbUser, false, $this->Game->Players[PlayerColor::White->value] );
             
             $this->CreateDbGame();
             $this->StartGame();
@@ -156,9 +156,9 @@ final class ChessGameManager extends BoardGameManager
             $action = $this->serializer->deserialize( $actionText, ChessMoveMadeActionDto::class, JsonEncoder::FORMAT );
             
             if ( $socket == $this->Clients->get( PlayerColor::Black->value ) ) {
-                $this->Game->BlackPlayer->FirstMoveMade = true;
+                $this->Game->Players[PlayerColor::Black->value]->FirstMoveMade = true;
             } else {
-                $this->Game->WhitePlayer->FirstMoveMade = true;
+                $this->Game->Players[PlayerColor::White->value]->FirstMoveMade = true;
             }
             
             $this->DoMove( $action );
@@ -334,9 +334,9 @@ final class ChessGameManager extends BoardGameManager
         $dto->myColor = $this->Game->CurrentPlayer;
         
         if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {
-            $this->Game->BlackPlayer->FirstMoveMade = true;
+            $this->Game->Players[PlayerColor::Black->value]->FirstMoveMade = true;
         } else {
-            $this->Game->WhitePlayer->FirstMoveMade = true;
+            $this->Game->Players[PlayerColor::White->value]->FirstMoveMade = true;
         }
         
         $this->Send( $client, $dto );

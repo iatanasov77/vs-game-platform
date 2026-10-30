@@ -38,7 +38,7 @@ export class FrontendPublisherService
         
         let body = new URLSearchParams({
             topic: `${topicUri}`,
-            data: JSON.stringify( { status: "checked out" } ),
+            data: JSON.stringify( { status: "sent to SubscribingTopic" } ),
         });
         
         const response = await fetch( `${context.mercureHost}`, {
@@ -56,9 +56,9 @@ export class FrontendPublisherService
     /**
      * https://mercure.rocks/docs/concepts/publishing#publishing-to-mercure-from-nodejs
      */
-    sendToTestMultiplayerLobby( token: string ): Observable<MessageData>
+    sendToTestMultiplayerLobbyTopic( topicUri: string, token: string ): Observable<MessageData>
     {
-        const headers = ( new HttpHeaders() ).set( "Authorization", `${token}` );
+        const headers = ( new HttpHeaders() ).set( "Authorization", `Bearer ${token}` );
         
         var url = `${this.url}/test-mercure/send-to-test-subscribing-topic`;
         alert( `sendToTestMultiplayerLobby URL: ${url}` );

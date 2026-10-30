@@ -73,15 +73,7 @@ export class TutorialService
     {
         const game: BoardGameDto = {
             gameCode: 'backgammon',
-            blackPlayer: {
-                name: 'You',
-                elo: 0,
-                gold: 0,
-                photoUrl: '',
-                playerColor: PlayerColor.black,
-                pointsLeft: 0,
-                isAi: false
-            },
+            
             currentPlayer: PlayerColor.black,
             goldMultiplier: 0,
             id: '',
@@ -92,15 +84,28 @@ export class TutorialService
             stake: 0,
             thinkTime: 1000,
             validMoves: [],
-            whitePlayer: {
-                name: 'Aina',
-                elo: 0,
-                gold: 0,
-                photoUrl: '',
-                playerColor: PlayerColor.black,
-                pointsLeft: 0,
-                isAi: false
+            
+            players: {
+                [PlayerColor.black]: {
+                    name: 'You',
+                    elo: 0,
+                    gold: 0,
+                    photoUrl: '',
+                    playerColor: PlayerColor.black,
+                    pointsLeft: 0,
+                    isAi: false
+                },
+                [PlayerColor.white]: {
+                    name: 'Aina',
+                    elo: 0,
+                    gold: 0,
+                    photoUrl: '',
+                    playerColor: PlayerColor.black,
+                    pointsLeft: 0,
+                    isAi: false
+                }
             },
+            
             winner: PlayerColor.neither,
             lastDoubler: undefined
         };

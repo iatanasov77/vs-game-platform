@@ -150,13 +150,16 @@ export class ChessService extends AbstractGameService
                     lastDoubler: this.appState.myColor.getValue(),
                     currentPlayer: this.appState.myColor.getValue(),
                     stake: game.stake * 2,
-                    whitePlayer: {
-                        ...game.whitePlayer,
-                        gold: game.whitePlayer.gold - game.stake / 2
-                    },
-                    blackPlayer: {
-                        ...game.blackPlayer,
-                        gold: game.blackPlayer.gold - game.stake / 2
+                    
+                    players: {
+                        [PlayerColor.white]: {
+                            ...game.players[PlayerColor.white],
+                            gold: game.players[PlayerColor.white].gold - game.stake / 2
+                        },
+                        [PlayerColor.black]: {
+                            ...game.players[PlayerColor.black],
+                            gold: game.players[PlayerColor.black].gold - game.stake / 2
+                        }
                     }
                 });
                 this.sound.playCoin();
@@ -359,14 +362,18 @@ export class ChessService extends AbstractGameService
             goldMultiplier: game.goldMultiplier * 2,
             lastDoubler: this.appState.getOtherPlayer(),
             currentPlayer: this.appState.getOtherPlayer(),
-            whitePlayer: {
-                ...game.whitePlayer,
-                gold: game.whitePlayer.gold - game.stake / 2
+            
+            players: {
+                [PlayerColor.white]: {
+                    ...game.players[PlayerColor.white],
+                    gold: game.players[PlayerColor.white].gold - game.stake / 2
+                },
+                [PlayerColor.black]: {
+                    ...game.players[PlayerColor.black],
+                    gold: game.players[PlayerColor.black].gold - game.stake / 2
+                },
             },
-            blackPlayer: {
-                ...game.blackPlayer,
-                gold: game.blackPlayer.gold - game.stake / 2
-            },
+            
             stake: game.stake * 2
         });
         

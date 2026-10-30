@@ -197,13 +197,15 @@ export class BackgammonBoardComponent implements AfterViewInit, OnChanges
         
         const bName = this.myColor === PlayerColor.black
             ? this.you
-            : this.game?.blackPlayer.name;
+            : this.game?.players[PlayerColor.black].name;
         const wName = this.myColor === PlayerColor.white
             ? this.you
-            : this.game?.whitePlayer.name;
+            : this.game?.players[PlayerColor.white].name;
         
-        const bLeft = this.game?.blackPlayer.pointsLeft;
-        const wLeft = this.game?.whitePlayer.pointsLeft;
+        // const bLeft = this.game?.blackPlayer.pointsLeft;
+        // const wLeft = this.game?.whitePlayer.pointsLeft;
+        const bLeft = this.game?.players[PlayerColor.black].pointsLeft;
+        const wLeft = this.game?.players[PlayerColor.white].pointsLeft;
         
         this.blacksName = this.game ? `${bName} - ${bLeft} ${this.left}` : '';
         this.whitesName = this.game ? `${wName} - ${wLeft} ${this.left}` : '';

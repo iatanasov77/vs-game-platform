@@ -52,7 +52,7 @@ export class TestMultiplayerLobby implements OnInit
             // alert( `MercureToken: ${JSON.stringify( jwt )}` );
             this.openDebugWindow( jwt.token );
             
-            this.frontendPublisher.sendToTestSubscribingTopic( this.topicUri, jwt.token ).then( ( message ) => {
+            this.frontendPublisher.sendToTestMultiplayerLobbyTopic( this.topicUri, jwt.token ).subscribe( ( message: MessageData ) => {
                 alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
             });
         });
@@ -60,7 +60,7 @@ export class TestMultiplayerLobby implements OnInit
     
     createLobby(): void
     {
-        this.backendPublisher.sendToTestMultiplayerLobby().subscribe( ( message ) => {
+        this.backendPublisher.sendToTestMultiplayerLobby( this.topicUri ).subscribe( ( message ) => {
             alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
         });
     }

@@ -30,7 +30,7 @@
     >
         
         <app-board-player
-            [playerDto]="gameDto.whitePlayer"
+            [playerDto]="gameDto.players[PlayerColor.white]"
             [doubling]="getDoubling(PlayerColor.white) | async"
         >
         </app-board-player>

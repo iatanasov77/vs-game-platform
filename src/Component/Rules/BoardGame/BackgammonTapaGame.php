@@ -57,9 +57,9 @@ class BackgammonTapaGame extends BackgammonGame
         $move->From->Checkers->removeElement( $checker );
         $move->To->Checkers[]   = $checker;
         if ( $move->Color == PlayerColor::Black ) {
-            $this->BlackPlayer->PointsLeft -= ( $move->To->BlackNumber - $move->From->BlackNumber);
+            $this->Players[PlayerColor::Black->value]->PointsLeft -= ( $move->To->BlackNumber - $move->From->BlackNumber);
         } else {
-            $this->WhitePlayer->PointsLeft -= ( $move->To->WhiteNumber - $move->From->WhiteNumber );
+            $this->Players[PlayerColor::White->value]->PointsLeft -= ( $move->To->WhiteNumber - $move->From->WhiteNumber );
         }
         
         // Feels wrong that now that own home is same point as opponent bar
@@ -102,9 +102,9 @@ class BackgammonTapaGame extends BackgammonGame
         $move->To->Checkers->removeElement( $checker );
         $move->From->Checkers[] = $checker;
         if ( $move->Color == PlayerColor::Black ) {
-            $this->BlackPlayer->PointsLeft += ( $move->To->BlackNumber - $move->From->BlackNumber );
+            $this->Players[PlayerColor::Black->value]->PointsLeft += ( $move->To->BlackNumber - $move->From->BlackNumber );
         } else {
-            $this->WhitePlayer->PointsLeft += ( $move->To->WhiteNumber - $move->From->WhiteNumber );
+            $this->Players[PlayerColor::White->value]->PointsLeft += ( $move->To->WhiteNumber - $move->From->WhiteNumber );
         }
         
         if ( $hitChecker != null ) {
@@ -117,9 +117,9 @@ class BackgammonTapaGame extends BackgammonGame
             
             $bar->Checkers->removeElement( $hitChecker );
             if ( $move->Color == PlayerColor::Black ) {
-                $this->WhitePlayer->PointsLeft -= ( $move->To->WhiteNumber );
+                $this->Players[PlayerColor::White->value]->PointsLeft -= ( $move->To->WhiteNumber );
             } else {
-                $this->BlackPlayer->PointsLeft -= ( $move->To->BlackNumber );
+                $this->Players[PlayerColor::Black->value]->PointsLeft -= ( $move->To->BlackNumber );
             }
         }
     }

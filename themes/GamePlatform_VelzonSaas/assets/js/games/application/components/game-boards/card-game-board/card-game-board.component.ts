@@ -787,7 +787,9 @@ export class CardGameBoardComponent implements AfterViewInit, OnChanges
         
         this.playerAreas = [];
         var pw, ph, playerArea;
-        for ( let p = 0; p < this.game.players.length; p++ ) {
+        
+        for ( let p in this.game.players ) {
+        // for ( let p = 0; p < this.game.players.length; p++ ) {
             switch( this.game.players[p].playerPosition ) {
                 case PlayerPosition.north:
                     pw = this.width / 2;

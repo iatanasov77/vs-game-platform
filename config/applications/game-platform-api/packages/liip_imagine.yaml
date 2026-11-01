@@ -16,7 +16,7 @@ liip_imagine:
     resolvers:
         default:
             web_path:
-                web_root: "%kernel.project_dir%/public/video-platform-api"
+                web_root: "%kernel.project_dir%/public/game-platform-api"
                 cache_prefix: "media/cache"
 
     filter_sets:

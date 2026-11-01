@@ -58,3 +58,8 @@ sudo tail -f /dev/shm/game-platform.lh/game-platform/log/websocket_chat.log
 
 sudo tail -f /dev/shm/game-platform.lh/game-platform/log/test_websocket.log
 ```
+
+## Debug Mercure Communication
+```
+sudo tail -f /dev/shm/game-platform.lh/game-platform-api/log/mercure_game.log
+```

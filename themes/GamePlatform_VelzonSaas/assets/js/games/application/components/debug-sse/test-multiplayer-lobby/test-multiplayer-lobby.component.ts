@@ -50,7 +50,7 @@ export class TestMultiplayerLobby implements OnInit
     {
         this.authService.generateMercureToken().subscribe( ( jwt: MercureJwt ) => {
             // alert( `MercureToken: ${JSON.stringify( jwt )}` );
-            this.openDebugWindow( jwt.token );
+            // this.openDebugWindow( jwt.token );
             
             this.frontendPublisher.sendToTestMultiplayerLobbyTopic( this.topicUri, jwt.token ).subscribe( ( message: MessageData ) => {
                 alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
@@ -58,9 +58,16 @@ export class TestMultiplayerLobby implements OnInit
         });
     }
     
-    createLobby(): void
+    createCardGameLobby(): void
     {
-        this.backendPublisher.sendToTestMultiplayerLobby( this.topicUri ).subscribe( ( message ) => {
+        this.backendPublisher.createMultiplayerLobby( 'card_game', this.topicUri ).subscribe( ( message ) => {
+            alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
+        });
+    }
+    
+    createBoardGameLobby(): void
+    {
+        this.backendPublisher.createMultiplayerLobby( 'board_game', this.topicUri ).subscribe( ( message ) => {
             alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
         });
     }

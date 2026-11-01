@@ -62,7 +62,7 @@ export class GameRoomsTableComponent implements OnInit
         
         this.gameService.loadGameSessions( gameSlug ).subscribe( ( rooms: IGameRoom[] ) => {
             // console.log( rooms );
-            // alert( `Game Rooms: ${JSON.stringify( rooms )}` );
+            alert( `Game Rooms: ${JSON.stringify( rooms )}` );
             
             this.showSpinner    = false;
             this.gameRooms      = rooms;

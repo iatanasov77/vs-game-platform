@@ -5,12 +5,12 @@
         </tr>
     </thead>
     <tbody>
-        @for( bidHistoryNth of bidHistoryTransformed; track $index ) {
+        <ng-container *ngFor="let bidHistoryNth of bidHistoryTransformed">
             <tr>
-                @for( bid of bidHistoryNth; track $index ) {
+               <ng-container *ngFor="let bid of bidHistoryNth">
                     <td><span [ngClass]="bid == 'Pass' ? 'pass' : 'bid-suit'" [innerHTML]="bid"></span></td>
-                }
+                </ng-container>
             </tr>
-        }
+        </ng-container>
     </tbody>
 </table>

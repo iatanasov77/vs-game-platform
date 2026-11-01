@@ -85,7 +85,7 @@ export class FrontendPublisherService
     
     private mapMessageData( response: any )
     {
-        alert( `MessageData: ${response}` );
+        alert( `MessageData: ${JSON.stringify( response )}` );
         if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
             let message: MessageData = {
                 status: response.status,

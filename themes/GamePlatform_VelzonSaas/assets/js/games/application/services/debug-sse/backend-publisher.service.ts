@@ -42,10 +42,30 @@ export class BackendPublisherService
         );
     }
     
-    createMultiplayerLobby( topic: string ): Observable<MessageData>
+    createMultiplayerLobby( gameType: string, topic: string ): Observable<MessageData>
     {
         const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
-        const url = `${this.url}/test-mercure/test-message`;
+        const url = `${this.url}/test-mercure/create-lobby/${gameType}`;
+        
+        return this.httpClient.post<MessageData>( url, { topic : topic }, {headers} ).pipe(
+            map( ( response: any ) => this.mapMessageData( response ) )
+        );
+    }
+    
+    joinMultiplayerLobby( topic: string ): Observable<MessageData>
+    {
+        const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
+        const url = `${this.url}/test-mercure/join-lobby`;
+        
+        return this.httpClient.post<MessageData>( url, { topic : topic }, {headers} ).pipe(
+            map( ( response: any ) => this.mapMessageData( response ) )
+        );
+    }
+    
+    leaveMultiplayerLobby( topic: string ): Observable<MessageData>
+    {
+        const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
+        const url = `${this.url}/test-mercure/leave-lobby`;
         
         return this.httpClient.post<MessageData>( url, { topic : topic }, {headers} ).pipe(
             map( ( response: any ) => this.mapMessageData( response ) )

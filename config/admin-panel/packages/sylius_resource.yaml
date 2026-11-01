@@ -11,7 +11,7 @@ sylius_resource:
             driver: doctrine/orm
             classes:
                 model: App\Entity\GameCategory
-                repository: Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository
+                repository: App\Repository\GameCategoryRepository
                 controller: App\Controller\AdminPanel\GameCategoryController
                 form: App\Form\GameCategoryForm
         vsapp.game_platform_application:

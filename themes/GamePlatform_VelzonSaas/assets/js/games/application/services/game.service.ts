@@ -69,6 +69,14 @@ export class GameService
         return this.httpClient.get<IGameRoom[]>( url );
     }
     
+    loadGameSessionsCategory( categorySlug: string ): Observable<IGameRoom[]>
+    {
+        // alert( gameSlug );
+        var url = `${this.url}/game-sessions-category/${categorySlug}`;
+        
+        return this.httpClient.get<IGameRoom[]>( url );
+    }
+    
     clearGameSessions( gameSlug: string ): Observable<IGameRoom[]>
     {
         var url = `${this.url}/clear-game-sessions/${gameSlug}`;

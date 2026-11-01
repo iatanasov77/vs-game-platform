@@ -8,8 +8,6 @@ use Sylius\Component\Resource\Model\ResourceInterface;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 /**
- * GamePlay Entity
- * 
  * Games Played in the Room (Example: In Bridge Belote One game finished when a team reach 151 points in Score)
  */
 #[ORM\Entity]

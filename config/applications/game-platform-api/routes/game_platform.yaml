@@ -17,6 +17,14 @@ vs_api_game_by_slug:
 vs_api_game_play_by_game:
     path: /api/game-sessions/{gameSlug}
     controller: App\Controller\Api\Games\GetGamePlayByGameController::index
+    
+vs_api_game_sessions_by_category:
+    path: /api/game-sessions-category/{categorySlug}
+    controller: App\Controller\Api\Games\GetGameSessionsByCategoryController::index
+
+vs_api_join_game_room_in_position:
+    path: /api/game-room-join-position/{roomId}-{position}
+    controller: App\Controller\GamePlatform\GameRoomsController::joinGameRoomInPosition
 
 vs_api_remove_all_game_play_by_game:
     path: /api/clear-game-sessions/{gameSlug}
@@ -55,3 +63,15 @@ vs_api_finish_game:
 vs_api_test_mercure_test_message:
     path: /api/test-mercure/test-message
     controller: App\Controller\Api\TestMercurePublishController::sendTestMessageAction
+
+vs_api_test_mercure_create_lobby:
+    path: /api/test-mercure/create-lobby/{gameType}
+    controller: App\Controller\Api\TestMercurePublishController::createGameLobby
+
+vs_api_test_mercure_join_lobby:
+    path: /api/test-mercure/join-lobby
+    controller: App\Controller\Api\TestMercurePublishController::joinGameLobby
+
+vs_api_test_mercure_leave_lobby:
+    path: /api/test-mercure/leave-lobby
+    controller: App\Controller\Api\TestMercurePublishController::exitGameLobby

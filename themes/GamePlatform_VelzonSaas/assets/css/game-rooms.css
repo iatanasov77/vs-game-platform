@@ -2,6 +2,10 @@
     display: inline-block !important;
 }
 
+.game-rooms-table .dib-angular {
+    margin: 0 3px 0 3px;
+}
+
 .game-rooms-table .player-slot i {
     height: 44px;
     color: #e0e0e0;

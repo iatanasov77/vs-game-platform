@@ -24,7 +24,7 @@ sylius_resource:
             driver: doctrine/orm
             classes:
                 model: App\Entity\GameCategory
-                repository: Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository
+                repository: App\Repository\GameCategoryRepository
         vsapp.game_players:
             driver: doctrine/orm
             classes:

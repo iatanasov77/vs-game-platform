@@ -19,6 +19,7 @@ use App\Component\Type\PlayerColor;
 use App\Component\Type\PlayerPosition;
 use App\Component\Type\GameState;
 
+use App\Entity\Game;
 use App\Entity\GamePlay;
 use App\Entity\GamePlayer;
 use App\Entity\TempPlayer;
@@ -112,8 +113,19 @@ class TestMercurePublishController
         return new JsonResponse( $response );
     }
     
-    public function joinGameLobby( Request $request ): JsonResponse
+    public function joinGameLobby( $roomId, Request $request ): JsonResponse
     {
+        $room   = $this->gamePlayRepository->find( $roomId );
+        $player = $this->vsSecurityBridge->getUser()->getPlayer();
+        
+        $this->logger->log( "Join Game Lobby !!!" );
+        $tempPlayer = $this->createTempPlayer( $room->getGame(), $player );
+        $tempPlayer->setGame( $room );
+        $room->addGamePlayer( $tempPlayer );
+        
+        $em = $this->doctrine->getManager();
+        $em->persist( $room );
+        $em->flush();
         
         $response   = [
             'status'    => Status::STATUS_OK,
@@ -123,8 +135,17 @@ class TestMercurePublishController
         return new JsonResponse( $response );
     }
     
-    public function exitGameLobby( Request $request ): JsonResponse
+    public function exitGameLobby( $roomId, Request $request ): JsonResponse
     {
+        $room   = $this->gamePlayRepository->find( $roomId );
+        $player = $this->vsSecurityBridge->getUser()->getPlayer();
+        
+        $tempPlayer = $room->getTempPlayer( $player );
+        $room->removeGamePlayer( $tempPlayer );
+        
+        $em = $this->doctrine->getManager();
+        $em->persist( $room );
+        $em->flush();
         
         $response   = [
             'status'    => Status::STATUS_OK,
@@ -202,6 +223,29 @@ class TestMercurePublishController
         $em->flush();
         
         return $game;
+    }
+    
+    private function createTempPlayer( Game $baseGame, $player, $position = null ): TempPlayer
+    {
+        switch ( $baseGame->getType() ) {
+            case GamePlatform::GAME_TYPE_BOARD_GAME:
+                if ( ! $position ) {
+                    $position = PlayerColor::Black;
+                }
+                
+                return $this->CreateBoardGameTempPlayer( $player, $position );
+                
+                break;
+            case GamePlatform::GAME_TYPE_CARD_GAME:
+            case GamePlatform::GAME_TYPE_CARD_GAME_NO_TEAMS:
+                if ( ! $position ) {
+                    $position = PlayerPosition::South;
+                }
+                
+                return $this->CreateBoardGameTempPlayer( $player, $position );
+                
+                break;
+        }
     }
     
     private function CreateBoardGameTempPlayer( GamePlayer $player, PlayerColor $playerPosition ): TempPlayer

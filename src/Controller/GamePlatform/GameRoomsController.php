@@ -312,8 +312,6 @@ class GameRoomsController extends AbstractController
             
         }
         
-        $tempPlayer->setPosition( $position );
-        
         $tempPlayer->setGuid( Guid::NewGuid() );
         $tempPlayer->setPlayer( $player );
         $tempPlayer->setName( $player->getName() );

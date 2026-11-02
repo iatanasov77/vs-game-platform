@@ -1,7 +1,7 @@
 import { Injectable, Inject, NgZone } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { Observable, Subscriber, map } from 'rxjs';
-import { Topic, MessageData } from '@vankosoft/game-platform';
+import { Topic, MessageData, IGameRoom } from '@vankosoft/game-platform';
 
 import { AuthService } from '../auth.service';
 
@@ -52,22 +52,22 @@ export class BackendPublisherService
         );
     }
     
-    joinMultiplayerLobby( topic: string ): Observable<MessageData>
+    joinMultiplayerLobby(  room: IGameRoom  ): Observable<MessageData>
     {
         const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
-        const url = `${this.url}/test-mercure/join-lobby`;
+        const url = `${this.url}/test-mercure/join-lobby/${room.id}`;
         
-        return this.httpClient.post<MessageData>( url, { topic : topic }, {headers} ).pipe(
+        return this.httpClient.get<MessageData>( url, {headers} ).pipe(
             map( ( response: any ) => this.mapMessageData( response ) )
         );
     }
     
-    leaveMultiplayerLobby( topic: string ): Observable<MessageData>
+    leaveMultiplayerLobby(  room: IGameRoom  ): Observable<MessageData>
     {
         const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
-        const url = `${this.url}/test-mercure/leave-lobby`;
+        const url = `${this.url}/test-mercure/leave-lobby/${room.id}`;
         
-        return this.httpClient.post<MessageData>( url, { topic : topic }, {headers} ).pipe(
+        return this.httpClient.get<MessageData>( url, {headers} ).pipe(
             map( ( response: any ) => this.mapMessageData( response ) )
         );
     }

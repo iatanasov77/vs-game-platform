@@ -72,24 +72,6 @@ export class TestMultiplayerLobby implements OnInit
         });
     }
     
-    joinLobby(): void
-    {
-        /*  
-        this.backendPublisher.sendToTestMultiplayerLobby().subscribe( ( message ) => {
-            alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
-        });
-        */
-    }
-    
-    exitLobby(): void
-    {
-        /*  
-        this.backendPublisher.sendToTestMultiplayerLobby().subscribe( ( message ) => {
-            alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
-        });
-        */
-    }
-    
     openDebugWindow( debugText: string ): void
     {
         // debugText = 'Test Debug Window';

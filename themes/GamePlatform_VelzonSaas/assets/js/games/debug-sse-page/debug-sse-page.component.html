@@ -88,7 +88,10 @@
     <div class="card-body">
         <div class="row">
             <div class="col-12">
-                <game-rooms-table-test></game-rooms-table-test>
+                <game-rooms-table-test
+                    [isLoggedIn]="isLoggedIn"
+                    [currentPlayer]="currentPlayer"
+                ></game-rooms-table-test>
             </div>
         </div>
     </div><!-- end card-body -->

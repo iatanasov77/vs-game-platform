@@ -14,10 +14,12 @@ import { PlayerPosition } from '@vankosoft/game-platform';
 import { PlayerPositions } from '@vankosoft/game-platform';
 import { Helper } from '@vankosoft/game-platform';
 import { BidTrump } from '@vankosoft/game-platform';
-import { AppStateService } from '../../../state/app-state.service';
+import { AuthService } from '../../../services/auth.service';
 import { GameService } from '../../../services/game.service'
 import { EventSourceServiceTest } from '../../../services/event-source.service-test';
+import { BackendPublisherService } from '../../../services/debug-sse/backend-publisher.service'
 
+import { IPlayer } from '@vankosoft/game-platform';
 import { IGameRoom } from '@vankosoft/game-platform';
 import { IMercureAction } from '@vankosoft/game-platform';
 
@@ -40,6 +42,9 @@ const { context } = require( '../../../context' );
 })
 export class GameRoomsTableTestComponent implements OnInit
 {
+    @Input() isLoggedIn: boolean = false;
+    @Input() currentPlayer: IPlayer | undefined;
+    
     showSpinner = true;
     
     gameRooms: IGameRoom[] | undefined;
@@ -47,8 +52,9 @@ export class GameRoomsTableTestComponent implements OnInit
     
     constructor(
         @Inject( TranslateService ) private translateService: TranslateService,
-        @Inject( AppStateService ) private appStateService: AppStateService,
+        @Inject( AuthService ) private authService: AuthService,
         @Inject( GameService ) private gameService: GameService,
+        @Inject( BackendPublisherService ) private backendPublisher: BackendPublisherService,
         @Inject( EventSourceServiceTest ) private sseService: EventSourceServiceTest,
         @Inject( NgbModal ) private ngbModal: NgbModal,
     ) {
@@ -71,6 +77,13 @@ export class GameRoomsTableTestComponent implements OnInit
             this.showSpinner    = false;
             this.gameRooms      = rooms;
         });
+    }
+    
+    isCurrentPlayerInRoom( room: IGameRoom ): boolean
+    {
+        const res: boolean = room.players.some( player => player.name === this?.currentPlayer?.name );
+        
+        return res;
     }
     
     subscribeToMercureTopic(): void
@@ -99,6 +112,24 @@ export class GameRoomsTableTestComponent implements OnInit
             });
         }
         */
+    }
+    
+    joinRoom( room: IGameRoom ): void
+    {
+        // alert( `Join Room: ${JSON.stringify( room )}` );
+        
+        this.backendPublisher.joinMultiplayerLobby( room ).subscribe( ( message ) => {
+            alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
+        });
+    }
+    
+    leaveRoom( room: IGameRoom ): void
+    {
+        // alert( `Leave Room: ${JSON.stringify( room )}` );
+         
+        this.backendPublisher.leaveMultiplayerLobby( room ).subscribe( ( message: any ) => {
+            alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
+        });
     }
     
     openDebugWindowDialog( debugText: string ): void

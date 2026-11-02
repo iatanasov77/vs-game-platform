@@ -69,9 +69,9 @@ vs_api_test_mercure_create_lobby:
     controller: App\Controller\Api\TestMercurePublishController::createGameLobby
 
 vs_api_test_mercure_join_lobby:
-    path: /api/test-mercure/join-lobby
+    path: /api/test-mercure/join-lobby/{roomId}
     controller: App\Controller\Api\TestMercurePublishController::joinGameLobby
 
 vs_api_test_mercure_leave_lobby:
-    path: /api/test-mercure/leave-lobby
+    path: /api/test-mercure/leave-lobby/{roomId}
     controller: App\Controller\Api\TestMercurePublishController::exitGameLobby

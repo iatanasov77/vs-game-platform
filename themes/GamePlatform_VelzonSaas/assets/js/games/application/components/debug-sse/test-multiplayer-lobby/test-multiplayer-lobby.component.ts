@@ -1,10 +1,11 @@
 import { Component, OnInit, Inject, Input, Output, EventEmitter  } from '@angular/core';
+import { Observable } from 'rxjs';
 
 import { MessageData } from '@vankosoft/game-platform';
 
 import { MercureJwt, User, PaymentTopic } from '../../../services/debug-sse/models';
 import { AuthService } from '../../../services/auth.service';
-import { EventSourceServiceTest } from '../../../services/event-source.service-test'
+import { EventSourceService } from '../../../services/event-source.service'
 import { FrontendPublisherService } from '../../../services/debug-sse/frontend-publisher.service'
 import { BackendPublisherService } from '../../../services/debug-sse/backend-publisher.service'
 
@@ -25,25 +26,23 @@ export class TestMultiplayerLobby implements OnInit
     @Input() isLoggedIn: boolean = false;
     @Output() onOpenDebugWindow = new EventEmitter<string>();
     
+    sseClient$: Observable<Event>;
     topicUri: string;
+    sseResponseType: string = 'text';
     
     constructor(
         @Inject( AuthService ) private authService: AuthService,
-        @Inject( EventSourceServiceTest ) private sseService: EventSourceServiceTest,
+        @Inject( EventSourceService ) private sseService: EventSourceService,
         @Inject( FrontendPublisherService ) private frontendPublisher: FrontendPublisherService,
         @Inject( BackendPublisherService ) private backendPublisher: BackendPublisherService,
     ) {
         this.topicUri = `${context.backendURL}/test-multiplayer-lobby/subscribe`;
+        this.sseClient$ = this.sseService.createNgxSseClientStream( this.topicUri, this.sseResponseType );
     }
     
     ngOnInit(): void
     {
-        this.subscribeToMercureTopic();
-    }
-    
-    subscribeToMercureTopic(): void
-    {
-        this.sseService.createNgxSseClientStream( this.topicUri );
+        
     }
     
     testMultiplayerLobby(): void
@@ -52,9 +51,8 @@ export class TestMultiplayerLobby implements OnInit
             // alert( `MercureToken: ${JSON.stringify( jwt )}` );
             // this.openDebugWindow( jwt.token );
             
-            this.frontendPublisher.sendToTestMultiplayerLobbyTopic( this.topicUri, jwt.token ).subscribe( ( message: MessageData ) => {
-                alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
-            });
+            this.frontendPublisher.sendToTestMultiplayerLobbyTopic( this.topicUri, jwt.token )
+                                    .subscribe( response => alert( `Mercure Response Recieved: ${response}` ) );
         });
     }
     

@@ -1,16 +1,13 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
-import { Observable, Subscriber, map } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
-import { Topic, MessageData } from '@vankosoft/game-platform';
+import { MessageData } from '@vankosoft/game-platform';
 
 import { AuthService } from '../auth.service';
-import { User } from './models';
 
 import { AppConstants } from "../../constants";
 const { context } = require( '../../context' );
-
-declare var $: any;
 
 @Injectable({
     providedIn: 'root'
@@ -56,16 +53,25 @@ export class FrontendPublisherService
     /**
      * https://mercure.rocks/docs/concepts/publishing#publishing-to-mercure-from-nodejs
      */
-    sendToTestMultiplayerLobbyTopic( topicUri: string, token: string ): Observable<MessageData>
+    sendToTestMultiplayerLobbyTopic( topicUri: string, token: string ): Observable<any> // Observable<MessageData>
     {
-        const headers = ( new HttpHeaders() ).set( "Authorization", `Bearer ${token}` );
+        let message: MessageData = {
+            status: 'ok',
+            message: 'Sent to TestMultiplayerLobbyTopic',
+        };
         
-        var url = `${this.url}/test-mercure/send-to-test-subscribing-topic`;
-        alert( `sendToTestMultiplayerLobby URL: ${url}` );
+        let headers = {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/x-www-form-urlencoded",
+        };
         
-        return this.httpClient.get<MessageData>( url, {headers} ).pipe(
-            map( ( response: any ) => this.mapMessageData( response ) )
-        );
+        let body = new URLSearchParams({
+            topic: `${topicUri}`,
+            data: JSON.stringify( message ),
+        });
+        
+        // alert( 'Send To Test Multiplayer Lobby Topic' );
+        return this.httpClient.post( `${context.mercureHost}`, body, {headers, responseType: 'text'} );
     }
     
     /**
@@ -85,7 +91,7 @@ export class FrontendPublisherService
     
     private mapMessageData( response: any )
     {
-        alert( `MessageData: ${JSON.stringify( response )}` );
+        alert( `MessageData Recieved: ${JSON.stringify( response )}` );
         if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
             let message: MessageData = {
                 status: response.status,
@@ -96,5 +102,13 @@ export class FrontendPublisherService
         }
         
         return response.message;
+    }
+    
+    private mapMercureResponse( response: any )
+    {
+        alert( `Mercure Response Recieved: ${response}` );
+        // alert( `Mercure Response Recieved: ${JSON.stringify( response )}` );
+        
+        return response;
     }
 }

@@ -5,6 +5,7 @@ import {
     Output,
     OnInit
 } from '@angular/core';
+import { Observable } from 'rxjs';
 
 import { TranslateService } from '@ngx-translate/core';
 import { GetTrumps, GetAnnounceSymbol } from '@vankosoft/game-platform';
@@ -16,7 +17,7 @@ import { Helper } from '@vankosoft/game-platform';
 import { BidTrump } from '@vankosoft/game-platform';
 import { AuthService } from '../../../services/auth.service';
 import { GameService } from '../../../services/game.service'
-import { EventSourceServiceTest } from '../../../services/event-source.service-test';
+import { EventSourceService } from '../../../services/event-source.service';
 import { BackendPublisherService } from '../../../services/debug-sse/backend-publisher.service'
 
 import { IPlayer } from '@vankosoft/game-platform';
@@ -50,21 +51,25 @@ export class GameRoomsTableTestComponent implements OnInit
     gameRooms: IGameRoom[] | undefined;
     gameCategorySlug: string = 'debug-games';
     
+    sseClient$: Observable<Event>;
+    topicUri: string;
+    sseResponseType: string = 'text';
+    
     constructor(
         @Inject( TranslateService ) private translateService: TranslateService,
         @Inject( AuthService ) private authService: AuthService,
         @Inject( GameService ) private gameService: GameService,
         @Inject( BackendPublisherService ) private backendPublisher: BackendPublisherService,
-        @Inject( EventSourceServiceTest ) private sseService: EventSourceServiceTest,
+        @Inject( EventSourceService ) private sseService: EventSourceService,
         @Inject( NgbModal ) private ngbModal: NgbModal,
     ) {
-        
+        this.topicUri = `${context.backendURL}/${window.gamePlatformSettings.gameSlug}`;
+        this.sseClient$ = this.sseService.createNgxSseClientStream( this.topicUri, this.sseResponseType );
     }
     
     ngOnInit(): void
     {
         this.loadGameRooms();
-        this.subscribeToMercureTopic();
     }
     
     loadGameRooms(): void
@@ -84,34 +89,6 @@ export class GameRoomsTableTestComponent implements OnInit
         const res: boolean = room.players.some( player => player.name === this?.currentPlayer?.name );
         
         return res;
-    }
-    
-    subscribeToMercureTopic(): void
-    {
-        const topicUri = `${context.backendURL}/${window.gamePlatformSettings.gameSlug}`;
-        
-        this.sseService.createNgxSseClientStream( topicUri );
-        
-        /*
-        const mercureEventSource: string = '';
-        this.eventSourceSubscription = this.eventSourceService.createNativeSseClientStream(
-            topicUri,
-            { withCredentials: false },
-            ['GamePlayRoomUpdate']
-        )
-        
-        if ( this.eventSourceSubscription ) {
-            this.eventSourceSubscription.subscribe({
-                next: ( data: any ) => {
-                    let action: IMercureAction  = JSON.parse( data.data );
-                    this.updateRooms( action );
-                },
-                error: ( error: any ) => {
-                    console.log( error );
-                }
-            });
-        }
-        */
     }
     
     joinRoom( room: IGameRoom ): void

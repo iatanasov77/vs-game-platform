@@ -36,25 +36,31 @@ export class GameRoomsComponent implements OnInit, OnDestroy
     
     gameRooms: IGameRoom[] | undefined;
     
+    sseClient$: Observable<Event>;
+    topicUri: string;
+    sseResponseType: string = 'text';
+    
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,
         @Inject( GameService ) private gameService: GameService,
-        @Inject( EventSourceService ) private eventSourceService: EventSourceService,
+        @Inject( EventSourceService ) private sseService: EventSourceService,
         @Inject( Store ) private store: Store,
         @Inject( Actions ) private actions$: Actions
-    ) { }
+    ) {
+        this.topicUri = `${context.backendURL}/${window.gamePlatformSettings.gameSlug}`;
+        this.sseClient$ = this.sseService.createNgxSseClientStream( this.topicUri, this.sseResponseType );
+    }
     
     ngOnInit(): void
     {
         this.loadGameRooms();
-        this.subscribeToMercureTopic();
     }
     
     ngOnDestroy(): void
     {
         if ( this.eventSourceSubscription ) {
             this.eventSourceSubscription.unsubscribe();
-            this.eventSourceService.close();
+            // this.sseService.close();
         }
     }
     
@@ -75,33 +81,5 @@ export class GameRoomsComponent implements OnInit, OnDestroy
             this.showSpinner    = false;
             this.gameRooms      = rooms;
         });
-    }
-    
-    subscribeToMercureTopic(): void
-    {
-        const topicUri = `${context.backendURL}/${window.gamePlatformSettings.gameSlug}`;
-        
-        this.eventSourceService.createNgxSseClientStream( topicUri );
-        
-        /*
-        const mercureEventSource: string = '';
-        this.eventSourceSubscription = this.eventSourceService.createNativeSseClientStream(
-            topicUri,
-            { withCredentials: false },
-            ['GamePlayRoomUpdate']
-        )
-        
-        if ( this.eventSourceSubscription ) {
-            this.eventSourceSubscription.subscribe({
-                next: ( data: any ) => {
-                    let action: IMercureAction  = JSON.parse( data.data );
-                    this.updateRooms( action );
-                },
-                error: ( error: any ) => {
-                    console.log( error );
-                }
-            });
-        }
-        */
     }
 }

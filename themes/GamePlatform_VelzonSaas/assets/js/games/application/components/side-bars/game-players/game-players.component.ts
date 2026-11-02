@@ -5,7 +5,7 @@ import { EventSourceService } from '../../../services/event-source.service';
 
 import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
-import { map, merge } from 'rxjs';
+import { Observable, map, merge } from 'rxjs';
 
 import { IPlayer } from '@vankosoft/game-platform';
 import { IMercureAction } from '@vankosoft/game-platform';
@@ -35,25 +35,31 @@ export class GamePlayersComponent implements OnInit, OnDestroy
     showSpinner = true;
     players: null | IPlayer[] = null;
     
+    sseClient$: Observable<Event>;
+    topicUri: string;
+    sseResponseType: string = 'text';
+    
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,
         @Inject( GameService ) private gameService: GameService,
-        @Inject( EventSourceService ) private eventSourceService: EventSourceService,
+        @Inject( EventSourceService ) private sseService: EventSourceService,
         @Inject( Store ) private store: Store,
         @Inject( Actions ) private actions$: Actions
-    ) { }
+    ) {
+        this.topicUri = `${context.backendURL}/${window.gamePlatformSettings.gameSlug}`;
+        this.sseClient$ = this.sseService.createNgxSseClientStream( this.topicUri, this.sseResponseType );
+    }
     
     ngOnInit(): void
     {
         this.loadPlayers();
-        this.subscribeToMercureTopic();
     }
     
     ngOnDestroy(): void
     {
         if ( this.eventSourceSubscription ) {
             this.eventSourceSubscription.unsubscribe();
-            this.eventSourceService.close();
+            // this.sseService.close();
         }
     }
     
@@ -72,33 +78,5 @@ export class GamePlayersComponent implements OnInit, OnDestroy
             this.showSpinner    = false;
             this.players  = players;
         });
-    }
-    
-    subscribeToMercureTopic(): void
-    {
-        const topicUri = `${context.backendURL}/${window.gamePlatformSettings.gameSlug}`;
-        
-        this.eventSourceService.createNgxSseClientStream( topicUri );
-        
-        /*  
-        const mercureEventSource: string = '';
-        this.eventSourceSubscription = this.eventSourceService.createNativeSseClientStream(
-            topicUri,
-            { withCredentials: false },
-            ['activeConnectionUpdate']
-        )
-        
-        if ( this.eventSourceSubscription ) {
-            this.eventSourceSubscription.subscribe({
-                next: ( data: any ) => {
-                    let action: IMercureAction  = JSON.parse( data.data );
-                    this.updatePlayers( action );
-                },
-                error: ( error: any ) => {
-                    console.log( error );
-                }
-            });
-        }
-        */
     }
 }

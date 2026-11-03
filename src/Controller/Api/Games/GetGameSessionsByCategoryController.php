@@ -15,6 +15,8 @@ use App\Entity\GamePlay;
 
 class GetGameSessionsByCategoryController extends AbstractController
 {
+    use GameRoomResponseTrait;
+    
     /** @var MercureLogger */
     private $logger;
     
@@ -62,57 +64,16 @@ class GetGameSessionsByCategoryController extends AbstractController
         
         $rooms = [];
         foreach ( $sessions as $room ) {
-            $rooms[] = [
-                'id'        => $room->getId(),
-                'owner'     => $room->getOwner()->getName(),
-                'guid'      => $room->getGuid(),
-                'name'      => $room->getGuid(),
-                
-                'game'      => $this->_getRoomGame( $room ),
-                'players'   => $this->_getRoomPlayers( $room ),
-                'teams'     => $this->_getRoomTeams( $room ),
-                
-                'status'    => $room->getStatus(),
-                'isPlaying' => $room->getStatus() == GamePlatform::GAME_ROOM_STATUS_PLAYING,
-            ];
+            $rooms[] = $this->createResponseBody( $room, $this->_getRoomTeams( $room ) );
         }
         
         return $rooms;
     }
     
-    private function _getRoomGame( GamePlay $room ): array
-    {
-        $game   = [
-            'id'            => $room->getGame()->getId(),
-            'slug'          => $room->getGame()->getSlug(),
-            'title'         => $room->getGame()->getTitle(),
-            'maxPlayers'    => $room->getGame()->getMaxPlayers(),
-        ];
-        
-        return $game;
-    }
-    
-    private function _getRoomPlayers( GamePlay $room ): array
-    {
-        $players = [];
-        foreach ( $room->getGamePlayers() as $player ) {
-            $players[] = [
-                'id'    => $player->getId(),
-                'type'  => $player->getType(),
-                'name'  => $player->getName(),
-            ];
-        }
-        
-        return $players;
-    }
-    
     private function _getRoomTeams( GamePlay $room ): array
     {
         $teams = $this->gameTeamService->createGameTeam( $room );
-        /*  
-        $json = $this->serializer->serialize( $teams, JsonEncoder::FORMAT );
-        $this->logger->log( "Game Room Teams: {$json}", 'GameManager' );
-        */
+        
         $teamsResponse = [];
         foreach ( $teams as $team ) {
             $teamsResponse[] = $team;

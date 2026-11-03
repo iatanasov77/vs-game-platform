@@ -5,11 +5,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 
-use App\Component\GamePlatform;
-use App\Entity\GamePlay;
-
 class GetGamePlayByGameController extends AbstractController
 {
+    use GameRoomResponseTrait;
+    
     /** @var RepositoryInterface */
     private $gamesRepository;
     
@@ -36,46 +35,9 @@ class GetGamePlayByGameController extends AbstractController
         
         $rooms = [];
         foreach ( $sessions as $room ) {
-            $rooms[] = [
-                'id'        => $room->getId(),
-                'owner'     => $room->getOwner()->getName(),
-                'guid'      => $room->getGuid(),
-                'name'      => $room->getGuid(),
-                
-                'game'      => $this->_getRoomGame( $room ),
-                'players'   => $this->_getRoomPlayers( $room ),
-                
-                'status'    => $room->getStatus(),
-                'isPlaying' => $room->getStatus() == GamePlatform::GAME_ROOM_STATUS_PLAYING,
-            ];
+            $rooms[] = $this->createResponseBody( $room );
         }
         
         return $rooms;
-    }
-    
-    private function _getRoomGame( GamePlay $room ): array
-    {
-        $game   = [
-            'id'            => $room->getGame()->getId(),
-            'slug'          => $room->getGame()->getSlug(),
-            'title'         => $room->getGame()->getTitle(),
-            'maxPlayers'    => $room->getGame()->getMaxPlayers(),
-        ];
-        
-        return $game;
-    }
-    
-    private function _getRoomPlayers( GamePlay $room ): array
-    {
-        $players = [];
-        foreach ( $room->getGamePlayers() as $player ) {
-            $players[] = [
-                'id'    => $player->getId(),
-                'type'  => $player->getType(),
-                'name'  => $player->getName(),
-            ];
-        }
-        
-        return $players;
     }
 }

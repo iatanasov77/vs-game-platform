@@ -6,7 +6,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 use Vankosoft\ApplicationBundle\Component\Status;
 use App\Component\GameService;
-use App\Entity\GamePlay;
 
 class SelectGameRoomController extends AbstractController
 {

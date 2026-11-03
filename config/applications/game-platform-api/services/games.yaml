@@ -18,6 +18,16 @@ services:
         autowire: true
         autoconfigure: true
     
+    app_mercure_publisher:
+        class: App\Component\ServerSentEvent\MercurePublisher
+        public: true
+        arguments:
+            - '@app_mercure_logger'
+            - '@serializer'
+            - '@mercure.hub.default'
+            - '@Symfony\Component\Mercure\Discovery'
+            - '@Symfony\Component\Mercure\Authorization'
+    
     app_game_team:
         class: App\Component\GameTeam
         public: true

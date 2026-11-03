@@ -34,6 +34,7 @@ services:
         public: true
         arguments:
             - '@app_mercure_logger'
+            - '@serializer'
             - '@mercure.hub.default'
             - '@Symfony\Component\Mercure\Discovery'
             - '@Symfony\Component\Mercure\Authorization'

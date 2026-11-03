@@ -94,24 +94,17 @@ services:
         autowire: true
         arguments:
             - '@doctrine'
+            - '@app_mercure_publisher'
             - '@vsapp.repository.game_sessions'
             - '@vsapp.factory.game_sessions'
-            - '@mercure.hub.default'
         
     App\Controller\Api\Games\FinishGameController:
         tags: ['controller.service_arguments']
         autowire: true
         arguments:
             - '@doctrine'
+            - '@app_mercure_publisher'
             - '@vsapp.repository.game_sessions'
-            - '@mercure.hub.default'
-    
-    App\Controller\Api\MercureController:
-        tags: ['controller.service_arguments']
-        autowire: true
-        arguments:
-            - '@doctrine'
-            - '@mercure.hub.default'
     
     App\Controller\Api\GenerateMercureTokenController:
         tags: ['controller.service_arguments']
@@ -127,7 +120,6 @@ services:
             - '@vs_users.security_bridge'
             - '@vs_users.repository.users'
             - '@vsapp.factory.game_sessions'
-            - '@mercure.hub.default'
             - '@liip_imagine.cache.manager'
     
     App\Controller\Api\TestMercurePublishController:
@@ -135,7 +127,7 @@ services:
         autowire: true
         arguments:
             - '@doctrine'
-            - '@mercure.hub.default'
+            - '@app_mercure_publisher'
             - '@vs_users.security_bridge'
             - '@app_mercure_logger'
             - '@vsapp.repository.games'

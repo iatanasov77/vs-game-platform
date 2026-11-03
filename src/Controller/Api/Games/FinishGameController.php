@@ -3,32 +3,30 @@
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Mercure\HubInterface;
-use Symfony\Component\Mercure\Update;
 use Doctrine\Persistence\ManagerRegistry;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Vankosoft\ApplicationBundle\Component\Status;
-use App\Entity\GamePlay;
+use App\Component\ServerSentEvent\MercurePublisher;
 
 class FinishGameController extends AbstractController
 {
     /** @var ManagerRegistry */
     private $doctrine;
     
+    /** @var MercurePublisher */
+    private $mercurePublisher;
+    
     /** @var RepositoryInterface */
     private $gamePlayRepository;
     
-    /** @var HubInterface */
-    private $hub;
-    
     public function __construct(
         ManagerRegistry $doctrine,
-        RepositoryInterface $gamePlayRepository,
-        HubInterface $hub
+        MercurePublisher $mercurePublisher,
+        RepositoryInterface $gamePlayRepository
     ) {
         $this->doctrine             = $doctrine;
+        $this->mercurePublisher     = $mercurePublisher;
         $this->gamePlayRepository   = $gamePlayRepository;
-        $this->hub                  = $hub;
     }
     
     public function finishGameAction( $gamePlayId, Request $request ): JsonResponse
@@ -41,7 +39,8 @@ class FinishGameController extends AbstractController
         $em->persist( $gamePlay );
         $em->flush();
         
-        $this->publishGamePlay( $gamePlay );
+        // This Method Should Be Replaced with App\Component\ServerSentEvent\MercurePublisher
+        // $this->publishGamePlay( $gamePlay );
         
         return new JsonResponse([
             'status'    => Status::STATUS_OK,
@@ -49,28 +48,5 @@ class FinishGameController extends AbstractController
                 'id'        => $gamePlay->getId(),
             ],
         ]);
-    }
-    
-    private function publishGamePlay( GamePlay $gamePlay ): void
-    {
-        if ( $gamePlay->getGame()->getSlug() == 'backgammon' ) {
-            return;
-        }
-        
-        $publishData    = json_encode([
-            'type'      => 'GamePlayRoomUpdate',
-            'action'    => 'FinishGame',
-            'target'    => $gamePlay->getGameRoom(),
-        ]);
-        
-        $update = new Update(
-            '/game-play',
-            $publishData,
-            false,
-            null,
-            'GamePlayRoomUpdate'
-        );
-        
-        $this->hub->publish( $update );
     }
 }

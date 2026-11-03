@@ -68,8 +68,8 @@ export class TestSubscribingComponent implements OnInit
     {
         this.backendPublisher.sendTestMessage( this.topicUri ).subscribe (
             ( e: MessageData ) => {
-                console.log( 'Message received: ' + e.message );
-                alert( `Message received: ${JSON.stringify( e )}` );
+                // console.log( 'Message received: ' + e.message );
+                // alert( `Message received: ${JSON.stringify( e )}` );
             }
         );
     }

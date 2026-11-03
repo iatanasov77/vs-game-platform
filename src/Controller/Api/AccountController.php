@@ -4,15 +4,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-use Symfony\Component\Mercure\HubInterface;
-use Symfony\Component\Mercure\Update;
 use Doctrine\Persistence\ManagerRegistry;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Vankosoft\UsersBundle\Security\SecurityBridge;
 use Vankosoft\ApplicationBundle\Component\Status;
-use App\Entity\GamePlay;
 
 class AccountController extends AbstractController
 {
@@ -28,9 +25,6 @@ class AccountController extends AbstractController
     /** @var FactoryInterface */
     private $gamePlayFactory;
     
-    /** @var HubInterface */
-    private $hub;
-    
     /** @var CacheManager */
     private $imagineCacheManager;
     
@@ -39,14 +33,12 @@ class AccountController extends AbstractController
         SecurityBridge $vsSecurityBridge,
         RepositoryInterface $usersRepository,
         FactoryInterface $gamePlayFactory,
-        HubInterface $hub,
         CacheManager $imagineCacheManager
     ) {
         $this->doctrine             = $doctrine;
         $this->vsSecurityBridge     = $vsSecurityBridge;
         $this->usersRepository      = $usersRepository;
         $this->gamePlayFactory      = $gamePlayFactory;
-        $this->hub                  = $hub;
         $this->imagineCacheManager  = $imagineCacheManager;
     }
     

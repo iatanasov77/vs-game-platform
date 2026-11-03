@@ -55,7 +55,7 @@ export class DebugSsePageComponent implements OnInit, OnDestroy
         
         if ( ! this.authService.getAuth() && window.gamePlatformSettings.apiVerifySiganature.length ) {
             this.authSubs = this.authService.loginBySignature( window.gamePlatformSettings.apiVerifySiganature  ).subscribe( ( auth ) => {
-                alert( `Login By Signature Response: ${JSON.stringify( auth )}` );
+                // alert( `Login By Signature Response: ${JSON.stringify( auth )}` );
             });
         }
     }

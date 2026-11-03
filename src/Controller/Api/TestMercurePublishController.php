@@ -10,7 +10,9 @@ use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Vankosoft\ApplicationBundle\Component\Status;
 use Vankosoft\UsersBundle\Security\SecurityBridge;
+use App\Component\ServerSentEvent\MercurePublisher;
 use App\Component\Logger\MercureLogger;
+use App\Controller\Api\Games\GameRoomResponseTrait;
 
 // Types
 use App\Component\GamePlatform;
@@ -26,11 +28,13 @@ use App\Entity\TempPlayer;
 
 class TestMercurePublishController
 {
+    use GameRoomResponseTrait;
+    
     /** @var ManagerRegistry */
     private $doctrine;
     
-    /** @var HubInterface */
-    private $hub;
+    /** @var MercurePublisher */
+    private $mercurePublisher;
     
     /** @var SecurityBridge */
     private $vsSecurityBridge;
@@ -55,7 +59,7 @@ class TestMercurePublishController
     
     public function __construct(
         ManagerRegistry $doctrine,
-        HubInterface $hub,
+        MercurePublisher $mercurePublisher,
         SecurityBridge $vsSecurityBridge,
         MercureLogger $logger,
         RepositoryInterface $gameRepository,
@@ -65,7 +69,7 @@ class TestMercurePublishController
         FactoryInterface $tempPlayersFactory,
     ) {
         $this->doctrine             = $doctrine;
-        $this->hub                  = $hub;
+        $this->mercurePublisher     = $mercurePublisher;
         $this->vsSecurityBridge     = $vsSecurityBridge;
         $this->logger               = $logger;
         $this->gameRepository       = $gameRepository;
@@ -78,16 +82,7 @@ class TestMercurePublishController
     public function sendTestMessageAction( Request $request ): JsonResponse
     {
         $postData = \json_decode( $request->getContent(), true );
-        $publishData    = json_encode([
-            'status'   => 'checked out',
-        ]);
-        
-        $update = new Update(
-            $postData['topic'],
-            $publishData,
-        );
-        
-        $this->hub->publish( $update );
+        $this->mercurePublisher->publishData( $postData['topic'], ['status' => 'checked out'] );
         
         $response   = [
             'status'    => Status::STATUS_OK,
@@ -104,6 +99,10 @@ class TestMercurePublishController
         } else {
             $loby = $this->_createBoardGameLobby();
         }
+        
+        $postData = \json_decode( $request->getContent(), true );
+        $gamePlay = $this->createResponseBody( $loby );
+        $this->mercurePublisher->publishData( $postData['topic'], $gamePlay );
         
         $response   = [
             'status'    => Status::STATUS_OK,

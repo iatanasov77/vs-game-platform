@@ -1,3 +1,19 @@
+2.0.3	|	Release date: **03.11.2026**
+============================================
+* New Features:
+  - Create Test Mercure Publish with Backend Controller.
+  - Improve Test SSE.
+  - Add a Game Rooms Table into Test SSE Page.
+  - Fix Frontend Components to use players Array.
+  - Fix CardGameManger Trick Winner.
+  - Fix Mercure Configs.
+  - Create a Game Rooms Table Angular Argument.
+  - Create Join and Leave Game Room in Test Mercure Page.
+  - Refactoring of Angular Mercure Serice.
+  - Some Improvements.
+  - Use GameRoomResponseTrait in All API Controllers.
+
+
 2.0.2	|	Release date: **27.10.2026**
 ============================================
 * New Features:

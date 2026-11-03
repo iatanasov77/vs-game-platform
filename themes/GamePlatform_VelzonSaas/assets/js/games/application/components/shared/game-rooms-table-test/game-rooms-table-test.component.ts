@@ -63,13 +63,15 @@ export class GameRoomsTableTestComponent implements OnInit
         @Inject( EventSourceService ) private sseService: EventSourceService,
         @Inject( NgbModal ) private ngbModal: NgbModal,
     ) {
-        this.topicUri = `${context.backendURL}/${window.gamePlatformSettings.gameSlug}`;
+        this.topicUri = `${context.backendURL}/test-multiplayer-lobby/${window.gamePlatformSettings.gameSlug}`;
         this.sseClient$ = this.sseService.createNgxSseClientStream( this.topicUri, this.sseResponseType );
     }
     
     ngOnInit(): void
     {
         this.loadGameRooms();
+        
+        this.sseClient$.subscribe( this.handleSseResponse.bind( this ) );
     }
     
     loadGameRooms(): void
@@ -117,5 +119,10 @@ export class GameRoomsTableTestComponent implements OnInit
         modalRef.componentInstance.closeModal.subscribe( () => {
             modalRef.dismiss();
         });
+    }
+    
+    private handleSseResponse( data: any )
+    {
+        alert( `GameRoomsTableTest Message: ${data}` );
     }
 }

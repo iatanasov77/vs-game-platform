@@ -56,7 +56,7 @@ export class TestSubscribingComponent implements OnInit
     {
         this.authService.generateMercureToken().subscribe( ( jwt: MercureJwt ) => {
             // alert( `MercureToken: ${JSON.stringify( jwt )}` );
-            this.openDebugWindow( jwt.token );
+            // this.openDebugWindow( jwt.token );
             
             this.frontendPublisher.sendToTestSubscribingTopic( this.topicUri, jwt.token ).then( ( data ) => {
                 alert( `Publish to Test Subscribing Component. Response: ${JSON.stringify( data )}` );
@@ -72,6 +72,13 @@ export class TestSubscribingComponent implements OnInit
                 alert( `Message received: ${JSON.stringify( e )}` );
             }
         );
+    }
+    
+    testGenerateMercureToken(): void
+    {
+        this.authService.generateMercureToken().subscribe( ( jwt: MercureJwt ) => {
+            this.openDebugWindow( jwt.token );
+        });
     }
     
     openDebugWindow( debugText: string ): void

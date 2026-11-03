@@ -51,8 +51,10 @@ export class TestMultiplayerLobby implements OnInit
             // alert( `MercureToken: ${JSON.stringify( jwt )}` );
             // this.openDebugWindow( jwt.token );
             
-            this.frontendPublisher.sendToTestMultiplayerLobbyTopic( this.topicUri, jwt.token )
-                                    .subscribe( response => alert( `Mercure Response Recieved: ${response}` ) );
+            this.frontendPublisher.sendToTestMultiplayerLobbyTopic( this.topicUri, jwt.token ).subscribe( response => {
+                // Return URN (UUID/GUID)
+                alert( `TestMultiplayerLobby Response: ${response}` );
+            });
         });
     }
     

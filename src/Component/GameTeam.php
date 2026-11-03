@@ -14,12 +14,17 @@ final class GameTeam
     /** @var LiipImagineCacheManager */
     private $imagineCacheManager;
     
+    /** @var string */
+    private $joinGameRoute;
+    
     public function __construct(
         RouterInterface $router,
         LiipImagineCacheManager $imagineCacheManager,
+        $joinGameRoute
     ) {
         $this->router               = $router;
         $this->imagineCacheManager  = $imagineCacheManager;
+        $this->joinGameRoute         = $joinGameRoute;
     }
     
     public function createGameTeam( $room ): array
@@ -67,7 +72,7 @@ final class GameTeam
                 
                 break;
             case GamePlatform::GAME_TYPE_CARD_GAME_NO_TEAMS:
-                $team = [
+                return [
                     // new GameTeamPlayer(),
                 ];
                 
@@ -79,12 +84,12 @@ final class GameTeam
     
     private function createEmptyBoardGameTeam( $room ): array
     {
-        $joinBlackUrl = $this->router->generate( 'app_join_game_room_in_position', [
+        $joinBlackUrl = $this->router->generate( $this->joinGameRoute, [
             'roomId'    => $room->getId(),
             'position'  => PlayerColor::Black->toString()
         ]);
         
-        $joinWhiteUrl = $this->router->generate( 'app_join_game_room_in_position', [
+        $joinWhiteUrl = $this->router->generate( $this->joinGameRoute, [
             'roomId'    => $room->getId(),
             'position'  => PlayerColor::White->toString()
         ]);
@@ -103,22 +108,22 @@ final class GameTeam
     
     private function createEmptyCardGameTeam( $room ): array
     {
-        $joinSouthUrl = $this->router->generate( 'app_join_game_room_in_position', [
+        $joinSouthUrl = $this->router->generate( $this->joinGameRoute, [
             'roomId'    => $room->getId(),
             'position'  => PlayerPosition::South->toString()
         ]);
         
-        $joinNorthUrl = $this->router->generate( 'app_join_game_room_in_position', [
+        $joinNorthUrl = $this->router->generate( $this->joinGameRoute, [
             'roomId'    => $room->getId(),
             'position'  => PlayerPosition::North->toString()
         ]);
         
-        $joinEastUrl = $this->router->generate( 'app_join_game_room_in_position', [
+        $joinEastUrl = $this->router->generate( $this->joinGameRoute, [
             'roomId'    => $room->getId(),
             'position'  => PlayerPosition::East->toString()
         ]);
         
-        $joinWestUrl = $this->router->generate( 'app_join_game_room_in_position', [
+        $joinWestUrl = $this->router->generate( $this->joinGameRoute, [
             'roomId'    => $room->getId(),
             'position'  => PlayerPosition::West->toString()
         ]);

@@ -1,16 +1,13 @@
-import { Injectable, Inject, NgZone } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
-import { Observable, Subscriber, map } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
-import { Topic, MessageData } from '@vankosoft/game-platform';
+import { MessageData } from '@vankosoft/game-platform';
 
 import { AuthService } from '../auth.service';
-import { User } from './models';
 
 import { AppConstants } from "../../constants";
 const { context } = require( '../../context' );
-
-declare var $: any;
 
 @Injectable({
     providedIn: 'root'
@@ -18,15 +15,12 @@ declare var $: any;
 export class FrontendPublisherService
 {
     private url: string;
-    private eventSource: null | EventSource;
     
     constructor(
-        @Inject( NgZone ) private zone: NgZone,
         @Inject( HttpClient ) private httpClient: HttpClient,
         @Inject( AuthService ) private authService: AuthService,
     ) {
-        this.url            = `${context.backendURL}`;
-        this.eventSource    = null;
+        this.url = `${context.backendURL}`;
     }
     
     /**
@@ -41,7 +35,7 @@ export class FrontendPublisherService
         
         let body = new URLSearchParams({
             topic: `${topicUri}`,
-            data: JSON.stringify( { status: "checked out" } ),
+            data: JSON.stringify( { status: "sent to SubscribingTopic" } ),
         });
         
         const response = await fetch( `${context.mercureHost}`, {
@@ -59,16 +53,25 @@ export class FrontendPublisherService
     /**
      * https://mercure.rocks/docs/concepts/publishing#publishing-to-mercure-from-nodejs
      */
-    sendToTestMultiplayerLobby( token: string ): Observable<MessageData>
+    sendToTestMultiplayerLobbyTopic( topicUri: string, token: string ): Observable<any> // Observable<MessageData>
     {
-        const headers = ( new HttpHeaders() ).set( "Authorization", `${token}` );
+        let message: MessageData = {
+            status: 'ok',
+            message: 'Sent to TestMultiplayerLobbyTopic',
+        };
         
-        var url = `${this.url}/test-mercure/send-to-test-subscribing-topic`;
-        alert( `sendToTestMultiplayerLobby URL: ${url}` );
+        let headers = {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/x-www-form-urlencoded",
+        };
         
-        return this.httpClient.get<MessageData>( url, {headers} ).pipe(
-            map( ( response: any ) => this.mapMessageData( response ) )
-        );
+        let body = new URLSearchParams({
+            topic: `${topicUri}`,
+            data: JSON.stringify( message ),
+        });
+        
+        // alert( 'Send To Test Multiplayer Lobby Topic' );
+        return this.httpClient.post( `${context.mercureHost}`, body, {headers, responseType: 'text'} );
     }
     
     /**
@@ -88,7 +91,7 @@ export class FrontendPublisherService
     
     private mapMessageData( response: any )
     {
-        alert( `MessageData: ${response}` );
+        alert( `MessageData Recieved: ${JSON.stringify( response )}` );
         if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
             let message: MessageData = {
                 status: response.status,
@@ -99,5 +102,13 @@ export class FrontendPublisherService
         }
         
         return response.message;
+    }
+    
+    private mapMercureResponse( response: any )
+    {
+        alert( `Mercure Response Recieved: ${response}` );
+        // alert( `Mercure Response Recieved: ${JSON.stringify( response )}` );
+        
+        return response;
     }
 }

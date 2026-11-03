@@ -4,10 +4,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
-use App\Component\GamePlatform;
 
 class GetGamePlayByGameController extends AbstractController
 {
+    use GameRoomResponseTrait;
+    
     /** @var RepositoryInterface */
     private $gamesRepository;
     
@@ -22,21 +23,21 @@ class GetGamePlayByGameController extends AbstractController
     
     public function index( $gameSlug, Request $request ): JsonResponse
     {
-        $game       = $this->gamesRepository->findOneBy( ['slug' => $gameSlug] );
-        $rooms      = $this->gameSessionsRepository->findBy( ['game' => $game] );
-        $response   = [];
-        
-        foreach ( $rooms as $room ) {
-            $response[] = [
-                'id'        => $room->getId(),
-                'guid'      => $room->getGuid(),
-                'name'      => $room->getGuid(),
-                'players'   => $room->getGamePlayers(),
-                
-                'isPlaying' => $room->getStatus() == GamePlatform::GAME_ROOM_STATUS_PLAYING,
-            ];
-        }
+        $response   = $this->_getRooms( $gameSlug );
         
         return new JsonResponse( $response );
+    }
+    
+    private function _getRooms( $gameSlug ): array
+    {
+        $game       = $this->gamesRepository->findOneBy( ['slug' => $gameSlug] );
+        $sessions   = $this->gameSessionsRepository->findBy( ['game' => $game] );
+        
+        $rooms = [];
+        foreach ( $sessions as $room ) {
+            $rooms[] = $this->createResponseBody( $room );
+        }
+        
+        return $rooms;
     }
 }

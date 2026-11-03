@@ -1,0 +1,11 @@
+App\Entity\GamePlay:
+    attributes:
+        id:
+            groups: ['game:read']
+        owner:
+            max_depth: 1
+            groups: ['game:read']
+        guid:
+            groups: ['game:read']
+        name:
+            groups: ['game:read']

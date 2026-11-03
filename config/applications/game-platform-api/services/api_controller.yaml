@@ -71,6 +71,16 @@ services:
         autowire: true
         tags: ['controller.service_arguments']
     
+    App\Controller\Api\Games\GetGameSessionsByCategoryController:
+        arguments:
+            - '@app_mercure_logger'
+            - '@serializer'
+            - '@vsapp.repository.game_categories'
+            - '@vsapp.repository.game_sessions'
+            - '@app_game_team'
+        autowire: true
+        tags: ['controller.service_arguments']
+    
     App\Controller\Api\Games\RemoveAllGamePlayByGameController:
         arguments:
             - '@doctrine'
@@ -84,24 +94,17 @@ services:
         autowire: true
         arguments:
             - '@doctrine'
+            - '@app_mercure_publisher'
             - '@vsapp.repository.game_sessions'
             - '@vsapp.factory.game_sessions'
-            - '@mercure.hub.default'
         
     App\Controller\Api\Games\FinishGameController:
         tags: ['controller.service_arguments']
         autowire: true
         arguments:
             - '@doctrine'
+            - '@app_mercure_publisher'
             - '@vsapp.repository.game_sessions'
-            - '@mercure.hub.default'
-    
-    App\Controller\Api\MercureController:
-        tags: ['controller.service_arguments']
-        autowire: true
-        arguments:
-            - '@doctrine'
-            - '@mercure.hub.default'
     
     App\Controller\Api\GenerateMercureTokenController:
         tags: ['controller.service_arguments']
@@ -117,5 +120,18 @@ services:
             - '@vs_users.security_bridge'
             - '@vs_users.repository.users'
             - '@vsapp.factory.game_sessions'
-            - '@mercure.hub.default'
             - '@liip_imagine.cache.manager'
+    
+    App\Controller\Api\TestMercurePublishController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@doctrine'
+            - '@app_mercure_publisher'
+            - '@vs_users.security_bridge'
+            - '@app_mercure_logger'
+            - '@vsapp.repository.games'
+            - '@vsapp.factory.game_sessions'
+            - '@vsapp.repository.game_sessions'
+            - '@vsapp.repository.game_players'
+            - '@vsapp.factory.temp_players'

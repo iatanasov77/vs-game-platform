@@ -15,13 +15,17 @@ import styleString from './test-websocket-ratchet.component.scss';
 })
 export class TestWebsocketRatchetComponent implements OnInit
 {
+    ratchetServerExixts: boolean = false;
+    
     constructor(
         @Inject( TestRatchetService ) private wsRatchetService: TestRatchetService,
     ) { }
     
     ngOnInit(): void
     {
-        this.wsRatchetService.connect();
+        if( this.ratchetServerExixts ) {
+            this.wsRatchetService.connect();
+        }
     }
     
     testWebsocketRatchetMessage(): void

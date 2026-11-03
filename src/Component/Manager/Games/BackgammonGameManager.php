@@ -45,7 +45,7 @@ final class BackgammonGameManager extends BoardGameManager
             $this->logger->log( "Connecting Black Player ...", 'GameManager' );
             $this->Clients->set( PlayerColor::Black->value, $webSocket );
             
-            $this->InitializePlayer( $dbUser, false, $this->Game->BlackPlayer );
+            $this->InitializePlayer( $dbUser, false, $this->Game->Players[PlayerColor::Black->value] );
             if ( $this->Game->IsGoldGame ) {
                 $this->Game->Stake = self::firstBet * 2;
             }
@@ -54,7 +54,7 @@ final class BackgammonGameManager extends BoardGameManager
                 $this->logger->log( "Play AI is TRUE !!!", 'GameManager' );
                 
                 $aiUser = $this->playersRepository->findOneBy( ['guid' => GamePlayer::AiUser] );
-                $this->InitializePlayer( $aiUser, true, $this->Game->WhitePlayer );
+                $this->InitializePlayer( $aiUser, true, $this->Game->Players[PlayerColor::White->value] );
                 
                 $this->Engine = AiEngineFactory::CreateAiEngine(
                     $this->GameCode,
@@ -76,7 +76,7 @@ final class BackgammonGameManager extends BoardGameManager
             }
             $this->Clients->set( PlayerColor::White->value, $webSocket );
             
-            $this->InitializePlayer( $dbUser, false, $this->Game->WhitePlayer );
+            $this->InitializePlayer( $dbUser, false, $this->Game->Players[PlayerColor::White->value] );
             
             $this->CreateDbGame();
             $this->StartGame();
@@ -152,9 +152,9 @@ final class BackgammonGameManager extends BoardGameManager
             $action = $this->serializer->deserialize( $actionText, MovesMadeActionDto::class, JsonEncoder::FORMAT );
             
             if ( $socket == $this->Clients->get( PlayerColor::Black->value ) ) {
-                $this->Game->BlackPlayer->FirstMoveMade = true;
+                $this->Game->Players[PlayerColor::Black->value]->FirstMoveMade = true;
             } else {
-                $this->Game->WhitePlayer->FirstMoveMade = true;
+                $this->Game->Players[PlayerColor::White->value]->FirstMoveMade = true;
             }
             
             $this->DoMoves( $action );
@@ -307,24 +307,24 @@ final class BackgammonGameManager extends BoardGameManager
     protected function DoDoubling(): void
     {
         $this->Game->GoldMultiplier *= 2;
-        $this->Game->BlackPlayer->Gold -= $this->Game->Stake / 2;
-        $this->Game->WhitePlayer->Gold -= $this->Game->Stake / 2;
+        $this->Game->Players[PlayerColor::Black->value]->Gold -= $this->Game->Stake / 2;
+        $this->Game->Players[PlayerColor::White->value]->Gold -= $this->Game->Stake / 2;
         
-        if ( $this->Game->WhitePlayer->Gold < 0 || $this->Game->BlackPlayer->Gold < 0 ) {
+        if ( $this->Game->Players[PlayerColor::White->value]->Gold < 0 || $this->Game->Players[PlayerColor::Black->value]->Gold < 0 ) {
             throw new \RuntimeException( "Player out of gold. Should not be allowd." );
         }
         
-        $blackUser = $this->playersRepository->find( $this->Game->BlackPlayer->Id );
-        $whiteUser = $this->playersRepository->find( $this->Game->WhitePlayer->Id );
+        $blackUser = $this->playersRepository->find( $this->Game->Players[PlayerColor::Black->value]->Id );
+        $whiteUser = $this->playersRepository->find( $this->Game->Players[PlayerColor::White->value]->Id );
         
         $em = $this->doctrine->getManager();
         if ( ! $this->IsAi( $blackUser->getGuid() ) ) { // gold for ai remains in the db
-            $blackUser->setGold( $this->Game->BlackPlayer->Gold ); // non gold games guarded earlier in block.
+            $blackUser->setGold( $this->Game->Players[PlayerColor::Black->value]->Gold ); // non gold games guarded earlier in block.
             $em->persist( $blackUser );
         }
         
         if ( ! $this->IsAi( $whiteUser->getGuid() ) ) {
-            $whiteUser->setGold( $this->Game->WhitePlayer->Gold );
+            $whiteUser->setGold( $this->Game->Players[PlayerColor::White->value]->Gold );
             $em->persist( $whiteUser );
         }
         $em->flush();
@@ -352,12 +352,12 @@ final class BackgammonGameManager extends BoardGameManager
         )->toArray();
         $rollAction->moveTimer = Game::ClientCountDown;
         
-        if ( $this->Clients->get( PlayerColor::Black->value ) && ! $this->Game->BlackPlayer->IsAi() ) {
+        if ( $this->Clients->get( PlayerColor::Black->value ) && ! $this->Game->Players[PlayerColor::Black->value]->IsAi() ) {
             $this->logger->log( "Sending NewRoll to Client1 !!!", 'NewRoll' );
             $this->Send( $this->Clients->get( PlayerColor::Black->value ), $rollAction );
         }
         
-        if ( $this->Clients->get( PlayerColor::White->value ) && ! $this->Game->WhitePlayer->IsAi() ) {
+        if ( $this->Clients->get( PlayerColor::White->value ) && ! $this->Game->Players[PlayerColor::White->value]->IsAi() ) {
             $this->logger->log( "Sending NewRoll to Client2 !!!", 'NewRoll' );
             $this->Send( $this->Clients->get( PlayerColor::White->value ), $rollAction );
         }
@@ -441,9 +441,9 @@ final class BackgammonGameManager extends BoardGameManager
         }
         
         if ( $this->Game->CurrentPlayer == PlayerColor::Black ) {
-            $this->Game->BlackPlayer->FirstMoveMade = true;
+            $this->Game->Players[PlayerColor::Black->value]->FirstMoveMade = true;
         } else {
-            $this->Game->WhitePlayer->FirstMoveMade = true;
+            $this->Game->Players[PlayerColor::White->value]->FirstMoveMade = true;
         }
         
         $noMoves = false;

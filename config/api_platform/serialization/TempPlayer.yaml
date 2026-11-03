@@ -1,0 +1,12 @@
+App\Entity\TempPlayer:
+    attributes:
+        id:
+            groups: ['game:read']
+        guid:
+            groups: ['game:read']
+        name:
+            groups: ['game:read']
+        color:
+            groups: ['game:read']
+        position:
+            groups: ['game:read']

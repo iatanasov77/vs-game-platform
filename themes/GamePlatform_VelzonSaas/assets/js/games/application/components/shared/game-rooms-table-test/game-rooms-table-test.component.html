@@ -1,0 +1,62 @@
+<table class="table table-striped game-rooms-table">
+    <thead>
+        <tr>
+            <th scope="col"></th>
+            <th scope="col">Owner</th>
+            <th scope="col">Guid</th>
+            <th scope="col">Game</th>
+            <th scope="col">Players Addition</th>
+            <th scope="col">Players</th>
+            <th scope="col">Status</th>
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <ng-container *ngFor="let room of gameRooms; let idx = index">
+            <tr>
+                <th>{{ idx + 1 }}</th>
+                <td>{{ room.owner }}</td>
+                <td>
+                    <span
+                        ngbTooltip="{{ room.guid }}" placement="top"
+                    >
+                        {{ room.guid | slice: 0:15}} {{ room.guid.length > 15 ? '...' : ''}}
+                    </span>
+                </td>
+                <td>{{ room.game.title }}</td>
+                <td>{{ room.players.length }} / {{ room.game.maxPlayers }}</td>
+                <td>
+                    <div class="cell-players observers">
+                        <!-- Manual: https://v20.angular.dev/api/common/KeyValuePipe -->
+                        <ng-container *ngFor="let team of room.teams; let last = last;">
+                            <ng-container *ngFor="let player of team | keyvalue;">
+                                <div class="player-slot dib dib-angular" [innerHTML]="player.value.photoUrlImage"></div>
+                            </ng-container>
+                            
+                            <div *ngIf="! last" class="dib dib-angular vs">VS</div>
+                        </ng-container>
+                    </div>
+                </td>
+                <td>{{ room.status }}</td>
+                
+                <td>
+                    <div *ngIf="isLoggedIn" class="btn-group">
+                        <a *ngIf="! isCurrentPlayerInRoom( room )" class="dropdown-item btn btn-primary"
+                            (click)="joinRoom( room )"
+                            title="Join Room"
+                        >
+                            <i class="fa-solid fa-right-to-bracket me-2 align-middle"></i>
+                        </a>
+                        
+                        <a *ngIf="isCurrentPlayerInRoom( room )" class="dropdown-item btn btn-primary"
+                            (click)="leaveRoom( room )"
+                            title="Leave Room"
+                        >
+                            <i class="fa-solid fa-right-from-bracket me-2 align-middle"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        </ng-container>
+    </tbody>
+</table>

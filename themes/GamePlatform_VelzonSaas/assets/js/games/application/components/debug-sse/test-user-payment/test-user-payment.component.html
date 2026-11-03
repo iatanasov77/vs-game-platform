@@ -1,7 +1,8 @@
 <div *ngIf="isLoggedIn">
-    <a href="javascript:void( 0 );"
-        (click)="testUserPayment()"
-    >
-        Test User Payment
-    </a>
+    <div class="mb-3">
+        <a href="javascript:void( 0 );"
+            (click)="testUserPayment()"
+        >Test User Payment</a>
+        <span class="ms-2">( Sending with Frontend )</span>
+    </div>
 </div>

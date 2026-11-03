@@ -9,7 +9,7 @@ final class GameTeamPlayer
     private $imagineCacheManager;
     
     /* @var string */
-    private $photoUrlImage;
+    public $photoUrlImage;
     
     public function __construct(
         string $joinUrl,

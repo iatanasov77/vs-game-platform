@@ -84,8 +84,8 @@ abstract class BoardGameManager extends AbstractGameManager
     protected function CreateDbGame(): void
     {
         try {
-            $blackPlayer = $this->playersRepository->find( $this->Game->BlackPlayer->Id );
-            $whitePlayer = $this->playersRepository->find( $this->Game->WhitePlayer->Id );
+            $blackPlayer = $this->playersRepository->find( $this->Game->Players[PlayerColor::Black->value]->Id );
+            $whitePlayer = $this->playersRepository->find( $this->Game->Players[PlayerColor::White->value]->Id );
             
             $tempBlackPlayer = $this->CreateTempPlayer( $blackPlayer, PlayerColor::Black );
             $tempWhitePlayer = $this->CreateTempPlayer( $whitePlayer, PlayerColor::White );
@@ -114,7 +114,7 @@ abstract class BoardGameManager extends AbstractGameManager
     
     protected function AisTurn(): bool
     {
-        $plyr = $this->Game->CurrentPlayer == PlayerColor::Black ? $this->Game->BlackPlayer : $this->Game->WhitePlayer;
+        $plyr = $this->Game->CurrentPlayer == PlayerColor::Black ? $this->Game->Players[PlayerColor::Black->value] : $this->Game->Players[PlayerColor::White->value];
         
         return $plyr->IsAi();
     }
@@ -132,8 +132,8 @@ abstract class BoardGameManager extends AbstractGameManager
             return [null, null];
         }
         
-        $black = $this->playersRepository->find( $this->Game->BlackPlayer->Id );
-        $white = $this->playersRepository->find( $this->Game->WhitePlayer->Id );
+        $black = $this->playersRepository->find( $this->Game->Players[PlayerColor::Black->value]->Id );
+        $white = $this->playersRepository->find( $this->Game->Players[PlayerColor::White->value]->Id );
         $computed = Score::NewScore(
             $black->getElo(),
             $white->getElo(),
@@ -159,20 +159,20 @@ abstract class BoardGameManager extends AbstractGameManager
             $stake = $this->Game->Stake;
             $this->Game->Stake = 0;
             $this->logger->log( "Stake: {$stake}", 'EndGame' );
-            $this->logger->log( "Initial gold: {$black->getGold()} {$this->Game->BlackPlayer->Gold} {$white->getGold()} {$this->Game->WhitePlayer->Gold}", 'EndGame' );
+            $this->logger->log( "Initial gold: {$black->getGold()} {$this->Game->Players[PlayerColor::Black->value]->Gold} {$white->getGold()} {$this->Game->Players[PlayerColor::White->value]->Gold}", 'EndGame' );
             
             if ( $color == PlayerColor::Black ) {
                 if ( ! $this->IsAi( $black->getGuid() ) ) {
                     $black->addGold( $stake );
                 }
-                $this->Game->BlackPlayer->Gold += $stake;
+                $this->Game->Players[PlayerColor::Black->value]->Gold += $stake;
             } else {
                 if ( ! $this->IsAi( $white->getGuid() ) ) {
                     $white->addGold( $stake );
                 }
-                $this->Game->WhitePlayer->Gold += $stake;
+                $this->Game->Players[PlayerColor::White->value]->Gold += $stake;
             }
-            $this->logger->log( "After transfer: {$black->getGold()} {$this->Game->BlackPlayer->Gold} {$white->getGold()} {$this->Game->WhitePlayer->Gold}", 'EndGame' );
+            $this->logger->log( "After transfer: {$black->getGold()} {$this->Game->Players[PlayerColor::Black->value]->Gold} {$white->getGold()} {$this->Game->Players[PlayerColor::White->value]->Gold}", 'EndGame' );
         }
         
         $em->persist( $black );
@@ -199,10 +199,10 @@ abstract class BoardGameManager extends AbstractGameManager
     {
         $em     = $this->doctrine->getManager();
         
-        //$this->logger->log( "Resign White Player: " . $this->Game->WhitePlayer, 'EndGame' );
-        $black  = $this->playersRepository->find( $this->Game->BlackPlayer->Id );
-        $white  = $this->Game->WhitePlayer && $this->Game->WhitePlayer->Id ?
-                    $this->playersRepository->find( $this->Game->WhitePlayer->Id ) :
+        //$this->logger->log( "Resign White Player: " . $this->Game->Players[PlayerColor::White->value], 'EndGame' );
+        $black  = $this->playersRepository->find( $this->Game->Players[PlayerColor::Black->value]->Id );
+        $white  = $this->Game->Players[PlayerColor::White->value] && $this->Game->Players[PlayerColor::White->value]->Id ?
+        $this->playersRepository->find( $this->Game->Players[PlayerColor::White->value]->Id ) :
                     null;
         
         if ( ! $this->IsAi( $black->getGuid() ) ) {

@@ -1,6 +1,9 @@
 <?php namespace App\Component\ServerSentEvent;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Discovery;
 use Symfony\Component\Mercure\Authorization;
@@ -22,6 +25,9 @@ final class MercurePublisher
     /** @var MercureLogger */
     private $logger;
     
+    /** @var SerializerInterface */
+    private $serializer;
+    
     /** @var HubInterface */
     private $hub;
     
@@ -33,17 +39,32 @@ final class MercurePublisher
     
     public function __construct(
         MercureLogger $logger,
+        SerializerInterface $serializer,
         HubInterface $hub,
         Discovery $discovery,
         Authorization $authorization
     ) {
         $this->logger           = $logger;
+        $this->serializer       = $serializer;
         $this->hub              = $hub;
         $this->discovery        = $discovery;
         $this->authorization    = $authorization;
     }
     
-    public function publish( Request $request, Update $update )
+    public function publishData( string $topic, $data ): void
+    {
+        // $publishData    = \json_encode( $data );
+        $publishData = $this->serializer->serialize( $data, JsonEncoder::FORMAT );
+        
+        $update = new Update(
+            $topic,
+            $publishData,
+        );
+        
+        $this->hub->publish( $update );
+    }
+    
+    public function publishRequest( Request $request, Update $update ): void
     {
         try {
             $this->discovery->addLink( $request );

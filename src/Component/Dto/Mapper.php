@@ -36,8 +36,8 @@ final class Mapper
         $gameDto->id = $game->Id;
         $gameDto->gameCode = $game->GameCode;
         
-        $gameDto->blackPlayer = self::BoardGamePlayerToDto( $game->BlackPlayer );
-        $gameDto->whitePlayer = self::BoardGamePlayerToDto( $game->WhitePlayer );
+        $gameDto->players = self::BoardGamePlayersToDto( $game->Players );
+        
         $gameDto->currentPlayer = $game->CurrentPlayer;
         $gameDto->playState = $game->PlayState;
         
@@ -227,6 +227,29 @@ final class Mapper
         return $gameDto;
     }
     
+    public static function BoardGamePlayersToDto( array $players ): array
+    {
+        $playersDto = [];
+        foreach ( $players as $player ) {
+            $playerDto = new PlayerDto();
+            
+            // Do not mapp id, it should never be sent to opponent.
+            $playerDto->name = $player->Name;
+            
+            $playerDto->playerColor = $player->PlayerColor;
+            
+            $playerDto->elo = $player->Elo;
+            $playerDto->gold = $player->Gold;
+            $playerDto->photoUrl = $player->Photo;
+            
+            $playerDto->isAi = $player->IsAi();
+            
+            $playersDto[$player->PlayerColor->value] = $playerDto;
+        }
+        
+        return $playersDto;
+    }
+    
     public static function CardGamePlayersToDto( array $players ): array
     {
         $playersDto = [];
@@ -244,7 +267,7 @@ final class Mapper
             
             $playerDto->isAi = $player->IsAi();
             
-            $playersDto[] = $playerDto;
+            $playersDto[$player->PlayerPosition->value] = $playerDto;
         }
         
         return $playersDto;

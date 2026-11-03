@@ -8,6 +8,7 @@ import { BehaviorSubject, Observable, tap, map, take, finalize } from 'rxjs';
 import { AppConstants } from "../constants";
 
 import { IAuth } from '@vankosoft/game-platform';
+import { IPlayer } from '@vankosoft/game-platform';
 import { ISignedUrlResponse } from '@vankosoft/game-platform';
 import { IToggleSoundMuteResponse } from '@vankosoft/game-platform';
 
@@ -208,6 +209,13 @@ export class AuthService
         }
         
         this.loggedIn$.next( this.loggedIn );
+    }
+    
+    public getPlayer(): IPlayer | null
+    {
+        let player    = this.localStorageService.getItem<IPlayer>( 'player' );
+        
+        return player;
     }
     
     public createUserDto( auth: IAuth ): UserDto

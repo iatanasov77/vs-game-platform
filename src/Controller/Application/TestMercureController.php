@@ -85,7 +85,7 @@ class TestMercureController extends AbstractController
             true // private
         );
         
-        $this->mercurePublisher->publish( $request, $update );
+        $this->mercurePublisher->publishRequest( $request, $update );
         
         $responseData   = [
             'status'    => Status::STATUS_OK,

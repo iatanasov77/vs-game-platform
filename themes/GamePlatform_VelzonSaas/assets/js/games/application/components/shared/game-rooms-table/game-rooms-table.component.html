@@ -1,0 +1,48 @@
+<table class="bridge-table mt-4">
+    <thead>
+        <tr>
+            <th scope="col"></th>
+            <th scope="col">Owner</th>
+            <th scope="col">Guid</th>
+            <th scope="col">Game</th>
+            <th scope="col">Players Addition</th>
+            <th scope="col">Players</th>
+            <th scope="col">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        <ng-container *ngFor="let room of gameRooms; let idx = index">
+            <tr>
+                <th>{{ idx + 1 }}</th>
+                <td>{{ room.owner }}</td>
+                <td>
+                    <span
+                        ngbTooltip="{{ room.guid }}" placement="top"
+                    >
+                        {{ room.guid | slice: 0:15}} {{ room.guid.length > 15 ? '...' : ''}}
+                    </span>
+                </td>
+                <td>{{ room.game.title }}</td>
+                <td>{{ room.players.length }} / {{ room.game.maxPlayers }}</td>
+                <td>
+                    <!--
+                    <div class="cell-players observers">
+                        {% for team in gameRoomTeams[room.id] %}
+                            {% for player in team %}
+                                <div rel="0" class="player-slot dib">
+                                    {{ player.photoUrlImage | raw }}
+                                </div>
+                            {% endfor %}
+                            
+                            {% if not loop.last %}
+                                <div class="dib vs">VS</div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    -->
+                </td>
+                <td>{{ room.status }}</td>
+            </tr>
+        </ng-container>
+    </tbody>
+</table>

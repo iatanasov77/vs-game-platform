@@ -77,32 +77,59 @@ export class EventSourceService
      * Try to Use 'ngx-sse-client'
      * https://www.npmjs.com/package/ngx-sse-client
      */
-    createNgxSseClientStream( topicUri: string ): void
+    createNgxSseClientStream( topicUri: string, responseType: string ): Observable<Event>
     {
-        // alert( topicUri );
+        let options = {
+            keepAlive: true,
+            reconnectionDelay: 1000,
+            responseType: responseType // responseType: 'event'
+        } as const;
+        
+        let sseClient = this.createNgxSseClient( topicUri, options );
+        this.subscribeNgxSseClientStream( sseClient, responseType );
+        
+        return sseClient;
+    }
+    
+    private createNgxSseClient( topicUri: string, options: any ): Observable<Event>
+    {
         const hub       = `${context.mercureHost}?match=${topicUri}`;
         const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
         
-        let options = { keepAlive: true, reconnectionDelay: 1000, responseType: 'event' } as const;
         let requestOptions = { headers } as const;
         let method = 'POST';
         
-        // this.sseClient.stream( hub, options, requestOptions, method ).subscribe( ( event ) => {
-        this.sseClient.stream( hub, options ).subscribe( ( event ) => {
-            // alert( `SSE Subscribe Event: ${event.type}` );
+        return this.sseClient.stream( hub, options );
+    }
+    
+    private subscribeNgxSseClientStream( sseClient: any, responseType: string ): void
+    {
+        if ( responseType == 'event' ) {
+            // this.sseClient.stream( hub, options, requestOptions, method ).subscribe( ( event ) => {
+            sseClient.subscribe( this.handleNgxSseEventResponse.bind( this ) );
+        } else {
+            sseClient.subscribe( this.handleNgxSseTextResponse.bind( this ) );
+        }
+    }
+    
+    private handleNgxSseTextResponse( data: any )
+    {
+        alert( `NgxSseClient Message: ${data}` );
+    }
+    
+    private handleNgxSseEventResponse( event: any )
+    {
+        if ( event.type === 'error' ) {
+            const errorEvent = event as ErrorEvent;
             
-            if ( event.type === 'error' ) {
-                const errorEvent = event as ErrorEvent;
-                
-                alert( errorEvent.message );
-                console.error( errorEvent.error, errorEvent.message );
-            } else {
-                const messageEvent = event as MessageEvent;
-                
-                alert( messageEvent.data );
-                console.info( `SSE request with type "${messageEvent.type}" and data "${messageEvent.data}"` );
-            }
-        });
+            alert( `NgxSseClient Error: ${errorEvent.message}` );
+            console.error( errorEvent.error, errorEvent.message );
+        } else {
+            const messageEvent = event as MessageEvent;
+            
+            alert( `NgxSseClient Message: ${messageEvent.data}` );
+            console.info( `SSE request with type "${messageEvent.type}" and data "${messageEvent.data}"` );
+        }
     }
     
     /**

@@ -1,9 +1,10 @@
 import { Component, OnInit, Inject, Input, Output, EventEmitter, NgZone } from '@angular/core';
+import { Observable } from 'rxjs';
 
 import { MessageData } from '@vankosoft/game-platform';
 
 import { AuthService } from '../../../services/auth.service';
-import { EventSourceServiceTest } from '../../../services/event-source.service-test'
+import { EventSourceService } from '../../../services/event-source.service'
 
 import { MercureJwt, User, PaymentTopic } from '../../../services/debug-sse/models';
 import { FrontendPublisherService } from '../../../services/debug-sse/frontend-publisher.service'
@@ -31,37 +32,52 @@ export class TestSubscribingComponent implements OnInit
     @Input() isLoggedIn: boolean = false;
     @Output() onOpenDebugWindow = new EventEmitter<string>();
     
+    sseClient$: Observable<Event>;
     topicUri: string;
+    sseResponseType: string = 'text';
     
     constructor(
         @Inject( AuthService ) private authService: AuthService,
-        @Inject( EventSourceServiceTest ) private sseService: EventSourceServiceTest,
+        @Inject( EventSourceService ) private sseService: EventSourceService,
         @Inject( FrontendPublisherService ) private frontendPublisher: FrontendPublisherService,
         @Inject( BackendPublisherService ) private backendPublisher: BackendPublisherService,
         @Inject( NgZone ) private zone: NgZone,
     ) { 
         this.topicUri = `${context.backendURL}/test-subscribing/subscribe`;
+        this.sseClient$ = this.sseService.createNgxSseClientStream( this.topicUri, this.sseResponseType );
     }
     
     ngOnInit(): void
     {
-        this.subscribeToMercureTopic();
-    }
-    
-    subscribeToMercureTopic(): void
-    {
-        this.sseService.createNgxSseClientStream( this.topicUri );
+        
     }
     
     testSubscribing(): void
     {
         this.authService.generateMercureToken().subscribe( ( jwt: MercureJwt ) => {
             // alert( `MercureToken: ${JSON.stringify( jwt )}` );
-            this.openDebugWindow( jwt.token );
+            // this.openDebugWindow( jwt.token );
             
             this.frontendPublisher.sendToTestSubscribingTopic( this.topicUri, jwt.token ).then( ( data ) => {
                 alert( `Publish to Test Subscribing Component. Response: ${JSON.stringify( data )}` );
             });
+        });
+    }
+    
+    sendTestMessage(): void
+    {
+        this.backendPublisher.sendTestMessage( this.topicUri ).subscribe (
+            ( e: MessageData ) => {
+                // console.log( 'Message received: ' + e.message );
+                // alert( `Message received: ${JSON.stringify( e )}` );
+            }
+        );
+    }
+    
+    testGenerateMercureToken(): void
+    {
+        this.authService.generateMercureToken().subscribe( ( jwt: MercureJwt ) => {
+            this.openDebugWindow( jwt.token );
         });
     }
     

@@ -1,12 +1,15 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
+import { Observable, Subscription } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+
+import { IPlayer } from '@vankosoft/game-platform';
 
 import { Keys } from '@vankosoft/game-platform';
 import { CookieService } from 'ngx-cookie-service';
 import { ErrorState } from '../application/state/ErrorState';
 import { ErrorReportService } from '../application/services/error-report.service';
 import { AuthService } from '../application/services/auth.service';
+import { GameService } from '../application/services/game.service'
 import { AppStateService } from '../application/state/app-state.service';
 
 import { ErrorReportDto } from '@vankosoft/game-platform';
@@ -31,45 +34,53 @@ declare global {
         cssGameString || 'Game CSS Not Loaded !!!',
     ]
 })
-export class DebugSsePageComponent implements OnInit
+export class DebugSsePageComponent implements OnInit, OnDestroy
 {
     title   = 'Debug SSE';
     errors$: Observable<ErrorState>;
     
+    authSubs: Subscription | undefined;
     isLoggedIn: boolean = false;
+    currentPlayer: IPlayer | undefined;
     
     constructor(
         @Inject( ErrorReportService ) private errorReportService: ErrorReportService,
         @Inject( AppStateService ) private appState: AppStateService,
         @Inject( AuthService ) private authService: AuthService,
+        @Inject( GameService ) private gameService: GameService,
         @Inject( CookieService ) private cookieService: CookieService,
         @Inject( NgbModal ) private ngbModal: NgbModal,
     ) {
         this.errors$ = this.appState.errors.observe();
         
         if ( ! this.authService.getAuth() && window.gamePlatformSettings.apiVerifySiganature.length ) {
-            this.authService.loginBySignature( window.gamePlatformSettings.apiVerifySiganature  ).subscribe( ( auth ) => {
+            this.authSubs = this.authService.loginBySignature( window.gamePlatformSettings.apiVerifySiganature  ).subscribe( ( auth ) => {
                 // alert( `Login By Signature Response: ${JSON.stringify( auth )}` );
-                
-                /* Not Need This Cookie 
-                 *
-                let oAuth = this.authService.getAuth();
-                let strAuth = '';
-                if ( oAuth ) {
-                   strAuth =  JSON.stringify( oAuth );
-                }
-                
-                // alert( `Login By Signature Auth: ${strAuth}` );
-                this.cookieService.set( Keys.authKey, strAuth, 2 );
-                */
             });
         }
     }
     
     ngOnInit(): void {
         this.authService.isLoggedIn().subscribe( ( isLoggedIn: boolean ) => {
+            // alert( `Logged In: ${isLoggedIn}` );
             this.isLoggedIn = isLoggedIn;
+            let auth        = this.authService.getAuth();
+            
+            if ( isLoggedIn && auth ) {
+                // alert( 'Auth ID: ' + auth.id );
+                this.gameService.loadPlayerByUser( auth.id ).subscribe( ( player: IPlayer ) => {
+                    //console.log( player );
+                    this.currentPlayer  = player;
+                });
+            }
         });
+    }
+    
+    ngOnDestroy(): void
+    {
+        if ( this.authSubs ) {
+            this.authSubs.unsubscribe();
+        }
     }
     
     saveErrorReport( errorDto: ErrorReportDto ): void

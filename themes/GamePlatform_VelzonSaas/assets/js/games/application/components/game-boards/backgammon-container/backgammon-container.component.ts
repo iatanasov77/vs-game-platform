@@ -456,8 +456,8 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
     hasFundsForDoubling( gameDto: BoardGameDto ): boolean
     {
         return (
-            gameDto.blackPlayer.gold >= gameDto.stake / 2 &&
-            gameDto.whitePlayer.gold >= gameDto.stake / 2
+            gameDto.players[PlayerColor.black].gold >= gameDto.stake / 2 &&
+            gameDto.players[PlayerColor.white].gold >= gameDto.stake / 2
         );
     }
 

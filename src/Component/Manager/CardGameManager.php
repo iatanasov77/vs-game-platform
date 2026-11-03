@@ -33,6 +33,7 @@ use App\Component\Type\PlayerPosition;
 use App\Component\Type\GameState;
 use App\Component\Type\AnnounceType;
 use App\Component\Type\BidTrump;
+use App\Component\Dto\CardGameDto;
 
 // DTO Actions
 use App\Component\Dto\Mapper;
@@ -569,7 +570,7 @@ abstract class CardGameManager extends AbstractGameManager
         $this->Send( $client, $action );
     }
     
-    protected function SendTrickEndedAction( PlayerPosition $winner ): void
+    protected function SendTrickEndedAction( CardGameDto $game ): void
     {
         $this->ReactAsyncDelay( 1.2 );
         

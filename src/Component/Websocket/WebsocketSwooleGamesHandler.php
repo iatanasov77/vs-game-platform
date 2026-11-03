@@ -180,6 +180,18 @@ final class WebsocketSwooleGamesHandler extends SwooleServerHandler
         unset( $this->names[$connectionSequenceId] );
     }
     
+    public function serverWasTerminated(): void
+    {
+        $this->logger->log( "WebSocket Swoole Server Was Terminated", 'GameServer' );
+        foreach ( $this->clients as $value ) {
+            $connection = $this->clients->current(); // current object
+            $assocKey = $this->clients->getInfo(); // return, if exists, associated with cur. obj. data; else NULL
+            
+            //$this->logger->log( "Connection: " . \print_r( $connection, true ), 'GameServer' );
+            //$this->logger->log( "Connection Info: " . \print_r( $assocKey, true ), 'GameServer' );
+        }
+    }
+    
     private function ConnectGame( WebsocketServer $server, Request $request ): void
     {
         $this->logger->log( "Connect Game Request.", 'GameServer' );

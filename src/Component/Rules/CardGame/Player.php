@@ -48,7 +48,7 @@ class Player // implements PlayerInterface
         $player = $manager->Game->SouthPlayer;
         
         if ( $position == PlayerPosition::East ) {
-            $player = $manager->Game->WhitePlayer;
+            $player = $manager->Game->Players[PlayerPosition::South->value];
         }
         
         return $dbUser != null && $dbUser->getId() == $player->Id;

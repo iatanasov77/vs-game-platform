@@ -16,6 +16,7 @@ parameters:
     env(WEBSOCKET_GAME_LOGGER_CONTEXTS): '[]'
 
     app_end_game_on_total_think_time_elapse: '%env(bool:END_GAME_ON_TOTAL_THINK_TIME_ELAPSE)%'
+    app_join_game_route: 'app_join_game_room_in_position'
     
 services:
     _defaults:
@@ -33,6 +34,7 @@ services:
         public: true
         arguments:
             - '@app_mercure_logger'
+            - '@serializer'
             - '@mercure.hub.default'
             - '@Symfony\Component\Mercure\Discovery'
             - '@Symfony\Component\Mercure\Authorization'
@@ -43,6 +45,7 @@ services:
         arguments:
             - '@router'
             - '@liip_imagine.cache.manager'
+            - '%app_join_game_route%'
     
     ##############################################################
     # Custom Loggers

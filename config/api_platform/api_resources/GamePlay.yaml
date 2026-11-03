@@ -8,4 +8,3 @@ resources:
                 controller: App\Controller\Api\Games\GetGamePlayController
                 normalizationContext:
                     groups: ['game-play:read']
-                forceEager: false

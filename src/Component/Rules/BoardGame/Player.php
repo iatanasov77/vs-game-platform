@@ -51,10 +51,10 @@ class Player
     public static function MyColor( GameManagerInterface $manager, GamePlayer $dbUser, PlayerColor $color ): bool
     {
         //prevents someone with same game id, get someone elses side in the game.
-        $player = $manager->Game->BlackPlayer;
+        $player = $manager->Game->Players[PlayerColor::Black->value];
         
         if ( $color == PlayerColor::White ) {
-            $player = $manager->Game->WhitePlayer;
+            $player = $manager->Game->Players[PlayerColor::White->value];
         }
         
         return $dbUser != null && $dbUser->getId() == $player->Id;

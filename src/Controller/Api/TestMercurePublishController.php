@@ -3,80 +3,41 @@
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Mercure\HubInterface;
-use Symfony\Component\Mercure\Update;
-use Doctrine\Persistence\ManagerRegistry;
-use Sylius\Component\Resource\Factory\FactoryInterface;
-use Sylius\Component\Resource\Repository\RepositoryInterface;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Vankosoft\ApplicationBundle\Component\Status;
-use Vankosoft\UsersBundle\Security\SecurityBridge;
-use App\Component\ServerSentEvent\MercurePublisher;
-use App\Component\Logger\MercureLogger;
-use App\Controller\Api\Games\GameRoomResponseTrait;
 
-// Types
-use App\Component\GamePlatform;
-use App\Component\Utils\Guid;
-use App\Component\Type\PlayerColor;
-use App\Component\Type\PlayerPosition;
-use App\Component\Type\GameState;
-
-use App\Entity\Game;
-use App\Entity\GamePlay;
-use App\Entity\GamePlayer;
-use App\Entity\TempPlayer;
+use App\Component\Dto\Actions\MercureActionNames;
+use App\Component\Dto\Actions\MercureActionDto;
+use App\Component\Manager\MercureManager;
 
 class TestMercurePublishController
 {
-    use GameRoomResponseTrait;
+    /** @var SerializerInterface */
+    private $serializer;
     
-    /** @var ManagerRegistry */
-    private $doctrine;
+    /** @var MercureManager */
+    private $manager;
     
-    /** @var MercurePublisher */
-    private $mercurePublisher;
+    public function __construct( SerializerInterface $serializer, MercureManager $manager )
+    {
+        $this->serializer   = $serializer;
+        $this->manager      = $manager;
+    }
     
-    /** @var SecurityBridge */
-    private $vsSecurityBridge;
-    
-    /** @var MercureLogger */
-    private $logger;
-    
-    /** @var RepositoryInterface */
-    private $gameRepository;
-    
-    /** @var FactoryInterface */
-    private $gamePlayFactory;
-    
-    /** @var RepositoryInterface */
-    private $gamePlayRepository;
-    
-    /** @var RepositoryInterface */
-    private $playersRepository;
-    
-    /** @var FactoryInterface */
-    private $tempPlayersFactory;
-    
-    public function __construct(
-        ManagerRegistry $doctrine,
-        MercurePublisher $mercurePublisher,
-        SecurityBridge $vsSecurityBridge,
-        MercureLogger $logger,
-        RepositoryInterface $gameRepository,
-        FactoryInterface $gamePlayFactory,
-        RepositoryInterface $gamePlayRepository,
-        RepositoryInterface $playersRepository,
-        FactoryInterface $tempPlayersFactory,
-    ) {
-        $this->doctrine             = $doctrine;
-        $this->mercurePublisher     = $mercurePublisher;
-        $this->vsSecurityBridge     = $vsSecurityBridge;
-        $this->logger               = $logger;
-        $this->gameRepository       = $gameRepository;
-        $this->gamePlayFactory      = $gamePlayFactory;
-        $this->gamePlayRepository   = $gamePlayRepository;
-        $this->playersRepository    = $playersRepository;
-        $this->tempPlayersFactory   = $tempPlayersFactory;
+    public function index( Request $request ): JsonResponse
+    {
+        $postData   = \json_decode( $request->getContent(), true );
+        $topic      = $postData['topic'];
+        $message    = $postData['message'];
+        
+        $response   = $this->manager->DoAction( $topic, $message );
+        
+        $response   = [
+            'status'    => Status::STATUS_OK,
+            'message'   => $response,
+        ];
+        return new JsonResponse( $response );
     }
     
     public function sendTestMessageAction( Request $request ): JsonResponse
@@ -86,7 +47,7 @@ class TestMercurePublishController
         
         $response   = [
             'status'    => Status::STATUS_OK,
-            'message'   => 'Published From Backend',
+            'message'   => 'Response: Published From Backend',
         ];
         
         return new JsonResponse( $response );
@@ -152,122 +113,5 @@ class TestMercurePublishController
         ];
         
         return new JsonResponse( $response );
-    }
-    
-    private function _createBoardGameLobby(): GamePlay
-    {
-        $aiPlayer = $this->playersRepository->findOneBy( ['guid' => GamePlayer::AiUser] );
-        
-        $currentUser = $this->vsSecurityBridge->getUser();
-        $blackPlayer = $this->playersRepository->find( $currentUser->getPlayer()->getId() );
-        $whitePlayer = $this->playersRepository->find( $aiPlayer->getId() );
-        
-        $tempBlackPlayer = $this->CreateBoardGameTempPlayer( $blackPlayer, PlayerColor::Black );
-        $tempWhitePlayer = $this->CreateBoardGameTempPlayer( $whitePlayer, PlayerColor::White );
-        
-        $gameBase   = $this->gameRepository->findOneBy(['slug' => 'debug-board-game-sse']);
-        $game       = $this->gamePlayFactory->createNew();
-        
-        $game->setGame( $gameBase );
-        $game->setOwner( $blackPlayer );
-        $game->setGuid( Guid::NewGuid() );
-        
-        $tempBlackPlayer->setGame( $game );
-        $tempWhitePlayer->setGame( $game );
-        
-        $game->addGamePlayer( $tempBlackPlayer );
-        $game->addGamePlayer( $tempWhitePlayer );
-        
-        $em = $this->doctrine->getManager();
-        $em->persist( $game );
-        $em->flush();
-        
-        return $game;
-    }
-    
-    private function _createCardGameLobby(): GamePlay
-    {
-        $aiPlayer = $this->playersRepository->findOneBy( ['guid' => GamePlayer::AiUser] );
-        
-        $currentUser = $this->vsSecurityBridge->getUser();
-        $southPlayer = $this->playersRepository->find( $currentUser->getPlayer()->getId() );
-        $eastPlayer = $this->playersRepository->find( $aiPlayer->getId() );
-        $northPlayer = $this->playersRepository->find( $aiPlayer->getId() );
-        $westPlayer = $this->playersRepository->find( $aiPlayer->getId() );
-        
-        $tempSouthPlayer = $this->CreateCardGameTempPlayer( $southPlayer, PlayerPosition::South );
-        $tempEastPlayer = $this->CreateCardGameTempPlayer( $eastPlayer, PlayerPosition::East );
-        $tempNorthPlayer = $this->CreateCardGameTempPlayer( $northPlayer, PlayerPosition::North );
-        $tempWestPlayer = $this->CreateCardGameTempPlayer( $westPlayer, PlayerPosition::West );
-        
-        $gameBase   = $this->gameRepository->findOneBy(['slug' => 'debug-card-game-sse']);
-        $game       = $this->gamePlayFactory->createNew();
-        
-        $game->setGame( $gameBase );
-        $game->setOwner( $southPlayer );
-        $game->setGuid( Guid::NewGuid() );
-        
-        $tempSouthPlayer->setGame( $game );
-        $tempEastPlayer->setGame( $game );
-        $tempNorthPlayer->setGame( $game );
-        $tempWestPlayer->setGame( $game );
-        
-        $game->addGamePlayer( $tempSouthPlayer );
-        $game->addGamePlayer( $tempEastPlayer );
-        $game->addGamePlayer( $tempNorthPlayer );
-        $game->addGamePlayer( $tempWestPlayer );
-        
-        $em = $this->doctrine->getManager();
-        $em->persist( $game );
-        $em->flush();
-        
-        return $game;
-    }
-    
-    private function createTempPlayer( Game $baseGame, $player, $position = null ): TempPlayer
-    {
-        switch ( $baseGame->getType() ) {
-            case GamePlatform::GAME_TYPE_BOARD_GAME:
-                if ( ! $position ) {
-                    $position = PlayerColor::Black;
-                }
-                
-                return $this->CreateBoardGameTempPlayer( $player, $position );
-                
-                break;
-            case GamePlatform::GAME_TYPE_CARD_GAME:
-            case GamePlatform::GAME_TYPE_CARD_GAME_NO_TEAMS:
-                if ( ! $position ) {
-                    $position = PlayerPosition::South;
-                }
-                
-                return $this->CreateBoardGameTempPlayer( $player, $position );
-                
-                break;
-        }
-    }
-    
-    private function CreateBoardGameTempPlayer( GamePlayer $player, PlayerColor $playerPosition ): TempPlayer
-    {
-        $tempPlayer = $this->tempPlayersFactory->createNew();
-        $tempPlayer->setGuid( Guid::NewGuid() );
-        $tempPlayer->setPlayer( $player );
-        $tempPlayer->setColor( $playerPosition->toString() );
-        $tempPlayer->setName( $player->getName() );
-        $player->addGamePlayer( $tempPlayer );
-        
-        return $tempPlayer;
-    }
-    
-    private function CreateCardGameTempPlayer( GamePlayer $player, PlayerPosition $playerPosition ): TempPlayer
-    {
-        $tempPlayer = $this->tempPlayersFactory->createNew();
-        $tempPlayer->setGuid( Guid::NewGuid() );
-        $tempPlayer->setPlayer( $player );
-        $tempPlayer->setPosition( $playerPosition->toString() );
-        $tempPlayer->setName( $player->getName() );
-        $player->addGamePlayer( $tempPlayer );
-        
-        return $tempPlayer;
     }
 }

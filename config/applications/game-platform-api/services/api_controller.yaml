@@ -126,12 +126,5 @@ services:
         tags: ['controller.service_arguments']
         autowire: true
         arguments:
-            - '@doctrine'
-            - '@app_mercure_publisher'
-            - '@vs_users.security_bridge'
-            - '@app_mercure_logger'
-            - '@vsapp.repository.games'
-            - '@vsapp.factory.game_sessions'
-            - '@vsapp.repository.game_sessions'
-            - '@vsapp.repository.game_players'
-            - '@vsapp.factory.temp_players'
+            - '@serializer'
+            - '@app_mercure_manager'

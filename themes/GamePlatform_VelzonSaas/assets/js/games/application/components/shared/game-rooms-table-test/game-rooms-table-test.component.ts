@@ -5,7 +5,7 @@ import {
     Output,
     OnInit
 } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Subscription, map } from 'rxjs';
 
 import { TranslateService } from '@ngx-translate/core';
 import { GetTrumps, GetAnnounceSymbol } from '@vankosoft/game-platform';
@@ -15,6 +15,14 @@ import { PlayerPosition } from '@vankosoft/game-platform';
 import { PlayerPositions } from '@vankosoft/game-platform';
 import { Helper } from '@vankosoft/game-platform';
 import { BidTrump } from '@vankosoft/game-platform';
+
+// App State
+import { AppStateService } from '../../../state/app-state.service';
+
+// DTO
+import { GameRoomDto } from '../../../Dto/gameRoomDto';
+
+// Services
 import { AuthService } from '../../../services/auth.service';
 import { GameService } from '../../../services/game.service'
 import { EventSourceService } from '../../../services/event-source.service';
@@ -46,6 +54,9 @@ export class GameRoomsTableTestComponent implements OnInit
     @Input() isLoggedIn: boolean = false;
     @Input() currentPlayer: IPlayer | undefined;
     
+    rooms$: Observable<IGameRoom[]>;
+    roomSubs: Subscription;
+    
     showSpinner = true;
     
     gameRooms: IGameRoom[] | undefined;
@@ -53,10 +64,11 @@ export class GameRoomsTableTestComponent implements OnInit
     
     sseClient$: Observable<Event>;
     topicUri: string;
-    sseResponseType: string = 'text';
+    sseResponseType: string = 'event';
     
     constructor(
         @Inject( TranslateService ) private translateService: TranslateService,
+        @Inject( AppStateService ) private appStateService: AppStateService,
         @Inject( AuthService ) private authService: AuthService,
         @Inject( GameService ) private gameService: GameService,
         @Inject( BackendPublisherService ) private backendPublisher: BackendPublisherService,
@@ -65,6 +77,9 @@ export class GameRoomsTableTestComponent implements OnInit
     ) {
         this.topicUri = `${context.backendURL}/test-multiplayer-lobby/${window.gamePlatformSettings.gameSlug}`;
         this.sseClient$ = this.sseService.createNgxSseClientStream( this.topicUri, this.sseResponseType );
+        
+        this.rooms$ = this.appStateService.gameRooms.observe();
+        this.roomSubs = this.appStateService.gameRooms.observe().subscribe( this.roomChanged.bind( this ) );
     }
     
     ngOnInit(): void
@@ -72,6 +87,14 @@ export class GameRoomsTableTestComponent implements OnInit
         this.loadGameRooms();
         
         this.sseClient$.subscribe( this.handleSseResponse.bind( this ) );
+    }
+    
+    roomChanged( dto: IGameRoom[] ): void
+    {
+        let gameRooms = JSON.stringify( dto );
+        
+        // alert( `App State Rooms Changed: ${gameRooms}` );
+        this.openDebugWindowDialog( gameRooms );
     }
     
     loadGameRooms(): void
@@ -86,27 +109,27 @@ export class GameRoomsTableTestComponent implements OnInit
         });
     }
     
-    isCurrentPlayerInRoom( room: IGameRoom ): boolean
+    isCurrentPlayerInRoom( room: GameRoomDto ): boolean
     {
         const res: boolean = room.players.some( player => player.name === this?.currentPlayer?.name );
         
         return res;
     }
     
-    joinRoom( room: IGameRoom ): void
+    joinRoom( room: GameRoomDto ): void
     {
         // alert( `Join Room: ${JSON.stringify( room )}` );
         
-        this.backendPublisher.joinMultiplayerLobby( room ).subscribe( ( message ) => {
+        this.backendPublisher.joinMultiplayerLobby( room, this.topicUri ).subscribe( ( message ) => {
             alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
         });
     }
     
-    leaveRoom( room: IGameRoom ): void
+    leaveRoom( room: GameRoomDto ): void
     {
-        // alert( `Leave Room: ${JSON.stringify( room )}` );
+        alert( `Leave Room: ${JSON.stringify( room )}` );
          
-        this.backendPublisher.leaveMultiplayerLobby( room ).subscribe( ( message: any ) => {
+        this.backendPublisher.leaveMultiplayerLobby( room, this.topicUri ).subscribe( ( message: any ) => {
             alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
         });
     }
@@ -121,7 +144,7 @@ export class GameRoomsTableTestComponent implements OnInit
         });
     }
     
-    private handleSseResponse( data: any )
+    handleSseResponse( data: any )
     {
         alert( `GameRoomsTableTest Message: ${data}` );
     }

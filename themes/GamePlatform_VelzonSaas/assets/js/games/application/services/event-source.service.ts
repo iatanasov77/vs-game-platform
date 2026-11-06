@@ -9,7 +9,11 @@ import { EventSourcePolyfill } from "event-source-polyfill";
 import { AppConstants } from "../constants";
 const { context } = require( '../context' );
 
+import { AppStateService } from '../state/app-state.service';
 import { AuthService } from './auth.service';
+
+// DTO
+import { IGameRoom } from '@vankosoft/game-platform';
 
 declare var $: any;
 
@@ -32,6 +36,7 @@ declare var $: any;
 export class EventSourceService
 {
     private eventSource: null | EventSource;
+    private sseClientStream: null | Observable<Event>;
     
     /**
      * constructor
@@ -43,9 +48,11 @@ export class EventSourceService
     constructor(
         @Inject( NgZone ) private zone: NgZone,
         @Inject( SseClient ) private sseClient: SseClient,
+        @Inject( AppStateService ) private appState: AppStateService,
         @Inject( AuthService ) private authService: AuthService,
     ) {
-        this.eventSource    = null;
+        this.eventSource        = null;
+        this.sseClientStream    = null;
     }
     
     createNativeSseClientStream( topicUri: string, options: EventSourceInit, eventNames: string[] = [] ): Observable<MessageEvent> | undefined
@@ -85,10 +92,10 @@ export class EventSourceService
             responseType: responseType // responseType: 'event'
         } as const;
         
-        let sseClient = this.createNgxSseClient( topicUri, options );
-        this.subscribeNgxSseClientStream( sseClient, responseType );
+        this.sseClientStream = this.createNgxSseClient( topicUri, options );
+        this.subscribeNgxSseClientStream( this.sseClientStream, responseType );
         
-        return sseClient;
+        return this.sseClientStream;
     }
     
     private createNgxSseClient( topicUri: string, options: any ): Observable<Event>
@@ -114,7 +121,7 @@ export class EventSourceService
     
     private handleNgxSseTextResponse( data: any )
     {
-        alert( `NgxSseClient Message: ${data}` );
+        alert( `NgxSseClient Data Message: ${data}` );
     }
     
     private handleNgxSseEventResponse( event: any )
@@ -122,14 +129,29 @@ export class EventSourceService
         if ( event.type === 'error' ) {
             const errorEvent = event as ErrorEvent;
             
-            alert( `NgxSseClient Error: ${errorEvent.message}` );
-            console.error( errorEvent.error, errorEvent.message );
+            // alert( `NgxSseClient Error: ${errorEvent.message}` );
+            // console.error( errorEvent.error, errorEvent.message );
         } else {
             const messageEvent = event as MessageEvent;
-            
-            alert( `NgxSseClient Message: ${messageEvent.data}` );
-            console.info( `SSE request with type "${messageEvent.type}" and data "${messageEvent.data}"` );
+            this.onMessage( messageEvent );
         }
+    }
+    
+    onMessage( message: MessageEvent<string> ): void
+    {
+        if ( ! message.data.length  ) {
+            return;
+        }
+        
+        const room = JSON.parse( message.data ) as IGameRoom;
+        const gameRooms = this.appState.gameRooms.getValue();
+        
+        // alert( `NgxSseClient Event Message: ${message.data}` );
+        // console.info( `SSE request with type "${message.type}" and data "${message.data}"` );
+        
+        // gameRooms.push( room );
+        // this.appState.gameRooms.setValue( gameRooms );
+        this.appState.gameRooms.setValue( [room] );
     }
     
     /**

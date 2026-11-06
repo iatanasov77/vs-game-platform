@@ -25,7 +25,7 @@ export class TestUserPaymentComponent implements OnInit
     @Input() isLoggedIn: boolean = false;
     
     sseClient$: Observable<Event>;
-    sseResponseType: string = 'text';
+    sseResponseType: string = 'event';
     
     constructor(
         @Inject( EventSourceService ) private sseService: EventSourceService,

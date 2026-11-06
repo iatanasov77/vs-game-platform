@@ -34,7 +34,7 @@ export class TestSubscribingComponent implements OnInit
     
     sseClient$: Observable<Event>;
     topicUri: string;
-    sseResponseType: string = 'text';
+    sseResponseType: string = 'event';
     
     constructor(
         @Inject( AuthService ) private authService: AuthService,

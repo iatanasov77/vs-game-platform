@@ -28,7 +28,7 @@ export class TestMultiplayerLobby implements OnInit
     
     sseClient$: Observable<Event>;
     topicUri: string;
-    sseResponseType: string = 'text';
+    sseResponseType: string = 'event';
     
     constructor(
         @Inject( AuthService ) private authService: AuthService,
@@ -61,14 +61,14 @@ export class TestMultiplayerLobby implements OnInit
     createCardGameLobby(): void
     {
         this.backendPublisher.createMultiplayerLobby( 'card_game', this.topicUri ).subscribe( ( message ) => {
-            alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
+            // alert( `Create CardGame Lobby Response: ${JSON.stringify( message )}` );
         });
     }
     
     createBoardGameLobby(): void
     {
         this.backendPublisher.createMultiplayerLobby( 'board_game', this.topicUri ).subscribe( ( message ) => {
-            alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
+            // alert( `Create BoardGame Lobby Response: ${JSON.stringify( message )}` );
         });
     }
     

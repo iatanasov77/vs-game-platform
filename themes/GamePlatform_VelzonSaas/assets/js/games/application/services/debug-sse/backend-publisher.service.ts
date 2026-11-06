@@ -8,6 +8,17 @@ import { AuthService } from '../auth.service';
 import { AppConstants } from "../../constants";
 const { context } = require( '../../context' );
 
+// Action Interfaces
+import { MercureActionNames } from '../../Enum/mercureActionNames';
+import { MercureActionDto } from '../../Dto/Actions/mercureActionDto';
+import { GameLobbyCreatedActionDto } from '../../Dto/Actions/gameLobbyCreatedActionDto';
+import { GameRoomDto } from '../../Dto/gameRoomDto';
+
+import { TestMercureMessageActionDto } from '../../Dto/Actions/testMercureMessageActionDto';
+import { CreateGameLobbyActionDto } from '../../Dto/Actions/createGameLobbyActionDto';
+import { JoinGameLobbyActionDto } from '../../Dto/Actions/joinGameLobbyActionDto';
+import { LeaveGameLobbyActionDto } from '../../Dto/Actions/leaveGameLobbyActionDto';
+
 @Injectable({
     providedIn: 'root'
 })
@@ -24,50 +35,59 @@ export class BackendPublisherService
     
     sendTestMessage( topic: string ): Observable<MessageData>
     {
-        const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
-        const url = `${this.url}/test-mercure/test-message`;
-        
-        return this.httpClient.post<MessageData>( url, { topic : topic }, {headers} ).pipe(
-            map( ( response: any ) => this.mapMessageData( response ) )
-        );
+        const action: TestMercureMessageActionDto = {
+            actionName: MercureActionNames.testMessage,
+            message: {
+                message: "Send Test Message."
+            }
+        };
+        return this.sendMessage( topic, JSON.stringify( action ) );
     }
     
     sendToTestMultiplayerLobby( topic: string ): Observable<MessageData>
     {
-        const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
-        const url = `${this.url}/test-mercure/test-message`;
-        
-        return this.httpClient.post<MessageData>( url, { topic : topic }, {headers} ).pipe(
-            map( ( response: any ) => this.mapMessageData( response ) )
-        );
+        const action: TestMercureMessageActionDto = {
+            actionName: MercureActionNames.testMessage,
+            message: {
+                message: "Send To Test Multiplayer Lobby."
+            }
+        };
+        return this.sendMessage( topic, JSON.stringify( action ) );
     }
     
     createMultiplayerLobby( gameType: string, topic: string ): Observable<MessageData>
     {
-        const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
-        const url = `${this.url}/test-mercure/create-lobby/${gameType}`;
-        
-        return this.httpClient.post<MessageData>( url, { topic : topic }, {headers} ).pipe(
-            map( ( response: any ) => this.mapMessageData( response ) )
-        );
+        const action: CreateGameLobbyActionDto = {
+            actionName: MercureActionNames.createGameLobby,
+            gameType: gameType,
+        };
+        return this.sendMessage( topic, JSON.stringify( action ) );
     }
     
-    joinMultiplayerLobby(  room: IGameRoom  ): Observable<MessageData>
+    joinMultiplayerLobby( room: GameRoomDto, topic: string  ): Observable<MessageData>
     {
-        const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
-        const url = `${this.url}/test-mercure/join-lobby/${room.id}`;
-        
-        return this.httpClient.get<MessageData>( url, {headers} ).pipe(
-            map( ( response: any ) => this.mapMessageData( response ) )
-        );
+        const action: JoinGameLobbyActionDto = {
+            actionName: MercureActionNames.joinGameLobby,
+            room: room
+        };
+        return this.sendMessage( topic, JSON.stringify( action ) );
     }
     
-    leaveMultiplayerLobby(  room: IGameRoom  ): Observable<MessageData>
+    leaveMultiplayerLobby(  room: GameRoomDto, topic: string  ): Observable<MessageData>
+    {
+        const action: LeaveGameLobbyActionDto = {
+            actionName: MercureActionNames.leaveGameLobby,
+            room: room
+        };
+        return this.sendMessage( topic, JSON.stringify( action ) );
+    }
+    
+    private sendMessage( topic: string, message: string ): Observable<MessageData>
     {
         const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
-        const url = `${this.url}/test-mercure/leave-lobby/${room.id}`;
+        const url = `${this.url}/test-mercure/test-message`;
         
-        return this.httpClient.get<MessageData>( url, {headers} ).pipe(
+        return this.httpClient.post<MessageData>( url, { topic : topic, message: message }, {headers} ).pipe(
             map( ( response: any ) => this.mapMessageData( response ) )
         );
     }

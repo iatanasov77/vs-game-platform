@@ -28,6 +28,21 @@ services:
             - '@Symfony\Component\Mercure\Discovery'
             - '@Symfony\Component\Mercure\Authorization'
     
+    app_mercure_manager:
+        class: App\Component\Manager\MercureManager
+        public: true
+        arguments:
+            - '@doctrine'
+            - '@app_mercure_publisher'
+            - '@vs_users.security_bridge'
+            - '@app_mercure_logger'
+            - '@serializer'
+            - '@vsapp.repository.games'
+            - '@vsapp.factory.game_sessions'
+            - '@vsapp.repository.game_sessions'
+            - '@vsapp.repository.game_players'
+            - '@vsapp.factory.temp_players'
+    
     app_game_team:
         class: App\Component\GameTeam
         public: true

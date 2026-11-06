@@ -27,7 +27,7 @@ trait GameRoomResponseTrait
     private function _getRoomGame( GamePlay $room ): array
     {
         $game   = [
-            'id'            => $room->getGame()->getId(),
+            'id'            => $room->getGuid(),
             'slug'          => $room->getGame()->getSlug(),
             'title'         => $room->getGame()->getTitle(),
             'maxPlayers'    => $room->getGame()->getMaxPlayers(),

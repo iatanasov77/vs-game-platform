@@ -37,7 +37,7 @@ export class GamePlayersComponent implements OnInit, OnDestroy
     
     sseClient$: Observable<Event>;
     topicUri: string;
-    sseResponseType: string = 'text';
+    sseResponseType: string = 'event';
     
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,

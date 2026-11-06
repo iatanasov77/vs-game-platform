@@ -97,7 +97,10 @@ class MercureManager
         if ( $actionName == MercureActionNames::testMessage ) {
             $action = $this->serializer->deserialize( $actionText, TestMercureMessageActionDto::class, JsonEncoder::FORMAT );
             
-            return 'Response: Published From Backend';
+            $this->mercurePublisher->publishData( $topic, $action );
+            $json = $this->serializer->serialize( $action, JsonEncoder::FORMAT );
+            
+            return $json;
         } else if ( $actionName == MercureActionNames::createGameLobby ) {
             $gameType   = $action->gameType;
             if ( $gameType == GamePlatform::GAME_TYPE_CARD_GAME ) {
@@ -108,8 +111,9 @@ class MercureManager
             
             $gamePlay = $this->createResponseBody( $loby );
             $this->mercurePublisher->publishData( $topic, $gamePlay );
+            $json = $this->serializer->serialize( $gamePlay, JsonEncoder::FORMAT );
             
-            return $json = $this->serializer->serialize( $gamePlay, JsonEncoder::FORMAT );
+            return $json;
         } else if ( $actionName == MercureActionNames::joinGameLobby ) {
             $action = $this->serializer->deserialize( $actionText, JoinGameLobbyActionDto::class, JsonEncoder::FORMAT );
             
@@ -119,8 +123,9 @@ class MercureManager
             
             $gamePlay = $this->createResponseBody( $loby );
             $this->mercurePublisher->publishData( $topic, $gamePlay );
+            $json = $this->serializer->serialize( $gamePlay, JsonEncoder::FORMAT );
             
-            return $json = $this->serializer->serialize( $gamePlay, JsonEncoder::FORMAT );
+            return $json;
         } else if ( $actionName == MercureActionNames::leaveGameLobby ) {
             $action = $this->serializer->deserialize( $actionText, LeaveGameLobbyActionDto::class, JsonEncoder::FORMAT );
             
@@ -130,8 +135,9 @@ class MercureManager
             
             $gamePlay = $this->createResponseBody( $loby );
             $this->mercurePublisher->publishData( $topic, $gamePlay );
+            $json = $this->serializer->serialize( $gamePlay, JsonEncoder::FORMAT );
             
-            return $json = $this->serializer->serialize( $gamePlay, JsonEncoder::FORMAT );
+            return $json;
         }
     }
     

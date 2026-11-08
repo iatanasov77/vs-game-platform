@@ -1,10 +1,8 @@
-import { Injectable, Inject, NgZone } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
-import { Observable, Subscriber } from 'rxjs';
+import { Observable, Subscription, Subscriber } from 'rxjs';
 
 import { SseClient } from 'ngx-sse-client';
-const EventSource: any = window["EventSource"];
-import { EventSourcePolyfill } from "event-source-polyfill";
 
 // Action Interfaces
 import { MercureActionNames } from '../Enum/mercureActionNames';
@@ -37,8 +35,8 @@ declare var $: any;
 })
 export class EventSourceService
 {
-    private eventSource: null | EventSource;
-    private sseClientStream: null | Observable<Event>;
+    private sseClientStream: Observable<Event> | null;
+    private sseSubscription: Subscription | null;
     
     /**
      * constructor
@@ -48,38 +46,12 @@ export class EventSourceService
      * and we need to notify Angular about changes related to SSE events
      */
     constructor(
-        @Inject( NgZone ) private zone: NgZone,
         @Inject( SseClient ) private sseClient: SseClient,
         @Inject( AppStateService ) private appState: AppStateService,
         @Inject( AuthService ) private authService: AuthService,
     ) {
-        this.eventSource        = null;
         this.sseClientStream    = null;
-    }
-    
-    createNativeSseClientStream( topicUri: string, options: EventSourceInit, eventNames: string[] = [] ): Observable<MessageEvent> | undefined
-    {
-        const hub           = `${context.mercureHost}?match=${topicUri}`;
-        this.eventSource    = new EventSourcePolyfill( hub, options );
-        // alert( this.eventSource.url );
-        
-        return new Observable( ( subscriber: Subscriber<MessageEvent> ) => {
-            if ( ! this.eventSource ) return;
-            
-            this.eventSource.onerror = error => {
-                this.zone.run( () => subscriber.error( error ) );
-            };
-            
-            eventNames.forEach( ( event: string ) => {
-                if ( ! this.eventSource ) return;
-                
-                // alert( event );
-                this.eventSource.addEventListener( event, data => {
-                    console.log( data.data );
-                    this.zone.run( () => subscriber.next( data ) );
-                });
-            });
-        });
+        this.sseSubscription    = null;
     }
     
     /*  
@@ -95,7 +67,7 @@ export class EventSourceService
         } as const;
         
         this.sseClientStream = this.createNgxSseClient( topicUri, options );
-        this.subscribeNgxSseClientStream( this.sseClientStream, responseType );
+        this.sseSubscription = this.subscribeNgxSseClientStream( this.sseClientStream, responseType );
         
         return this.sseClientStream;
     }
@@ -111,14 +83,13 @@ export class EventSourceService
         return this.sseClient.stream( hub, options );
     }
     
-    private subscribeNgxSseClientStream( sseClient: any, responseType: string ): void
+    private subscribeNgxSseClientStream( sseClient: any, responseType: string ): Subscription
     {
         if ( responseType == 'event' ) {
-            // this.sseClient.stream( hub, options, requestOptions, method ).subscribe( ( event ) => {
-            sseClient.subscribe( this.handleNgxSseEventResponse.bind( this ) );
-        } else {
-            sseClient.subscribe( this.handleNgxSseTextResponse.bind( this ) );
+            return sseClient.subscribe( this.handleNgxSseEventResponse.bind( this ) );
         }
+        
+        return sseClient.subscribe( this.handleNgxSseTextResponse.bind( this ) );
     }
     
     private handleNgxSseTextResponse( data: any )
@@ -168,11 +139,11 @@ export class EventSourceService
      */
     close(): void
     {
-        if ( ! this.eventSource ) {
+        if ( ! this.sseClientStream || ! this.sseSubscription ) {
             return;
         }
     
-        this.eventSource.close();
-        this.eventSource = null;
+        this.sseSubscription.unsubscribe();
+        this.sseClientStream = null;
     }
 }

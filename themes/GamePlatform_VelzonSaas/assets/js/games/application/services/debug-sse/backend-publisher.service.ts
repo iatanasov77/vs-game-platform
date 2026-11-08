@@ -102,7 +102,7 @@ export class BackendPublisherService
     
     private mapMessageData( response: any )
     {
-        alert( `Map MessageData: ${JSON.stringify( response )}` );
+        // alert( `Map MessageData: ${JSON.stringify( response )}` );
         if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
             let message: MessageData = {
                 status: response.status,

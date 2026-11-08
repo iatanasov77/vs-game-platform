@@ -152,7 +152,7 @@ export class EventSourceService
         switch ( action.actionName ) {
             case MercureActionNames.gameLobbyCreated: {
                 const dto = JSON.parse( message.data ) as GameLobbyCreatedActionDto;
-                alert( `NgxSseClient GameRoomDto: ${dto.room}` );
+                // alert( `NgxSseClient GameRoomDto: ${dto.room}` );
                 
                 // Can Use: https://ngrx.io/guide/data
                 const gameRooms = this.appState.gameRooms.getValue();

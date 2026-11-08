@@ -8,7 +8,7 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Vankosoft\UsersBundle\Security\SecurityBridge;
 use App\Component\ServerSentEvent\MercurePublisher;
 use App\Component\Logger\MercureLogger;
-use App\Controller\Api\Games\GameRoomObjectTrait;
+use App\Component\GameRoomObjectTrait;
 
 // DTO
 use App\Component\Dto\Actions\MercureActionNames;

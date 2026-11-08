@@ -1,4 +1,4 @@
-<?php namespace App\Controller\Api\Games;
+<?php namespace App\Component;
 
 use App\Component\Dto\GameRoomDto;
 use App\Component\Dto\GameDto;

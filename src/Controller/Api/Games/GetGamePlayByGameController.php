@@ -5,9 +5,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 
+use App\Component\GameRoomObjectTrait;
+
 class GetGamePlayByGameController extends AbstractController
 {
-    use GameRoomResponseTrait;
+    use GameRoomObjectTrait;
     
     /** @var RepositoryInterface */
     private $gamesRepository;

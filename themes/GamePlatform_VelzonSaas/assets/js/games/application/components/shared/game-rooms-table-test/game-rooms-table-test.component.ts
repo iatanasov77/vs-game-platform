@@ -88,7 +88,7 @@ export class GameRoomsTableTestComponent implements OnInit
     
     roomChanged( dto: GameRoomDto[] ): void
     {
-        this.openDebugWindowDialog( `App State Rooms Changed: ${JSON.stringify( dto )}` );
+        // this.openDebugWindowDialog( `App State Rooms Changed: ${JSON.stringify( dto )}` );
         this.gameRooms  = dto;
     }
     

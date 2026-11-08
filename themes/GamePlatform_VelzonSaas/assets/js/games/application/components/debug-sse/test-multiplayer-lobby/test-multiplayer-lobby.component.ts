@@ -5,9 +5,12 @@ import { MessageData } from '@vankosoft/game-platform';
 
 import { MercureJwt, User, PaymentTopic } from '../../../services/debug-sse/models';
 import { AuthService } from '../../../services/auth.service';
-import { EventSourceService } from '../../../services/event-source.service'
-import { FrontendPublisherService } from '../../../services/debug-sse/frontend-publisher.service'
-import { BackendPublisherService } from '../../../services/debug-sse/backend-publisher.service'
+import { EventSourceService } from '../../../services/event-source.service';
+import { FrontendPublisherService } from '../../../services/debug-sse/frontend-publisher.service';
+
+// Action Interfaces
+import { MercureActionNames } from '../../../Enum/mercureActionNames';
+import { CreateGameLobbyActionDto } from '../../../Dto/Actions/createGameLobbyActionDto';
 
 import templateString from './test-multiplayer-lobby.component.html';
 import styleString from './test-multiplayer-lobby.component.scss';
@@ -34,7 +37,6 @@ export class TestMultiplayerLobby implements OnInit
         @Inject( AuthService ) private authService: AuthService,
         @Inject( EventSourceService ) private sseService: EventSourceService,
         @Inject( FrontendPublisherService ) private frontendPublisher: FrontendPublisherService,
-        @Inject( BackendPublisherService ) private backendPublisher: BackendPublisherService,
     ) {
         this.topicUri = `${context.backendURL}/test-multiplayer-lobby/subscribe`;
         this.sseClient$ = this.sseService.createNgxSseClientStream( this.topicUri, this.sseResponseType );
@@ -60,15 +62,25 @@ export class TestMultiplayerLobby implements OnInit
     
     createCardGameLobby(): void
     {
-        this.backendPublisher.createMultiplayerLobby( 'card_game', this.topicUri ).subscribe( ( message ) => {
+        const action: CreateGameLobbyActionDto = {
+            actionName: MercureActionNames.createGameLobby,
+            gameType: "card_game",
+        };
+        
+        this.sseService.sendMessage( this.topicUri, JSON.stringify( action ) ).subscribe( ( message ) => {
             // alert( `Create CardGame Lobby Response: ${JSON.stringify( message )}` );
         });
     }
     
     createBoardGameLobby(): void
     {
-        this.backendPublisher.createMultiplayerLobby( 'board_game', this.topicUri ).subscribe( ( message ) => {
-            // alert( `Create BoardGame Lobby Response: ${JSON.stringify( message )}` );
+        const action: CreateGameLobbyActionDto = {
+            actionName: MercureActionNames.createGameLobby,
+            gameType: "board_game",
+        };
+        
+        this.sseService.sendMessage( this.topicUri, JSON.stringify( action ) ).subscribe( ( message ) => {
+            // alert( `Create CardGame Lobby Response: ${JSON.stringify( message )}` );
         });
     }
     

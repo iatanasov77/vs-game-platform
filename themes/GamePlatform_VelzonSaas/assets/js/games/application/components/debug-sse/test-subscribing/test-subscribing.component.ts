@@ -1,14 +1,17 @@
-import { Component, OnInit, Inject, Input, Output, EventEmitter, NgZone } from '@angular/core';
+import { Component, OnInit, Inject, Input, Output, EventEmitter } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { MessageData } from '@vankosoft/game-platform';
 
 import { AuthService } from '../../../services/auth.service';
-import { EventSourceService } from '../../../services/event-source.service'
+import { EventSourceService } from '../../../services/event-source.service';
 
 import { MercureJwt, User, PaymentTopic } from '../../../services/debug-sse/models';
-import { FrontendPublisherService } from '../../../services/debug-sse/frontend-publisher.service'
-import { BackendPublisherService } from '../../../services/debug-sse/backend-publisher.service'
+import { FrontendPublisherService } from '../../../services/debug-sse/frontend-publisher.service';
+
+// Action Interfaces
+import { MercureActionNames } from '../../../Enum/mercureActionNames';
+import { MercureMessageActionDto } from '../../../Dto/Actions/mercureMessageActionDto';
 
 import templateString from './test-subscribing.component.html';
 import styleString from './test-subscribing.component.scss';
@@ -40,8 +43,6 @@ export class TestSubscribingComponent implements OnInit
         @Inject( AuthService ) private authService: AuthService,
         @Inject( EventSourceService ) private sseService: EventSourceService,
         @Inject( FrontendPublisherService ) private frontendPublisher: FrontendPublisherService,
-        @Inject( BackendPublisherService ) private backendPublisher: BackendPublisherService,
-        @Inject( NgZone ) private zone: NgZone,
     ) { 
         this.topicUri = `${context.backendURL}/test-subscribing/subscribe`;
         this.sseClient$ = this.sseService.createNgxSseClientStream( this.topicUri, this.sseResponseType );
@@ -66,12 +67,18 @@ export class TestSubscribingComponent implements OnInit
     
     sendTestMessage(): void
     {
-        this.backendPublisher.sendTestMessage( this.topicUri ).subscribe (
-            ( e: MessageData ) => {
-                // console.log( 'Message received: ' + e.message );
-                // alert( `Message received: ${JSON.stringify( e )}` );
+        const action: MercureMessageActionDto = {
+            actionName: MercureActionNames.testMessage,
+            message: {
+                topic : this.topicUri,
+                message: "Send Test Message."
             }
-        );
+        };
+        
+        this.sseService.sendMessage( this.topicUri, JSON.stringify( action ) ).subscribe( ( message ) => {
+            // console.log( 'Message received: ' + e.message );
+            // alert( `Message received: ${JSON.stringify( e )}` );
+        });
     }
     
     testGenerateMercureToken(): void

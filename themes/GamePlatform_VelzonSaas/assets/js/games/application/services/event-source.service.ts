@@ -1,13 +1,15 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
-import { Observable, Subscription, Subscriber } from 'rxjs';
+import { Observable, Subscription, map } from 'rxjs';
 
 import { SseClient } from 'ngx-sse-client';
+import { MessageData } from '@vankosoft/game-platform';
 
 // Action Interfaces
 import { MercureActionNames } from '../Enum/mercureActionNames';
 import { MercureActionDto } from '../Dto/Actions/mercureActionDto';
 import { GameLobbyCreatedActionDto } from '../Dto/Actions/gameLobbyCreatedActionDto';
+import { MercureMessageDto } from '../Dto/mercureMessageDto';
 
 import { AppConstants } from "../constants";
 const { context } = require( '../context' );
@@ -35,6 +37,7 @@ declare var $: any;
 })
 export class EventSourceService
 {
+    private url: string;
     private sseClientStream: Observable<Event> | null;
     private sseSubscription: Subscription | null;
     
@@ -49,7 +52,9 @@ export class EventSourceService
         @Inject( SseClient ) private sseClient: SseClient,
         @Inject( AppStateService ) private appState: AppStateService,
         @Inject( AuthService ) private authService: AuthService,
+        @Inject( HttpClient ) private httpClient: HttpClient,
     ) {
+        this.url = `${context.apiURL}`;
         this.sseClientStream    = null;
         this.sseSubscription    = null;
     }
@@ -70,6 +75,21 @@ export class EventSourceService
         this.sseSubscription = this.subscribeNgxSseClientStream( this.sseClientStream, responseType );
         
         return this.sseClientStream;
+    }
+    
+    sendMessage( topic: string, message: string ): Observable<MessageData>
+    {
+        const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
+        const url = `${this.url}/mercure-publish`;
+        
+        const messageDto:MercureMessageDto = {
+            topic : topic,
+            message: message
+        };
+        
+        return this.httpClient.post<MessageData>( url, messageDto, {headers} ).pipe(
+            map( ( response: any ) => this.mapMessageData( response ) )
+        );
     }
     
     private createNgxSseClient( topicUri: string, options: any ): Observable<Event>
@@ -110,7 +130,7 @@ export class EventSourceService
         }
     }
     
-    onMessage( message: MessageEvent<string> ): void
+    private onMessage( message: MessageEvent<string> ): void
     {
         if ( ! message.data.length  ) {
             return;
@@ -132,6 +152,21 @@ export class EventSourceService
                 break;
             }
         }
+    }
+    
+    private mapMessageData( response: any )
+    {
+        // alert( `Map MessageData: ${JSON.stringify( response )}` );
+        if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
+            let message: MessageData = {
+                status: response.status,
+                message: response.message,
+            };
+            
+            return message;
+        }
+        
+        return response.message;
     }
     
     /**

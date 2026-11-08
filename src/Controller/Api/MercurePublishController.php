@@ -10,7 +10,7 @@ use Vankosoft\ApplicationBundle\Component\Status;
 use App\Component\Manager\MercureManager;
 use App\Component\Dto\TestMercureMessageDto;
 
-class TestMercurePublishController
+class MercurePublishController
 {
     /** @var SerializerInterface */
     private $serializer;

@@ -26,10 +26,14 @@ import { GameRoomDto } from '../../../Dto/gameRoomDto';
 import { AuthService } from '../../../services/auth.service';
 import { GameService } from '../../../services/game.service'
 import { EventSourceService } from '../../../services/event-source.service';
-import { BackendPublisherService } from '../../../services/debug-sse/backend-publisher.service'
 
 import { IPlayer } from '@vankosoft/game-platform';
 import { IMercureAction } from '@vankosoft/game-platform';
+
+// Action Interfaces
+import { MercureActionNames } from '../../../Enum/mercureActionNames';
+import { JoinGameLobbyActionDto } from '../../../Dto/Actions/joinGameLobbyActionDto';
+import { LeaveGameLobbyActionDto } from '../../../Dto/Actions/leaveGameLobbyActionDto';
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DebugWindowComponent } from '../debug-window/debug-window.component';
@@ -70,7 +74,6 @@ export class GameRoomsTableTestComponent implements OnInit
         @Inject( AppStateService ) private appStateService: AppStateService,
         @Inject( AuthService ) private authService: AuthService,
         @Inject( GameService ) private gameService: GameService,
-        @Inject( BackendPublisherService ) private backendPublisher: BackendPublisherService,
         @Inject( EventSourceService ) private sseService: EventSourceService,
         @Inject( NgbModal ) private ngbModal: NgbModal,
     ) {
@@ -115,7 +118,12 @@ export class GameRoomsTableTestComponent implements OnInit
     {
         // alert( `Join Room: ${JSON.stringify( room )}` );
         
-        this.backendPublisher.joinMultiplayerLobby( room, this.topicUri ).subscribe( ( message ) => {
+        const action: JoinGameLobbyActionDto = {
+            actionName: MercureActionNames.joinGameLobby,
+            room: room
+        };
+        
+        this.sseService.sendMessage( this.topicUri, JSON.stringify( action ) ).subscribe( ( message ) => {
             alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
         });
     }
@@ -123,8 +131,13 @@ export class GameRoomsTableTestComponent implements OnInit
     leaveRoom( room: GameRoomDto ): void
     {
         alert( `Leave Room: ${JSON.stringify( room )}` );
-         
-        this.backendPublisher.leaveMultiplayerLobby( room, this.topicUri ).subscribe( ( message: any ) => {
+        
+        const action: LeaveGameLobbyActionDto = {
+            actionName: MercureActionNames.leaveGameLobby,
+            room: room
+        };
+        
+        this.sseService.sendMessage( this.topicUri, JSON.stringify( action ) ).subscribe( ( message ) => {
             alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
         });
     }

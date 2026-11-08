@@ -12,6 +12,9 @@ import { IGame } from '@vankosoft/game-platform';
 import { IPlayer } from '@vankosoft/game-platform';
 import { IGameRoom } from '@vankosoft/game-platform';
 
+// Core Interfaces
+import { GameRoomDto } from '../Dto/gameRoomDto';
+
 @Injectable({
     providedIn: 'root'
 })
@@ -69,12 +72,12 @@ export class GameService
         return this.httpClient.get<IGameRoom[]>( url );
     }
     
-    loadGameSessionsCategory( categorySlug: string ): Observable<IGameRoom[]>
+    loadGameSessionsCategory( categorySlug: string ): Observable<GameRoomDto[]>
     {
         // alert( gameSlug );
         var url = `${this.url}/game-sessions-category/${categorySlug}`;
         
-        return this.httpClient.get<IGameRoom[]>( url );
+        return this.httpClient.get<GameRoomDto[]>( url );
     }
     
     clearGameSessions( gameSlug: string ): Observable<IGameRoom[]>

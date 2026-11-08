@@ -44,10 +44,15 @@ export class EditorService
         const index = gameClone.points[from].checkers.indexOf( checker );
         gameClone.points[from].checkers.splice( index, 1 );
         
+        
+        const whitePointsLeft = gameClone.players[PlayerColor.white].pointsLeft || 0;
+        
         if ( move.color == PlayerColor.black ) {
-            gameClone.players[PlayerColor.black].pointsLeft -= move.to - move.from;
+            let blackPointsLeft = gameClone.players[PlayerColor.black].pointsLeft || 0;
+            blackPointsLeft -= move.to - move.from;
         } else {
-            gameClone.players[PlayerColor.white].pointsLeft -= move.from - move.to;
+            let whitePointsLeft = gameClone.players[PlayerColor.white].pointsLeft || 0;
+            whitePointsLeft -= move.from - move.to;
         }
         
         //push checker to new point
@@ -61,6 +66,9 @@ export class EditorService
         const game: BoardGameDto = {
             id: '15f126cb-e84d-4fe7-9782-8767109eed49',
             gameCode: 'backgammon',
+            
+            title: 'Backgammon',
+            maxPlayers: 2,
             
             players: {
                 [PlayerColor.black]: {

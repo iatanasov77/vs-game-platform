@@ -6,14 +6,16 @@ import { SseClient } from 'ngx-sse-client';
 const EventSource: any = window["EventSource"];
 import { EventSourcePolyfill } from "event-source-polyfill";
 
+// Action Interfaces
+import { MercureActionNames } from '../Enum/mercureActionNames';
+import { MercureActionDto } from '../Dto/Actions/mercureActionDto';
+import { GameLobbyCreatedActionDto } from '../Dto/Actions/gameLobbyCreatedActionDto';
+
 import { AppConstants } from "../constants";
 const { context } = require( '../context' );
 
 import { AppStateService } from '../state/app-state.service';
 import { AuthService } from './auth.service';
-
-// DTO
-import { IGameRoom } from '@vankosoft/game-platform';
 
 declare var $: any;
 
@@ -143,15 +145,22 @@ export class EventSourceService
             return;
         }
         
-        const room = JSON.parse( message.data ) as IGameRoom;
-        const gameRooms = this.appState.gameRooms.getValue();
-        
         // alert( `NgxSseClient Event Message: ${message.data}` );
         // console.info( `SSE request with type "${message.type}" and data "${message.data}"` );
         
-        // gameRooms.push( room );
-        // this.appState.gameRooms.setValue( gameRooms );
-        this.appState.gameRooms.setValue( [room] );
+        const action = JSON.parse( message.data ) as MercureActionDto;
+        switch ( action.actionName ) {
+            case MercureActionNames.gameLobbyCreated: {
+                const dto = JSON.parse( message.data ) as GameLobbyCreatedActionDto;
+                alert( `NgxSseClient GameRoomDto: ${dto.room}` );
+                
+                // Can Use: https://ngrx.io/guide/data
+                const gameRooms = this.appState.gameRooms.getValue();
+                this.appState.gameRooms.setValue( [...gameRooms, dto.room] );
+                
+                break;
+            }
+        }
     }
     
     /**

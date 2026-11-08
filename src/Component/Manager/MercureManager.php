@@ -8,12 +8,13 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Vankosoft\UsersBundle\Security\SecurityBridge;
 use App\Component\ServerSentEvent\MercurePublisher;
 use App\Component\Logger\MercureLogger;
-use App\Controller\Api\Games\GameRoomResponseTrait;
+use App\Controller\Api\Games\GameRoomObjectTrait;
 
 // DTO
 use App\Component\Dto\Actions\MercureActionNames;
 use App\Component\Dto\Actions\MercureActionDto;
 use App\Component\Dto\Actions\TestMercureMessageActionDto;
+use App\Component\Dto\Actions\GameLobbyCreatedActionDto;
 use App\Component\Dto\Actions\JoinGameLobbyActionDto;
 use App\Component\Dto\Actions\LeaveGameLobbyActionDto;
 
@@ -31,7 +32,7 @@ use App\Entity\TempPlayer;
 
 class MercureManager
 {
-    use GameRoomResponseTrait;
+    use GameRoomObjectTrait;
     
     /** @var ManagerRegistry */
     private $doctrine;
@@ -110,8 +111,11 @@ class MercureManager
             }
             
             $gamePlay = $this->createResponseBody( $loby );
-            $this->mercurePublisher->publishData( $topic, $gamePlay );
-            $json = $this->serializer->serialize( $gamePlay, JsonEncoder::FORMAT );
+            $action = new GameLobbyCreatedActionDto();
+            $action->room = $gamePlay;
+            
+            $this->mercurePublisher->publishData( $topic, $action );
+            $json = $this->serializer->serialize( $action, JsonEncoder::FORMAT );
             
             return $json;
         } else if ( $actionName == MercureActionNames::joinGameLobby ) {
@@ -122,8 +126,11 @@ class MercureManager
             $this->_joinGameLobby( $loby, $player );
             
             $gamePlay = $this->createResponseBody( $loby );
-            $this->mercurePublisher->publishData( $topic, $gamePlay );
-            $json = $this->serializer->serialize( $gamePlay, JsonEncoder::FORMAT );
+            $action = new GameLobbyCreatedActionDto();
+            $action->room = $gamePlay;
+            
+            $this->mercurePublisher->publishData( $topic, $action );
+            $json = $this->serializer->serialize( $action, JsonEncoder::FORMAT );
             
             return $json;
         } else if ( $actionName == MercureActionNames::leaveGameLobby ) {
@@ -134,8 +141,11 @@ class MercureManager
             $this->_leaveGameLobby( $loby, $player );
             
             $gamePlay = $this->createResponseBody( $loby );
-            $this->mercurePublisher->publishData( $topic, $gamePlay );
-            $json = $this->serializer->serialize( $gamePlay, JsonEncoder::FORMAT );
+            $action = new GameLobbyCreatedActionDto();
+            $action->room = $gamePlay;
+            
+            $this->mercurePublisher->publishData( $topic, $action );
+            $json = $this->serializer->serialize( $action, JsonEncoder::FORMAT );
             
             return $json;
         }

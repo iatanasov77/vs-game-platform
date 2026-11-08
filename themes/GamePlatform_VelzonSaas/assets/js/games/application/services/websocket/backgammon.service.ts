@@ -147,6 +147,11 @@ export class BackgammonService extends AbstractGameService
                 
                 const action = JSON.parse( message.data ) as DoublingActionDto;
                 this.appState.moveTimer.setValue( action.moveTimer );
+                
+                const blackGold = game.players[PlayerColor.black].gold || 0;
+                const whiteGold = game.players[PlayerColor.white].gold || 0;
+                const gameStake = game.stake || 0;
+                
                 // Opponent has accepted
                 this.appState.boardGame.setValue({
                     ...game,
@@ -154,19 +159,20 @@ export class BackgammonService extends AbstractGameService
                     goldMultiplier: game.goldMultiplier * 2,
                     lastDoubler: this.appState.myColor.getValue(),
                     currentPlayer: this.appState.myColor.getValue(),
-                    stake: game.stake * 2,
+                    stake: gameStake * 2,
                     
                     players: {
                         [PlayerColor.white]: {
                             ...game.players[PlayerColor.white],
-                            gold: game.players[PlayerColor.white].gold - game.stake / 2
+                            gold: whiteGold - gameStake / 2
                         },
                         
                         [PlayerColor.black]: {
                             ...game.players[PlayerColor.black],
-                            gold: game.players[PlayerColor.black].gold - game.stake / 2
+                            gold: blackGold - gameStake / 2
                         }
                     }
+                    
                 });
                 this.sound.playCoin();
                 this.statusMessageService.setDoublingAccepted();
@@ -329,11 +335,14 @@ export class BackgammonService extends AbstractGameService
         const index = gameClone.points[from].checkers.indexOf( checker );
         gameClone.points[from].checkers.splice( index, 1 );
         
-        if ( move.color == PlayerColor.black ) {
-            gameClone.players[PlayerColor.black].pointsLeft -= move.to - move.from;
-        } else {
-            gameClone.players[PlayerColor.white].pointsLeft -= move.to - move.from;
+        if ( gameClone.players ) {
+            if ( move.color == PlayerColor.black ) {
+                gameClone.players[PlayerColor.black].pointsLeft -= move.to - move.from;
+            } else {
+                gameClone.players[PlayerColor.white].pointsLeft -= move.to - move.from;
+            }
         }
+        
         // hitting opponent checker
         const hit = gameClone.points[to].checkers.find(
             ( c ) => c.color !== move.color

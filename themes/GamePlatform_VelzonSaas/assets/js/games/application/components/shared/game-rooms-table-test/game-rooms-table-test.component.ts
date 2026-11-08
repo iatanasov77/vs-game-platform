@@ -29,7 +29,6 @@ import { EventSourceService } from '../../../services/event-source.service';
 import { BackendPublisherService } from '../../../services/debug-sse/backend-publisher.service'
 
 import { IPlayer } from '@vankosoft/game-platform';
-import { IGameRoom } from '@vankosoft/game-platform';
 import { IMercureAction } from '@vankosoft/game-platform';
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -54,12 +53,12 @@ export class GameRoomsTableTestComponent implements OnInit
     @Input() isLoggedIn: boolean = false;
     @Input() currentPlayer: IPlayer | undefined;
     
-    rooms$: Observable<IGameRoom[]>;
+    rooms$: Observable<GameRoomDto[]>;
     roomSubs: Subscription;
     
     showSpinner = true;
     
-    gameRooms: IGameRoom[] | undefined;
+    gameRooms: GameRoomDto[] | undefined;
     gameCategorySlug: string = 'debug-games';
     
     sseClient$: Observable<Event>;
@@ -85,27 +84,23 @@ export class GameRoomsTableTestComponent implements OnInit
     ngOnInit(): void
     {
         this.loadGameRooms();
-        
-        this.sseClient$.subscribe( this.handleSseResponse.bind( this ) );
     }
     
-    roomChanged( dto: IGameRoom[] ): void
+    roomChanged( dto: GameRoomDto[] ): void
     {
-        let gameRooms = JSON.stringify( dto );
-        
-        // alert( `App State Rooms Changed: ${gameRooms}` );
-        this.openDebugWindowDialog( gameRooms );
+        this.openDebugWindowDialog( `App State Rooms Changed: ${JSON.stringify( dto )}` );
+        this.gameRooms  = dto;
     }
     
     loadGameRooms(): void
     {
-        this.gameService.loadGameSessionsCategory( this.gameCategorySlug ).subscribe( ( rooms: IGameRoom[] ) => {
-            // console.log( rooms );
-            // alert( `Game Rooms: ${JSON.stringify( rooms )}` );
+        this.gameService.loadGameSessionsCategory( this.gameCategorySlug ).subscribe( ( rooms: GameRoomDto[] ) => {
             // this.openDebugWindowDialog( JSON.stringify( rooms ) );
             
             this.showSpinner    = false;
+            
             this.gameRooms      = rooms;
+            this.appStateService.gameRooms.setValue( rooms );
         });
     }
     
@@ -142,10 +137,5 @@ export class GameRoomsTableTestComponent implements OnInit
         modalRef.componentInstance.closeModal.subscribe( () => {
             modalRef.dismiss();
         });
-    }
-    
-    handleSseResponse( data: any )
-    {
-        alert( `GameRoomsTableTest Message: ${data}` );
     }
 }

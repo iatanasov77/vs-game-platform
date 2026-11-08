@@ -6,9 +6,6 @@ use App\Component\Type\CardGameTeam;
 
 class CardGameDto extends GameDto
 {
-    /** @var PlayerDto[] */
-    public array $players;
-    
     public array $validBids;
     public array $validCards;
     public array $bidHistory;

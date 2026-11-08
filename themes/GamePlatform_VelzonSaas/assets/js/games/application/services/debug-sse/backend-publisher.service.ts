@@ -12,6 +12,7 @@ const { context } = require( '../../context' );
 import { MercureActionNames } from '../../Enum/mercureActionNames';
 import { MercureActionDto } from '../../Dto/Actions/mercureActionDto';
 import { GameLobbyCreatedActionDto } from '../../Dto/Actions/gameLobbyCreatedActionDto';
+import { TestMercureMessageDto } from '../../Dto/testMercureMessageDto';
 import { GameRoomDto } from '../../Dto/gameRoomDto';
 
 import { TestMercureMessageActionDto } from '../../Dto/Actions/testMercureMessageActionDto';
@@ -38,6 +39,7 @@ export class BackendPublisherService
         const action: TestMercureMessageActionDto = {
             actionName: MercureActionNames.testMessage,
             message: {
+                topic : topic,
                 message: "Send Test Message."
             }
         };
@@ -49,6 +51,7 @@ export class BackendPublisherService
         const action: TestMercureMessageActionDto = {
             actionName: MercureActionNames.testMessage,
             message: {
+                topic : topic,
                 message: "Send To Test Multiplayer Lobby."
             }
         };
@@ -87,14 +90,19 @@ export class BackendPublisherService
         const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
         const url = `${this.url}/test-mercure/test-message`;
         
-        return this.httpClient.post<MessageData>( url, { topic : topic, message: message }, {headers} ).pipe(
+        const messageDto:TestMercureMessageDto = {
+            topic : topic,
+            message: message
+        };
+        
+        return this.httpClient.post<MessageData>( url, messageDto, {headers} ).pipe(
             map( ( response: any ) => this.mapMessageData( response ) )
         );
     }
     
     private mapMessageData( response: any )
     {
-        // alert( `MessageData: ${JSON.stringify( response )}` );
+        alert( `Map MessageData: ${JSON.stringify( response )}` );
         if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
             let message: MessageData = {
                 status: response.status,

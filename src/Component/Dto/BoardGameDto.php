@@ -5,9 +5,6 @@ use App\Component\Type\PlayerColor;
 
 class BoardGameDto extends GameDto
 {
-    /** @var PlayerDto[] */
-    public array $players;
-    
     public ?PlayerColor $currentPlayer;
     public PlayerColor $winner = PlayerColor::Neither;
     

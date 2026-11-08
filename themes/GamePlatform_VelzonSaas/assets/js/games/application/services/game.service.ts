@@ -8,12 +8,12 @@ import { LocalStorageService } from './local-storage.service';
 import { AuthService } from './auth.service';
 import { AppConstants } from "../constants";
 
-import { IGame } from '@vankosoft/game-platform';
-import { IPlayer } from '@vankosoft/game-platform';
-import { IGameRoom } from '@vankosoft/game-platform';
-
-// Core Interfaces
-import { GameRoomDto } from '../Dto/gameRoomDto';
+import {
+    IGame,
+    IPlayer,
+    IGameRoom,
+    GameRoomDto
+} from '@vankosoft/game-platform';
 
 @Injectable({
     providedIn: 'root'

@@ -3,13 +3,13 @@ import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { Observable, Subscription, map } from 'rxjs';
 
 import { SseClient } from 'ngx-sse-client';
-import { MessageData } from '@vankosoft/game-platform';
-
-// Action Interfaces
-import { MercureActionNames } from '../Enum/mercureActionNames';
-import { MercureActionDto } from '../Dto/Actions/mercureActionDto';
-import { GameLobbyCreatedActionDto } from '../Dto/Actions/gameLobbyCreatedActionDto';
-import { MercureMessageDto } from '../Dto/mercureMessageDto';
+import {
+    MercureActionNames,
+    MessageData,
+    MercureMessageDto,
+    MercureActionDto,
+    GameLobbyCreatedActionDto
+} from '@vankosoft/game-platform';
 
 import { AppConstants } from "../constants";
 const { context } = require( '../context' );

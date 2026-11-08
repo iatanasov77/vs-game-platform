@@ -1,16 +1,12 @@
 import { Component, OnInit, Inject, Input, Output, EventEmitter  } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { MessageData } from '@vankosoft/game-platform';
+import { MercureActionNames, MessageData, CreateGameLobbyActionDto } from '@vankosoft/game-platform';
 
 import { MercureJwt, User, PaymentTopic } from '../../../services/debug-sse/models';
 import { AuthService } from '../../../services/auth.service';
 import { EventSourceService } from '../../../services/event-source.service';
 import { FrontendPublisherService } from '../../../services/debug-sse/frontend-publisher.service';
-
-// Action Interfaces
-import { MercureActionNames } from '../../../Enum/mercureActionNames';
-import { CreateGameLobbyActionDto } from '../../../Dto/Actions/createGameLobbyActionDto';
 
 import templateString from './test-multiplayer-lobby.component.html';
 import styleString from './test-multiplayer-lobby.component.scss';

@@ -9,11 +9,13 @@ import { MessageDto } from '@vankosoft/game-platform';
 import { ChatMessageDto } from '@vankosoft/game-platform';
 
 // Core Interfaces
-import { ConnectionDto } from '@vankosoft/game-platform';
-import { UserDto } from '@vankosoft/game-platform';
-import { GameState } from '@vankosoft/game-platform';
-import { GameDto } from '@vankosoft/game-platform';
-import { GameRoomDto } from '../Dto/gameRoomDto';
+import {
+    ConnectionDto,
+    UserDto,
+    GameState,
+    GameDto,
+    GameRoomDto
+} from '@vankosoft/game-platform';
 
 // BoardGame Interfaces
 import { BoardGameDto } from '@vankosoft/game-platform';

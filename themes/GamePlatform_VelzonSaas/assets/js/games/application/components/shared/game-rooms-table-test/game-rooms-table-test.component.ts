@@ -8,32 +8,30 @@ import {
 import { Observable, Subscription, map } from 'rxjs';
 
 import { TranslateService } from '@ngx-translate/core';
-import { GetTrumps, GetAnnounceSymbol } from '@vankosoft/game-platform';
-import { CardGameAnnounceSymbolModel } from '@vankosoft/game-platform';
-import { ContractBridgeBidDto } from '@vankosoft/game-platform';
-import { PlayerPosition } from '@vankosoft/game-platform';
-import { PlayerPositions } from '@vankosoft/game-platform';
-import { Helper } from '@vankosoft/game-platform';
-import { BidTrump } from '@vankosoft/game-platform';
+import {
+    IPlayer,
+    IMercureAction,
+    MercureActionNames,
+    GameRoomDto,
+    GetTrumps,
+    GetAnnounceSymbol,
+    CardGameAnnounceSymbolModel,
+    ContractBridgeBidDto,
+    PlayerPosition,
+    PlayerPositions,
+    Helper,
+    BidTrump,
+    JoinGameLobbyActionDto,
+    LeaveGameLobbyActionDto
+} from '@vankosoft/game-platform';
 
 // App State
 import { AppStateService } from '../../../state/app-state.service';
-
-// DTO
-import { GameRoomDto } from '../../../Dto/gameRoomDto';
 
 // Services
 import { AuthService } from '../../../services/auth.service';
 import { GameService } from '../../../services/game.service'
 import { EventSourceService } from '../../../services/event-source.service';
-
-import { IPlayer } from '@vankosoft/game-platform';
-import { IMercureAction } from '@vankosoft/game-platform';
-
-// Action Interfaces
-import { MercureActionNames } from '../../../Enum/mercureActionNames';
-import { JoinGameLobbyActionDto } from '../../../Dto/Actions/joinGameLobbyActionDto';
-import { LeaveGameLobbyActionDto } from '../../../Dto/Actions/leaveGameLobbyActionDto';
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DebugWindowComponent } from '../debug-window/debug-window.component';

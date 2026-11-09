@@ -10,17 +10,8 @@ import { Observable, Subscription, map } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import {
     IPlayer,
-    IMercureAction,
     MercureActionNames,
     GameRoomDto,
-    GetTrumps,
-    GetAnnounceSymbol,
-    CardGameAnnounceSymbolModel,
-    ContractBridgeBidDto,
-    PlayerPosition,
-    PlayerPositions,
-    Helper,
-    BidTrump,
     JoinGameLobbyActionDto,
     LeaveGameLobbyActionDto
 } from '@vankosoft/game-platform';

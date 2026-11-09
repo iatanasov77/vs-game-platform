@@ -10,14 +10,10 @@ import { Observable, Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 
 import {
-    GetTrumps,
-    GetAnnounceSymbol,
-    CardGameAnnounceSymbolModel,
-    ContractBridgeBidDto,
-    PlayerPosition,
-    PlayerPositions,
-    Helper,
-    BidTrump,
+    IPlayer,
+    MercureActionNames,
+    JoinGameLobbyActionDto,
+    LeaveGameLobbyActionDto,
     GameRoomDto
 } from '@vankosoft/game-platform';
 
@@ -41,6 +37,9 @@ const { context } = require( '../../../context' );
 })
 export class GameRoomsTableComponent implements OnInit
 {
+    @Input() isLoggedIn: boolean = false;
+    @Input() currentPlayer: IPlayer | undefined;
+    
     rooms$: Observable<GameRoomDto[]>;
     roomSubs: Subscription;
     
@@ -72,7 +71,6 @@ export class GameRoomsTableComponent implements OnInit
     
     roomChanged( dto: GameRoomDto[] ): void
     {
-        // this.openDebugWindowDialog( `App State Rooms Changed: ${JSON.stringify( dto )}` );
         this.gameRooms  = dto;
     }
     
@@ -82,11 +80,48 @@ export class GameRoomsTableComponent implements OnInit
         
         this.gameService.loadGameSessions( gameSlug ).subscribe( ( rooms: GameRoomDto[] ) => {
             // console.log( rooms );
-            alert( `Game Rooms: ${JSON.stringify( rooms )}` );
+            // alert( `Game Rooms: ${JSON.stringify( rooms )}` );
             
             this.showSpinner    = false;
             this.gameRooms      = rooms;
             this.appStateService.gameRooms.setValue( rooms );
+        });
+    }
+    
+    isCurrentPlayerInRoom( room: GameRoomDto ): boolean
+    {
+        const res: boolean = room.players.some( player => player.name === this?.currentPlayer?.name );
+        
+        return res;
+    }
+    
+    joinRoom( index: number, room: GameRoomDto ): void
+    {
+        // alert( `Join Room: ${JSON.stringify( room )}` );
+        
+        const action: JoinGameLobbyActionDto = {
+            actionName: MercureActionNames.joinGameLobby,
+            index: index,
+            room: room
+        };
+        
+        this.sseService.sendMessage( this.topicUri, JSON.stringify( action ) ).subscribe( ( message ) => {
+            // alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
+        });
+    }
+    
+    leaveRoom( index: number, room: GameRoomDto ): void
+    {
+        // alert( `Leave Room: ${JSON.stringify( room )}` );
+        
+        const action: LeaveGameLobbyActionDto = {
+            actionName: MercureActionNames.leaveGameLobby,
+            index: index,
+            room: room
+        };
+        
+        this.sseService.sendMessage( this.topicUri, JSON.stringify( action ) ).subscribe( ( message ) => {
+            // alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
         });
     }
 }

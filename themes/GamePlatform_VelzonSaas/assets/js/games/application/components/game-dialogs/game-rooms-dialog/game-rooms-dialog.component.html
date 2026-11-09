@@ -1,0 +1,42 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{ 'dialogs.select_game_room' | translate }}</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="dismissModal()"></button>
+</div>
+
+<div class="modal-body">
+    <div class="card">
+        <div class="card-header align-items-center d-flex">
+            <h4 class="card-title mb-0 flex-grow-1">Game Rooms</h4>
+            <!--
+            <div class="flex-shrink-0">
+                <div class="form-check form-switch form-switch-right form-switch-md">
+                    <label for="default" class="form-label text-muted">Show Code</label>
+                    <input class="form-check-input code-switcher" type="checkbox" id="default">
+                </div>
+            </div>
+            -->
+        </div><!-- end card header -->
+    
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12">
+                    <game-rooms-table
+                        [isLoggedIn]="isLoggedIn"
+                        [currentPlayer]="currentPlayer"
+                    ></game-rooms-table>
+                </div>
+            </div>
+        </div><!-- end card-body -->
+    </div>
+</div>
+
+<div class="modal-footer">
+    <div class="row">
+        <div class="col-10">&nbsp;</div>
+        <div class="col-2">
+            <button type="button" class="btn btn-outline-dark float-end" (click)="dismissModal()">
+                {{ 'dialogs.close' | translate }}
+            </button>
+        </div>
+    </div>
+</div>

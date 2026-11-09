@@ -24,6 +24,7 @@ import { GameVariant } from "@vankosoft/game-platform";
 import { RequirementsDialogComponent } from '../../game-dialogs/requirements-dialog/requirements-dialog.component';
 import { GameRoomSelectDialogComponent } from '../../game-dialogs/game-room-select-dialog/game-room-select-dialog.component';
 import { GameRoomCreateDialogComponent } from '../../game-dialogs/game-room-create-dialog/game-room-create-dialog.component';
+import { GameRoomsDialogComponent } from '../../game-dialogs/game-rooms-dialog/game-rooms-dialog.component';
 import { PlayAiQuestionComponent } from '../../game-dialogs/play-ai-question/play-ai-question.component';
 import { CreateInviteGameDialogComponent } from '../../game-dialogs/create-invite-game-dialog/create-invite-game-dialog.component';
 import { UserLoginDialogComponent } from '../../game-dialogs/user-login-dialog/user-login-dialog.component';
@@ -833,6 +834,46 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
         
         this.statusMessageService.setWaitingForConnect();
         this.exitVisible = true;
+    }
+    
+    openGameRoomsTable( gameId: string ): void
+    {
+        let currentPlayer = this.authService.getPlayer();
+        // alert( `Current Player From Auth Service: ${JSON.stringify( currentPlayer )}` );
+        
+        // const modalRef = this.ngbModal.open( GameRoomSelectDialogComponent );
+        const modalRef = this.ngbModal.open( GameRoomsDialogComponent );
+        modalRef.componentInstance.isLoggedIn = this.isLoggedIn;
+        modalRef.componentInstance.currentPlayer = currentPlayer;
+        
+        modalRef.componentInstance.closeModal.subscribe( () => {
+            // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
+            modalRef.dismiss();
+        });
+        /*  
+        modalRef.componentInstance.onPlayGame.subscribe( ( gameId: string ) => {
+            modalRef.close();
+            
+            this.playGame( gameId );
+        });
+        */
+    }
+    
+    createGameRoom( gameId: string ): void
+    {
+        const modalRef = this.ngbModal.open( GameRoomCreateDialogComponent );
+        
+        modalRef.componentInstance.closeModal.subscribe( () => {
+            // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
+            modalRef.dismiss();
+        });
+        /*  
+        modalRef.componentInstance.onPlayGame.subscribe( ( gameId: string ) => {
+            modalRef.close();
+            
+            this.playGame( gameId );
+        });
+        */
     }
     
     initFlags(): void

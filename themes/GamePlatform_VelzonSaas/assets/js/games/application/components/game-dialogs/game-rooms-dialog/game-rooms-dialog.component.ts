@@ -1,6 +1,6 @@
 import { Component, Inject, Input, Output, EventEmitter } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { GameRoomDto } from '@vankosoft/game-platform';
+import { IPlayer, GameRoomDto } from '@vankosoft/game-platform';
 
 import templateString from './game-rooms-dialog.component.html';
 
@@ -14,6 +14,10 @@ export class GameRoomsDialogComponent
 {
     @Input() game: any;
     @Input() rooms: GameRoomDto[] | null  = null;
+    
+    @Input() isLoggedIn: boolean = false;
+    @Input() currentPlayer: IPlayer | undefined;
+    
     @Output() closeModal: EventEmitter<any> = new EventEmitter();
     
     constructor(

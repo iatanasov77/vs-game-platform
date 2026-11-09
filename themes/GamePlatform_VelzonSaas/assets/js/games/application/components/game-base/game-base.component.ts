@@ -29,7 +29,7 @@ export class GameBaseComponent implements OnInit, OnDestroy
     introPlaying: boolean       = false;
     hasPlayer: boolean          = false;
     developementClass: string   = '';
-    currentPlayer: any;
+    currentPlayer: IPlayer | undefined;
     
     userActivity: any;
     userInactive: Subject<any> = new Subject();
@@ -68,6 +68,7 @@ export class GameBaseComponent implements OnInit, OnDestroy
             if ( isLoggedIn && auth ) {
                 // alert( 'Auth ID: ' + auth.id );
                 this.gameService.loadPlayerByUser( auth.id ).subscribe( ( player: IPlayer ) => {
+                    // alert( `Current Player: ${JSON.stringify( player )}` );
                     //console.log( player );
                     this.currentPlayer  = player;
                 });

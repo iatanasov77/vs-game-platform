@@ -141,6 +141,8 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     newRoundVisible = false;
     openAuctionDialogVisible = false;
     
+    currentPlayer: PlayerPosition | undefined;
+    
     gameDto: CardGameDto | undefined;
     playerCardsDto: Array<CardDto[]> | undefined;
     playerBidsDto: BidDto[] | undefined = [];
@@ -148,7 +150,6 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     deckDto: CardDto[] | undefined = [];
     pileDto: CardDto[] | undefined = [];
     validBids: BidDto[] = [];
-    currentPlayer: PlayerPosition | undefined;
     contract: BidDto | undefined;
     
     gameStarted: boolean = false;
@@ -263,7 +264,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     
     ngOnChanges( changes: SimpleChanges ): void
     {
-        // alert( 'CardGameContainerComponent Changes !!!' );
+        // alert( `CardGameContainerComponent Changes: ${JSON.stringify( changes )}` );
         
         for ( const propName in changes ) {
             const changedProp = changes[propName];
@@ -570,7 +571,7 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         }
         
         // alert( 'Current Player: ' + dto?.currentPlayer + 'Play State: ' + dto?.playState );
-        this.currentPlayer = dto?.currentPlayer;
+        // this.currentPlayer = dto?.currentPlayer;
     }
     
     oponnentDone(): void
@@ -687,8 +688,13 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
     
     openGameRoomsTable( gameId: string ): void
     {
+        let currentPlayer = this.authService.getPlayer();
+        // alert( `Current Player From Auth Service: ${JSON.stringify( currentPlayer )}` );
+        
         // const modalRef = this.ngbModal.open( GameRoomSelectDialogComponent );
         const modalRef = this.ngbModal.open( GameRoomsDialogComponent );
+        modalRef.componentInstance.isLoggedIn = this.isLoggedIn;
+        modalRef.componentInstance.currentPlayer = currentPlayer;
         
         modalRef.componentInstance.closeModal.subscribe( () => {
             // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular

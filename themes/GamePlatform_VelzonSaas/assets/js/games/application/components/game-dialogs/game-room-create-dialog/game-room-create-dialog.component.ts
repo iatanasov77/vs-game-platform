@@ -1,18 +1,17 @@
 import { Component, Inject, Input, Output, EventEmitter } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
-import { IGameRoom } from '@vankosoft/game-platform';
 import { IPlayer } from '@vankosoft/game-platform';
 
-import templateString from './create-game-room-dialog.component.html';
+import templateString from './game-room-create-dialog.component.html';
 
 @Component({
     standalone: false,
-    selector: 'create-game-room-dialog',
+    selector: 'game-room-create-dialog',
     template:  templateString || 'Template Not Loaded !!!',
     styleUrls: []
 })
-export class CreateGameRoomDialogComponent
+export class GameRoomCreateDialogComponent
 {
     @Input() game: any;
     @Input() players: null | IPlayer[]  = null;

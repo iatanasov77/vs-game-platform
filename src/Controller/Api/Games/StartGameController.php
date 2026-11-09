@@ -7,11 +7,13 @@ use Doctrine\Persistence\ManagerRegistry;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Vankosoft\ApplicationBundle\Component\Status;
+
+use App\Component\GameRoomObjectTrait;
 use App\Component\ServerSentEvent\MercurePublisher;
 
 class StartGameController extends AbstractController
 {
-    use GameRoomResponseTrait;
+    use GameRoomObjectTrait;
     
     /** @var ManagerRegistry */
     private $doctrine;

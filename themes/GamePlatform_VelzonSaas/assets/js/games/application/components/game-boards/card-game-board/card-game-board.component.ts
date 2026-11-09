@@ -25,7 +25,6 @@ import { GameState } from '@vankosoft/game-platform';
 
 // CardGame Interfaces
 import { CardGameDto } from '@vankosoft/game-platform';
-import { CardGamePlayerDto } from '@vankosoft/game-platform';
 import { PlayerPosition } from '@vankosoft/game-platform';
 import { CardDto } from '@vankosoft/game-platform';
 import { BidDto } from '@vankosoft/game-platform';

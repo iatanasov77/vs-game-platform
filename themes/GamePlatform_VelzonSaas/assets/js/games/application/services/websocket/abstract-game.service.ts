@@ -9,34 +9,28 @@ import { AppStateService } from '../../state/app-state.service';
 import { QueryParamsService } from '../../state/query-params.service';
 import { GameService } from '../game.service';
 
-// Core Interfaces
-import { IGameRoom } from '@vankosoft/game-platform';
-import { GameState } from '@vankosoft/game-platform';
-import { GameDto } from '@vankosoft/game-platform';
-import { GameCookieDto } from '@vankosoft/game-platform';
-
-// Board Interfaces
-import { PlayerColor } from '@vankosoft/game-platform';
-import { MoveDto } from '@vankosoft/game-platform';
-import { ChessMoveDto } from '@vankosoft/game-platform';
-import { DiceDto } from '@vankosoft/game-platform';
-
-// Action Interfaces
-import { ActionDto } from '@vankosoft/game-platform';
-import { ActionNames } from '@vankosoft/game-platform';
-import { MovesMadeActionDto } from '@vankosoft/game-platform';
-import { OpponentMoveActionDto } from '@vankosoft/game-platform';
-import { UndoActionDto } from '@vankosoft/game-platform';
-import { StartGamePlayActionDto } from '@vankosoft/game-platform';
-
-// Unused Actions but part of the TypeScript compilation
-import { ServerWasTerminatedActionDto } from '@vankosoft/game-platform';
-
-// Game Variants
-import { GameVariant } from "@vankosoft/game-platform";
-
-import { Keys } from '@vankosoft/game-platform';
-import { MessageLevel, StatusMessage } from '@vankosoft/game-platform';
+// DTO Interfaces
+import {
+    Keys,
+    GameVariant,
+    ActionNames,
+    ActionDto,
+    ServerWasTerminatedActionDto,
+    MovesMadeActionDto,
+    OpponentMoveActionDto,
+    UndoActionDto,
+    StartGamePlayActionDto,
+    GameState,
+    GameDto,
+    GameCookieDto,
+    GameRoomDto,
+    PlayerColor,
+    MoveDto,
+    ChessMoveDto,
+    DiceDto,
+    MessageLevel,
+    StatusMessage
+} from '@vankosoft/game-platform';
 
 declare global {
     interface Window {
@@ -193,7 +187,7 @@ export abstract class AbstractGameService
         }, 250 );
     }
     
-    selectGameRoomFromCookie( rooms: IGameRoom[] ): void
+    selectGameRoomFromCookie( rooms: GameRoomDto[] ): void
     {
         //console.log( 'Rooms in Game State: ', rooms );
         let gameCookie  = this.cookieService.get( Keys.gameIdKey );

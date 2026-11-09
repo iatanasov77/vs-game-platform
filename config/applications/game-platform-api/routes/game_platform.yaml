@@ -56,18 +56,6 @@ vs_api_finish_game:
     path: /api/finish-game/{gamePlayId}
     controller: App\Controller\Api\Games\FinishGameController::finishGameAction
 
-vs_api_test_mercure_test_message:
-    path: /api/test-mercure/test-message
-    controller: App\Controller\Api\TestMercurePublishController::sendTestMessageAction
-
-vs_api_test_mercure_create_lobby:
-    path: /api/test-mercure/create-lobby/{gameType}
-    controller: App\Controller\Api\TestMercurePublishController::createGameLobby
-
-vs_api_test_mercure_join_lobby:
-    path: /api/test-mercure/join-lobby/{roomId}
-    controller: App\Controller\Api\TestMercurePublishController::joinGameLobby
-
-vs_api_test_mercure_leave_lobby:
-    path: /api/test-mercure/leave-lobby/{roomId}
-    controller: App\Controller\Api\TestMercurePublishController::exitGameLobby
+vs_api_mercure_publish:
+    path: /api/mercure-publish
+    controller: App\Controller\Api\MercurePublishController::index

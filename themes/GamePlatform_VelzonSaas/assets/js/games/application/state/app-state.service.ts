@@ -9,11 +9,13 @@ import { MessageDto } from '@vankosoft/game-platform';
 import { ChatMessageDto } from '@vankosoft/game-platform';
 
 // Core Interfaces
-import { ConnectionDto } from '@vankosoft/game-platform';
-import { UserDto } from '@vankosoft/game-platform';
-import { GameState } from '@vankosoft/game-platform';
-import { GameDto } from '@vankosoft/game-platform';
-import { IGameRoom } from '@vankosoft/game-platform';
+import {
+    ConnectionDto,
+    UserDto,
+    GameState,
+    GameDto,
+    GameRoomDto
+} from '@vankosoft/game-platform';
 
 // BoardGame Interfaces
 import { BoardGameDto } from '@vankosoft/game-platform';
@@ -88,7 +90,7 @@ export class AppStateService
     
     chessOpponentMove: StateObject<ChessMoveDto>;
     
-    gameRooms: StateObject<IGameRoom[]>;
+    gameRooms: StateObject<GameRoomDto[]>;
     
     constructor()
     {
@@ -152,7 +154,7 @@ export class AppStateService
         
         this.chessOpponentMove = new StateObject<ChessMoveDto>();
         
-        this.gameRooms = new StateObject<IGameRoom[]>();
+        this.gameRooms = new StateObject<GameRoomDto[]>();
         this.gameRooms.setValue( [] );
     }
 

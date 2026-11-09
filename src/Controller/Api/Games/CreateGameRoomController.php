@@ -9,6 +9,8 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Vankosoft\ApplicationBundle\Component\Status;
 use Vankosoft\UsersBundle\Security\SecurityBridge;
+
+use App\Component\GameRoomObjectTrait;
 use App\Component\GameService;
 use App\Component\Type\PlayerType;
 use App\Component\Type\PlayerPosition;
@@ -19,7 +21,7 @@ use App\Entity\TempPlayer;
 
 class CreateGameRoomController extends AbstractController
 {
-    use GameRoomResponseTrait;
+    use GameRoomObjectTrait;
     
     /** @var ManagerRegistry */
     private $doctrine;

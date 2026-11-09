@@ -22,8 +22,8 @@ import { GameVariant } from "@vankosoft/game-platform";
 
 // Dialogs
 import { RequirementsDialogComponent } from '../../game-dialogs/requirements-dialog/requirements-dialog.component';
-import { SelectGameRoomDialogComponent } from '../../game-dialogs/select-game-room-dialog/select-game-room-dialog.component';
-import { CreateGameRoomDialogComponent } from '../../game-dialogs/create-game-room-dialog/create-game-room-dialog.component';
+import { GameRoomSelectDialogComponent } from '../../game-dialogs/game-room-select-dialog/game-room-select-dialog.component';
+import { GameRoomCreateDialogComponent } from '../../game-dialogs/game-room-create-dialog/game-room-create-dialog.component';
 import { PlayAiQuestionComponent } from '../../game-dialogs/play-ai-question/play-ai-question.component';
 import { CreateInviteGameDialogComponent } from '../../game-dialogs/create-invite-game-dialog/create-invite-game-dialog.component';
 import { UserLoginDialogComponent } from '../../game-dialogs/user-login-dialog/user-login-dialog.component';
@@ -455,10 +455,19 @@ export class BackgammonContainerComponent implements OnInit, AfterViewInit, OnDe
     
     hasFundsForDoubling( gameDto: BoardGameDto ): boolean
     {
-        return (
-            gameDto.players[PlayerColor.black].gold >= gameDto.stake / 2 &&
-            gameDto.players[PlayerColor.white].gold >= gameDto.stake / 2
-        );
+        if ( ! gameDto.players ) {
+            return false;
+        }
+        
+        if ( ! gameDto.stake ) {
+            return false;
+        }
+        
+        const blackGold = gameDto.players[PlayerColor.black].gold || 0;
+        const whiteGold = gameDto.players[PlayerColor.white].gold || 0;
+        const stake = gameDto.stake || 0;
+        
+        return blackGold >= stake / 2 && whiteGold >= stake / 2;
     }
 
     diceChanged( dto: DiceDto[] ): void

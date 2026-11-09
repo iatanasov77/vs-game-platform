@@ -1,34 +1,38 @@
-<?php namespace App\Controller\Api;
+<?php namespace App\Component\Manager;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Mercure\HubInterface;
-use Symfony\Component\Mercure\Update;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Doctrine\Persistence\ManagerRegistry;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
-use Vankosoft\ApplicationBundle\Component\Status;
 use Vankosoft\UsersBundle\Security\SecurityBridge;
 use App\Component\ServerSentEvent\MercurePublisher;
 use App\Component\Logger\MercureLogger;
-use App\Controller\Api\Games\GameRoomResponseTrait;
+use App\Component\GameTeam;
+use App\Component\GameRoomObjectTrait;
+
+// DTO
+use App\Component\Dto\Actions\MercureActionNames;
+use App\Component\Dto\Actions\MercureActionDto;
+use App\Component\Dto\Actions\TestMercureMessageActionDto;
+use App\Component\Dto\Actions\GameLobbyCreatedActionDto;
+use App\Component\Dto\Actions\JoinGameLobbyActionDto;
+use App\Component\Dto\Actions\LeaveGameLobbyActionDto;
 
 // Types
 use App\Component\GamePlatform;
 use App\Component\Utils\Guid;
 use App\Component\Type\PlayerColor;
 use App\Component\Type\PlayerPosition;
-use App\Component\Type\GameState;
 
 use App\Entity\Game;
 use App\Entity\GamePlay;
 use App\Entity\GamePlayer;
 use App\Entity\TempPlayer;
 
-class TestMercurePublishController
+class MercureManager
 {
-    use GameRoomResponseTrait;
+    use GameRoomObjectTrait;
     
     /** @var ManagerRegistry */
     private $doctrine;
@@ -41,6 +45,9 @@ class TestMercurePublishController
     
     /** @var MercureLogger */
     private $logger;
+    
+    /** @var SerializerInterface */
+    private $serializer;
     
     /** @var RepositoryInterface */
     private $gameRepository;
@@ -57,67 +64,104 @@ class TestMercurePublishController
     /** @var FactoryInterface */
     private $tempPlayersFactory;
     
+    /** @var GameTeam */
+    private $gameTeamService;
+    
     public function __construct(
         ManagerRegistry $doctrine,
         MercurePublisher $mercurePublisher,
         SecurityBridge $vsSecurityBridge,
         MercureLogger $logger,
+        SerializerInterface $serializer,
         RepositoryInterface $gameRepository,
         FactoryInterface $gamePlayFactory,
         RepositoryInterface $gamePlayRepository,
         RepositoryInterface $playersRepository,
         FactoryInterface $tempPlayersFactory,
+        GameTeam $gameTeamService
     ) {
         $this->doctrine             = $doctrine;
         $this->mercurePublisher     = $mercurePublisher;
         $this->vsSecurityBridge     = $vsSecurityBridge;
         $this->logger               = $logger;
+        $this->serializer           = $serializer;
         $this->gameRepository       = $gameRepository;
         $this->gamePlayFactory      = $gamePlayFactory;
         $this->gamePlayRepository   = $gamePlayRepository;
         $this->playersRepository    = $playersRepository;
         $this->tempPlayersFactory   = $tempPlayersFactory;
+        $this->gameTeamService      = $gameTeamService;
     }
     
-    public function sendTestMessageAction( Request $request ): JsonResponse
+    public function DoAction( string $topic, string $actionText ): string
     {
-        $postData = \json_decode( $request->getContent(), true );
-        $this->mercurePublisher->publishData( $postData['topic'], ['status' => 'checked out'] );
+        $action     = $this->serializer->deserialize( $actionText, MercureActionDto::class, JsonEncoder::FORMAT );
+        $actionName = MercureActionNames::from( $action->actionName );
+        $this->logger->log( "Doing action: {$actionName->value}", 'MercureManager' );
+        //$this->logger->debug( $this->Game->Points, 'BeforeDoAction.txt' );
         
-        $response   = [
-            'status'    => Status::STATUS_OK,
-            'message'   => 'Published From Backend',
-        ];
-        
-        return new JsonResponse( $response );
-    }
-    
-    public function createGameLobby( $gameType, Request $request ): JsonResponse
-    {
-        if ( $gameType == GamePlatform::GAME_TYPE_CARD_GAME ) {
-            $loby = $this->_createCardGameLobby();
-        } else {
-            $loby = $this->_createBoardGameLobby();
+        if ( $actionName == MercureActionNames::testMessage ) {
+            $action = $this->serializer->deserialize( $actionText, TestMercureMessageActionDto::class, JsonEncoder::FORMAT );
+            
+            $this->mercurePublisher->publishData( $topic, $action );
+            $json = $this->serializer->serialize( $action, JsonEncoder::FORMAT );
+            
+            return $json;
+        } else if ( $actionName == MercureActionNames::createGameLobby ) {
+            $gameType   = $action->gameType;
+            if ( $gameType == GamePlatform::GAME_TYPE_CARD_GAME ) {
+                $loby = $this->_createCardGameLobby();
+            } else {
+                $loby = $this->_createBoardGameLobby();
+            }
+            
+            $teams          = $this->_getRoomTeams( $loby );
+            $gamePlay       = $this->createResponseBody( $loby, $teams );
+            
+            $action         = new GameLobbyCreatedActionDto();
+            $action->room   = $gamePlay;
+            
+            $this->mercurePublisher->publishData( $topic, $action );
+            $json = $this->serializer->serialize( $action, JsonEncoder::FORMAT );
+            
+            return $json;
+        } else if ( $actionName == MercureActionNames::joinGameLobby ) {
+            $action = $this->serializer->deserialize( $actionText, JoinGameLobbyActionDto::class, JsonEncoder::FORMAT );
+            
+            $loby   = $this->gamePlayRepository->find( $action->room->id );
+            $player = $this->vsSecurityBridge->getUser()->getPlayer();
+            $loby   = $this->_joinGameLobby( $loby, $player );
+            
+            $teams          = $this->_getRoomTeams( $loby );
+            $gamePlay       = $this->createResponseBody( $loby, $teams );
+            $action->room   = $gamePlay;
+            
+            $this->mercurePublisher->publishData( $topic, $action );
+            $json = $this->serializer->serialize( $action, JsonEncoder::FORMAT );
+            
+            return $json;
+        } else if ( $actionName == MercureActionNames::leaveGameLobby ) {
+            $action = $this->serializer->deserialize( $actionText, LeaveGameLobbyActionDto::class, JsonEncoder::FORMAT );
+            
+            $loby   = $this->gamePlayRepository->find( $action->room->id );
+            $player = $this->vsSecurityBridge->getUser()->getPlayer();
+            $loby   = $this->_leaveGameLobby( $loby, $player );
+            
+            $teams          = $this->_getRoomTeams( $loby );
+            $gamePlay       = $this->createResponseBody( $loby, $teams );
+            $action->room   = $gamePlay;
+            
+            $this->mercurePublisher->publishData( $topic, $action );
+            $json = $this->serializer->serialize( $action, JsonEncoder::FORMAT );
+            
+            return $json;
         }
-        
-        $postData = \json_decode( $request->getContent(), true );
-        $gamePlay = $this->createResponseBody( $loby );
-        $this->mercurePublisher->publishData( $postData['topic'], $gamePlay );
-        
-        $response   = [
-            'status'    => Status::STATUS_OK,
-            'message'   => 'Test Game Lobby Created',
-        ];
-        
-        return new JsonResponse( $response );
     }
     
-    public function joinGameLobby( $roomId, Request $request ): JsonResponse
+    private function _joinGameLobby( $room, $player ): GamePlay
     {
-        $room   = $this->gamePlayRepository->find( $roomId );
-        $player = $this->vsSecurityBridge->getUser()->getPlayer();
-        
         $this->logger->log( "Join Game Lobby !!!" );
+        
         $tempPlayer = $this->createTempPlayer( $room->getGame(), $player );
         $tempPlayer->setGame( $room );
         $room->addGamePlayer( $tempPlayer );
@@ -126,18 +170,12 @@ class TestMercurePublishController
         $em->persist( $room );
         $em->flush();
         
-        $response   = [
-            'status'    => Status::STATUS_OK,
-            'message'   => 'Test Game Lobby Joined',
-        ];
-        
-        return new JsonResponse( $response );
+        return $room;
     }
     
-    public function exitGameLobby( $roomId, Request $request ): JsonResponse
+    private function _leaveGameLobby( $room, $player ): GamePlay
     {
-        $room   = $this->gamePlayRepository->find( $roomId );
-        $player = $this->vsSecurityBridge->getUser()->getPlayer();
+        $this->logger->log( "Leave Game Lobby !!!" );
         
         $tempPlayer = $room->getTempPlayer( $player );
         $room->removeGamePlayer( $tempPlayer );
@@ -146,12 +184,7 @@ class TestMercurePublishController
         $em->persist( $room );
         $em->flush();
         
-        $response   = [
-            'status'    => Status::STATUS_OK,
-            'message'   => 'Test Game Lobby Leaved',
-        ];
-        
-        return new JsonResponse( $response );
+        return $room;
     }
     
     private function _createBoardGameLobby(): GamePlay
@@ -241,7 +274,7 @@ class TestMercurePublishController
                     $position = PlayerPosition::South;
                 }
                 
-                return $this->CreateBoardGameTempPlayer( $player, $position );
+                return $this->CreateCardGameTempPlayer( $player, $position );
                 
                 break;
         }

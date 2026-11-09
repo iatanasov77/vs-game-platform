@@ -1,17 +1,17 @@
 import { Component, OnInit, OnDestroy, Inject, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { GameService } from '../../../services/game.service'
+import { AppStateService } from '../../../state/app-state.service';
+import { GameService } from '../../../services/game.service';
 import { EventSourceService } from '../../../services/event-source.service';
 
 import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
 import { map, merge, Observable, Subscription } from 'rxjs';
 
-import { IGameRoom } from '@vankosoft/game-platform';
-import { IMercureAction } from '@vankosoft/game-platform';
+import { GameRoomDto } from '@vankosoft/game-platform';
 
-import templateString from './game-rooms.component.html'
-import cssString from './game-rooms.component.scss'
+import templateString from './game-rooms.component.html';
+import cssString from './game-rooms.component.scss';
 
 const { context } = require( '../../../context' );
 declare var $: any;
@@ -34,14 +34,15 @@ export class GameRoomsComponent implements OnInit, OnDestroy
     
     showSpinner = true;
     
-    gameRooms: IGameRoom[] | undefined;
+    gameRooms: GameRoomDto[] | undefined;
     
     sseClient$: Observable<Event>;
     topicUri: string;
-    sseResponseType: string = 'text';
+    sseResponseType: string = 'event';
     
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,
+        @Inject( AppStateService ) private appStateService: AppStateService,
         @Inject( GameService ) private gameService: GameService,
         @Inject( EventSourceService ) private sseService: EventSourceService,
         @Inject( Store ) private store: Store,
@@ -64,22 +65,17 @@ export class GameRoomsComponent implements OnInit, OnDestroy
         }
     }
     
-    updateRooms( action: IMercureAction ): void
-    {
-        //console.log( action );
-        this.loadGameRooms();
-    }
-    
     loadGameRooms(): void
     {
         const gameSlug: string =  window.gamePlatformSettings.gameSlug;
         
-        this.gameService.loadGameSessions( gameSlug ).subscribe( ( rooms: IGameRoom[] ) => {
+        this.gameService.loadGameSessions( gameSlug ).subscribe( ( rooms: GameRoomDto[] ) => {
             // console.log( rooms );
             // alert( `Game Rooms: ${JSON.stringify( rooms )}` );
             
             this.showSpinner    = false;
             this.gameRooms      = rooms;
+            this.appStateService.gameRooms.setValue( rooms );
         });
     }
 }

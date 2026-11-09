@@ -1,14 +1,22 @@
-import { Injectable, Inject, NgZone } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
-import { Observable, Subscriber } from 'rxjs';
+import { Observable, Subscription, map } from 'rxjs';
 
 import { SseClient } from 'ngx-sse-client';
-const EventSource: any = window["EventSource"];
-import { EventSourcePolyfill } from "event-source-polyfill";
+import {
+    MercureActionNames,
+    MessageData,
+    MercureMessageDto,
+    MercureActionDto,
+    GameLobbyCreatedActionDto,
+    JoinGameLobbyActionDto,
+    LeaveGameLobbyActionDto
+} from '@vankosoft/game-platform';
 
 import { AppConstants } from "../constants";
 const { context } = require( '../context' );
 
+import { AppStateService } from '../state/app-state.service';
 import { AuthService } from './auth.service';
 
 declare var $: any;
@@ -31,7 +39,9 @@ declare var $: any;
 })
 export class EventSourceService
 {
-    private eventSource: null | EventSource;
+    private url: string;
+    private sseClientStream: Observable<Event> | null;
+    private sseSubscription: Subscription | null;
     
     /**
      * constructor
@@ -41,36 +51,14 @@ export class EventSourceService
      * and we need to notify Angular about changes related to SSE events
      */
     constructor(
-        @Inject( NgZone ) private zone: NgZone,
         @Inject( SseClient ) private sseClient: SseClient,
+        @Inject( AppStateService ) private appState: AppStateService,
         @Inject( AuthService ) private authService: AuthService,
+        @Inject( HttpClient ) private httpClient: HttpClient,
     ) {
-        this.eventSource    = null;
-    }
-    
-    createNativeSseClientStream( topicUri: string, options: EventSourceInit, eventNames: string[] = [] ): Observable<MessageEvent> | undefined
-    {
-        const hub           = `${context.mercureHost}?match=${topicUri}`;
-        this.eventSource    = new EventSourcePolyfill( hub, options );
-        // alert( this.eventSource.url );
-        
-        return new Observable( ( subscriber: Subscriber<MessageEvent> ) => {
-            if ( ! this.eventSource ) return;
-            
-            this.eventSource.onerror = error => {
-                this.zone.run( () => subscriber.error( error ) );
-            };
-            
-            eventNames.forEach( ( event: string ) => {
-                if ( ! this.eventSource ) return;
-                
-                // alert( event );
-                this.eventSource.addEventListener( event, data => {
-                    console.log( data.data );
-                    this.zone.run( () => subscriber.next( data ) );
-                });
-            });
-        });
+        this.url = `${context.apiURL}`;
+        this.sseClientStream    = null;
+        this.sseSubscription    = null;
     }
     
     /*  
@@ -85,10 +73,25 @@ export class EventSourceService
             responseType: responseType // responseType: 'event'
         } as const;
         
-        let sseClient = this.createNgxSseClient( topicUri, options );
-        this.subscribeNgxSseClientStream( sseClient, responseType );
+        this.sseClientStream = this.createNgxSseClient( topicUri, options );
+        this.sseSubscription = this.subscribeNgxSseClientStream( this.sseClientStream, responseType );
         
-        return sseClient;
+        return this.sseClientStream;
+    }
+    
+    sendMessage( topic: string, message: string ): Observable<MessageData>
+    {
+        const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
+        const url = `${this.url}/mercure-publish`;
+        
+        const messageDto:MercureMessageDto = {
+            topic : topic,
+            message: message
+        };
+        
+        return this.httpClient.post<MessageData>( url, messageDto, {headers} ).pipe(
+            map( ( response: any ) => this.mapMessageData( response ) )
+        );
     }
     
     private createNgxSseClient( topicUri: string, options: any ): Observable<Event>
@@ -102,19 +105,18 @@ export class EventSourceService
         return this.sseClient.stream( hub, options );
     }
     
-    private subscribeNgxSseClientStream( sseClient: any, responseType: string ): void
+    private subscribeNgxSseClientStream( sseClient: any, responseType: string ): Subscription
     {
         if ( responseType == 'event' ) {
-            // this.sseClient.stream( hub, options, requestOptions, method ).subscribe( ( event ) => {
-            sseClient.subscribe( this.handleNgxSseEventResponse.bind( this ) );
-        } else {
-            sseClient.subscribe( this.handleNgxSseTextResponse.bind( this ) );
+            return sseClient.subscribe( this.handleNgxSseEventResponse.bind( this ) );
         }
+        
+        return sseClient.subscribe( this.handleNgxSseTextResponse.bind( this ) );
     }
     
     private handleNgxSseTextResponse( data: any )
     {
-        alert( `NgxSseClient Message: ${data}` );
+        alert( `NgxSseClient Data Message: ${data}` );
     }
     
     private handleNgxSseEventResponse( event: any )
@@ -122,14 +124,73 @@ export class EventSourceService
         if ( event.type === 'error' ) {
             const errorEvent = event as ErrorEvent;
             
-            alert( `NgxSseClient Error: ${errorEvent.message}` );
-            console.error( errorEvent.error, errorEvent.message );
+            // alert( `NgxSseClient Error: ${errorEvent.message}` );
+            // console.error( errorEvent.error, errorEvent.message );
         } else {
             const messageEvent = event as MessageEvent;
-            
-            alert( `NgxSseClient Message: ${messageEvent.data}` );
-            console.info( `SSE request with type "${messageEvent.type}" and data "${messageEvent.data}"` );
+            this.onMessage( messageEvent );
         }
+    }
+    
+    private onMessage( message: MessageEvent<string> ): void
+    {
+        if ( ! message.data.length  ) {
+            return;
+        }
+        
+        // alert( `NgxSseClient Event Message: ${message.data}` );
+        // console.info( `SSE request with type "${message.type}" and data "${message.data}"` );
+        
+        const action = JSON.parse( message.data ) as MercureActionDto;
+        switch ( action.actionName ) {
+            case MercureActionNames.gameLobbyCreated: {
+                const dto = JSON.parse( message.data ) as GameLobbyCreatedActionDto;
+                // alert( `NgxSseClient GameRoomDto: ${dto.room}` );
+                
+                // Can Use: https://ngrx.io/guide/data
+                const gameRooms = this.appState.gameRooms.getValue();
+                this.appState.gameRooms.setValue( [...gameRooms, dto.room] );
+                
+                break;
+            }
+            case MercureActionNames.joinGameLobby: {
+                const dto = JSON.parse( message.data ) as JoinGameLobbyActionDto;
+                // alert( `NgxSseClient GameRoomDto: ${dto.room}` );
+                
+                let gameRooms = this.appState.gameRooms.getValue();
+                gameRooms.map( ( room ) => room.id == dto.room.id ? dto.room : room );
+                
+                this.appState.gameRooms.setValue( gameRooms );
+                
+                break;
+            }
+            case MercureActionNames.leaveGameLobby: {
+                const dto = JSON.parse( message.data ) as LeaveGameLobbyActionDto;
+                // alert( `NgxSseClient GameRoomDto: ${dto.room}` );
+                
+                let gameRooms = this.appState.gameRooms.getValue();
+                gameRooms.map( ( room ) => room.id == dto.room.id ? dto.room : room );
+                
+                this.appState.gameRooms.setValue( gameRooms );
+                
+                break;
+            }
+        }
+    }
+    
+    private mapMessageData( response: any )
+    {
+        // alert( `Map MessageData: ${JSON.stringify( response )}` );
+        if ( response.status == AppConstants.RESPONSE_STATUS_OK && response.data ) {
+            let message: MessageData = {
+                status: response.status,
+                message: response.message,
+            };
+            
+            return message;
+        }
+        
+        return response.message;
     }
     
     /**
@@ -137,11 +198,11 @@ export class EventSourceService
      */
     close(): void
     {
-        if ( ! this.eventSource ) {
+        if ( ! this.sseClientStream || ! this.sseSubscription ) {
             return;
         }
     
-        this.eventSource.close();
-        this.eventSource = null;
+        this.sseSubscription.unsubscribe();
+        this.sseClientStream = null;
     }
 }

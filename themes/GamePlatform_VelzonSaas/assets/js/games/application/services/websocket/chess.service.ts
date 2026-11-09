@@ -142,6 +142,11 @@ export class ChessService extends AbstractGameService
                 
                 const action = JSON.parse( message.data ) as DoublingActionDto;
                 this.appState.moveTimer.setValue( action.moveTimer );
+                
+                const blackGold = game.players[PlayerColor.black].gold || 0;
+                const whiteGold = game.players[PlayerColor.white].gold || 0;
+                const gameStake = game.stake || 0;
+                
                 // Opponent has accepted
                 this.appState.boardGame.setValue({
                     ...game,
@@ -149,16 +154,16 @@ export class ChessService extends AbstractGameService
                     goldMultiplier: game.goldMultiplier * 2,
                     lastDoubler: this.appState.myColor.getValue(),
                     currentPlayer: this.appState.myColor.getValue(),
-                    stake: game.stake * 2,
+                    stake: gameStake * 2,
                     
                     players: {
                         [PlayerColor.white]: {
                             ...game.players[PlayerColor.white],
-                            gold: game.players[PlayerColor.white].gold - game.stake / 2
+                            gold: whiteGold - gameStake / 2
                         },
                         [PlayerColor.black]: {
                             ...game.players[PlayerColor.black],
-                            gold: game.players[PlayerColor.black].gold - game.stake / 2
+                            gold: blackGold - gameStake / 2
                         }
                     }
                 });

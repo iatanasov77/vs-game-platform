@@ -8,9 +8,11 @@ import { LocalStorageService } from './local-storage.service';
 import { AuthService } from './auth.service';
 import { AppConstants } from "../constants";
 
-import { IGame } from '@vankosoft/game-platform';
-import { IPlayer } from '@vankosoft/game-platform';
-import { IGameRoom } from '@vankosoft/game-platform';
+import {
+    IGame,
+    IPlayer,
+    GameRoomDto
+} from '@vankosoft/game-platform';
 
 @Injectable({
     providedIn: 'root'
@@ -61,28 +63,28 @@ export class GameService
         );
     }
     
-    loadGameSessions( gameSlug: string ): Observable<IGameRoom[]>
+    loadGameSessions( gameSlug: string ): Observable<GameRoomDto[]>
     {
         // alert( gameSlug );
         var url = `${this.url}/game-sessions/${gameSlug}`;
         
-        return this.httpClient.get<IGameRoom[]>( url );
+        return this.httpClient.get<GameRoomDto[]>( url );
     }
     
-    loadGameSessionsCategory( categorySlug: string ): Observable<IGameRoom[]>
+    loadGameSessionsCategory( categorySlug: string ): Observable<GameRoomDto[]>
     {
         // alert( gameSlug );
         var url = `${this.url}/game-sessions-category/${categorySlug}`;
         
-        return this.httpClient.get<IGameRoom[]>( url );
+        return this.httpClient.get<GameRoomDto[]>( url );
     }
     
-    clearGameSessions( gameSlug: string ): Observable<IGameRoom[]>
+    clearGameSessions( gameSlug: string ): Observable<GameRoomDto[]>
     {
         var url = `${this.url}/clear-game-sessions/${gameSlug}`;
         
         
-        return this.httpClient.delete<IGameRoom[]>( url );
+        return this.httpClient.delete<GameRoomDto[]>( url );
     }
     
     loadPlayers(): Observable<IPlayer[]>

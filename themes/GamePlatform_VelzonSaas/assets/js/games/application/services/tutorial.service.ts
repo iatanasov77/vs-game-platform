@@ -74,6 +74,9 @@ export class TutorialService
         const game: BoardGameDto = {
             gameCode: 'backgammon',
             
+            title: 'Backgammon',
+            maxPlayers: 2,
+            
             currentPlayer: PlayerColor.black,
             goldMultiplier: 0,
             id: '',

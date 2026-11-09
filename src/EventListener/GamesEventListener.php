@@ -7,6 +7,7 @@ use Vankosoft\ApplicationBundle\Component\Context\ApplicationContextInterface;
 use App\Component\Logger\GameLogger;
 use App\Component\GameService;
 use App\Entity\GamePlatformSettings;
+use App\Entity\GameCategory;
 
 use App\EventListener\Event\GameStartedEvent;
 use App\EventListener\Event\GameEndedEvent;
@@ -63,7 +64,10 @@ final class GamesEventListener implements EventSubscriberInterface
         
         $em = $this->doctrine->getManager();
         foreach( $gamePlay->getOwner()->getGameSessions() as $game ) {
-            if ( $game->getGuid() != $event->getSender()->Game->Id ) {
+            if (
+                $game->getGame()->getCategory()->getCode() != GameCategory::DebugGames &&
+                $game->getGuid() != $event->getSender()->Game->Id
+            ) {
                 $em->remove( $game );
                 $em->flush();
             }

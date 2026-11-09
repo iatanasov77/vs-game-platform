@@ -13,6 +13,9 @@ class GameCategory implements ResourceInterface, TaxonDescendentInterface
 {
     use TaxonDescendentEntity;
     
+    /** @const string */
+    const DebugGames = "debug-games";
+    
     /** @var int */
     #[ORM\Id, ORM\Column(type: "integer"), ORM\GeneratedValue(strategy: "IDENTITY")]
     private $id;

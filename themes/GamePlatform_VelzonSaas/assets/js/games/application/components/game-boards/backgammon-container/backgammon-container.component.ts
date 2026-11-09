@@ -22,8 +22,8 @@ import { GameVariant } from "@vankosoft/game-platform";
 
 // Dialogs
 import { RequirementsDialogComponent } from '../../game-dialogs/requirements-dialog/requirements-dialog.component';
-import { SelectGameRoomDialogComponent } from '../../game-dialogs/select-game-room-dialog/select-game-room-dialog.component';
-import { CreateGameRoomDialogComponent } from '../../game-dialogs/create-game-room-dialog/create-game-room-dialog.component';
+import { GameRoomSelectDialogComponent } from '../../game-dialogs/game-room-select-dialog/game-room-select-dialog.component';
+import { GameRoomCreateDialogComponent } from '../../game-dialogs/game-room-create-dialog/game-room-create-dialog.component';
 import { PlayAiQuestionComponent } from '../../game-dialogs/play-ai-question/play-ai-question.component';
 import { CreateInviteGameDialogComponent } from '../../game-dialogs/create-invite-game-dialog/create-invite-game-dialog.component';
 import { UserLoginDialogComponent } from '../../game-dialogs/user-login-dialog/user-login-dialog.component';

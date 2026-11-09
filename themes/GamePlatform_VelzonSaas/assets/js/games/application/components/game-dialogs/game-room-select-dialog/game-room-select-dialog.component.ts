@@ -1,20 +1,20 @@
 import { Component, Inject, Input, Output, EventEmitter } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
-import { IPlayer } from '@vankosoft/game-platform';
+import { GameRoomDto } from '@vankosoft/game-platform';
 
-import templateString from './create-game-room-dialog.component.html';
+import templateString from './game-room-select-dialog.component.html';
 
 @Component({
     standalone: false,
-    selector: 'create-game-room-dialog',
+    selector: 'game-room-select-dialog',
     template:  templateString || 'Template Not Loaded !!!',
     styleUrls: []
 })
-export class CreateGameRoomDialogComponent
+export class GameRoomSelectDialogComponent
 {
     @Input() game: any;
-    @Input() players: null | IPlayer[]  = null;
+    @Input() rooms: GameRoomDto[] | null  = null;
     @Output() closeModal: EventEmitter<any> = new EventEmitter();
     
     constructor(
@@ -29,7 +29,7 @@ export class CreateGameRoomDialogComponent
     handleSubmit( form: NgForm ): void
     {
         let postData    = form.value;
-        let player      = this?.players?.find( ( item: any ) => item?.id === postData.selectedRoom );
+        let gameRoom    = this?.rooms?.find( ( item: any ) => item?.id === postData.selectedRoom );
         
         this.closeModal.emit();
     }

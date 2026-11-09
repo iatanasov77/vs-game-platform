@@ -8,6 +8,7 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Vankosoft\UsersBundle\Security\SecurityBridge;
 use App\Component\ServerSentEvent\MercurePublisher;
 use App\Component\Logger\MercureLogger;
+use App\Component\GameTeam;
 use App\Component\GameRoomObjectTrait;
 
 // DTO
@@ -23,7 +24,6 @@ use App\Component\GamePlatform;
 use App\Component\Utils\Guid;
 use App\Component\Type\PlayerColor;
 use App\Component\Type\PlayerPosition;
-use App\Component\Type\GameState;
 
 use App\Entity\Game;
 use App\Entity\GamePlay;
@@ -64,6 +64,9 @@ class MercureManager
     /** @var FactoryInterface */
     private $tempPlayersFactory;
     
+    /** @var GameTeam */
+    private $gameTeamService;
+    
     public function __construct(
         ManagerRegistry $doctrine,
         MercurePublisher $mercurePublisher,
@@ -75,6 +78,7 @@ class MercureManager
         RepositoryInterface $gamePlayRepository,
         RepositoryInterface $playersRepository,
         FactoryInterface $tempPlayersFactory,
+        GameTeam $gameTeamService
     ) {
         $this->doctrine             = $doctrine;
         $this->mercurePublisher     = $mercurePublisher;
@@ -86,6 +90,7 @@ class MercureManager
         $this->gamePlayRepository   = $gamePlayRepository;
         $this->playersRepository    = $playersRepository;
         $this->tempPlayersFactory   = $tempPlayersFactory;
+        $this->gameTeamService      = $gameTeamService;
     }
     
     public function DoAction( string $topic, string $actionText ): string
@@ -110,9 +115,11 @@ class MercureManager
                 $loby = $this->_createBoardGameLobby();
             }
             
-            $gamePlay = $this->createResponseBody( $loby );
-            $action = new GameLobbyCreatedActionDto();
-            $action->room = $gamePlay;
+            $teams          = $this->_getRoomTeams( $loby );
+            $gamePlay       = $this->createResponseBody( $loby, $teams );
+            
+            $action         = new GameLobbyCreatedActionDto();
+            $action->room   = $gamePlay;
             
             $this->mercurePublisher->publishData( $topic, $action );
             $json = $this->serializer->serialize( $action, JsonEncoder::FORMAT );
@@ -123,11 +130,11 @@ class MercureManager
             
             $loby   = $this->gamePlayRepository->find( $action->room->id );
             $player = $this->vsSecurityBridge->getUser()->getPlayer();
-            $this->_joinGameLobby( $loby, $player );
+            $loby   = $this->_joinGameLobby( $loby, $player );
             
-            $gamePlay = $this->createResponseBody( $loby );
-            $action = new GameLobbyCreatedActionDto();
-            $action->room = $gamePlay;
+            $teams          = $this->_getRoomTeams( $loby );
+            $gamePlay       = $this->createResponseBody( $loby, $teams );
+            $action->room   = $gamePlay;
             
             $this->mercurePublisher->publishData( $topic, $action );
             $json = $this->serializer->serialize( $action, JsonEncoder::FORMAT );
@@ -138,11 +145,11 @@ class MercureManager
             
             $loby   = $this->gamePlayRepository->find( $action->room->id );
             $player = $this->vsSecurityBridge->getUser()->getPlayer();
-            $this->_leaveGameLobby( $loby, $player );
+            $loby   = $this->_leaveGameLobby( $loby, $player );
             
-            $gamePlay = $this->createResponseBody( $loby );
-            $action = new GameLobbyCreatedActionDto();
-            $action->room = $gamePlay;
+            $teams          = $this->_getRoomTeams( $loby );
+            $gamePlay       = $this->createResponseBody( $loby, $teams );
+            $action->room   = $gamePlay;
             
             $this->mercurePublisher->publishData( $topic, $action );
             $json = $this->serializer->serialize( $action, JsonEncoder::FORMAT );
@@ -267,7 +274,7 @@ class MercureManager
                     $position = PlayerPosition::South;
                 }
                 
-                return $this->CreateBoardGameTempPlayer( $player, $position );
+                return $this->CreateCardGameTempPlayer( $player, $position );
                 
                 break;
         }

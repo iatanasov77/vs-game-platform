@@ -42,6 +42,7 @@ services:
             - '@vsapp.repository.game_sessions'
             - '@vsapp.repository.game_players'
             - '@vsapp.factory.temp_players'
+            - '@app_game_team'
     
     app_game_team:
         class: App\Component\GameTeam

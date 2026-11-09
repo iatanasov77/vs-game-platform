@@ -8,11 +8,9 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 
 use App\Component\GameRoomObjectTrait;
-use App\Component\GamePlatform;
 use App\Component\GameTeam;
 use App\Component\Logger\MercureLogger;
 use App\Entity\Game;
-use App\Entity\GamePlay;
 
 class GetGameSessionsByCategoryController extends AbstractController
 {
@@ -69,17 +67,5 @@ class GetGameSessionsByCategoryController extends AbstractController
         }
         
         return $rooms;
-    }
-    
-    private function _getRoomTeams( GamePlay $room ): array
-    {
-        $teams = $this->gameTeamService->createGameTeam( $room );
-        
-        $teamsResponse = [];
-        foreach ( $teams as $team ) {
-            $teamsResponse[] = $team;
-        }
-        
-        return $teamsResponse;
     }
 }

@@ -55,4 +55,19 @@ trait GameRoomObjectTrait
         
         return $players;
     }
+    
+    private function _getRoomTeams( GamePlay $room ): array
+    {
+        $teamsResponse = [];
+        if ( ! \property_exists( $this, 'gameTeamService' ) ) {
+            return $teamsResponse;
+        }
+        
+        $teams = $this->gameTeamService->createGameTeam( $room );
+        foreach ( $teams as $team ) {
+            $teamsResponse[] = $team;
+        }
+        
+        return $teamsResponse;
+    }
 }

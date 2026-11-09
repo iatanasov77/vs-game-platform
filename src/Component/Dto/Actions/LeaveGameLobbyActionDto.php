@@ -9,5 +9,6 @@ class LeaveGameLobbyActionDto extends MercureActionDto
         $this->actionName = MercureActionNames::leaveGameLobby->value;
     }
     
+    public int $index;
     public GameRoomDto $room;
 }

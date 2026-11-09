@@ -42,14 +42,14 @@
                 <td>
                     <div *ngIf="isLoggedIn" class="btn-group">
                         <a *ngIf="! isCurrentPlayerInRoom( room )" class="dropdown-item btn btn-primary"
-                            (click)="joinRoom( room )"
+                            (click)="joinRoom( idx, room )"
                             title="Join Room"
                         >
                             <i class="fa-solid fa-right-to-bracket me-2 align-middle"></i>
                         </a>
                         
                         <a *ngIf="isCurrentPlayerInRoom( room )" class="dropdown-item btn btn-primary"
-                            (click)="leaveRoom( room )"
+                            (click)="leaveRoom( idx, room )"
                             title="Leave Room"
                         >
                             <i class="fa-solid fa-right-from-bracket me-2 align-middle"></i>

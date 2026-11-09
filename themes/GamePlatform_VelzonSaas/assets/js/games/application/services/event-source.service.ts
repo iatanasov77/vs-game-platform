@@ -8,7 +8,9 @@ import {
     MessageData,
     MercureMessageDto,
     MercureActionDto,
-    GameLobbyCreatedActionDto
+    GameLobbyCreatedActionDto,
+    JoinGameLobbyActionDto,
+    LeaveGameLobbyActionDto
 } from '@vankosoft/game-platform';
 
 import { AppConstants } from "../constants";
@@ -148,6 +150,28 @@ export class EventSourceService
                 // Can Use: https://ngrx.io/guide/data
                 const gameRooms = this.appState.gameRooms.getValue();
                 this.appState.gameRooms.setValue( [...gameRooms, dto.room] );
+                
+                break;
+            }
+            case MercureActionNames.joinGameLobby: {
+                const dto = JSON.parse( message.data ) as JoinGameLobbyActionDto;
+                // alert( `NgxSseClient GameRoomDto: ${dto.room}` );
+                
+                let gameRooms = this.appState.gameRooms.getValue();
+                gameRooms.map( ( room ) => room.id == dto.room.id ? dto.room : room );
+                
+                this.appState.gameRooms.setValue( gameRooms );
+                
+                break;
+            }
+            case MercureActionNames.leaveGameLobby: {
+                const dto = JSON.parse( message.data ) as LeaveGameLobbyActionDto;
+                // alert( `NgxSseClient GameRoomDto: ${dto.room}` );
+                
+                let gameRooms = this.appState.gameRooms.getValue();
+                gameRooms.map( ( room ) => room.id == dto.room.id ? dto.room : room );
+                
+                this.appState.gameRooms.setValue( gameRooms );
                 
                 break;
             }

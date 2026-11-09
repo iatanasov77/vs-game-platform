@@ -112,31 +112,35 @@ export class GameRoomsTableTestComponent implements OnInit
         return res;
     }
     
-    joinRoom( room: GameRoomDto ): void
+    joinRoom( index: number, room: GameRoomDto ): void
     {
         // alert( `Join Room: ${JSON.stringify( room )}` );
         
         const action: JoinGameLobbyActionDto = {
             actionName: MercureActionNames.joinGameLobby,
+            index: index,
             room: room
         };
         
         this.sseService.sendMessage( this.topicUri, JSON.stringify( action ) ).subscribe( ( message ) => {
-            alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
+            // alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
+            this.openDebugWindowDialog( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
         });
     }
     
-    leaveRoom( room: GameRoomDto ): void
+    leaveRoom( index: number, room: GameRoomDto ): void
     {
-        alert( `Leave Room: ${JSON.stringify( room )}` );
+        // alert( `Leave Room: ${JSON.stringify( room )}` );
         
         const action: LeaveGameLobbyActionDto = {
             actionName: MercureActionNames.leaveGameLobby,
+            index: index,
             room: room
         };
         
         this.sseService.sendMessage( this.topicUri, JSON.stringify( action ) ).subscribe( ( message ) => {
-            alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
+            // alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
+            this.openDebugWindowDialog( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
         });
     }
     

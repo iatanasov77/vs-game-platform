@@ -9,5 +9,6 @@ class JoinGameLobbyActionDto extends MercureActionDto
         $this->actionName = MercureActionNames::joinGameLobby->value;
     }
     
+    public int $index;
     public GameRoomDto $room;
 }

@@ -1,3 +1,19 @@
+2.1.0	|	Release date: **09.11.2026**
+============================================
+* New Features:
+  - Create Join and Leave Actions For Game Lobbies.
+  - Using GameRoomObjectTrait to Create Game Lobbies.
+  - Remove GameRoomResponseTrait and Move GameRoomObjectTrait into Components.
+  - Remove Native SSE Client.
+  - Refactoring Using Mercure Service.
+  - Move Mercure Actions DTO into NPM Package.
+  - Create Game Teams in Mercure Manager on All Mercure Actions.
+  - Prevent Removing Games From Debug Category on New Game Created.
+  - Replace IGameRoom with GameRoomDto
+  - Refactoring of Game Rooms Dialogs.
+  - Create a Game Rooms Dialog.
+
+
 2.0.3	|	Release date: **03.11.2026**
 ============================================
 * New Features:

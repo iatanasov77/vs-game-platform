@@ -28,7 +28,6 @@ import { CookieService } from 'ngx-cookie-service';
 import { RequirementsDialogComponent } from '../../game-dialogs/requirements-dialog/requirements-dialog.component';
 import { CreateInviteGameDialogComponent } from '../../game-dialogs/create-invite-game-dialog/create-invite-game-dialog.component';
 import { UserLoginDialogComponent } from '../../game-dialogs/user-login-dialog/user-login-dialog.component';
-import { GameRoomSelectDialogComponent } from '../../game-dialogs/game-room-select-dialog/game-room-select-dialog.component';
 import { GameRoomCreateDialogComponent } from '../../game-dialogs/game-room-create-dialog/game-room-create-dialog.component';
 import { GameRoomsDialogComponent } from '../../game-dialogs/game-rooms-dialog/game-rooms-dialog.component';
 
@@ -620,7 +619,6 @@ export class ChessContainerComponent implements OnInit, AfterViewInit, OnDestroy
         let currentPlayer = this.authService.getPlayer();
         // alert( `Current Player From Auth Service: ${JSON.stringify( currentPlayer )}` );
         
-        // const modalRef = this.ngbModal.open( GameRoomSelectDialogComponent );
         const modalRef = this.ngbModal.open( GameRoomsDialogComponent );
         modalRef.componentInstance.isLoggedIn = this.isLoggedIn;
         modalRef.componentInstance.currentPlayer = currentPlayer;

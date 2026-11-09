@@ -8,7 +8,6 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 import { SharedModule } from '../shared/shared.module';
 import { RequirementsDialogComponent } from './requirements-dialog/requirements-dialog.component';
-import { GameRoomSelectDialogComponent } from './game-room-select-dialog/game-room-select-dialog.component';
 import { GameRoomCreateDialogComponent } from './game-room-create-dialog/game-room-create-dialog.component';
 import { GameRoomsDialogComponent } from './game-rooms-dialog/game-rooms-dialog.component';
 import { PlayAiQuestionComponent } from './play-ai-question/play-ai-question.component';
@@ -20,7 +19,6 @@ import { DebugGameSoundsComponent } from './debug-game-sounds/debug-game-sounds.
 @NgModule({
     declarations: [
         RequirementsDialogComponent,
-        GameRoomSelectDialogComponent,
         GameRoomCreateDialogComponent,
         GameRoomsDialogComponent,
         PlayAiQuestionComponent,
@@ -41,7 +39,6 @@ import { DebugGameSoundsComponent } from './debug-game-sounds/debug-game-sounds.
     ],
     exports: [
         RequirementsDialogComponent,
-        GameRoomSelectDialogComponent,
         GameRoomCreateDialogComponent,
         GameRoomsDialogComponent,
         PlayAiQuestionComponent,

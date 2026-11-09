@@ -684,6 +684,40 @@ export class CardGameContainerComponent implements OnInit, AfterViewInit, OnDest
         this.exitVisible = true;
     }
     
+    openGameRoomsTable( gameId: string ): void
+    {
+        const modalRef = this.ngbModal.open( SelectGameRoomDialogComponent );
+        
+        modalRef.componentInstance.closeModal.subscribe( () => {
+            // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
+            modalRef.dismiss();
+        });
+        /*  
+        modalRef.componentInstance.onPlayGame.subscribe( ( gameId: string ) => {
+            modalRef.close();
+            
+            this.playGame( gameId );
+        });
+        */
+    }
+    
+    createGameRoom( gameId: string ): void
+    {
+        const modalRef = this.ngbModal.open( CreateGameRoomDialogComponent );
+        
+        modalRef.componentInstance.closeModal.subscribe( () => {
+            // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
+            modalRef.dismiss();
+        });
+        /*  
+        modalRef.componentInstance.onPlayGame.subscribe( ( gameId: string ) => {
+            modalRef.close();
+            
+            this.playGame( gameId );
+        });
+        */
+    }
+    
     initFlags(): void
     {
         if ( this.queryParamsService.gameId.getValue() ) {

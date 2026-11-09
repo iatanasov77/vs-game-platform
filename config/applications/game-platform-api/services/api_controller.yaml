@@ -68,6 +68,7 @@ services:
         arguments:
             - '@vsapp.repository.games'
             - '@vsapp.repository.game_sessions'
+            - '@app_game_team'
         autowire: true
         tags: ['controller.service_arguments']
     

@@ -1,7 +1,7 @@
 import { Component, Inject, Input, Output, EventEmitter } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
-import { IGameRoom } from '@vankosoft/game-platform';
+import { GameRoomDto } from '@vankosoft/game-platform';
 
 import templateString from './select-game-room-dialog.component.html';
 
@@ -14,7 +14,7 @@ import templateString from './select-game-room-dialog.component.html';
 export class SelectGameRoomDialogComponent
 {
     @Input() game: any;
-    @Input() rooms: null | IGameRoom[]  = null;
+    @Input() rooms: GameRoomDto[] | null  = null;
     @Output() closeModal: EventEmitter<any> = new EventEmitter();
     
     constructor(

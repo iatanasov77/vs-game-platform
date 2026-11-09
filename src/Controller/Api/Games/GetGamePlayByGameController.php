@@ -6,6 +6,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 
 use App\Component\GameRoomObjectTrait;
+use App\Component\GameTeam;
 
 class GetGamePlayByGameController extends AbstractController
 {
@@ -17,10 +18,17 @@ class GetGamePlayByGameController extends AbstractController
     /** @var RepositoryInterface */
     private $gameSessionsRepository;
     
-    public function __construct( RepositoryInterface $gamesRepository, RepositoryInterface $gameSessionsRepository )
-    {
+    /** @var GameTeam */
+    private $gameTeamService;
+    
+    public function __construct(
+        RepositoryInterface $gamesRepository,
+        RepositoryInterface $gameSessionsRepository,
+        GameTeam $gameTeamService
+    ) {
         $this->gamesRepository          = $gamesRepository;
         $this->gameSessionsRepository   = $gameSessionsRepository;
+        $this->gameTeamService          = $gameTeamService;
     }
     
     public function index( $gameSlug, Request $request ): JsonResponse
@@ -37,7 +45,7 @@ class GetGamePlayByGameController extends AbstractController
         
         $rooms = [];
         foreach ( $sessions as $room ) {
-            $rooms[] = $this->createResponseBody( $room );
+            $rooms[] = $this->createResponseBody( $room, $this->_getRoomTeams( $room ) );
         }
         
         return $rooms;

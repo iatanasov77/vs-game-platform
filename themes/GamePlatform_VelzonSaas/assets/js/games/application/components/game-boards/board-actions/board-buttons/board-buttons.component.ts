@@ -48,6 +48,8 @@ export class BoardButtonsComponent implements OnInit, OnChanges
     
     @Output() onPlayWithComputer = new EventEmitter<string>();
     @Output() onPlayGame = new EventEmitter<string>();
+    @Output() onSelectGameRoom = new EventEmitter<string>();
+    @Output() onCreateGameRoom = new EventEmitter<string>();
     @Output() onInviteFriend = new EventEmitter<void>();
     @Output() onAcceptInvite = new EventEmitter<string>();
     @Output() onCancelInvite = new EventEmitter<void>();
@@ -166,6 +168,16 @@ export class BoardButtonsComponent implements OnInit, OnChanges
     playGame(): void
     {
         this.onPlayGame.emit( '' );
+    }
+    
+    selectGameRoom(): void
+    {
+        this.onSelectGameRoom.emit( '' );
+    }
+    
+    createGameRoom(): void
+    {
+        this.onCreateGameRoom.emit( '' );
     }
     
     inviteFriendClick(): void

@@ -11,7 +11,6 @@ import { AppConstants } from "../constants";
 import {
     IGame,
     IPlayer,
-    IGameRoom,
     GameRoomDto
 } from '@vankosoft/game-platform';
 
@@ -64,12 +63,12 @@ export class GameService
         );
     }
     
-    loadGameSessions( gameSlug: string ): Observable<IGameRoom[]>
+    loadGameSessions( gameSlug: string ): Observable<GameRoomDto[]>
     {
         // alert( gameSlug );
         var url = `${this.url}/game-sessions/${gameSlug}`;
         
-        return this.httpClient.get<IGameRoom[]>( url );
+        return this.httpClient.get<GameRoomDto[]>( url );
     }
     
     loadGameSessionsCategory( categorySlug: string ): Observable<GameRoomDto[]>
@@ -80,12 +79,12 @@ export class GameService
         return this.httpClient.get<GameRoomDto[]>( url );
     }
     
-    clearGameSessions( gameSlug: string ): Observable<IGameRoom[]>
+    clearGameSessions( gameSlug: string ): Observable<GameRoomDto[]>
     {
         var url = `${this.url}/clear-game-sessions/${gameSlug}`;
         
         
-        return this.httpClient.delete<IGameRoom[]>( url );
+        return this.httpClient.delete<GameRoomDto[]>( url );
     }
     
     loadPlayers(): Observable<IPlayer[]>

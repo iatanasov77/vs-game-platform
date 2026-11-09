@@ -9,12 +9,12 @@
             {{ 'game_board.start_game' | translate }}
         </button>
         
-        <button *ngIf="isLoggedIn && ! acceptInviteVisible" (click)="selectGameRoom()" class="default-button">
-            {{ 'game_board.select_room' | translate }}
-        </button>
-        
         <button *ngIf="isLoggedIn && ! acceptInviteVisible" (click)="createGameRoom()" class="default-button">
             {{ 'game_board.create_room' | translate }}
+        </button>
+        
+        <button *ngIf="isLoggedIn && ! acceptInviteVisible" (click)="selectGameRoom()" class="default-button">
+            {{ 'game_board.select_room' | translate }}
         </button>
         
         <button *ngIf="isLoggedIn && acceptInviteVisible" (click)="startInvitedGame(inviteId)" class="default-button">

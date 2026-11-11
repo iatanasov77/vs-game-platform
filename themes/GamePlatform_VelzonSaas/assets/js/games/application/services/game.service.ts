@@ -107,6 +107,7 @@ export class GameService
                         id: response.data.id,
                         type: response.data.type,
                         name: response.data.name,
+                        photoUrl: response.data.photoUrl,
                         connected: response.data.connected,
                         rooms: [],
                     };

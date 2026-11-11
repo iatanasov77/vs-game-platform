@@ -4,6 +4,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
+use Liip\ImagineBundle\Imagine\Cache\CacheManager as LiipImagineCacheManager;
 use Vankosoft\ApplicationBundle\Component\Status;
 
 class ShowPlayerByUserController extends AbstractController
@@ -11,10 +12,15 @@ class ShowPlayerByUserController extends AbstractController
     /** @var RepositoryInterface */
     private $usersRepository;
     
+    /** @var LiipImagineCacheManager */
+    private $imagineCacheManager;
+    
     public function __construct(
-        RepositoryInterface $usersRepository
+        RepositoryInterface $usersRepository,
+        LiipImagineCacheManager $imagineCacheManager
     ) {
-        $this->usersRepository  = $usersRepository;
+        $this->usersRepository      = $usersRepository;
+        $this->imagineCacheManager  = $imagineCacheManager;
     }
     
     public function __invoke( $id, Request $request ): JsonResponse
@@ -29,9 +35,15 @@ class ShowPlayerByUserController extends AbstractController
             ]);
         }
         
+        $photoUrl = $this->imagineCacheManager->getBrowserPath(
+            $player->getAvatarPath(),
+            'users_crud_index_thumb',
+        );
+        
         $playerData   = [
             'id'        => $player->getId(),
             'name'      => $player->getName(),
+            'photoUrl'  => $photoUrl,
             'type'      => $player->getType(),
             'connected' => true,
         ];

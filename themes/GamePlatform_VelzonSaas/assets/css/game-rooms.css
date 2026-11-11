@@ -20,3 +20,7 @@
 .game-rooms-table .player-slot i.fa-sign-in {
     cursor: pointer;
 }
+
+img.tip-dialog {
+    vertical-align: unset !important;
+}

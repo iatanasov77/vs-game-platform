@@ -4,24 +4,205 @@
 </div>
 
 <div class="modal-body">
-    <form #createGameRoomForm="ngForm" (ngSubmit)="handleSubmit(createGameRoomForm)">
-        <div class="form-group">
-            <label  class="form-label">{{ 'forms.create_game_room.opponent_label' | translate }}</label>
-            <select class="form-select" name="selectedRoom"
-                ngModel required
-            >
-                <option [ngValue]="null" [disabled]="true" >{{ 'forms.create_game_room.opponent_placeholder' | translate }}</option>
-                <option *ngFor="let player of players" [ngValue]="player.id">
-                    {{ player.name }}
-                </option>
-            </select>
+
+    <div id="inviteUrlContainer" class="game-room-player-invite-friend mb-2" style="display: none;">
+        <p>{{ 'invite.copylink' | translate }}</p>
+        <div *ngIf="invite$ | async">
+            <app-input-copy [text]="link"></app-input-copy>
         </div>
-        <div class="row">&nbsp;</div>
+    </div>
+
+    <div class="container game-room-players-container game-rooms-table" *ngIf="gameType=='card_game'">
+        <div class="row mb-2 border-bottom">
+            <div class="col-6 text-center fw-bold">
+                South-North
+            </div>
+            <div class="col-6 text-center fw-bold">
+                East-West
+            </div>
+        </div>
         
-        <button type="submit" class="btn btn-primary">
-            {{ 'forms.create_game_room.submit' | translate }}
-        </button>
-    </form>
+        <div class="row mb-1">
+            <div class="col-6">
+                <div class="cell-players observers">
+                    <div class="player-slot dib dib-angular">
+                        <img class="tip tip-dialog" height="46" src="{{ currentPlayer.photoUrl }}">
+                    </div>
+                    
+                    <div class="player-slot dib dib-angular">
+                        <div>{{ currentPlayer.name }}</div>
+                        <div class="game-room-player-designation">{{ 'dialogs.game_room_owner' | translate }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="cell-players observers">
+                    <div class="player-slot dib dib-angular">
+                        <img class="tip tip-dialog" height="46" src="/build/gameplatform-velzonsaas-theme/images/game_player/question-mark-icon-free-vector.jpg">
+                    </div>
+                    
+                    <div class="player-slot dib dib-angular">
+                        <div class="mb-1">{{ 'dialogs.invite_east_player' | translate }}:</div>
+                        <div class="invite-actions">
+                            <a href="javascript:void(0);"
+                                class="me-2"
+                                ngbTooltip="{{ 'dialogs.firend' | translate }}" placement="top"
+                                (click)="inviteCardGamePlayer( PlayerPosition.east )"
+                            >
+                                <i class="fa-solid fa-user"></i>
+                            </a>
+                            
+                            <a href="javascript:void(0);"
+                                class="me-2"
+                                ngbTooltip="{{ 'dialogs.robot' | translate }}" placement="top"
+                            >
+                                <i class="fa-solid fa-desktop"></i>
+                            </a>
+                            
+                            <a href="javascript:void(0);"
+                                ngbTooltip="{{ 'dialogs.join_here' | translate }}" placement="top"
+                                (click)="joinCardGamePlayerHere( PlayerPosition.east )"
+                            >
+                                <i class="fa-solid fa-chair"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-1">
+            <div class="col-6">
+                <div class="cell-players observers">
+                    <div class="player-slot dib dib-angular">
+                        <img class="tip tip-dialog" height="46" src="/build/gameplatform-velzonsaas-theme/images/game_player/question-mark-icon-free-vector.jpg">
+                    </div>
+                    
+                    <div class="player-slot dib dib-angular">
+                        <div class="mb-1">{{ 'dialogs.invite_north_player' | translate }}:</div>
+                        <div>
+                            <a href="javascript:void(0);"
+                                class="me-2"
+                                ngbTooltip="{{ 'dialogs.firend' | translate }}" placement="top"
+                            >
+                                <i class="fa-solid fa-user"></i>
+                            </a>
+                            
+                            <a href="javascript:void(0);"
+                                class="me-2"
+                                ngbTooltip="{{ 'dialogs.robot' | translate }}" placement="top"
+                            >
+                                <i class="fa-solid fa-desktop"></i>
+                            </a>
+                            
+                            <a href="javascript:void(0);"
+                                ngbTooltip="{{ 'dialogs.join_here' | translate }}" placement="top"
+                                (click)="joinCardGamePlayerHere( PlayerPosition.north )"
+                            >
+                                <i class="fa-solid fa-chair"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="cell-players observers">
+                    <div class="player-slot dib dib-angular">
+                        <img class="tip tip-dialog" height="46" src="/build/gameplatform-velzonsaas-theme/images/game_player/question-mark-icon-free-vector.jpg">
+                    </div>
+                    
+                    <div class="player-slot dib dib-angular">
+                        <div class="mb-1">{{ 'dialogs.invite_west_player' | translate }}:</div>
+                        <div>
+                            <a href="javascript:void(0);"
+                                class="me-2"
+                                ngbTooltip="{{ 'dialogs.firend' | translate }}" placement="top"
+                            >
+                                <i class="fa-solid fa-user"></i>
+                            </a>
+                            
+                            <a href="javascript:void(0);"
+                                class="me-2"
+                                ngbTooltip="{{ 'dialogs.robot' | translate }}" placement="top"
+                            >
+                                <i class="fa-solid fa-desktop"></i>
+                            </a>
+                            
+                            <a href="javascript:void(0);"
+                                ngbTooltip="{{ 'dialogs.join_here' | translate }}" placement="top"
+                                (click)="joinCardGamePlayerHere( PlayerPosition.west )"
+                            >
+                                <i class="fa-solid fa-chair"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container game-room-players-container game-rooms-table" *ngIf="gameType=='board_game'">
+        <div class="row mb-2 border-bottom">
+            <div class="col-6 text-center fw-bold">
+                Black
+            </div>
+            <div class="col-6 text-center fw-bold">
+                White
+            </div>
+        </div>
+        
+        <div class="row mb-1">
+            <div class="col-6">
+                <div class="cell-players observers">
+                    <div class="player-slot dib dib-angular">
+                        <img class="tip tip-dialog" height="46" src="{{ currentPlayer.photoUrl }}">
+                    </div>
+                    
+                    <div class="player-slot dib dib-angular">
+                        <div>{{ currentPlayer.name }}</div>
+                        <div class="game-room-player-designation">{{ 'dialogs.game_room_owner' | translate }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-1">
+            <div class="col-6">
+                <div class="cell-players observers">
+                    <div class="player-slot dib dib-angular">
+                        <img class="tip tip-dialog" height="46" src="/build/gameplatform-velzonsaas-theme/images/game_player/question-mark-icon-free-vector.jpg">
+                    </div>
+                    
+                    <div class="player-slot dib dib-angular">
+                        <div class="mb-1">{{ 'dialogs.invite_white_player' | translate }}:</div>
+                        <div>
+                            <a href="javascript:void(0);"
+                                class="me-2"
+                                ngbTooltip="{{ 'dialogs.firend' | translate }}" placement="top"
+                            >
+                                <i class="fa-solid fa-user"></i>
+                            </a>
+                            
+                            <a href="javascript:void(0);"
+                                class="me-2"
+                                ngbTooltip="{{ 'dialogs.robot' | translate }}" placement="top"
+                            >
+                                <i class="fa-solid fa-desktop"></i>
+                            </a>
+                            
+                            <a href="javascript:void(0);"
+                                ngbTooltip="{{ 'dialogs.join_here' | translate }}" placement="top"
+                                (click)="joinBoardGamePlayerHere( PlayerColor.white )"
+                            >
+                                <i class="fa-solid fa-chair"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
 </div>
 
 <div class="modal-footer">

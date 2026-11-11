@@ -55,6 +55,7 @@ services:
     App\Controller\Api\Games\ShowPlayerByUserController:
         arguments:
             - '@vs_users.repository.users'
+            - '@liip_imagine.cache.manager'
         autowire: true
         tags: ['controller.service_arguments']
             

@@ -272,4 +272,13 @@ class GamePlayer implements ResourceInterface
         
         return $this->user->getInfo() ? $this->user->getInfo()->getFullName() : $this->user->getUsername();
     }
+    
+    public function getAvatarPath(): ?string
+    {
+        if ( $this->user && $this->user->getInfo()->getAvatar() ) {
+            return $this->user->getInfo()->getAvatar()->getPath();
+        }
+        
+        return null;
+    }
 }

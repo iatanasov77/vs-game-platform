@@ -120,17 +120,13 @@ class TempPlayer implements ResourceInterface
         return $this->player->getType();
     }
     
-    public function getAvatarPath(): ?string
-    {
-        if ( $this->player->getUser() && $this->player->getUser()->getInfo()->getAvatar() ) {
-            return $this->player->getUser()->getInfo()->getAvatar()->getPath();
-        }
-        
-        return null;
-    }
-    
     public function getPhotoUrl(): ?string
     {
         return $this->player->getPhotoUrl();
+    }
+    
+    public function getAvatarPath(): ?string
+    {
+        return $this->player->getAvatarPath();
     }
 }

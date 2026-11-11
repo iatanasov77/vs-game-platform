@@ -115,7 +115,7 @@ export class GameRoomsTableTestComponent implements OnInit
         
         this.sseService.sendMessage( this.topicUri, JSON.stringify( action ) ).subscribe( ( message ) => {
             // alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
-            this.openDebugWindowDialog( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
+            // this.openDebugWindowDialog( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
         });
     }
     
@@ -131,7 +131,7 @@ export class GameRoomsTableTestComponent implements OnInit
         
         this.sseService.sendMessage( this.topicUri, JSON.stringify( action ) ).subscribe( ( message ) => {
             // alert( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
-            this.openDebugWindowDialog( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
+            // this.openDebugWindowDialog( `Test Multiplayer Lobby Component Response: ${JSON.stringify( message )}` );
         });
     }
     

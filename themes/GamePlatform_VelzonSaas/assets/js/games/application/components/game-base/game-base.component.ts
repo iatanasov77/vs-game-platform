@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, isDevMode, HostListener } from '@angular/core';
-import { Observable, Subscription, Subject } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 import { IAuth } from '@vankosoft/game-platform';
 import { IPlayer } from '@vankosoft/game-platform';
@@ -7,6 +7,7 @@ import { IPlayer } from '@vankosoft/game-platform';
 import { AuthService } from '../../services/auth.service'
 import { SoundService } from '../../services/sound.service'
 import { GameService } from '../../services/game.service'
+import { UserActivityService } from '../../services/user-activity.service'
 
 declare global {
     interface Window {
@@ -31,14 +32,13 @@ export class GameBaseComponent implements OnInit, OnDestroy
     developementClass: string   = '';
     currentPlayer: IPlayer | undefined;
     
-    userActivity: any;
-    userInactive: Subject<any> = new Subject();
     userInactivityTimeout: number; 
     
     constructor(
         protected authService: AuthService,
         protected soundService: SoundService,
         protected gameService: GameService,
+        protected activityService: UserActivityService,
     ) {
         this.userInactivityTimeout = window.gamePlatformSettings.gamePlayerInactivityTimeout;
         
@@ -51,15 +51,9 @@ export class GameBaseComponent implements OnInit, OnDestroy
                 // alert( `Login By Signature Response: ${JSON.stringify( auth )}` );
             });
         }
-        
-        this.setTimeout();
-        this.userInactive.subscribe( () => {
-            // console.log( `user has been inactive for ${this.userInactivityTimeout / 1000}s` );
-            alert( `user has been inactive for ${this.userInactivityTimeout / 1000}s` );
-        });
     }
     
-    ngOnInit()
+    ngOnInit(): void
     {
         alert( 'Game Opened !!!' );
         
@@ -88,21 +82,18 @@ export class GameBaseComponent implements OnInit, OnDestroy
                 this.introPlaying = introPlaying;
             });
         });
+        
+        this.activityService.startMonitoringIdleTime( () => {
+            alert( `⚠️ You have been inactive for ${this.userInactivityTimeout / 60000} minute.` );
+        }, this.userInactivityTimeout );
     }
     
-    // Manual: https://wesleygrimes.com/angular/2019/03/29/making-upgrades-to-angular-ngondestroy
-    @HostListener( 'window:beforeunload' )
-    async ngOnDestroy()
+    ngOnDestroy(): void
     {
         if ( this.authSubs ) {
             this.authSubs.unsubscribe();
         }
         
-        await this.authService.signOut();
-    }
-    
-    setTimeout(): void
-    {
-        this.userActivity = setTimeout( () => this.userInactive.next( undefined ), this.userInactivityTimeout );
+        this.activityService.stopMonitoring();
     }
 }

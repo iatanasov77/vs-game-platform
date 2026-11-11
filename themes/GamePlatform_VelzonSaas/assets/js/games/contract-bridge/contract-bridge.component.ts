@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { AuthService } from '../application/services/auth.service'
 import { SoundService } from '../application/services/sound.service'
 import { GameService } from '../application/services/game.service'
+import { UserActivityService } from '../application/services/user-activity.service'
 import { GameBaseComponent } from '../application/components/game-base/game-base.component';
 
 import { AppStateService } from '../application/state/app-state.service';
@@ -38,11 +39,12 @@ export class ContractBridgeComponent extends GameBaseComponent implements OnInit
         @Inject( AuthService ) authService: AuthService,
         @Inject( SoundService ) soundService: SoundService,
         @Inject( GameService ) gameService: GameService,
+        @Inject( UserActivityService ) activityService: UserActivityService,
         
         @Inject( ErrorReportService ) private errorReportService: ErrorReportService,
         @Inject( AppStateService ) private appState: AppStateService
     ) {
-        super( authService, soundService, gameService );
+        super( authService, soundService, gameService, activityService );
         
         this.errors$    = this.appState.errors.observe();
     }

@@ -252,6 +252,8 @@ export class AuthService
     
     signOut(): void
     {
+        alert( 'Game Destroyed !!!' );
+        
         this.appState.user.clearValue();
         this.localStorageService.removeItem( Keys.loginKey );
     }

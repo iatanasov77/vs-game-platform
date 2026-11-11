@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { AuthService } from '../application/services/auth.service'
@@ -24,7 +24,7 @@ import templateString from './svara.component.html'
         cssGameString || 'Game CSS Not Loaded !!!',
     ]
 })
-export class SvaraComponent extends GameBaseComponent implements OnInit
+export class SvaraComponent extends GameBaseComponent implements OnInit, OnDestroy
 {
     title   = 'Svara';
     errors$: Observable<ErrorState>;

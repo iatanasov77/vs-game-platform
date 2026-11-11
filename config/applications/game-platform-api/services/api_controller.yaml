@@ -49,6 +49,7 @@ services:
     App\Controller\Api\Games\GetPlayersController:
         arguments:
             - '@vsapp.repository.game_players'
+            - '@liip_imagine.cache.manager'
         autowire: true
         tags: ['controller.service_arguments']
     

@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { Busy } from '../application/state/busy';
@@ -28,7 +28,7 @@ import templateString from './chess.component.html'
         cssGameString || 'Game CSS Not Loaded !!!',
     ]
 })
-export class ChessComponent extends GameBaseComponent implements OnInit
+export class ChessComponent extends GameBaseComponent implements OnInit, OnDestroy
 {
     title   = 'Chess';
     busy$: Observable<Busy>;

@@ -42,9 +42,7 @@ export class GamePlayersComponent implements OnInit, OnDestroy
     constructor(
         @Inject( TranslateService ) private translate: TranslateService,
         @Inject( GameService ) private gameService: GameService,
-        @Inject( EventSourceService ) private sseService: EventSourceService,
-        @Inject( Store ) private store: Store,
-        @Inject( Actions ) private actions$: Actions
+        @Inject( EventSourceService ) private sseService: EventSourceService
     ) {
         this.topicUri = `${context.backendURL}/${window.gamePlatformSettings.gameSlug}`;
         this.sseClient$ = this.sseService.createNgxSseClientStream( this.topicUri, this.sseResponseType );
@@ -76,7 +74,7 @@ export class GamePlayersComponent implements OnInit, OnDestroy
             // alert( `Game Rooms: ${JSON.stringify( players )}` );
             
             this.showSpinner    = false;
-            this.players  = players;
+            this.players        = players;
         });
     }
 }

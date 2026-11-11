@@ -37,7 +37,7 @@ class ShowPlayerByUserController extends AbstractController
         
         $photoUrl = $this->imagineCacheManager->getBrowserPath(
             $player->getAvatarPath(),
-            'users_crud_index_thumb',
+            'users_crud_index_thumb'
         );
         
         $playerData   = [

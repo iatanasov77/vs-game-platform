@@ -55,12 +55,14 @@ export class GameBaseComponent implements OnInit, OnDestroy
         this.setTimeout();
         this.userInactive.subscribe( () => {
             // console.log( `user has been inactive for ${this.userInactivityTimeout / 1000}s` );
-            // alert( `user has been inactive for ${this.userInactivityTimeout / 1000}s` );
+            alert( `user has been inactive for ${this.userInactivityTimeout / 1000}s` );
         });
     }
     
     ngOnInit()
     {
+        alert( 'Game Opened !!!' );
+        
         this.authService.isLoggedIn().subscribe( ( isLoggedIn: boolean ) => {
             this.isLoggedIn = isLoggedIn;
             let auth        = this.authService.getAuth();
@@ -88,22 +90,19 @@ export class GameBaseComponent implements OnInit, OnDestroy
         });
     }
     
-    ngOnDestroy(): void
+    // Manual: https://wesleygrimes.com/angular/2019/03/29/making-upgrades-to-angular-ngondestroy
+    @HostListener( 'window:beforeunload' )
+    async ngOnDestroy()
     {
         if ( this.authSubs ) {
             this.authSubs.unsubscribe();
         }
+        
+        await this.authService.signOut();
     }
     
     setTimeout(): void
     {
         this.userActivity = setTimeout( () => this.userInactive.next( undefined ), this.userInactivityTimeout );
-    }
-    
-    @HostListener( 'window:mousemove' )
-    refreshUserState()
-    {
-        clearTimeout( this.userActivity );
-        this.setTimeout();
     }
 }

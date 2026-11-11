@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { AuthService } from '../application/services/auth.service'
@@ -24,7 +24,7 @@ import templateString from './bridge-belote.component.html'
         cssGameString || 'Game CSS Not Loaded !!!',
     ]
 })
-export class BridgeBeloteComponent extends GameBaseComponent implements OnInit
+export class BridgeBeloteComponent extends GameBaseComponent implements OnInit, OnDestroy
 {
     title   = 'Bridge Belote';
     errors$: Observable<ErrorState>;

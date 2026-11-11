@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { AuthService } from '../application/services/auth.service'
@@ -25,7 +25,7 @@ declare var $: any;
         cssGameString || 'Template Not Loaded !!!',
     ]
 })
-export class ContractBridgeComponent extends GameBaseComponent implements OnInit
+export class ContractBridgeComponent extends GameBaseComponent implements OnInit, OnDestroy
 {
     title   = 'Conract Bridge';
     errors$: Observable<ErrorState>;

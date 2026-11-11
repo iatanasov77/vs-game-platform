@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { IAuth } from '@vankosoft/game-platform';
@@ -27,7 +27,7 @@ import templateString from './backgammon.component.html'
         cssGameString || 'Game CSS Not Loaded !!!',
     ]
 })
-export class BackgammonComponent extends GameBaseComponent implements OnInit
+export class BackgammonComponent extends GameBaseComponent implements OnInit, OnDestroy
 {
     title   = 'Backgammon';
     busy$: Observable<Busy>;

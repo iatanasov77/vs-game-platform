@@ -44,9 +44,7 @@ export class GameRoomsComponent implements OnInit, OnDestroy
         @Inject( TranslateService ) private translate: TranslateService,
         @Inject( AppStateService ) private appStateService: AppStateService,
         @Inject( GameService ) private gameService: GameService,
-        @Inject( EventSourceService ) private sseService: EventSourceService,
-        @Inject( Store ) private store: Store,
-        @Inject( Actions ) private actions$: Actions
+        @Inject( EventSourceService ) private sseService: EventSourceService
     ) {
         this.topicUri = `${context.backendURL}/${window.gamePlatformSettings.gameSlug}`;
         this.sseClient$ = this.sseService.createNgxSseClientStream( this.topicUri, this.sseResponseType );

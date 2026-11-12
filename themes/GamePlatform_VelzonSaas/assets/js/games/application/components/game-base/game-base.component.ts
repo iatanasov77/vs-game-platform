@@ -1,4 +1,6 @@
 import { Component, OnInit, OnDestroy, isDevMode, HostListener } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
 import { IAuth } from '@vankosoft/game-platform';
@@ -8,6 +10,8 @@ import { AuthService } from '../../services/auth.service'
 import { SoundService } from '../../services/sound.service'
 import { GameService } from '../../services/game.service'
 import { UserActivityService } from '../../services/user-activity.service'
+
+import { UserMessageDialogComponent } from '../game-dialogs/user-message-dialog/user-message-dialog.component'
 
 declare global {
     interface Window {
@@ -39,6 +43,8 @@ export class GameBaseComponent implements OnInit, OnDestroy
         protected soundService: SoundService,
         protected gameService: GameService,
         protected activityService: UserActivityService,
+        protected ngbModal: NgbModal,
+        protected translateService: TranslateService,
     ) {
         this.userInactivityTimeout = window.gamePlatformSettings.gamePlayerInactivityTimeout;
         
@@ -55,7 +61,7 @@ export class GameBaseComponent implements OnInit, OnDestroy
     
     ngOnInit(): void
     {
-        alert( 'Game Opened !!!' );
+        // alert( 'Game Opened !!!' );
         
         this.authService.isLoggedIn().subscribe( ( isLoggedIn: boolean ) => {
             this.isLoggedIn = isLoggedIn;
@@ -84,7 +90,22 @@ export class GameBaseComponent implements OnInit, OnDestroy
         });
         
         this.activityService.startMonitoringIdleTime( () => {
-            alert( `⚠️ You have been inactive for ${this.userInactivityTimeout / 60000} minute.` );
+            // alert( `⚠️ You have been inactive for ${this.userInactivityTimeout / 60000} minute.` );
+            const modalRef = this.ngbModal.open( UserMessageDialogComponent );
+            
+            const message = `${this.translateService.instant( 'dialogs.you_have_been_inactive' )} 
+                                ${this.userInactivityTimeout / 60000} 
+                                ${this.translateService.instant( 'dialogs.minutes' )}.`;
+            const messageQuestion = `${this.translateService.instant( 'dialogs.do_you_want_exit_game' )}`;
+                                
+            modalRef.componentInstance.message = message;
+            modalRef.componentInstance.messageQuestion = messageQuestion;
+            modalRef.componentInstance.timeLeft = 30;
+            
+            modalRef.componentInstance.closeModal.subscribe( () => {
+                // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
+                modalRef.dismiss();
+            });
         }, this.userInactivityTimeout );
     }
     

@@ -1,4 +1,6 @@
 import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 
 import { AuthService } from '../application/services/auth.service'
@@ -39,11 +41,13 @@ export class BridgeBeloteComponent extends GameBaseComponent implements OnInit, 
         @Inject( SoundService ) soundService: SoundService,
         @Inject( GameService ) gameService: GameService,
         @Inject( UserActivityService ) activityService: UserActivityService,
+        @Inject( NgbModal ) ngbModal: NgbModal,
+        @Inject( TranslateService ) translateService: TranslateService,
         
         @Inject( ErrorReportService ) private errorReportService: ErrorReportService,
         @Inject( AppStateService ) private appState: AppStateService
     ) {
-        super( authService, soundService, gameService, activityService );
+        super( authService, soundService, gameService, activityService, ngbModal, translateService );
         
         this.errors$    = this.appState.errors.observe();
     }

@@ -38,7 +38,7 @@ export class UserActivityService
     // Stop monitoring
     stopMonitoring(): void
     {
-        alert( '⚠️ Stop User Activity Monitoring' );
+        // alert( '⚠️ Stop User Activity Monitoring' );
         
         this.idleSub?.unsubscribe();
         this.idleSub = null;

@@ -15,6 +15,7 @@ import { CreateInviteGameDialogComponent } from './create-invite-game-dialog/cre
 import { UserLoginDialogComponent } from './user-login-dialog/user-login-dialog.component';
 import { ContractBridgeAuctionComponent } from './contract-bridge-auction/contract-bridge-auction.component';
 import { DebugGameSoundsComponent } from './debug-game-sounds/debug-game-sounds.component';
+import { UserMessageDialogComponent } from './user-message-dialog/user-message-dialog.component';
 
 @NgModule({
     declarations: [
@@ -25,7 +26,8 @@ import { DebugGameSoundsComponent } from './debug-game-sounds/debug-game-sounds.
         CreateInviteGameDialogComponent,
         UserLoginDialogComponent,
         ContractBridgeAuctionComponent,
-        DebugGameSoundsComponent
+        DebugGameSoundsComponent,
+        UserMessageDialogComponent
     ],
     imports: [
         CommonModule,
@@ -45,7 +47,8 @@ import { DebugGameSoundsComponent } from './debug-game-sounds/debug-game-sounds.
         CreateInviteGameDialogComponent,
         UserLoginDialogComponent,
         ContractBridgeAuctionComponent,
-        DebugGameSoundsComponent
+        DebugGameSoundsComponent,
+        UserMessageDialogComponent
     ]
 })
 export class GameDialogsModule { }

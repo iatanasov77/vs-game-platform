@@ -18,6 +18,7 @@ use App\Component\Dto\Actions\TestMercureMessageActionDto;
 use App\Component\Dto\Actions\GameLobbyCreatedActionDto;
 use App\Component\Dto\Actions\JoinGameLobbyActionDto;
 use App\Component\Dto\Actions\LeaveGameLobbyActionDto;
+use App\Component\Dto\Actions\MercureDisconnectPlayerActionDto;
 
 // Types
 use App\Component\GamePlatform;
@@ -153,6 +154,10 @@ class MercureManager
             
             $this->mercurePublisher->publishData( $topic, $action );
             $json = $this->serializer->serialize( $action, JsonEncoder::FORMAT );
+            
+            return $json;
+        } else if ( $actionName == MercureActionNames::disconnectPlayer ) {
+            $action = $this->serializer->deserialize( $actionText, MercureDisconnectPlayerActionDto::class, JsonEncoder::FORMAT );
             
             return $json;
         }

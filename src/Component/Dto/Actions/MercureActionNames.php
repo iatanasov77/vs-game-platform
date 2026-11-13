@@ -8,4 +8,6 @@ enum MercureActionNames: int
     case createGameLobby    = 2;
     case joinGameLobby      = 3;
     case leaveGameLobby     = 4;
+    
+    case disconnectPlayer   = 5;
 }

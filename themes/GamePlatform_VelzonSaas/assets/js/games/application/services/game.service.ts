@@ -6,11 +6,14 @@ const { context } = require( '../context' );
 import { BehaviorSubject, Observable, tap, map, of } from 'rxjs';
 import { LocalStorageService } from './local-storage.service';
 import { AuthService } from './auth.service';
+import { EventSourceService } from './event-source.service';
 import { AppConstants } from "../constants";
 
 import {
     IGame,
     IPlayer,
+    MercureActionNames,
+    MercureDisconnectPlayerActionDto,
     GameRoomDto
 } from '@vankosoft/game-platform';
 
@@ -26,6 +29,7 @@ export class GameService
         @Inject( HttpClient ) private httpClient: HttpClient,
         @Inject( AuthService ) private authService: AuthService,
         @Inject( LocalStorageService ) private localStorageService: LocalStorageService,
+        @Inject( EventSourceService ) private sseService: EventSourceService,
     ) {
         this.url        = `${context.apiURL}`;
         this.hasPlayer$ = new BehaviorSubject<boolean>( false );
@@ -124,6 +128,15 @@ export class GameService
                 }
             })
         );
+    }
+    
+    disconnectMercureConnection( player: IPlayer ): void
+    {
+        const action: MercureDisconnectPlayerActionDto = {
+            actionName: MercureActionNames.disconnectPlayer,
+            player: player
+        };
+        this.sseService.sendMessage( JSON.stringify( action ) );
     }
     
     private mapGame( response: any )

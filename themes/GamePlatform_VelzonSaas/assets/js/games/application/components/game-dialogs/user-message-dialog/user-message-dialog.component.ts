@@ -20,7 +20,9 @@ export class UserMessageDialogComponent implements OnInit, OnDestroy
     @Input() message: string | undefined;
     @Input() messageQuestion: string | undefined;
     @Input() timeLeft: number = 60;
+    
     @Output() closeModal: EventEmitter<any> = new EventEmitter();
+    @Output() disconnectPlayer: EventEmitter<any> = new EventEmitter();
     
     interval: any;
     
@@ -51,6 +53,8 @@ export class UserMessageDialogComponent implements OnInit, OnDestroy
     exitGame(): void
     {
         this.pauseTimer();
+        this.disconnectPlayer.emit();
+        this.closeModal.emit();
     }
     
     startTimer(): void

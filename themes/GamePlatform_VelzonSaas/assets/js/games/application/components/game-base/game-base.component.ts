@@ -3,8 +3,11 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
-import { IAuth } from '@vankosoft/game-platform';
-import { IPlayer } from '@vankosoft/game-platform';
+import {
+    IAuth,
+    IPlayer,
+    MercureDisconnectPlayerActionDto
+} from '@vankosoft/game-platform';
 
 import { AuthService } from '../../services/auth.service'
 import { SoundService } from '../../services/sound.service'
@@ -63,6 +66,23 @@ export class GameBaseComponent implements OnInit, OnDestroy
     {
         // alert( 'Game Opened !!!' );
         
+        this.subscribeIsLoggedIn();
+        this.subscribeHasPlayer();
+        this.subscribeIntroPlaying();
+        this.subscribeUserActivity();
+    }
+    
+    ngOnDestroy(): void
+    {
+        if ( this.authSubs ) {
+            this.authSubs.unsubscribe();
+        }
+        
+        this.activityService.stopMonitoring();
+    }
+    
+    subscribeIsLoggedIn(): void
+    {
         this.authService.isLoggedIn().subscribe( ( isLoggedIn: boolean ) => {
             this.isLoggedIn = isLoggedIn;
             let auth        = this.authService.getAuth();
@@ -76,19 +96,28 @@ export class GameBaseComponent implements OnInit, OnDestroy
                 });
             }
         });
-        
+    }
+    
+    subscribeHasPlayer(): void
+    {
         this.gameService.hasPlayer().subscribe( ( hasPlayer: boolean ) => {
             // alert( hasPlayer );
             this.hasPlayer = hasPlayer;
         });
-        
+    }
+    
+    subscribeIntroPlaying(): void
+    {
         setTimeout( () => {
             this.soundService.isIntroPlaying().subscribe( ( introPlaying: boolean ) => {
                 // alert( 'Intro Playing: ' + introPlaying );
                 this.introPlaying = introPlaying;
             });
         });
-        
+    }
+    
+    subscribeUserActivity(): void
+    {
         this.activityService.startMonitoringIdleTime( () => {
             // alert( `⚠️ You have been inactive for ${this.userInactivityTimeout / 60000} minute.` );
             const modalRef = this.ngbModal.open( UserMessageDialogComponent );
@@ -106,15 +135,15 @@ export class GameBaseComponent implements OnInit, OnDestroy
                 // https://stackoverflow.com/questions/19743299/what-is-the-difference-between-dismiss-a-modal-and-close-a-modal-in-angular
                 modalRef.dismiss();
             });
+            
+            modalRef.componentInstance.disconnectPlayer.subscribe( () => {
+                alert( `Disconnect Current Player: ${JSON.stringify( this.currentPlayer )}` );
+                
+                if ( this.currentPlayer ) {
+                    this.gameService.disconnectMercureConnection( this.currentPlayer );
+                    this.activityService.stopMonitoring();
+                }
+            });
         }, this.userInactivityTimeout );
-    }
-    
-    ngOnDestroy(): void
-    {
-        if ( this.authSubs ) {
-            this.authSubs.unsubscribe();
-        }
-        
-        this.activityService.stopMonitoring();
     }
 }

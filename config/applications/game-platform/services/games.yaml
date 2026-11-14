@@ -23,11 +23,12 @@ services:
         autowire: true
         autoconfigure: true
     
-    App\Component\ServerSentEvent\MyTokenProvider:
+    vs_api.mercure_token_provider:
+        class: App\Component\ServerSentEvent\MercureTokenProvider
         public: true
         arguments:
-            - '@lexik_jwt_authentication.jwt_manager'
-            - '@vs_users.security_bridge'
+            - '@mercure.hub.default.jwt.factory'
+            - '%env(MERCURE_PUBLIC_URL)%'
     
     app_mercure_publisher:
         class: App\Component\ServerSentEvent\MercurePublisher
@@ -156,6 +157,10 @@ services:
             - '@vsapp.repository.game_sessions'
             - '@vsapp.factory.game_sessions'
             - '@vsapp.factory.temp_players'
+    
+    App\Controller\GamePlatform\MercureSubscriptionsController:
+        tags: ['controller.service_arguments']
+        autowire: true
     
     App\Controller\GamePlatform\InviteController:
         tags: ['controller.service_arguments']

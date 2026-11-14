@@ -32,7 +32,11 @@ vs_api_remove_all_game_play_by_game:
 
 vs_api_generate_mercure_token:
     path: /api/generate-mercure-token
-    controller: App\Controller\Api\GenerateMercureTokenController::index
+    controller: App\Controller\Api\MercureGenerateTokenController::index
+
+vs_api_get_mercure_subscriptions:
+    path: /api/mercure-subscriptions
+    controller: App\Controller\Api\MercureGetSubscriptionsController::index
 
 vs_api_backgamon_editor_game_string:
     path: /api/backgamon/editor/gamestring

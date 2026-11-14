@@ -18,6 +18,13 @@ services:
         autowire: true
         autoconfigure: true
     
+    vs_api.mercure_token_provider:
+        class: App\Component\ServerSentEvent\MercureTokenProvider
+        public: true
+        arguments:
+            - '@mercure.hub.default.jwt.factory'
+            - '%env(MERCURE_PUBLIC_URL)%'
+    
     app_mercure_publisher:
         class: App\Component\ServerSentEvent\MercurePublisher
         public: true

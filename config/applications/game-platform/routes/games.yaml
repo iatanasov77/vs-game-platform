@@ -101,6 +101,13 @@ app_handle_add_user_into_game_room_form:
     controller: App\Controller\GamePlatform\GameRoomsController::handleUserIntoGameRoomForm
 
 ###################################################################################
+# Mercure Subscriptions Admin Actions
+###################################################################################
+app_mercure_subscriptions:
+    path: /mercure-subscriptions
+    controller: App\Controller\GamePlatform\MercureSubscriptionsController::index
+
+###################################################################################
 # Game Rooms User Actions
 ###################################################################################
 app_create_game_room_form:

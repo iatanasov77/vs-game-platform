@@ -24,6 +24,7 @@ export class GameService
 {
     url: string;
     hasPlayer$: BehaviorSubject<boolean>;
+    topicUri: string;
     
     constructor(
         @Inject( HttpClient ) private httpClient: HttpClient,
@@ -33,6 +34,8 @@ export class GameService
     ) {
         this.url        = `${context.apiURL}`;
         this.hasPlayer$ = new BehaviorSubject<boolean>( false );
+        
+        this.topicUri = `${context.backendURL}/${window.gamePlatformSettings.gameSlug}`;
     }
     
     public hasPlayer(): Observable<boolean>
@@ -136,7 +139,7 @@ export class GameService
             actionName: MercureActionNames.disconnectPlayer,
             player: player
         };
-        this.sseService.sendMessage( JSON.stringify( action ) );
+        this.sseService.sendMessage( this.topicUri, JSON.stringify( action ) );
     }
     
     private mapGame( response: any )

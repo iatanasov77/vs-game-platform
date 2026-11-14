@@ -94,6 +94,8 @@ Encore
     
     .addEntry( 'js/debug-websocket-page', './themes/GamePlatform_VelzonSaas/assets/js/games/debug-websocket-page/index.js' )
     .addEntry( 'js/debug-sse-page', './themes/GamePlatform_VelzonSaas/assets/js/games/debug-sse-page/index.js' )
+    
+    .addEntry( 'js/mercure-subscriptions-page', './themes/GamePlatform_VelzonSaas/assets/js/games/mercure-subscriptions-page/index.js' )
 ;
 
 if ( Encore.isDev() ) {
@@ -110,6 +112,7 @@ Encore.configureDefinePlugin( ( options ) => {
     options.PROD_BACKEND_URL    = JSON.stringify( process.env.PROD_BACKEND_URL );
     options.DEV_BACKEND_URL     = JSON.stringify( process.env.DEV_BACKEND_URL );
     options.MERCURE_URL         = JSON.stringify( process.env.MERCURE_URL );
+    options.MERCURE_PUBLIC_URL  = JSON.stringify( process.env.MERCURE_PUBLIC_URL );
     options.MERCURE_JWT_SECRET  = JSON.stringify( process.env.MERCURE_JWT_SECRET );
 });
 

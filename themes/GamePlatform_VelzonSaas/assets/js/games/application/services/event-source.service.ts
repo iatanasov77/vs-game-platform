@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
-import { Observable, Subscription, map } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription, map } from 'rxjs';
 
 import { SseClient } from 'ngx-sse-client';
 import {
@@ -18,6 +18,7 @@ const { context } = require( '../context' );
 
 import { AppStateService } from '../state/app-state.service';
 import { AuthService } from './auth.service';
+import { MercureJwt } from './debug-sse/models';
 
 declare var $: any;
 
@@ -43,6 +44,9 @@ export class EventSourceService
     private sseClientStream: Observable<Event> | null;
     private sseSubscription: Subscription | null;
     
+    mercureSubscriptions: any;
+    mercureSubscriptions$: BehaviorSubject<any>;
+    
     /**
      * constructor
      *
@@ -59,6 +63,10 @@ export class EventSourceService
         this.url = `${context.apiURL}`;
         this.sseClientStream    = null;
         this.sseSubscription    = null;
+        
+        this.mercureSubscriptions = null;
+        this.mercureSubscriptions$  = new BehaviorSubject<any>( this.mercureSubscriptions );
+        // this.loadMercureSubscriptions( 'frontend' );
     }
     
     /*  
@@ -92,6 +100,51 @@ export class EventSourceService
         return this.httpClient.post<MessageData>( url, messageDto, {headers} ).pipe(
             map( ( response: any ) => this.mapMessageData( response ) )
         );
+    }
+    
+    getMercureSubscriptions(): Observable<any>
+    {
+        return this.mercureSubscriptions$.asObservable();
+    }
+    
+    loadMercureSubscriptions( source: string ): void
+    {
+        if ( source === 'frontend' ) {
+            this.authService.generateMercureToken().subscribe( ( jwt: MercureJwt ) => {
+                this.loadSubscriptionsFromFrontend( jwt.token ).then( ( data ) => {
+                    this.mercureSubscriptions = data;
+                    this.mercureSubscriptions$.next( this.mercureSubscriptions );
+                });
+            });
+        } else {
+            this.mercureSubscriptions = this.loadMercureSubscriptionsFromBackend();
+            this.mercureSubscriptions$.next( this.mercureSubscriptions );
+        }
+    }
+    
+    private loadMercureSubscriptionsFromBackend(): Observable<any>
+    {
+        const headers   = ( new HttpHeaders() ).set( "Authorization", "Bearer " + this.authService.getApiToken() );
+        const url = `${this.url}/mercure-subscriptions`;
+        
+        return this.httpClient.get( url, {headers} );
+    }
+    
+    /*
+     * Manual: https://mercure.rocks/docs/concepts/active-subscriptions#subscription-api
+     */
+    private async loadSubscriptionsFromFrontend( token: string ): Promise<any>
+    {
+        let headers = {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/x-www-form-urlencoded",
+        };
+        
+        const response = await fetch( `${context.mercureHost}/subscriptions`, {
+            headers: headers,
+        });
+        
+        return response;
     }
     
     private createNgxSseClient( topicUri: string, options: any ): Observable<Event>

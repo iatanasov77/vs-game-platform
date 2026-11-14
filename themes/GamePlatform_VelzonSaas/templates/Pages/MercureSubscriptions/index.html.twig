@@ -1,0 +1,25 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+    <div id="TestSsseContainer"
+        data-locale="{{ app.request.locale }}"
+    >
+        <div class="mb-3" >
+            <a href="https://mercure-hub.game-platform.lh/.well-known/mercure/debug/" target="_blank">Mercure HUB Dashbord</a>
+        </div>
+        
+        <app-mercure-subscriptions-page></app-mercure-subscriptions-page>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    
+    <script type="text/javascript">
+        const gamePlatformSettings  = {{ ( gameSettings | json_encode | raw ) }};
+        window.gamePlatformSettings = gamePlatformSettings;
+    </script>
+    
+    {{ encore_entry_script_tags( 'js/mercure-subscriptions-page', null, 'GameplatformVelzonsaasTheme' ) }}
+{% endblock %}

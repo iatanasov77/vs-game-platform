@@ -109,11 +109,18 @@ services:
             - '@app_mercure_publisher'
             - '@vsapp.repository.game_sessions'
     
-    App\Controller\Api\GenerateMercureTokenController:
+    App\Controller\Api\MercureGenerateTokenController:
         tags: ['controller.service_arguments']
         autowire: true
         arguments:
-            - '@mercure.hub.default.jwt.factory'
+            - '@vs_api.mercure_token_provider'
+    
+    App\Controller\Api\MercureGetSubscriptionsController:
+        tags: ['controller.service_arguments']
+        autowire: true
+        arguments:
+            - '@vs_api.mercure_token_provider'
+            - '@http_client'
     
     App\Controller\Api\AccountController:
         tags: ['controller.service_arguments']

@@ -52,7 +52,7 @@ services:
             - '@vsapp.factory.temp_players'
     
     ##############################################################
-    # Debug Comonents
+    # Debug Components
     ##############################################################
     App\Component\ServerSentEvent\Handler\AddAiPlayerHandler:
         arguments:

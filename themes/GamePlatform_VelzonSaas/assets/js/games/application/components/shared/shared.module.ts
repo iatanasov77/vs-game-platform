@@ -15,6 +15,7 @@ import { CardGameBidHistoryComponent } from './card-game-bid-history/card-game-b
 import { CardGameMyPlayerCardsComponent } from './card-game-my-player-cards/card-game-my-player-cards.component';
 import { GameRoomsTableComponent } from './game-rooms-table/game-rooms-table.component';
 import { GameRoomsTableTestComponent } from './game-rooms-table-test/game-rooms-table-test.component';
+import { MercureSubscriptionsComponent } from './mercure-subscriptions/mercure-subscriptions.component';
 import { DebugWindowComponent } from './debug-window/debug-window.component';
 
 @NgModule({
@@ -29,6 +30,7 @@ import { DebugWindowComponent } from './debug-window/debug-window.component';
         CardGameMyPlayerCardsComponent,
         GameRoomsTableComponent,
         GameRoomsTableTestComponent,
+        MercureSubscriptionsComponent,
         DebugWindowComponent
     ],
     imports: [
@@ -49,6 +51,7 @@ import { DebugWindowComponent } from './debug-window/debug-window.component';
         CardGameMyPlayerCardsComponent,
         GameRoomsTableComponent,
         GameRoomsTableTestComponent,
+        MercureSubscriptionsComponent,
         DebugWindowComponent
     ]
 })
